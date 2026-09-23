@@ -22,74 +22,101 @@ describe("HitPointsWidget (via CharacterPlay)", () => {
     window.localStorage.clear();
   });
 
-  it("applies damage immediately, without a Save button", async () => {
-    const character = makeTestCharacter({
-      hitPoints: { current: 10, max: 10, temporary: 0 },
-    });
+  it("has no Save button — every action persists immediately", async () => {
+    const character = makeTestCharacter({ hitPoints: { current: 10, max: 10, temporary: 0 } });
     await new LocalStorageCharacterRepository().create(character);
 
-    const user = userEvent.setup();
     renderPlay(character.id);
     await screen.findByRole("heading", { name: character.name });
 
     expect(screen.queryByRole("button", { name: /^enregistrer$/i })).not.toBeInTheDocument();
-
-    await user.type(screen.getByLabelText(/^montant$/i), "4");
-    await user.click(screen.getByRole("button", { name: /^dégâts$/i }));
-
-    expect(await screen.findByText("6")).toBeInTheDocument();
-    const persisted = await new LocalStorageCharacterRepository().getById(character.id);
-    expect(persisted?.hitPoints).toEqual({ current: 6, max: 10, temporary: 0 });
   });
 
-  it("absorbs damage with temporary hit points before current hit points", async () => {
-    const character = makeTestCharacter({
-      hitPoints: { current: 10, max: 10, temporary: 5 },
-    });
+  it("inflicts 1 damage per click on the down chevron, absorbing temporary hit points first", async () => {
+    const character = makeTestCharacter({ hitPoints: { current: 10, max: 10, temporary: 2 } });
     await new LocalStorageCharacterRepository().create(character);
 
     const user = userEvent.setup();
     renderPlay(character.id);
     await screen.findByRole("heading", { name: character.name });
 
-    await user.type(screen.getByLabelText(/^montant$/i), "3");
-    await user.click(screen.getByRole("button", { name: /^dégâts$/i }));
+    await user.click(screen.getByRole("button", { name: /infliger 1 dégât/i }));
+    await user.click(screen.getByRole("button", { name: /infliger 1 dégât/i }));
+    await user.click(screen.getByRole("button", { name: /infliger 1 dégât/i }));
 
     const persisted = await new LocalStorageCharacterRepository().getById(character.id);
-    expect(persisted?.hitPoints).toEqual({ current: 10, max: 10, temporary: 2 });
+    expect(persisted?.hitPoints).toEqual({ current: 9, max: 10, temporary: 0 });
   });
 
-  it("heals current hit points, capped at max", async () => {
-    const character = makeTestCharacter({
-      hitPoints: { current: 8, max: 10, temporary: 0 },
-    });
+  it("heals 1 point per click on the up chevron, capped at max", async () => {
+    const character = makeTestCharacter({ hitPoints: { current: 9, max: 10, temporary: 0 } });
     await new LocalStorageCharacterRepository().create(character);
 
     const user = userEvent.setup();
     renderPlay(character.id);
     await screen.findByRole("heading", { name: character.name });
 
-    await user.type(screen.getByLabelText(/^montant$/i), "100");
-    await user.click(screen.getByRole("button", { name: /^soin$/i }));
+    await user.click(screen.getByRole("button", { name: /soigner 1 point de vie/i }));
+    await user.click(screen.getByRole("button", { name: /soigner 1 point de vie/i }));
 
     const persisted = await new LocalStorageCharacterRepository().getById(character.id);
     expect(persisted?.hitPoints).toEqual({ current: 10, max: 10, temporary: 0 });
   });
 
-  it("sets temporary hit points without stacking", async () => {
-    const character = makeTestCharacter({
-      hitPoints: { current: 10, max: 10, temporary: 5 },
-    });
+  it("edits current hit points directly, clamped to max", async () => {
+    const character = makeTestCharacter({ hitPoints: { current: 10, max: 10, temporary: 0 } });
     await new LocalStorageCharacterRepository().create(character);
 
     const user = userEvent.setup();
     renderPlay(character.id);
     await screen.findByRole("heading", { name: character.name });
 
-    await user.type(screen.getByLabelText(/pv temporaires/i), "3");
-    await user.click(screen.getByRole("button", { name: /^définir$/i }));
+    const currentInput = screen.getByLabelText(/pv actuels/i);
+    await user.clear(currentInput);
+    await user.type(currentInput, "999");
 
     const persisted = await new LocalStorageCharacterRepository().getById(character.id);
-    expect(persisted?.hitPoints.temporary).toBe(5);
+    expect(persisted?.hitPoints.current).toBe(10);
+  });
+
+  it("edits temporary hit points directly, including lowering an existing value", async () => {
+    const character = makeTestCharacter({ hitPoints: { current: 10, max: 10, temporary: 5 } });
+    await new LocalStorageCharacterRepository().create(character);
+
+    const user = userEvent.setup();
+    renderPlay(character.id);
+    await screen.findByRole("heading", { name: character.name });
+
+    const temporaryInput = screen.getByLabelText(/pv temporaires/i);
+    await user.clear(temporaryInput);
+    await user.type(temporaryInput, "2");
+
+    const persisted = await new LocalStorageCharacterRepository().getById(character.id);
+    expect(persisted?.hitPoints.temporary).toBe(2);
+  });
+
+  it("shows the moon gauge for the Séluné theme, the linear bar otherwise", async () => {
+    const seluneCharacter = makeTestCharacter({
+      hitPoints: { current: 7, max: 23, temporary: 0 },
+      themeId: "selune",
+    });
+    await new LocalStorageCharacterRepository().create(seluneCharacter);
+
+    const { unmount } = renderPlay(seluneCharacter.id);
+    await screen.findByRole("heading", { name: seluneCharacter.name });
+    expect(screen.getByText("/ 23 PV")).toBeInTheDocument();
+    expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+    unmount();
+
+    window.localStorage.clear();
+    const defaultCharacter = makeTestCharacter({
+      hitPoints: { current: 7, max: 23, temporary: 0 },
+    });
+    await new LocalStorageCharacterRepository().create(defaultCharacter);
+
+    renderPlay(defaultCharacter.id);
+    await screen.findByRole("heading", { name: defaultCharacter.name });
+    expect(screen.getByRole("progressbar")).toBeInTheDocument();
+    expect(screen.queryByText("/ 23 PV")).not.toBeInTheDocument();
   });
 });
