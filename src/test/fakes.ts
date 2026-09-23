@@ -1,5 +1,8 @@
 import type { Character } from "@/domain/character";
-import type { CharacterRepository } from "@/repositories/contracts/character-repository";
+import type {
+  CharacterRepository,
+  UpsertManyResult,
+} from "@/repositories/contracts/character-repository";
 
 /** Repository en mémoire pour tester la couche store en isolation, sans localStorage/jsdom. */
 export class InMemoryCharacterRepository implements CharacterRepository {
@@ -23,6 +26,22 @@ export class InMemoryCharacterRepository implements CharacterRepository {
       existing.id === id ? character : existing,
     );
     return character;
+  }
+
+  async upsertMany(characters: Character[]): Promise<UpsertManyResult> {
+    const byId = new Map(this.characters.map((character) => [character.id, character]));
+    let added = 0;
+    let updated = 0;
+    for (const character of characters) {
+      if (byId.has(character.id)) {
+        updated += 1;
+      } else {
+        added += 1;
+      }
+      byId.set(character.id, character);
+    }
+    this.characters = [...byId.values()];
+    return { added, updated, skipped: 0 };
   }
 
   async delete(id: string): Promise<void> {

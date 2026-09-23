@@ -52,4 +52,21 @@ describe("LocalStorageCharacterRepository", () => {
   it("deleting an unknown id is a no-op", async () => {
     await expect(repository.delete("missing")).resolves.toBeUndefined();
   });
+
+  it("upserts new characters as additions", async () => {
+    const result = await repository.upsertMany([
+      makeTestCharacter({ id: "a" }),
+      makeTestCharacter({ id: "b" }),
+    ]);
+    expect(result).toEqual({ added: 2, updated: 0, skipped: 0 });
+    expect(await repository.list()).toHaveLength(2);
+  });
+
+  it("upserting an existing id counts as an update and replaces the record", async () => {
+    await repository.upsertMany([makeTestCharacter({ id: "a", level: 3 })]);
+    const result = await repository.upsertMany([makeTestCharacter({ id: "a", level: 5 })]);
+
+    expect(result).toEqual({ added: 0, updated: 1, skipped: 0 });
+    expect(await repository.getById("a")).toMatchObject({ level: 5 });
+  });
 });

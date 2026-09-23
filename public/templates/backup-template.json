@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "exportedAt": "2026-01-01T00:00:00.000Z",
+  "characters": [
+    {
+      "id": "exemple-personnage-1",
+      "name": "Exemple : Personnage",
+      "class": "Clerc",
+      "level": 1,
+      "hitPoints": { "current": 8, "max": 8, "temporary": 0 },
+      "armorClass": 15,
+      "initiativeBonus": 0,
+      "speed": 9,
+      "abilityScores": {
+        "strength": 10,
+        "dexterity": 10,
+        "constitution": 12,
+        "intelligence": 10,
+        "wisdom": 14,
+        "charisma": 10
+      },
+      "concentration": { "active": false },
+      "spellSlots": [],
+      "knownSpellIds": [],
+      "preparedSpellIds": [],
+      "inventory": [],
+      "features": []
+    }
+  ],
+  "spells": [
+    {
+      "id": "exemple-etincelle",
+      "name": "Exemple : Étincelle",
+      "level": 0,
+      "school": "Évocation",
+      "castingTime": "1 action",
+      "range": "18 mètres",
+      "components": { "verbal": true, "somatic": true, "material": false },
+      "duration": "Instantané",
+      "concentration": false,
+      "ritual": false,
+      "description": "Sort d'exemple générique — voir docs/adr/0004-json-import-export-open5e-schema.md.",
+      "classes": ["Magicien"]
+    }
+  ]
+}

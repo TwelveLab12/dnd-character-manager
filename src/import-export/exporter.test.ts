@@ -1,11 +1,38 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { makeTestSpell } from "@/test/fixtures";
-import { downloadJson, exportSpellsToJson } from "./exporter";
+import { makeTestCharacter, makeTestSpell } from "@/test/fixtures";
+import { backupSchema } from "./schemas/backup-schema";
+import {
+  downloadJson,
+  exportBackupToJson,
+  exportCharactersToJson,
+  exportSpellsToJson,
+} from "./exporter";
 
 describe("exportSpellsToJson", () => {
   it("serializes spells as JSON that parses back to the same data", () => {
     const spell = makeTestSpell();
     expect(JSON.parse(exportSpellsToJson([spell]))).toEqual([spell]);
+  });
+});
+
+describe("exportCharactersToJson", () => {
+  it("serializes characters as JSON that parses back to the same data", () => {
+    const character = makeTestCharacter();
+    expect(JSON.parse(exportCharactersToJson([character]))).toEqual([character]);
+  });
+});
+
+describe("exportBackupToJson", () => {
+  it("produces a backup that satisfies backupSchema and contains both resources", () => {
+    const character = makeTestCharacter();
+    const spell = makeTestSpell();
+
+    const backup = backupSchema.parse(JSON.parse(exportBackupToJson([character], [spell])));
+
+    expect(backup.schemaVersion).toBe(1);
+    expect(backup.characters).toEqual([character]);
+    expect(backup.spells).toEqual([spell]);
+    expect(backup.exportedAt).toEqual(expect.any(String));
   });
 });
 

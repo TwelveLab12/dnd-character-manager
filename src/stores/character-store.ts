@@ -1,7 +1,10 @@
 import { create } from "zustand";
 import type { StoreApi, UseBoundStore } from "zustand";
 import type { Character } from "@/domain/character";
-import type { CharacterRepository } from "@/repositories/contracts/character-repository";
+import type {
+  CharacterRepository,
+  UpsertManyResult,
+} from "@/repositories/contracts/character-repository";
 
 export interface CharacterStoreState {
   characters: Character[];
@@ -10,6 +13,7 @@ export interface CharacterStoreState {
   load: () => Promise<void>;
   create: (character: Character) => Promise<void>;
   update: (id: string, character: Character) => Promise<Character>;
+  upsertMany: (characters: Character[]) => Promise<UpsertManyResult>;
   remove: (id: string) => Promise<void>;
 }
 
@@ -51,6 +55,16 @@ export function createCharacterStore(repository: CharacterRepository): Character
         characters: get().characters.map((existing) => (existing.id === id ? updated : existing)),
       });
       return updated;
+    },
+
+    upsertMany: async (characters) => {
+      const result = await repository.upsertMany(characters);
+      const byId = new Map(get().characters.map((character) => [character.id, character]));
+      for (const character of characters) {
+        byId.set(character.id, character);
+      }
+      set({ characters: [...byId.values()] });
+      return result;
     },
 
     remove: async (id) => {

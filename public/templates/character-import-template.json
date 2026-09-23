@@ -1,0 +1,48 @@
+[
+  {
+    "name": "Exemple : Personnage",
+    "class": "Clerc",
+    "subclass": "Domaine du Crépuscule",
+    "level": 3,
+    "race": "Aasimar",
+    "background": "Ermite",
+    "hitPoints": { "current": 22, "max": 23, "temporary": 0 },
+    "armorClass": 18,
+    "initiativeBonus": -1,
+    "speed": 9,
+    "abilityScores": {
+      "strength": 10,
+      "dexterity": 8,
+      "constitution": 14,
+      "intelligence": 10,
+      "wisdom": 16,
+      "charisma": 12
+    },
+    "savingThrowProficiencies": ["wisdom", "charisma"],
+    "skillProficiencies": ["Médecine", "Religion"],
+    "concentration": { "active": false },
+    "spellcasting": { "ability": "wisdom" },
+    "spellSlots": [
+      { "level": 1, "total": 4, "used": 0 },
+      { "level": 2, "total": 2, "used": 0 }
+    ],
+    "knownSpellIds": [],
+    "preparedSpellIds": [],
+    "inventory": [
+      { "id": "exemple-objet-1", "name": "Sac à dos", "quantity": 1 },
+      { "id": "exemple-objet-2", "name": "Armure d'écailles", "quantity": 1, "equipped": true }
+    ],
+    "features": [
+      {
+        "id": "exemple-capacite-1",
+        "name": "Canalisation Divine",
+        "source": "Clerc",
+        "description": "Exemple de capacité — remplacez par vos propres capacités.",
+        "usesMax": 1,
+        "usesCurrent": 1,
+        "recharge": "shortRest"
+      }
+    ],
+    "notes": "Ceci est un personnage d'exemple pour illustrer le format JSON attendu. L'id, createdAt et updatedAt sont optionnels à l'import : générés automatiquement si absents."
+  }
+]

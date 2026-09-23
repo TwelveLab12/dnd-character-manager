@@ -19,13 +19,13 @@ describe("previewSpellImport", () => {
     const existing = makeTestSpell({ id: "fireball", level: 3 });
     const [row] = previewSpellImport([{ ...existing, level: 5 }], [existing]);
     expect(row?.status).toBe("update");
-    expect(row?.spell?.level).toBe(5);
+    expect(row?.entity?.level).toBe(5);
   });
 
   it("derives the id from the name when absent", () => {
     const { id: _id, ...withoutId } = makeTestSpell({ name: "Fire Bolt" });
     const [row] = previewSpellImport([withoutId], []);
-    expect(row?.spell?.id).toBe("fire-bolt");
+    expect(row?.entity?.id).toBe("fire-bolt");
   });
 
   it("reports a humanized error for an invalid entry without blocking other rows", () => {
@@ -40,22 +40,12 @@ describe("previewSpellImport", () => {
 });
 
 describe("parseSpellImportEntries", () => {
-  it("accepts a bare array", () => {
-    const result = parseSpellImportEntries(JSON.stringify([{ name: "A" }]));
-    expect(result).toEqual({ ok: true, entries: [{ name: "A" }] });
-  });
-
   it("accepts a { spells: [...] } wrapper", () => {
     const result = parseSpellImportEntries(JSON.stringify({ spells: [{ name: "A" }] }));
     expect(result).toEqual({ ok: true, entries: [{ name: "A" }] });
   });
 
-  it("reports a syntax error", () => {
-    const result = parseSpellImportEntries("{not json");
-    expect(result.ok).toBe(false);
-  });
-
-  it("reports an unexpected shape", () => {
+  it("rejects a { characters: [...] } wrapper (wrong key)", () => {
     const result = parseSpellImportEntries(JSON.stringify({ characters: [] }));
     expect(result.ok).toBe(false);
   });

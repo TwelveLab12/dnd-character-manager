@@ -1,10 +1,7 @@
 import type { Spell } from "@/domain/spell";
+import type { UpsertManyResult } from "./upsert-many-result";
 
-export interface UpsertManyResult {
-  added: number;
-  updated: number;
-  skipped: number;
-}
+export type { UpsertManyResult };
 
 /** Voir docs/adr/0002-repository-pattern-localstorage-v1.md. */
 export interface SpellRepository {

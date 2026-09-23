@@ -1,5 +1,5 @@
 import type { Character } from "@/domain/character";
-import type { CharacterRepository } from "../contracts/character-repository";
+import type { CharacterRepository, UpsertManyResult } from "../contracts/character-repository";
 import { LocalStorageClient } from "./local-storage-client";
 
 export class LocalStorageCharacterRepository implements CharacterRepository {
@@ -33,6 +33,22 @@ export class LocalStorageCharacterRepository implements CharacterRepository {
     next[index] = updated;
     this.store.write(next);
     return updated;
+  }
+
+  async upsertMany(characters: Character[]): Promise<UpsertManyResult> {
+    const byId = new Map(this.store.read().map((character) => [character.id, character]));
+    let added = 0;
+    let updated = 0;
+    for (const character of characters) {
+      if (byId.has(character.id)) {
+        updated += 1;
+      } else {
+        added += 1;
+      }
+      byId.set(character.id, character);
+    }
+    this.store.write([...byId.values()]);
+    return { added, updated, skipped: 0 };
   }
 
   async delete(id: string): Promise<void> {

@@ -63,6 +63,21 @@ describe("createCharacterStore", () => {
     expect(store.getState().characters).toEqual([updated]);
   });
 
+  it("upserts characters in bulk and reflects added/updated counts immediately in state", async () => {
+    const repository = new InMemoryCharacterRepository();
+    const store = createCharacterStore(repository);
+
+    const firstResult = await store.getState().upsertMany([makeTestCharacter({ id: "a" })]);
+    expect(firstResult).toEqual({ added: 1, updated: 0, skipped: 0 });
+    expect(store.getState().characters).toHaveLength(1);
+
+    const secondResult = await store
+      .getState()
+      .upsertMany([makeTestCharacter({ id: "a", level: 5 })]);
+    expect(secondResult).toEqual({ added: 0, updated: 1, skipped: 0 });
+    expect(store.getState().characters).toEqual([expect.objectContaining({ level: 5 })]);
+  });
+
   it("surfaces a repository error from load() without throwing", async () => {
     const repository = new InMemoryCharacterRepository();
     repository.list = () => Promise.reject(new Error("boom"));
