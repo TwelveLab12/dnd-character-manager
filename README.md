@@ -4,7 +4,8 @@ Gestionnaire de personnage D&D 5e (multi-personnages) — portage d'une feuille 
 web app Next.js/TypeScript, pensé pour évoluer vers une vraie base de données sans réécriture de la
 couche métier ni de l'UI.
 
-**En ligne** : [dnd-character-manager-theta.vercel.app](https://dnd-character-manager-theta.vercel.app)
+**En ligne** : [dnd.brunoschvartz.dev](https://dnd.brunoschvartz.dev) (ou
+[dnd-character-manager-theta.vercel.app](https://dnd-character-manager-theta.vercel.app))
 
 ## Fonctionnalités
 

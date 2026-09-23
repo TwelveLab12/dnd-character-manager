@@ -21,3 +21,13 @@ automatiquement par Vercel reste disponible sans configuration DNS supplémentai
 Aucun coût de domaine additionnel, déploiement indépendant du portfolio (un incident sur l'un
 n'affecte pas l'autre), déploiements de preview automatiques par PR grâce à l'intégration GitHub de
 Vercel.
+
+**Piège rencontré à la mise en place** : le CNAME générique `cname.vercel-dns.com` (documenté comme
+valeur par défaut dans la doc Vercel) a provoqué un échec silencieux du handshake TLS
+(`ERR_CONNECTION_CLOSED`/`SSL_ERROR_SYSCALL`) alors même que le DNS résolvait correctement et que le
+domaine était marqué `verified` côté API Vercel. La page **Vercel → projet → Domains** (pas
+`Settings → Domains`, qui n'existe plus dans l'UI actuelle) affiche un bandeau _"DNS Change
+Recommended"_ avec la cible CNAME réellement à utiliser, spécifique au projet (ex :
+`8cf6f9f5ab209792.vercel-dns-017.com`) — c'est cette valeur-là qu'il faut mettre dans Cloudflare,
+pas le générique. À vérifier en premier via cette page en cas de sous-domaine Vercel qui ne répond
+pas alors que le DNS a l'air correct.
