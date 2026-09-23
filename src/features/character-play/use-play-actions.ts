@@ -2,7 +2,12 @@
 
 import type { Character } from "@/domain/character";
 import { adjustFeatureUses } from "@/domain/calculations/feature-uses";
-import { applyDamage, applyHealing, setTemporaryHitPoints } from "@/domain/calculations/hit-points";
+import {
+  applyDamage,
+  applyHealing,
+  setCurrentHitPoints,
+  setTemporaryHitPoints,
+} from "@/domain/calculations/hit-points";
 import { applyLongRest, applyShortRest } from "@/domain/calculations/rest";
 import { adjustSpellSlotUsage } from "@/domain/calculations/spell-slot-table";
 import { useCharacterStoreApi } from "@/stores/store-provider";
@@ -32,6 +37,10 @@ export function usePlayActions(characterId: string) {
       withCurrent((character) => ({ hitPoints: applyDamage(character.hitPoints, amount) })),
     applyHealing: (amount: number) =>
       withCurrent((character) => ({ hitPoints: applyHealing(character.hitPoints, amount) })),
+    setCurrentHitPoints: (value: number) =>
+      withCurrent((character) => ({
+        hitPoints: setCurrentHitPoints(character.hitPoints, value),
+      })),
     setTemporaryHitPoints: (amount: number) =>
       withCurrent((character) => ({
         hitPoints: setTemporaryHitPoints(character.hitPoints, amount),

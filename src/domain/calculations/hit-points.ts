@@ -18,7 +18,17 @@ export function applyHealing(hitPoints: HitPoints, amount: number): HitPoints {
   return { ...hitPoints, current: Math.min(hitPoints.max, hitPoints.current + healing) };
 }
 
-/** Les PV temporaires ne s'additionnent pas en RAW : on garde la plus grande des deux valeurs. */
+/**
+ * Fixe les PV temporaires à une valeur absolue (plancher 0). Le widget de PV en mode jeu affiche
+ * la valeur actuelle et permet de la corriger directement — le "pas de cumul" RAW (les PV
+ * temporaires ne s'additionnent pas) reste de la responsabilité du joueur, qui compare lui-même
+ * avant de saisir une nouvelle valeur, comme sur une fiche papier.
+ */
 export function setTemporaryHitPoints(hitPoints: HitPoints, amount: number): HitPoints {
-  return { ...hitPoints, temporary: Math.max(hitPoints.temporary, Math.max(0, amount)) };
+  return { ...hitPoints, temporary: Math.max(0, amount) };
+}
+
+/** Fixe les PV courants à une valeur absolue, bornée à [0, max]. Ne touche pas temporary. */
+export function setCurrentHitPoints(hitPoints: HitPoints, value: number): HitPoints {
+  return { ...hitPoints, current: Math.max(0, Math.min(hitPoints.max, value)) };
 }

@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 import type { HitPoints } from "../character";
-import { applyDamage, applyHealing, setTemporaryHitPoints } from "./hit-points";
+import {
+  applyDamage,
+  applyHealing,
+  setCurrentHitPoints,
+  setTemporaryHitPoints,
+} from "./hit-points";
 
 describe("applyDamage", () => {
   it("absorbs damage from temporary hit points first", () => {
@@ -47,14 +52,36 @@ describe("applyHealing", () => {
 });
 
 describe("setTemporaryHitPoints", () => {
-  it("keeps the higher of the existing and new value (no stacking)", () => {
+  it("sets the value directly, including lowering it", () => {
     const hp: HitPoints = { current: 10, max: 10, temporary: 5 };
-    expect(setTemporaryHitPoints(hp, 3)).toEqual({ current: 10, max: 10, temporary: 5 });
+    expect(setTemporaryHitPoints(hp, 3)).toEqual({ current: 10, max: 10, temporary: 3 });
     expect(setTemporaryHitPoints(hp, 8)).toEqual({ current: 10, max: 10, temporary: 8 });
   });
 
-  it("ignores negative amounts", () => {
+  it("floors negative amounts at zero", () => {
     const hp: HitPoints = { current: 10, max: 10, temporary: 5 };
-    expect(setTemporaryHitPoints(hp, -1)).toEqual({ current: 10, max: 10, temporary: 5 });
+    expect(setTemporaryHitPoints(hp, -1)).toEqual({ current: 10, max: 10, temporary: 0 });
+  });
+});
+
+describe("setCurrentHitPoints", () => {
+  it("sets the value directly, including lowering it", () => {
+    const hp: HitPoints = { current: 10, max: 10, temporary: 0 };
+    expect(setCurrentHitPoints(hp, 4)).toEqual({ current: 4, max: 10, temporary: 0 });
+  });
+
+  it("clamps at max", () => {
+    const hp: HitPoints = { current: 4, max: 10, temporary: 0 };
+    expect(setCurrentHitPoints(hp, 100)).toEqual({ current: 10, max: 10, temporary: 0 });
+  });
+
+  it("clamps at zero", () => {
+    const hp: HitPoints = { current: 4, max: 10, temporary: 0 };
+    expect(setCurrentHitPoints(hp, -5)).toEqual({ current: 0, max: 10, temporary: 0 });
+  });
+
+  it("does not affect temporary hit points", () => {
+    const hp: HitPoints = { current: 4, max: 10, temporary: 3 };
+    expect(setCurrentHitPoints(hp, 8)).toEqual({ current: 8, max: 10, temporary: 3 });
   });
 });
