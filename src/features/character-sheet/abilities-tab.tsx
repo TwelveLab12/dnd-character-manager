@@ -8,8 +8,10 @@ import { clampCharacterLevel, proficiencyBonusForLevel } from "@/domain/calculat
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ABILITY_LABELS } from "./ability-labels";
+import { ABILITY_LABELS, ABILITY_SHORT_LABELS } from "./ability-labels";
 import { formatModifier } from "./format";
+import type { SkillDefinition } from "./skills";
+import { SKILL_DEFINITIONS } from "./skills";
 import type { CharacterTabProps } from "./types";
 
 function toNumber(value: string): number {
@@ -21,31 +23,54 @@ export function AbilitiesTab({ draft, onChange }: CharacterTabProps) {
   const proficiencyBonus = proficiencyBonusForLevel(clampCharacterLevel(draft.level));
 
   return (
-    <div className="grid gap-6">
-      <p className="text-muted-foreground text-sm">
-        Bonus de maîtrise (niveau {draft.level}) :{" "}
-        <span className="text-foreground font-medium">{formatModifier(proficiencyBonus)}</span>
-      </p>
+    <div className="grid gap-8">
+      <div className="grid gap-4">
+        <p className="text-muted-foreground text-sm">
+          Bonus de maîtrise (niveau {draft.level}) :{" "}
+          <span className="text-foreground font-medium">{formatModifier(proficiencyBonus)}</span>
+        </p>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        {ABILITY_NAMES.map((ability) => (
-          <AbilityRow
-            key={ability}
-            ability={ability}
-            score={draft.abilityScores[ability]}
-            proficient={draft.savingThrowProficiencies.includes(ability)}
-            proficiencyBonus={proficiencyBonus}
-            onScoreChange={(score) =>
-              onChange({ abilityScores: { ...draft.abilityScores, [ability]: score } })
-            }
-            onProficiencyChange={(proficient) => {
-              const next = proficient
-                ? [...draft.savingThrowProficiencies, ability]
-                : draft.savingThrowProficiencies.filter((existing) => existing !== ability);
-              onChange({ savingThrowProficiencies: next });
-            }}
-          />
-        ))}
+        <div className="grid gap-4 sm:grid-cols-2">
+          {ABILITY_NAMES.map((ability) => (
+            <AbilityRow
+              key={ability}
+              ability={ability}
+              score={draft.abilityScores[ability]}
+              proficient={draft.savingThrowProficiencies.includes(ability)}
+              proficiencyBonus={proficiencyBonus}
+              onScoreChange={(score) =>
+                onChange({ abilityScores: { ...draft.abilityScores, [ability]: score } })
+              }
+              onProficiencyChange={(proficient) => {
+                const next = proficient
+                  ? [...draft.savingThrowProficiencies, ability]
+                  : draft.savingThrowProficiencies.filter((existing) => existing !== ability);
+                onChange({ savingThrowProficiencies: next });
+              }}
+            />
+          ))}
+        </div>
+      </div>
+
+      <div className="grid gap-3">
+        <h2 className="text-lg font-medium">Compétences</h2>
+        <div className="grid gap-1 sm:grid-cols-2">
+          {SKILL_DEFINITIONS.map((skill) => (
+            <SkillRow
+              key={skill.name}
+              skill={skill}
+              score={draft.abilityScores[skill.ability]}
+              proficient={draft.skillProficiencies.includes(skill.name)}
+              proficiencyBonus={proficiencyBonus}
+              onProficiencyChange={(proficient) => {
+                const next = proficient
+                  ? [...draft.skillProficiencies, skill.name]
+                  : draft.skillProficiencies.filter((existing) => existing !== skill.name);
+                onChange({ skillProficiencies: next });
+              }}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -95,6 +120,43 @@ function AbilityRow({
           Sauv. {formatModifier(savingThrow)}
         </Label>
       </div>
+    </div>
+  );
+}
+
+interface SkillRowProps {
+  skill: SkillDefinition;
+  score: number;
+  proficient: boolean;
+  proficiencyBonus: number;
+  onProficiencyChange: (proficient: boolean) => void;
+}
+
+function SkillRow({
+  skill,
+  score,
+  proficient,
+  proficiencyBonus,
+  onProficiencyChange,
+}: SkillRowProps) {
+  const skillId = useId();
+  const modifier = abilityModifier(score);
+  const total = modifier + (proficient ? proficiencyBonus : 0);
+
+  return (
+    <div className="flex items-center gap-2 rounded-md border px-2 py-1.5">
+      <Checkbox
+        id={skillId}
+        checked={proficient}
+        onCheckedChange={(checked) => onProficiencyChange(checked === true)}
+      />
+      <Label htmlFor={skillId} className="flex-1 text-sm font-normal">
+        {skill.name}{" "}
+        <span className="text-muted-foreground text-xs">
+          ({ABILITY_SHORT_LABELS[skill.ability]})
+        </span>
+      </Label>
+      <span className="w-10 text-right text-sm font-medium">{formatModifier(total)}</span>
     </div>
   );
 }

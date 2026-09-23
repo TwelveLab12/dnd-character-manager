@@ -69,8 +69,51 @@ describe("CharacterSheet", () => {
     await user.click(screen.getByRole("tab", { name: /caractéristiques/i }));
 
     // Sagesse 16 -> modificateur +3 ; proficient au niveau 3 (bonus +2) -> jet de sauvegarde +5.
-    expect(screen.getByText("+3")).toBeInTheDocument();
-    expect(screen.getByText(/sauv\. \+5/i)).toBeInTheDocument();
+    // Plusieurs compétences liées à la Sagesse affichent aussi +3 (non maîtrisées) : on se limite
+    // à la ligne "Sagesse" elle-même pour éviter une correspondance ambiguë.
+    const wisdomRow = screen.getByText(/^sagesse$/i).closest(".rounded-lg") as HTMLElement | null;
+    if (!wisdomRow) {
+      throw new Error("expected a row for Sagesse");
+    }
+    expect(within(wisdomRow).getByText("+3")).toBeInTheDocument();
+    expect(within(wisdomRow).getByText(/sauv\. \+5/i)).toBeInTheDocument();
+  });
+
+  it("toggles a skill proficiency and computes its total live on the Caractéristiques tab", async () => {
+    const character = makeTestCharacter({
+      abilityScores: {
+        strength: 10,
+        dexterity: 10,
+        constitution: 10,
+        intelligence: 10,
+        wisdom: 16,
+        charisma: 10,
+      },
+      level: 3,
+    });
+    await new LocalStorageCharacterRepository().create(character);
+
+    const user = userEvent.setup();
+    renderSheet(character.id);
+    await screen.findByRole("heading", { name: character.name });
+    await user.click(screen.getByRole("tab", { name: /caractéristiques/i }));
+
+    // Médecine (Sagesse) non maîtrisée au départ -> juste le modificateur, +3.
+    const medicineCheckbox = screen.getByRole("checkbox", { name: /médecine/i });
+    const medicineRow = medicineCheckbox.closest("div");
+    if (!medicineRow) {
+      throw new Error("expected a row for Médecine");
+    }
+    expect(within(medicineRow).getByText("+3")).toBeInTheDocument();
+
+    // Maîtrisée -> + bonus de maîtrise (+2 au niveau 3) -> +5.
+    await user.click(medicineCheckbox);
+    expect(within(medicineRow).getByText("+5")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: /^enregistrer$/i }));
+    await screen.findByText(/enregistré/i);
+    const persisted = await new LocalStorageCharacterRepository().getById(character.id);
+    expect(persisted?.skillProficiencies).toEqual(["Médecine"]);
   });
 
   it("activates spellcasting, computes DC/attack bonus, and lets an override take precedence", async () => {
