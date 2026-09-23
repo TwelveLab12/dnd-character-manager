@@ -9,8 +9,8 @@ d'ajouter ou d'évaluer une nouvelle dépendance.
 - **react** / **react-dom** — UI.
 - **radix-ui** — primitives UI headless (accessibilité, comportement clavier/focus) sur lesquelles
   les composants `src/components/ui/` générés par shadcn sont construits — voir
-  [ADR 0003 du portfolio](../../BrunoSchvartzDev/docs/adr) pour le choix de stack équivalent, et
-  [docs/adr/0001](adr/0001-record-architecture-decisions.md) et suivants ici.
+  [ADR 0007](adr/0007-ui-stack-radix-shadcn-tailwind.md) (attention au piège Base UI par défaut du
+  CLI shadcn, détaillé dans cet ADR).
 - **shadcn** — CLI utilisée pour générer les composants UI dans `src/components/ui/` (le code généré
   est copié dans le repo, pas importé comme dépendance à l'exécution ; le paquet `shadcn` référencé
   dans `dependencies` fournit des styles/utilitaires runtime consommés par ce code généré).
