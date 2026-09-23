@@ -4,21 +4,13 @@ import { useId } from "react";
 import type { AbilityName } from "@/domain/ability-scores";
 import { ABILITY_NAMES } from "@/domain/ability-scores";
 import { abilityModifier } from "@/domain/calculations/modifiers";
-import { proficiencyBonusForLevel } from "@/domain/calculations/proficiency";
+import { clampCharacterLevel, proficiencyBonusForLevel } from "@/domain/calculations/proficiency";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { clampCharacterLevel, formatModifier } from "./format";
+import { ABILITY_LABELS } from "./ability-labels";
+import { formatModifier } from "./format";
 import type { CharacterTabProps } from "./types";
-
-const ABILITY_LABELS: Record<AbilityName, string> = {
-  strength: "Force",
-  dexterity: "Dextérité",
-  constitution: "Constitution",
-  intelligence: "Intelligence",
-  wisdom: "Sagesse",
-  charisma: "Charisme",
-};
 
 function toNumber(value: string): number {
   const parsed = Number.parseInt(value, 10);

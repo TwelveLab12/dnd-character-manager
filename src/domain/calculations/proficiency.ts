@@ -5,3 +5,13 @@ export function proficiencyBonusForLevel(level: number): number {
   }
   return 2 + Math.floor((level - 1) / 4);
 }
+
+/** Niveau de personnage ramené dans la plage valide 1-20, pour des calculs dérivés qui ne doivent
+ * jamais planter sur une saisie de formulaire momentanément invalide (ex : champ vidé pendant la
+ * frappe). */
+export function clampCharacterLevel(level: number): number {
+  if (!Number.isFinite(level)) {
+    return 1;
+  }
+  return Math.min(20, Math.max(1, Math.trunc(level)));
+}

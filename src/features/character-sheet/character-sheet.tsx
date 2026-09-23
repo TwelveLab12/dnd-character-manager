@@ -7,7 +7,10 @@ import { useCharacterStore } from "@/stores/store-provider";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AbilitiesTab } from "./abilities-tab";
+import { FeaturesTab } from "./features-tab";
 import { GeneralTab } from "./general-tab";
+import { InventoryTab } from "./inventory-tab";
+import { SpellsTab } from "./spells-tab";
 
 export function CharacterSheet({ characterId }: { characterId: string }) {
   const characters = useCharacterStore((state) => state.characters);
@@ -91,12 +94,24 @@ export function CharacterSheet({ characterId }: { characterId: string }) {
         <TabsList>
           <TabsTrigger value="general">Général</TabsTrigger>
           <TabsTrigger value="abilities">Caractéristiques</TabsTrigger>
+          <TabsTrigger value="spells">Sorts</TabsTrigger>
+          <TabsTrigger value="inventory">Inventaire</TabsTrigger>
+          <TabsTrigger value="features">Capacités</TabsTrigger>
         </TabsList>
         <TabsContent value="general">
           <GeneralTab draft={draft} onChange={handleChange} />
         </TabsContent>
         <TabsContent value="abilities">
           <AbilitiesTab draft={draft} onChange={handleChange} />
+        </TabsContent>
+        <TabsContent value="spells">
+          <SpellsTab draft={draft} onChange={handleChange} />
+        </TabsContent>
+        <TabsContent value="inventory">
+          <InventoryTab draft={draft} onChange={handleChange} />
+        </TabsContent>
+        <TabsContent value="features">
+          <FeaturesTab draft={draft} onChange={handleChange} />
         </TabsContent>
       </Tabs>
     </div>
