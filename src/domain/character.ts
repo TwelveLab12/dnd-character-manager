@@ -62,6 +62,8 @@ export interface Character {
   spellTags: CharacterSpellTag[];
   inventory: InventoryItem[];
   features: CharacterFeature[];
+  /** Palette visuelle du personnage — voir src/features/character-theme/theme-registry.ts. */
+  themeId?: string;
   notes?: string;
   createdAt: string;
   updatedAt: string;

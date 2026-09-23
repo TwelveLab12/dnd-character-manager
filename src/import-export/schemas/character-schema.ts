@@ -105,6 +105,7 @@ export const characterSchema = z.object({
   spellTags: z.array(characterSpellTagSchema).default([]),
   inventory: z.array(inventoryItemSchema).default([]),
   features: z.array(characterFeatureSchema).default([]),
+  themeId: z.string().min(1).optional(),
   notes: z.string().min(1).optional(),
   createdAt: z
     .string()

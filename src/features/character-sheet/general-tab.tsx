@@ -6,6 +6,7 @@ import type { Character } from "@/domain/character";
 import { effectiveAbilityScores } from "@/domain/calculations/effective-ability-scores";
 import type { RaceSelection } from "@/domain/race";
 import { RACE_DEFINITIONS, findRaceDefinition } from "@/domain/race";
+import { CHARACTER_THEMES } from "@/features/character-theme/theme-registry";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -197,6 +198,8 @@ export function GeneralTab({ draft, onChange }: CharacterTabProps) {
         </div>
       </div>
 
+      <ThemeSection draft={draft} onChange={onChange} />
+
       <div className="grid gap-2">
         <Label htmlFor={notesId}>Notes</Label>
         <Textarea
@@ -206,6 +209,32 @@ export function GeneralTab({ draft, onChange }: CharacterTabProps) {
           rows={4}
         />
       </div>
+    </div>
+  );
+}
+
+function ThemeSection({ draft, onChange }: CharacterTabProps) {
+  const selectId = useId();
+
+  return (
+    <div className="grid gap-2 sm:max-w-xs">
+      <Label htmlFor={selectId}>Thème visuel</Label>
+      <Select
+        value={draft.themeId ?? "none"}
+        onValueChange={(value) => onChange({ themeId: value === "none" ? undefined : value })}
+      >
+        <SelectTrigger id={selectId}>
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="none">Aucun / thème par défaut</SelectItem>
+          {CHARACTER_THEMES.map((theme) => (
+            <SelectItem key={theme.id} value={theme.id}>
+              {theme.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
     </div>
   );
 }
