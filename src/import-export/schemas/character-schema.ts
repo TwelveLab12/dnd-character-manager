@@ -63,6 +63,12 @@ const inventoryItemSchema = z.object({
 
 const featureRechargeSchema = z.enum(["shortRest", "longRest", "other"]);
 
+const characterSpellTagSchema = z.object({
+  spellId: z.string().min(1),
+  domain: z.string().min(1).optional(),
+  alwaysPrepared: z.boolean(),
+});
+
 const characterFeatureSchema = z.object({
   id: z.string().min(1),
   name: z.string().min(1),
@@ -96,6 +102,7 @@ export const characterSchema = z.object({
   spellSlots: z.array(spellSlotLevelSchema).default([]),
   knownSpellIds: z.array(z.string()).default([]),
   preparedSpellIds: z.array(z.string()).default([]),
+  spellTags: z.array(characterSpellTagSchema).default([]),
   inventory: z.array(inventoryItemSchema).default([]),
   features: z.array(characterFeatureSchema).default([]),
   notes: z.string().min(1).optional(),

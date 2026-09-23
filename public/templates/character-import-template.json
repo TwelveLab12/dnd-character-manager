@@ -28,6 +28,7 @@
     ],
     "knownSpellIds": [],
     "preparedSpellIds": [],
+    "spellTags": [],
     "inventory": [
       { "id": "exemple-objet-1", "name": "Sac à dos", "quantity": 1 },
       { "id": "exemple-objet-2", "name": "Armure d'écailles", "quantity": 1, "equipped": true }

@@ -26,6 +26,7 @@ export function makeTestCharacter(overrides: Partial<Character> = {}): Character
     spellSlots: [],
     knownSpellIds: [],
     preparedSpellIds: [],
+    spellTags: [],
     inventory: [],
     features: [],
     createdAt: "2026-01-01T00:00:00.000Z",

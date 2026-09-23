@@ -10,6 +10,7 @@ import { effectiveAbilityScores } from "@/domain/calculations/effective-ability-
 import { fullCasterSpellSlots } from "@/domain/calculations/spell-slot-table";
 import { resolvedSpellAttackBonus, resolvedSpellSaveDC } from "@/domain/calculations/spellcasting";
 import type { Spell } from "@/domain/spell";
+import type { CharacterSpellTag } from "@/domain/spell-tag";
 import { useSpellStore } from "@/stores/store-provider";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -44,6 +45,7 @@ export function SpellsTab({ draft, onChange }: CharacterTabProps) {
       <SpellcastingSection draft={draft} onChange={onChange} />
       <SpellSlotsSection draft={draft} onChange={onChange} />
       <KnownSpellsSection draft={draft} onChange={onChange} spells={spells} />
+      <SpellTagsSection draft={draft} onChange={onChange} spells={spells} />
     </div>
   );
 }
@@ -265,10 +267,11 @@ function KnownSpellsSection({ draft, onChange, spells }: CharacterTabProps & { s
       knownSpellIds: known
         ? [...draft.knownSpellIds, spellId]
         : draft.knownSpellIds.filter((id) => id !== spellId),
-      // Un sort qu'on ne connaît plus ne peut pas rester préparé.
+      // Un sort qu'on ne connaît plus ne peut pas rester préparé ni tagué.
       preparedSpellIds: known
         ? draft.preparedSpellIds
         : draft.preparedSpellIds.filter((id) => id !== spellId),
+      spellTags: known ? draft.spellTags : draft.spellTags.filter((tag) => tag.spellId !== spellId),
     });
   }
 
@@ -340,6 +343,75 @@ function KnownSpellsSection({ draft, onChange, spells }: CharacterTabProps & { s
               })}
             </tbody>
           </table>
+        </div>
+      )}
+    </section>
+  );
+}
+
+function SpellTagsSection({ draft, onChange, spells }: CharacterTabProps & { spells: Spell[] }) {
+  function tagFor(spellId: string): CharacterSpellTag {
+    return (
+      draft.spellTags.find((tag) => tag.spellId === spellId) ?? { spellId, alwaysPrepared: false }
+    );
+  }
+
+  function updateTag(spellId: string, patch: Partial<CharacterSpellTag>) {
+    const next = { ...tagFor(spellId), ...patch };
+    const withoutSpell = draft.spellTags.filter((tag) => tag.spellId !== spellId);
+    const isEmpty = !next.domain && !next.alwaysPrepared;
+    onChange({ spellTags: isEmpty ? withoutSpell : [...withoutSpell, next] });
+  }
+
+  const knownSpells = spells
+    .filter((spell) => draft.knownSpellIds.includes(spell.id))
+    .sort((a, b) => a.level - b.level || a.name.localeCompare(b.name));
+
+  return (
+    <section className="grid gap-3">
+      <div>
+        <h2 className="text-lg font-medium">Domaines de sorts</h2>
+        <p className="text-muted-foreground text-sm">
+          Associez un domaine à un sort connu et marquez-le « toujours préparé » pour qu&rsquo;il
+          apparaisse en mode jeu sans consommer de préparation (ex : sorts de domaine d&rsquo;un
+          Clerc).
+        </p>
+      </div>
+
+      {knownSpells.length === 0 && (
+        <p className="text-muted-foreground text-sm">Aucun sort connu pour l&rsquo;instant.</p>
+      )}
+
+      {knownSpells.length > 0 && (
+        <div className="grid gap-2">
+          {knownSpells.map((spell) => {
+            const tag = tagFor(spell.id);
+            return (
+              <div
+                key={spell.id}
+                className="flex flex-wrap items-center gap-2 rounded-lg border p-2"
+              >
+                <span className="min-w-32 flex-1 text-sm">{spell.name}</span>
+                <Input
+                  className="w-48"
+                  placeholder="Domaine (ex : Domaine de la Lune)"
+                  value={tag.domain ?? ""}
+                  onChange={(event) =>
+                    updateTag(spell.id, { domain: event.target.value || undefined })
+                  }
+                />
+                <Label className="text-muted-foreground flex items-center gap-2 text-xs">
+                  <Checkbox
+                    checked={tag.alwaysPrepared}
+                    onCheckedChange={(checked) =>
+                      updateTag(spell.id, { alwaysPrepared: checked === true })
+                    }
+                  />
+                  Toujours préparé
+                </Label>
+              </div>
+            );
+          })}
         </div>
       )}
     </section>

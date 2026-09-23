@@ -36,6 +36,7 @@ export function createBlankCharacter(input: NewCharacterInput): Character {
     spellSlots: [],
     knownSpellIds: [],
     preparedSpellIds: [],
+    spellTags: [],
     inventory: [],
     features: [],
     createdAt: now,

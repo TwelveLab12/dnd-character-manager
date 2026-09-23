@@ -2,6 +2,7 @@ import type { AbilityName, AbilityScores } from "./ability-scores";
 import type { CharacterFeature } from "./feature";
 import type { InventoryItem } from "./inventory";
 import type { RaceSelection } from "./race";
+import type { CharacterSpellTag } from "./spell-tag";
 
 export interface HitPoints {
   current: number;
@@ -57,6 +58,8 @@ export interface Character {
   spellSlots: SpellSlotLevel[];
   knownSpellIds: string[];
   preparedSpellIds: string[];
+  /** Domaine/toujours-préparé par sort connu — voir src/domain/spell-tag.ts. */
+  spellTags: CharacterSpellTag[];
   inventory: InventoryItem[];
   features: CharacterFeature[];
   notes?: string;
