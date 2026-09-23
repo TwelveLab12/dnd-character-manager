@@ -1,0 +1,4 @@
+# Husky hooks are shell scripts run via `sh`; a CRLF checkout (e.g. with
+# core.autocrlf=true on Windows/WSL) breaks argument parsing and makes
+# lint-staged fail silently. Force LF regardless of client config.
+.husky/* text eol=lf
