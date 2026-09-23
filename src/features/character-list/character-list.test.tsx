@@ -102,9 +102,38 @@ describe("CharacterList", () => {
     await user.click(screen.getByRole("button", { name: /importer une sauvegarde/i }));
     const dialog = await screen.findByRole("dialog");
     await pasteIntoJsonField(user, dialog, JSON.stringify(backup));
-    await user.click(within(dialog).getByRole("button", { name: /^importer$/i }));
+    await user.click(within(dialog).getByRole("button", { name: /^analyser$/i }));
+
+    expect(await within(dialog).findByText("Elara Duskwood")).toBeInTheDocument();
+    await user.click(within(dialog).getByRole("button", { name: /^importer \(2\)$/i }));
 
     expect(await within(dialog).findByText(/personnages : 1 ajouté/i)).toBeInTheDocument();
+    await user.click(within(dialog).getByRole("button", { name: /^fermer$/i }));
+    expect(await screen.findByText("Elara Duskwood")).toBeInTheDocument();
+  });
+
+  it("imports valid characters from a backup even when a spell entry is invalid", async () => {
+    const user = userEvent.setup();
+    renderCharacterList();
+
+    const backup = {
+      schemaVersion: 1,
+      exportedAt: new Date().toISOString(),
+      characters: [makeTestCharacter({ name: "Elara Duskwood" })],
+      spells: [{ name: "Sort cassé" }],
+    };
+
+    await user.click(screen.getByRole("button", { name: /importer une sauvegarde/i }));
+    const dialog = await screen.findByRole("dialog");
+    await pasteIntoJsonField(user, dialog, JSON.stringify(backup));
+    await user.click(within(dialog).getByRole("button", { name: /^analyser$/i }));
+
+    expect(await within(dialog).findByText("Elara Duskwood")).toBeInTheDocument();
+    expect(within(dialog).getByText(/invalide/i)).toBeInTheDocument();
+
+    await user.click(within(dialog).getByRole("button", { name: /^importer \(1\)$/i }));
+    expect(await within(dialog).findByText(/personnages : 1 ajouté/i)).toBeInTheDocument();
+
     await user.click(within(dialog).getByRole("button", { name: /^fermer$/i }));
     expect(await screen.findByText("Elara Duskwood")).toBeInTheDocument();
   });

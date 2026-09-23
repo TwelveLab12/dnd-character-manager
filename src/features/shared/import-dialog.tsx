@@ -17,13 +17,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-
-const STATUS_LABELS: Record<ImportRow<unknown>["status"], string> = {
-  new: "Nouveau",
-  update: "Mise à jour",
-  identical: "Identique",
-  invalid: "Invalide",
-};
+import { ImportRowsTable } from "./import-rows-table";
 
 function hasEntity<T>(row: ImportRow<T>): row is ImportRow<T> & { entity: T } {
   return row.entity !== undefined;
@@ -171,35 +165,7 @@ export function ImportDialog<T>({
             </p>
           )}
 
-          {rows && (
-            <div className="max-h-64 overflow-y-auto rounded-md border">
-              <table className="w-full text-sm">
-                <tbody>
-                  {rows.map((row, index) => (
-                    <tr key={`${row.label}-${index}`} className="border-b last:border-0">
-                      <td className="p-2 font-medium">{row.label}</td>
-                      <td className="p-2">
-                        <span
-                          className={
-                            row.status === "invalid" ? "text-destructive" : "text-muted-foreground"
-                          }
-                        >
-                          {STATUS_LABELS[row.status]}
-                        </span>
-                        {row.errors && (
-                          <ul className="text-destructive mt-1 list-disc pl-4 text-xs">
-                            {row.errors.map((message, messageIndex) => (
-                              <li key={messageIndex}>{message}</li>
-                            ))}
-                          </ul>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+          {rows && <ImportRowsTable rows={rows} />}
 
           {summary && <p className="text-sm">{summary}</p>}
         </div>
