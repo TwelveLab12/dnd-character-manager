@@ -1,5 +1,6 @@
 "use client";
 
+import { Pencil } from "lucide-react";
 import Link from "next/link";
 import { useEffect } from "react";
 import { useCharacterStore } from "@/stores/store-provider";
@@ -8,12 +9,10 @@ import { PageTitle } from "@/components/ui/page-title";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CharacterThemeScope } from "@/features/character-theme/character-theme-scope";
 import { AbilitiesViewTab } from "./abilities-view-tab";
-import { ConcentrationMarker } from "./concentration-marker";
 import { GeneralViewTab } from "./general-view-tab";
 import { HitPointsWidget } from "./hit-points-widget";
 import { InventoryViewTab } from "./inventory-view-tab";
 import { FeaturesViewTab } from "./features-view-tab";
-import { RestActions } from "./rest-actions";
 import { SpellsViewTab } from "./spells-view-tab";
 
 export function CharacterPlay({ characterId }: { characterId: string }) {
@@ -46,7 +45,7 @@ export function CharacterPlay({ characterId }: { characterId: string }) {
     <CharacterThemeScope themeId={character.themeId}>
       <div className="bg-background text-foreground mx-auto flex w-full max-w-3xl flex-col gap-6 px-6 py-12">
         <div className="flex items-start justify-between">
-          <div>
+          <div className="grid gap-1.5">
             <Link href="/" className="text-muted-foreground text-sm underline underline-offset-4">
               &larr; Mes personnages
             </Link>
@@ -56,17 +55,15 @@ export function CharacterPlay({ characterId }: { characterId: string }) {
               {character.subclass ? ` — ${character.subclass}` : ""} · Niveau {character.level}
             </p>
           </div>
-          <Button type="button" variant="outline" asChild>
-            <Link href={`/characters/${characterId}/edit`}>Configurer</Link>
+          <Button type="button" variant="ghost" asChild>
+            <Link href={`/characters/${characterId}/edit`}>
+              <Pencil />
+              Configurer
+            </Link>
           </Button>
         </div>
 
         <HitPointsWidget character={character} />
-
-        <div className="flex flex-wrap items-center gap-2">
-          <ConcentrationMarker character={character} />
-          <RestActions characterId={characterId} />
-        </div>
 
         <Tabs defaultValue="general">
           <TabsList>

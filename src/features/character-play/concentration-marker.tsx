@@ -1,24 +1,22 @@
 "use client";
 
+import { useId } from "react";
 import type { Character } from "@/domain/character";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { usePlayActions } from "./use-play-actions";
 
 export function ConcentrationMarker({ character }: { character: Character }) {
   const { toggleConcentration } = usePlayActions(character.id);
+  const switchId = useId();
   const active = character.concentration.active;
 
   return (
-    <Button
-      type="button"
-      variant="outline"
-      aria-pressed={active}
-      onClick={() => void toggleConcentration()}
-    >
-      <Badge variant="outline" className={active ? "border-info/40 bg-info/10 text-info" : ""}>
-        {active ? "Concentration active" : "Concentration inactive"}
-      </Badge>
-    </Button>
+    <div className="flex items-center gap-2 rounded-lg border p-2">
+      <Switch id={switchId} checked={active} onCheckedChange={() => void toggleConcentration()} />
+      <Label htmlFor={switchId} className={active ? "text-info" : "text-muted-foreground"}>
+        Concentration {active ? "active" : "inactive"}
+      </Label>
+    </div>
   );
 }

@@ -30,19 +30,19 @@ describe("ConcentrationMarker (via CharacterPlay)", () => {
     renderPlay(character.id);
     await screen.findByRole("heading", { name: character.name });
 
-    const toggle = screen.getByRole("button", { name: /concentration inactive/i });
-    expect(toggle).toHaveAttribute("aria-pressed", "false");
+    const toggle = screen.getByRole("switch", { name: /concentration inactive/i });
+    expect(toggle).toHaveAttribute("aria-checked", "false");
 
     await user.click(toggle);
 
-    expect(await screen.findByRole("button", { name: /concentration active/i })).toHaveAttribute(
-      "aria-pressed",
+    expect(await screen.findByRole("switch", { name: /concentration active/i })).toHaveAttribute(
+      "aria-checked",
       "true",
     );
     const persisted = await new LocalStorageCharacterRepository().getById(character.id);
     expect(persisted?.concentration.active).toBe(true);
 
-    await user.click(screen.getByRole("button", { name: /concentration active/i }));
+    await user.click(screen.getByRole("switch", { name: /concentration active/i }));
     const persistedAgain = await new LocalStorageCharacterRepository().getById(character.id);
     expect(persistedAgain?.concentration.active).toBe(false);
   });
