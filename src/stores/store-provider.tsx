@@ -50,6 +50,15 @@ export function useCharacterStore<T>(selector: (state: CharacterStoreState) => T
   return characterStore(selector);
 }
 
+/**
+ * Donne accès au hook Zustand brut (pas une valeur déjà sélectionnée) pour les cas où il faut
+ * lire l'état au moment de l'action plutôt qu'une valeur de rendu fermée — voir
+ * src/features/character-play/use-play-actions.ts.
+ */
+export function useCharacterStoreApi(): CharacterStoreHook {
+  return useStores().characterStore;
+}
+
 export function useSpellStore<T>(selector: (state: SpellStoreState) => T): T {
   const { spellStore } = useStores();
   return spellStore(selector);
