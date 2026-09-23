@@ -1,5 +1,6 @@
 "use client";
 
+import { Minus, Plus } from "lucide-react";
 import type { Character } from "@/domain/character";
 import { Button } from "@/components/ui/button";
 import { SectionTitle } from "@/components/ui/section-title";
@@ -34,11 +35,12 @@ export function FeaturesUsageList({ character }: { character: Character }) {
                 <Button
                   type="button"
                   variant="outline"
-                  size="sm"
+                  size="icon-sm"
                   disabled={current <= 0}
                   onClick={() => void adjustFeatureUse(feature.id, -1)}
+                  aria-label={`Diminuer les utilisations de ${feature.name}`}
                 >
-                  &minus;
+                  <Minus />
                 </Button>
                 <span className="w-12 text-center text-sm tabular-nums">
                   {current} / {usesMax}
@@ -46,11 +48,12 @@ export function FeaturesUsageList({ character }: { character: Character }) {
                 <Button
                   type="button"
                   variant="outline"
-                  size="sm"
+                  size="icon-sm"
                   disabled={current >= usesMax}
                   onClick={() => void adjustFeatureUse(feature.id, 1)}
+                  aria-label={`Augmenter les utilisations de ${feature.name}`}
                 >
-                  +
+                  <Plus />
                 </Button>
               </div>
             </div>
