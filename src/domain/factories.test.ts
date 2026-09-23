@@ -18,6 +18,7 @@ describe("createBlankCharacter", () => {
     });
     expect(character.inventory).toEqual([]);
     expect(character.features).toEqual([]);
+    expect(character.spellTags).toEqual([]);
   });
 
   it("generates a unique id for every call", () => {
