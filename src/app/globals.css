@@ -144,6 +144,16 @@
   }
   body {
     @apply bg-background text-foreground;
+    /* "Bureau" sur lequel repose la fiche personnage (character-play.tsx/character-sheet.tsx) :
+     * une lueur chaude (lampe/lune) au-dessus du contenu, puis une vignette qui assombrit les
+     * bords pour donner de la profondeur — indépendant du thème du personnage affiché (chrome de
+     * page, pas du contenu thématisé par CharacterThemeScope, scopé au wrapper de la fiche, pas
+     * au body). */
+    background-image:
+      radial-gradient(70% 50% at 50% 0%, oklch(0.7 0.06 70 / 12%), transparent 70%),
+      radial-gradient(120% 90% at 50% 45%, transparent 40%, oklch(0 0 0 / 40%) 100%);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
   }
   html {
     @apply font-sans;
