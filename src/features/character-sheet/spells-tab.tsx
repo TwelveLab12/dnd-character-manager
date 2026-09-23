@@ -7,6 +7,7 @@ import { ABILITY_NAMES } from "@/domain/ability-scores";
 import type { SpellSlotLevel } from "@/domain/character";
 import { clampCharacterLevel } from "@/domain/calculations/proficiency";
 import { effectiveAbilityScores } from "@/domain/calculations/effective-ability-scores";
+import { applyLongRest, applyShortRest } from "@/domain/calculations/rest";
 import { fullCasterSpellSlots } from "@/domain/calculations/spell-slot-table";
 import { resolvedSpellAttackBonus, resolvedSpellSaveDC } from "@/domain/calculations/spellcasting";
 import type { Spell } from "@/domain/spell";
@@ -202,9 +203,15 @@ function SpellSlotsSection({ draft, onChange }: CharacterTabProps) {
             type="button"
             variant="outline"
             size="sm"
-            onClick={() =>
-              onChange({ spellSlots: draft.spellSlots.map((s) => ({ ...s, used: 0 })) })
-            }
+            onClick={() => onChange(applyShortRest(draft))}
+          >
+            Repos court
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => onChange(applyLongRest(draft))}
           >
             Repos long
           </Button>
