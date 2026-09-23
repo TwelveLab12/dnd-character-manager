@@ -12,10 +12,10 @@ export function ConcentrationMarker({ character }: { character: Character }) {
   const active = character.concentration.active;
 
   return (
-    <div className="flex items-center gap-2 rounded-lg border p-2">
+    <div className="flex items-center gap-2">
       <Switch id={switchId} checked={active} onCheckedChange={() => void toggleConcentration()} />
       <Label htmlFor={switchId} className={active ? "text-info" : "text-muted-foreground"}>
-        Concentration {active ? "active" : "inactive"}
+        Concentration
       </Label>
     </div>
   );
