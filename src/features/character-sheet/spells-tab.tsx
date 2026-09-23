@@ -14,7 +14,6 @@ import type { Spell } from "@/domain/spell";
 import type { CharacterSpellTag } from "@/domain/spell-tag";
 import { useSpellStore } from "@/stores/store-provider";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { SectionTitle } from "@/components/ui/section-title";
@@ -25,6 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { ABILITY_LABELS } from "./ability-labels";
 import { formatModifier } from "./format";
 import type { CharacterTabProps } from "./types";
@@ -334,13 +334,13 @@ function KnownSpellsSection({ draft, onChange, spells }: CharacterTabProps & { s
                     <td className="p-2">{spell.name}</td>
                     <td className="p-2">{spell.level === 0 ? "T" : spell.level}</td>
                     <td className="p-2">
-                      <Checkbox
+                      <Switch
                         checked={known}
                         onCheckedChange={(checked) => toggleKnown(spell.id, checked === true)}
                       />
                     </td>
                     <td className="p-2">
-                      <Checkbox
+                      <Switch
                         checked={prepared}
                         disabled={!known}
                         onCheckedChange={(checked) => togglePrepared(spell.id, checked === true)}
@@ -409,7 +409,7 @@ function SpellTagsSection({ draft, onChange, spells }: CharacterTabProps & { spe
                   }
                 />
                 <Label className="text-muted-foreground flex items-center gap-2 text-xs">
-                  <Checkbox
+                  <Switch
                     checked={tag.alwaysPrepared}
                     onCheckedChange={(checked) =>
                       updateTag(spell.id, { alwaysPrepared: checked === true })

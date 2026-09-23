@@ -148,15 +148,15 @@ describe("CharacterSheet", () => {
     await user.click(screen.getByRole("tab", { name: /caractéristiques/i }));
 
     // Médecine (Sagesse) non maîtrisée au départ -> juste le modificateur, +3.
-    const medicineCheckbox = screen.getByRole("checkbox", { name: /médecine/i });
-    const medicineRow = medicineCheckbox.closest("div");
+    const medicineSwitch = screen.getByRole("switch", { name: /médecine/i });
+    const medicineRow = medicineSwitch.closest("div");
     if (!medicineRow) {
       throw new Error("expected a row for Médecine");
     }
     expect(within(medicineRow).getByText("+3")).toBeInTheDocument();
 
     // Maîtrisée -> + bonus de maîtrise (+2 au niveau 3) -> +5.
-    await user.click(medicineCheckbox);
+    await user.click(medicineSwitch);
     expect(within(medicineRow).getByText("+5")).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: /^enregistrer$/i }));
@@ -227,20 +227,20 @@ describe("CharacterSheet", () => {
       throw new Error("expected a table row for the spell");
     }
 
-    const knownCheckbox = within(row).getAllByRole("checkbox")[0];
-    const preparedCheckbox = within(row).getAllByRole("checkbox")[1];
-    if (!knownCheckbox || !preparedCheckbox) {
-      throw new Error("expected known/prepared checkboxes");
+    const knownSwitch = within(row).getAllByRole("switch")[0];
+    const preparedSwitch = within(row).getAllByRole("switch")[1];
+    if (!knownSwitch || !preparedSwitch) {
+      throw new Error("expected known/prepared switches");
     }
 
-    await user.click(knownCheckbox);
+    await user.click(knownSwitch);
     expect(await screen.findByText(/1 connu\(s\), 0 préparé\(s\)/)).toBeInTheDocument();
 
-    await user.click(preparedCheckbox);
+    await user.click(preparedSwitch);
     expect(await screen.findByText(/1 connu\(s\), 1 préparé\(s\)/)).toBeInTheDocument();
 
     // Un-knowing a spell un-prepares it too.
-    await user.click(knownCheckbox);
+    await user.click(knownSwitch);
     expect(await screen.findByText(/0 connu\(s\), 0 préparé\(s\)/)).toBeInTheDocument();
   });
 

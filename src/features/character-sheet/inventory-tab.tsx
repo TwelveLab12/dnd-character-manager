@@ -4,10 +4,10 @@ import { useId } from "react";
 import type { InventoryItem } from "@/domain/inventory";
 import { generateId } from "@/domain/id";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { SectionTitle } from "@/components/ui/section-title";
+import { Switch } from "@/components/ui/switch";
 import type { CharacterTabProps } from "./types";
 
 function toNumber(value: string): number {
@@ -117,7 +117,7 @@ function InventoryRow({
         />
       </div>
       <div className="flex items-center gap-2">
-        <Checkbox
+        <Switch
           id={equippedId}
           checked={item.equipped ?? false}
           onCheckedChange={(checked) => onChange({ equipped: checked === true })}

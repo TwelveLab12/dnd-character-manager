@@ -6,10 +6,10 @@ import { ABILITY_NAMES } from "@/domain/ability-scores";
 import { abilityModifier } from "@/domain/calculations/modifiers";
 import { clampCharacterLevel, proficiencyBonusForLevel } from "@/domain/calculations/proficiency";
 import { effectiveAbilityScores } from "@/domain/calculations/effective-ability-scores";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { SectionTitle } from "@/components/ui/section-title";
+import { Switch } from "@/components/ui/switch";
 import { ABILITY_LABELS, ABILITY_SHORT_LABELS } from "./ability-labels";
 import { formatModifier } from "./format";
 import type { SkillDefinition } from "./skills";
@@ -128,7 +128,7 @@ function AbilityRow({
       </div>
       <p className="text-muted-foreground w-12 text-center text-sm">{formatModifier(modifier)}</p>
       <div className="flex items-center gap-2">
-        <Checkbox
+        <Switch
           id={saveId}
           checked={proficient}
           onCheckedChange={(checked) => onProficiencyChange(checked === true)}
@@ -163,7 +163,7 @@ function SkillRow({
 
   return (
     <div className="flex items-center gap-2 rounded-md border px-2 py-1.5">
-      <Checkbox
+      <Switch
         id={skillId}
         checked={proficient}
         onCheckedChange={(checked) => onProficiencyChange(checked === true)}
