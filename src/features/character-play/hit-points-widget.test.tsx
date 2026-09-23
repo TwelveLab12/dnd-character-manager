@@ -95,28 +95,15 @@ describe("HitPointsWidget (via CharacterPlay)", () => {
     expect(persisted?.hitPoints.temporary).toBe(2);
   });
 
-  it("shows the moon gauge for the Séluné theme, the linear bar otherwise", async () => {
-    const seluneCharacter = makeTestCharacter({
+  it("shows the same linear bar presentation regardless of the active theme", async () => {
+    const character = makeTestCharacter({
       hitPoints: { current: 7, max: 23, temporary: 0 },
       themeId: "selune",
     });
-    await new LocalStorageCharacterRepository().create(seluneCharacter);
+    await new LocalStorageCharacterRepository().create(character);
 
-    const { unmount } = renderPlay(seluneCharacter.id);
-    await screen.findByRole("heading", { name: seluneCharacter.name });
-    expect(screen.getByText("/ 23 PV")).toBeInTheDocument();
-    expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
-    unmount();
-
-    window.localStorage.clear();
-    const defaultCharacter = makeTestCharacter({
-      hitPoints: { current: 7, max: 23, temporary: 0 },
-    });
-    await new LocalStorageCharacterRepository().create(defaultCharacter);
-
-    renderPlay(defaultCharacter.id);
-    await screen.findByRole("heading", { name: defaultCharacter.name });
+    renderPlay(character.id);
+    await screen.findByRole("heading", { name: character.name });
     expect(screen.getByRole("progressbar")).toBeInTheDocument();
-    expect(screen.queryByText("/ 23 PV")).not.toBeInTheDocument();
   });
 });

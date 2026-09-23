@@ -61,7 +61,7 @@ describe("CharacterPlay", () => {
     for (const tabName of ["Général", "Caractéristiques", "Sorts", "Inventaire", "Capacités"]) {
       await user.click(screen.getByRole("tab", { name: tabName }));
       expect(screen.getByRole("heading", { name: /points de vie/i })).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: /concentration/i })).toBeInTheDocument();
+      expect(screen.getByRole("switch", { name: /concentration/i })).toBeInTheDocument();
       expect(screen.getByRole("button", { name: /^repos court$/i })).toBeInTheDocument();
     }
 
