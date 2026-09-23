@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { SectionTitle } from "@/components/ui/section-title";
 import {
   Select,
   SelectContent,
@@ -60,7 +61,7 @@ function SpellcastingSection({ draft, onChange }: CharacterTabProps) {
   if (!spellcasting) {
     return (
       <section className="grid gap-2">
-        <h2 className="text-lg font-medium">Incantation</h2>
+        <SectionTitle>Incantation</SectionTitle>
         <p className="text-muted-foreground text-sm">
           Ce personnage n&rsquo;a pas de caractéristique d&rsquo;incantation définie.
         </p>
@@ -90,7 +91,7 @@ function SpellcastingSection({ draft, onChange }: CharacterTabProps) {
   return (
     <section className="grid gap-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-medium">Incantation</h2>
+        <SectionTitle>Incantation</SectionTitle>
         <Button
           type="button"
           variant="ghost"
@@ -189,7 +190,7 @@ function SpellSlotsSection({ draft, onChange }: CharacterTabProps) {
   return (
     <section className="grid gap-3">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-medium">Emplacements de sorts</h2>
+        <SectionTitle>Emplacements de sorts</SectionTitle>
         <div className="flex gap-2">
           <Button
             type="button"
@@ -297,7 +298,7 @@ function KnownSpellsSection({ draft, onChange, spells }: CharacterTabProps & { s
   return (
     <section className="grid gap-3">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-medium">Sorts connus / préparés</h2>
+        <SectionTitle>Sorts connus / préparés</SectionTitle>
         <span className="text-muted-foreground text-sm">
           {draft.knownSpellIds.length} connu(s), {draft.preparedSpellIds.length} préparé(s)
         </span>
@@ -377,7 +378,7 @@ function SpellTagsSection({ draft, onChange, spells }: CharacterTabProps & { spe
   return (
     <section className="grid gap-3">
       <div>
-        <h2 className="text-lg font-medium">Domaines de sorts</h2>
+        <SectionTitle>Domaines de sorts</SectionTitle>
         <p className="text-muted-foreground text-sm">
           Associez un domaine à un sort connu et marquez-le « toujours préparé » pour qu&rsquo;il
           apparaisse en mode jeu sans consommer de préparation (ex : sorts de domaine d&rsquo;un

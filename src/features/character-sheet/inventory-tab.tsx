@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { SectionTitle } from "@/components/ui/section-title";
 import type { CharacterTabProps } from "./types";
 
 function toNumber(value: string): number {
@@ -32,7 +33,7 @@ export function InventoryTab({ draft, onChange }: CharacterTabProps) {
   return (
     <div className="grid gap-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-medium">Inventaire</h2>
+        <SectionTitle>Inventaire</SectionTitle>
         <Button
           type="button"
           variant="outline"

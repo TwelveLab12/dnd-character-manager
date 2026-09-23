@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import type { Character } from "@/domain/character";
 import { useCharacterStore } from "@/stores/store-provider";
 import { Button } from "@/components/ui/button";
+import { PageTitle } from "@/components/ui/page-title";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CharacterThemeScope } from "@/features/character-theme/character-theme-scope";
 import { AbilitiesTab } from "./abilities-tab";
@@ -82,7 +83,7 @@ export function CharacterSheet({ characterId }: { characterId: string }) {
             <Link href="/" className="text-muted-foreground text-sm underline underline-offset-4">
               &larr; Mes personnages
             </Link>
-            <h1 className="text-2xl font-semibold tracking-tight">{draft.name}</h1>
+            <PageTitle>{draft.name}</PageTitle>
           </div>
           <div className="flex items-center gap-3">
             {justSaved && <span className="text-muted-foreground text-xs">Enregistré</span>}

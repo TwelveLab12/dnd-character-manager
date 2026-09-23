@@ -6,6 +6,7 @@ import { generateId } from "@/domain/id";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { SectionTitle } from "@/components/ui/section-title";
 import {
   Select,
   SelectContent,
@@ -49,7 +50,7 @@ export function FeaturesTab({ draft, onChange }: CharacterTabProps) {
   return (
     <div className="grid gap-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-medium">Capacités (Channel Divinity, domaine…)</h2>
+        <SectionTitle>Capacités (Channel Divinity, domaine…)</SectionTitle>
         <Button
           type="button"
           variant="outline"
