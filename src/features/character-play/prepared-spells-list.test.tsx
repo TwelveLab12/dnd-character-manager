@@ -18,6 +18,10 @@ function renderPlay(characterId: string) {
   );
 }
 
+async function openSpellsTab(user: ReturnType<typeof userEvent.setup>) {
+  await user.click(screen.getByRole("tab", { name: /^sorts$/i }));
+}
+
 describe("PreparedSpellsList (via CharacterPlay)", () => {
   beforeEach(() => {
     window.localStorage.clear();
@@ -36,8 +40,10 @@ describe("PreparedSpellsList (via CharacterPlay)", () => {
       makeTestSpell({ id: "moonbeam", name: "Rayon lunaire", level: 2 }),
     ]);
 
+    const user = userEvent.setup();
     renderPlay(character.id);
     await screen.findByRole("heading", { name: character.name });
+    await openSpellsTab(user);
 
     expect(await screen.findByText("Soins")).toBeInTheDocument();
     expect(screen.getByText("Rayon lunaire")).toBeInTheDocument();
@@ -58,6 +64,7 @@ describe("PreparedSpellsList (via CharacterPlay)", () => {
     const user = userEvent.setup();
     renderPlay(character.id);
     await screen.findByRole("heading", { name: character.name });
+    await openSpellsTab(user);
     await screen.findByText("Soins");
 
     await user.click(screen.getByRole("button", { name: "Niveau 1" }));
@@ -81,6 +88,7 @@ describe("PreparedSpellsList (via CharacterPlay)", () => {
     const user = userEvent.setup();
     renderPlay(character.id);
     await screen.findByRole("heading", { name: character.name });
+    await openSpellsTab(user);
     await screen.findByText("Soins");
 
     await user.click(screen.getByRole("button", { name: "Domaine de la Lune" }));

@@ -6,14 +6,14 @@ import { ABILITY_NAMES } from "@/domain/ability-scores";
 import { abilityModifier } from "@/domain/calculations/modifiers";
 import { clampCharacterLevel, proficiencyBonusForLevel } from "@/domain/calculations/proficiency";
 import { effectiveAbilityScores } from "@/domain/calculations/effective-ability-scores";
+import { ABILITY_LABELS, ABILITY_SHORT_LABELS } from "@/features/shared/ability-labels";
+import { formatModifier } from "@/features/shared/format";
+import type { SkillDefinition } from "@/features/shared/skills";
+import { SKILL_DEFINITIONS } from "@/features/shared/skills";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { SectionTitle } from "@/components/ui/section-title";
 import { Switch } from "@/components/ui/switch";
-import { ABILITY_LABELS, ABILITY_SHORT_LABELS } from "./ability-labels";
-import { formatModifier } from "./format";
-import type { SkillDefinition } from "./skills";
-import { SKILL_DEFINITIONS } from "./skills";
 import type { CharacterTabProps } from "./types";
 
 function toNumber(value: string): number {

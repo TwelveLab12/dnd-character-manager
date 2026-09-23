@@ -4,6 +4,7 @@ import type { Character } from "@/domain/character";
 import { adjustFeatureUses } from "@/domain/calculations/feature-uses";
 import { applyDamage, applyHealing, setTemporaryHitPoints } from "@/domain/calculations/hit-points";
 import { applyLongRest, applyShortRest } from "@/domain/calculations/rest";
+import { adjustSpellSlotUsage } from "@/domain/calculations/spell-slot-table";
 import { useCharacterStoreApi } from "@/stores/store-provider";
 
 /**
@@ -52,6 +53,12 @@ export function usePlayActions(characterId: string) {
       withCurrent((character) => ({
         features: character.features.map((feature) =>
           feature.id === featureId ? adjustFeatureUses(feature, delta) : feature,
+        ),
+      })),
+    adjustSpellSlot: (level: number, delta: number) =>
+      withCurrent((character) => ({
+        spellSlots: character.spellSlots.map((slot) =>
+          slot.level === level ? adjustSpellSlotUsage(slot, delta) : slot,
         ),
       })),
   };

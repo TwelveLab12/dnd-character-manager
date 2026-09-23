@@ -7,6 +7,8 @@ import { effectiveAbilityScores } from "@/domain/calculations/effective-ability-
 import type { RaceSelection } from "@/domain/race";
 import { RACE_DEFINITIONS, findRaceDefinition } from "@/domain/race";
 import { CHARACTER_THEMES } from "@/features/character-theme/theme-registry";
+import { ABILITY_LABELS } from "@/features/shared/ability-labels";
+import { formatModifier } from "@/features/shared/format";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -17,8 +19,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { ABILITY_LABELS } from "./ability-labels";
-import { formatModifier } from "./format";
 import type { CharacterTabProps } from "./types";
 
 function toNumber(value: string): number {
