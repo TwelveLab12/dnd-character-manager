@@ -1,7 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect } from "react";
 import { useCharacterStore } from "@/stores/store-provider";
+import { Button } from "@/components/ui/button";
 import { CharacterCard } from "./character-card";
 import { CreateCharacterDialog } from "./create-character-dialog";
 
@@ -19,7 +21,12 @@ export function CharacterList() {
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 px-6 py-12">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold tracking-tight">Mes personnages</h1>
-        <CreateCharacterDialog />
+        <div className="flex items-center gap-2">
+          <Button variant="outline" asChild>
+            <Link href="/spells">Bibliothèque de sorts</Link>
+          </Button>
+          <CreateCharacterDialog />
+        </div>
       </div>
 
       {error && (

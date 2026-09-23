@@ -1,0 +1,40 @@
+[
+  {
+    "id": "exemple-etincelle",
+    "name": "Exemple : Étincelle",
+    "level": 0,
+    "school": "Évocation",
+    "castingTime": "1 action",
+    "range": "18 mètres",
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": false
+    },
+    "duration": "Instantané",
+    "concentration": false,
+    "ritual": false,
+    "description": "Ceci est un sort d'exemple générique pour illustrer le format JSON attendu — remplacez-le par vos propres sorts (voir docs/adr/0004-json-import-export-open5e-schema.md pour l'alignement sur le format open5e/SRD).",
+    "classes": ["Magicien", "Ensorceleur"],
+    "source": "Modèle d'exemple"
+  },
+  {
+    "name": "Exemple : Voile Protecteur",
+    "level": 2,
+    "school": "Abjuration",
+    "castingTime": "1 action",
+    "range": "Personnelle",
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": true,
+      "materialDescription": "Un fragment de miroir brisé"
+    },
+    "duration": "Concentration, jusqu'à 10 minutes",
+    "concentration": true,
+    "ritual": false,
+    "description": "Second sort d'exemple, sans champ \"id\" cette fois : l'id est alors dérivé automatiquement du nom (slugify) lors de l'import.",
+    "higherLevel": "Lancé avec un emplacement de niveau supérieur, l'effet d'exemple augmente proportionnellement.",
+    "classes": ["Clerc", "Paladin"]
+  }
+]
