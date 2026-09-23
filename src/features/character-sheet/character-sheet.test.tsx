@@ -79,6 +79,55 @@ describe("CharacterSheet", () => {
     expect(within(wisdomRow).getByText(/sauv\. \+5/i)).toBeInTheDocument();
   });
 
+  it("applies a chosen race's ability bonus (Humain variant) to the effective score everywhere", async () => {
+    const character = makeTestCharacter({
+      abilityScores: {
+        strength: 13,
+        dexterity: 8,
+        constitution: 14,
+        intelligence: 12,
+        wisdom: 15,
+        charisma: 10,
+      },
+      level: 3,
+    });
+    await new LocalStorageCharacterRepository().create(character);
+
+    const user = userEvent.setup();
+    renderSheet(character.id);
+    await screen.findByRole("heading", { name: character.name });
+
+    // Général : choisir Humain variant, puis Sagesse + Constitution pour le bonus au choix.
+    await user.click(screen.getByRole("combobox", { name: /race \(bonus/i }));
+    await user.click(await screen.findByRole("option", { name: "Humain variant" }));
+
+    await user.click(screen.getByRole("combobox", { name: /choix 1/i }));
+    await user.click(await screen.findByRole("option", { name: "Sagesse" }));
+
+    await user.click(screen.getByRole("combobox", { name: /choix 2/i }));
+    await user.click(await screen.findByRole("option", { name: "Constitution" }));
+
+    // L'ordre d'affichage suit l'ordre canonique des caractéristiques (Constitution avant
+    // Sagesse), pas l'ordre dans lequel elles ont été choisies.
+    expect(
+      await screen.findByText(/constitution 14 → 15 \(\+1\), sagesse 15 → 16 \(\+1\)/i),
+    ).toBeInTheDocument();
+
+    // Caractéristiques : le modificateur affiché doit utiliser le score EFFECTIF (16 -> +3), pas
+    // le score de base saisi (15 -> +2).
+    await user.click(screen.getByRole("tab", { name: /caractéristiques/i }));
+    const wisdomRow = screen.getByText(/^sagesse/i).closest(".rounded-lg") as HTMLElement | null;
+    if (!wisdomRow) {
+      throw new Error("expected a row for Sagesse");
+    }
+    expect(within(wisdomRow).getByText("+3")).toBeInTheDocument();
+
+    // Sorts : le DD utilise aussi le score effectif (16, mod +3) -> DD 8+2+3=13.
+    await user.click(screen.getByRole("tab", { name: /^sorts$/i }));
+    await user.click(screen.getByRole("button", { name: /activer l.incantation/i }));
+    expect(await screen.findByText(/dd de sauvegarde — 13/i)).toBeInTheDocument();
+  });
+
   it("toggles a skill proficiency and computes its total live on the Caractéristiques tab", async () => {
     const character = makeTestCharacter({
       abilityScores: {

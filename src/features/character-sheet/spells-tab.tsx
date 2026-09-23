@@ -6,6 +6,7 @@ import type { AbilityName } from "@/domain/ability-scores";
 import { ABILITY_NAMES } from "@/domain/ability-scores";
 import type { SpellSlotLevel } from "@/domain/character";
 import { clampCharacterLevel } from "@/domain/calculations/proficiency";
+import { effectiveAbilityScores } from "@/domain/calculations/effective-ability-scores";
 import { fullCasterSpellSlots } from "@/domain/calculations/spell-slot-table";
 import { resolvedSpellAttackBonus, resolvedSpellSaveDC } from "@/domain/calculations/spellcasting";
 import type { Spell } from "@/domain/spell";
@@ -73,7 +74,9 @@ function SpellcastingSection({ draft, onChange }: CharacterTabProps) {
     );
   }
 
-  const abilityScore = draft.abilityScores[spellcasting.ability];
+  const abilityScore = effectiveAbilityScores(draft.abilityScores, draft.raceSelection)[
+    spellcasting.ability
+  ];
   const dc = resolvedSpellSaveDC(draft.level, abilityScore, spellcasting.spellSaveDCOverride);
   const attack = resolvedSpellAttackBonus(
     draft.level,

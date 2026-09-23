@@ -1,6 +1,7 @@
 import type { AbilityName, AbilityScores } from "./ability-scores";
 import type { CharacterFeature } from "./feature";
 import type { InventoryItem } from "./inventory";
+import type { RaceSelection } from "./race";
 
 export interface HitPoints {
   current: number;
@@ -33,11 +34,19 @@ export interface Character {
   subclass?: string;
   level: number;
   race?: string;
+  /** Choix structuré (race + caractéristiques sélectionnées pour un bonus au choix) utilisé pour
+   * calculer les scores effectifs — voir src/domain/calculations/effective-ability-scores.ts.
+   * Indépendant du champ `race` ci-dessus (texte libre, purement descriptif) : les deux peuvent
+   * diverger sans conséquence, ex. `race: "Humain variant (Illuskien)"` avec
+   * `raceSelection.raceId: "humain-variant"`. */
+  raceSelection?: RaceSelection;
   background?: string;
   hitPoints: HitPoints;
   armorClass: number;
   initiativeBonus: number;
   speed: number;
+  /** Scores DE BASE (avant bonus racial) — voir effectiveAbilityScores pour les valeurs utilisées
+   * dans les calculs (modificateurs, jets, compétences, DD/bonus de sort). */
   abilityScores: AbilityScores;
   savingThrowProficiencies: AbilityName[];
   skillProficiencies: string[];

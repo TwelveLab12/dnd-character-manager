@@ -5,6 +5,7 @@ import type { AbilityName } from "@/domain/ability-scores";
 import { ABILITY_NAMES } from "@/domain/ability-scores";
 import { abilityModifier } from "@/domain/calculations/modifiers";
 import { clampCharacterLevel, proficiencyBonusForLevel } from "@/domain/calculations/proficiency";
+import { effectiveAbilityScores } from "@/domain/calculations/effective-ability-scores";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,6 +22,7 @@ function toNumber(value: string): number {
 
 export function AbilitiesTab({ draft, onChange }: CharacterTabProps) {
   const proficiencyBonus = proficiencyBonusForLevel(clampCharacterLevel(draft.level));
+  const effectiveScores = effectiveAbilityScores(draft.abilityScores, draft.raceSelection);
 
   return (
     <div className="grid gap-8">
@@ -35,7 +37,8 @@ export function AbilitiesTab({ draft, onChange }: CharacterTabProps) {
             <AbilityRow
               key={ability}
               ability={ability}
-              score={draft.abilityScores[ability]}
+              baseScore={draft.abilityScores[ability]}
+              effectiveScore={effectiveScores[ability]}
               proficient={draft.savingThrowProficiencies.includes(ability)}
               proficiencyBonus={proficiencyBonus}
               onScoreChange={(score) =>
@@ -59,7 +62,7 @@ export function AbilitiesTab({ draft, onChange }: CharacterTabProps) {
             <SkillRow
               key={skill.name}
               skill={skill}
-              score={draft.abilityScores[skill.ability]}
+              score={effectiveScores[skill.ability]}
               proficient={draft.skillProficiencies.includes(skill.name)}
               proficiencyBonus={proficiencyBonus}
               onProficiencyChange={(proficient) => {
@@ -78,7 +81,11 @@ export function AbilitiesTab({ draft, onChange }: CharacterTabProps) {
 
 interface AbilityRowProps {
   ability: AbilityName;
-  score: number;
+  /** Score de base, saisi ici. */
+  baseScore: number;
+  /** Score effectif (base + bonus racial éventuel, voir l'onglet Général) — utilisé pour le
+   * modificateur et le jet de sauvegarde affichés. */
+  effectiveScore: number;
   proficient: boolean;
   proficiencyBonus: number;
   onScoreChange: (score: number) => void;
@@ -87,7 +94,8 @@ interface AbilityRowProps {
 
 function AbilityRow({
   ability,
-  score,
+  baseScore,
+  effectiveScore,
   proficient,
   proficiencyBonus,
   onScoreChange,
@@ -95,17 +103,25 @@ function AbilityRow({
 }: AbilityRowProps) {
   const scoreId = useId();
   const saveId = useId();
-  const modifier = abilityModifier(score);
+  const modifier = abilityModifier(effectiveScore);
   const savingThrow = modifier + (proficient ? proficiencyBonus : 0);
+  const racialBonus = effectiveScore - baseScore;
 
   return (
     <div className="flex items-end gap-3 rounded-lg border p-3">
       <div className="grid flex-1 gap-2">
-        <Label htmlFor={scoreId}>{ABILITY_LABELS[ability]}</Label>
+        <Label htmlFor={scoreId}>
+          {ABILITY_LABELS[ability]}
+          {racialBonus !== 0 && (
+            <span className="text-muted-foreground ml-1 font-normal">
+              ({formatModifier(racialBonus)} racial = {effectiveScore})
+            </span>
+          )}
+        </Label>
         <Input
           id={scoreId}
           type="number"
-          value={score}
+          value={baseScore}
           onChange={(event) => onScoreChange(toNumber(event.target.value))}
         />
       </div>
@@ -126,6 +142,7 @@ function AbilityRow({
 
 interface SkillRowProps {
   skill: SkillDefinition;
+  /** Score effectif (déjà résolu avec le bonus racial) de la caractéristique liée. */
   score: number;
   proficient: boolean;
   proficiencyBonus: number;

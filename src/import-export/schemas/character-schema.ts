@@ -47,6 +47,11 @@ const concentrationSchema = z.object({
   spellId: z.string().min(1).optional(),
 });
 
+const raceSelectionSchema = z.object({
+  raceId: z.string().min(1),
+  abilityBonusChoices: z.array(abilityNameSchema).default([]),
+});
+
 const inventoryItemSchema = z.object({
   id: z.string().min(1),
   name: z.string().min(1),
@@ -75,6 +80,7 @@ export const characterSchema = z.object({
   subclass: z.string().min(1).optional(),
   level: z.number().int().min(1).max(20),
   race: z.string().min(1).optional(),
+  raceSelection: raceSelectionSchema.optional(),
   background: z.string().min(1).optional(),
   hitPoints: hitPointsSchema,
   armorClass: z.number(),
