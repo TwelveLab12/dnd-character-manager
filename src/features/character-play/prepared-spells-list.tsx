@@ -5,6 +5,7 @@ import type { Character } from "@/domain/character";
 import { playAvailableSpellIds, spellDomainTags } from "@/domain/calculations/spell-availability";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { SectionTitle } from "@/components/ui/section-title";
 import { useSpellStore } from "@/stores/store-provider";
 
 function toggleInList<T>(list: T[], value: T): T[] {
@@ -52,7 +53,7 @@ export function PreparedSpellsList({ character }: { character: Character }) {
 
   return (
     <section className="grid gap-3">
-      <h2 className="text-lg font-medium">Sorts disponibles</h2>
+      <SectionTitle>Sorts disponibles</SectionTitle>
 
       {(levels.length > 0 || domains.length > 0) && (
         <div className="flex flex-wrap gap-2">

@@ -9,6 +9,7 @@ import { effectiveAbilityScores } from "@/domain/calculations/effective-ability-
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { SectionTitle } from "@/components/ui/section-title";
 import { ABILITY_LABELS, ABILITY_SHORT_LABELS } from "./ability-labels";
 import { formatModifier } from "./format";
 import type { SkillDefinition } from "./skills";
@@ -56,7 +57,7 @@ export function AbilitiesTab({ draft, onChange }: CharacterTabProps) {
       </div>
 
       <div className="grid gap-3">
-        <h2 className="text-lg font-medium">Compétences</h2>
+        <SectionTitle>Compétences</SectionTitle>
         <div className="grid gap-1 sm:grid-cols-2">
           {SKILL_DEFINITIONS.map((skill) => (
             <SkillRow

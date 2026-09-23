@@ -16,6 +16,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { PageTitle } from "@/components/ui/page-title";
 import { ImportSpellsDialog } from "./import-spells-dialog";
 
 export function SpellLibrary() {
@@ -40,7 +41,7 @@ export function SpellLibrary() {
           <Link href="/" className="text-muted-foreground text-sm underline underline-offset-4">
             &larr; Mes personnages
           </Link>
-          <h1 className="text-2xl font-semibold tracking-tight">Bibliothèque de sorts</h1>
+          <PageTitle>Bibliothèque de sorts</PageTitle>
         </div>
         <div className="flex items-center gap-2">
           <Button

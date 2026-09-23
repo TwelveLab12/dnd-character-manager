@@ -2,6 +2,7 @@
 
 import type { Character } from "@/domain/character";
 import { Button } from "@/components/ui/button";
+import { SectionTitle } from "@/components/ui/section-title";
 import { usePlayActions } from "./use-play-actions";
 
 export function FeaturesUsageList({ character }: { character: Character }) {
@@ -15,7 +16,7 @@ export function FeaturesUsageList({ character }: { character: Character }) {
 
   return (
     <section className="grid gap-3">
-      <h2 className="text-lg font-medium">Capacités</h2>
+      <SectionTitle>Capacités</SectionTitle>
       <div className="grid gap-2">
         {trackedFeatures.map((feature) => {
           const usesMax = feature.usesMax ?? 0;

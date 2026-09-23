@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
+import { SectionTitle } from "@/components/ui/section-title";
 import { usePlayActions } from "./use-play-actions";
 
 function toPositiveInt(value: string): number {
@@ -53,7 +54,7 @@ export function HitPointsWidget({ character }: { character: Character }) {
   return (
     <section className="grid gap-3 rounded-lg border p-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-medium">Points de vie</h2>
+        <SectionTitle>Points de vie</SectionTitle>
         <div className="flex items-baseline gap-2">
           <span className="text-2xl font-semibold tabular-nums">{current}</span>
           <span className="text-muted-foreground text-sm">/ {max}</span>

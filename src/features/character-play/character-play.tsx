@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect } from "react";
 import { useCharacterStore } from "@/stores/store-provider";
 import { Button } from "@/components/ui/button";
+import { PageTitle } from "@/components/ui/page-title";
 import { CharacterThemeScope } from "@/features/character-theme/character-theme-scope";
 import { ConcentrationMarker } from "./concentration-marker";
 import { FeaturesUsageList } from "./features-usage-list";
@@ -45,7 +46,7 @@ export function CharacterPlay({ characterId }: { characterId: string }) {
             <Link href="/" className="text-muted-foreground text-sm underline underline-offset-4">
               &larr; Mes personnages
             </Link>
-            <h1 className="text-2xl font-semibold tracking-tight">{character.name}</h1>
+            <PageTitle>{character.name}</PageTitle>
             <p className="text-muted-foreground text-sm">
               {character.class}
               {character.subclass ? ` — ${character.subclass}` : ""} · Niveau {character.level}
