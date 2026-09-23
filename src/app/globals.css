@@ -126,6 +126,33 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+/**
+ * Séluné — déesse de la lune. Palette clair-de-lune : nacré/lavande pâle en fond, indigo profond
+ * en primaire, argent en accent. Scopée via un attribut data-theme posé par
+ * CharacterThemeScope (voir src/features/character-theme/), jamais globale — voir
+ * docs/adr/0013-per-character-visual-theme.md. Ne redéfinit pas les tokens sémantiques
+ * (success/warning/info/destructive) : ils restent constants d'un thème à l'autre.
+ */
+[data-theme="selune"] {
+  --background: oklch(0.97 0.012 292);
+  --foreground: oklch(0.24 0.035 280);
+  --card: oklch(0.99 0.006 292);
+  --card-foreground: oklch(0.24 0.035 280);
+  --popover: oklch(0.99 0.006 292);
+  --popover-foreground: oklch(0.24 0.035 280);
+  --primary: oklch(0.4 0.09 280);
+  --primary-foreground: oklch(0.98 0.008 292);
+  --secondary: oklch(0.92 0.02 292);
+  --secondary-foreground: oklch(0.32 0.05 280);
+  --muted: oklch(0.94 0.015 292);
+  --muted-foreground: oklch(0.5 0.03 280);
+  --accent: oklch(0.85 0.045 250);
+  --accent-foreground: oklch(0.24 0.035 280);
+  --border: oklch(0.88 0.025 282);
+  --input: oklch(0.88 0.025 282);
+  --ring: oklch(0.6 0.08 280);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

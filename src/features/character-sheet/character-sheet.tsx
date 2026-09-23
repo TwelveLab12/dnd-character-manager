@@ -6,6 +6,7 @@ import type { Character } from "@/domain/character";
 import { useCharacterStore } from "@/stores/store-provider";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { CharacterThemeScope } from "@/features/character-theme/character-theme-scope";
 import { AbilitiesTab } from "./abilities-tab";
 import { FeaturesTab } from "./features-tab";
 import { GeneralTab } from "./general-tab";
@@ -74,46 +75,48 @@ export function CharacterSheet({ characterId }: { characterId: string }) {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-6 py-12">
-      <div className="flex items-center justify-between">
-        <div>
-          <Link href="/" className="text-muted-foreground text-sm underline underline-offset-4">
-            &larr; Mes personnages
-          </Link>
-          <h1 className="text-2xl font-semibold tracking-tight">{draft.name}</h1>
+    <CharacterThemeScope themeId={draft.themeId}>
+      <div className="bg-background text-foreground mx-auto flex w-full max-w-3xl flex-col gap-6 px-6 py-12">
+        <div className="flex items-center justify-between">
+          <div>
+            <Link href="/" className="text-muted-foreground text-sm underline underline-offset-4">
+              &larr; Mes personnages
+            </Link>
+            <h1 className="text-2xl font-semibold tracking-tight">{draft.name}</h1>
+          </div>
+          <div className="flex items-center gap-3">
+            {justSaved && <span className="text-muted-foreground text-xs">Enregistré</span>}
+            <Button onClick={() => void handleSave()} disabled={isSaving}>
+              {isSaving ? "Enregistrement…" : "Enregistrer"}
+            </Button>
+          </div>
         </div>
-        <div className="flex items-center gap-3">
-          {justSaved && <span className="text-muted-foreground text-xs">Enregistré</span>}
-          <Button onClick={() => void handleSave()} disabled={isSaving}>
-            {isSaving ? "Enregistrement…" : "Enregistrer"}
-          </Button>
-        </div>
-      </div>
 
-      <Tabs defaultValue="general">
-        <TabsList>
-          <TabsTrigger value="general">Général</TabsTrigger>
-          <TabsTrigger value="abilities">Caractéristiques</TabsTrigger>
-          <TabsTrigger value="spells">Sorts</TabsTrigger>
-          <TabsTrigger value="inventory">Inventaire</TabsTrigger>
-          <TabsTrigger value="features">Capacités</TabsTrigger>
-        </TabsList>
-        <TabsContent value="general">
-          <GeneralTab draft={draft} onChange={handleChange} />
-        </TabsContent>
-        <TabsContent value="abilities">
-          <AbilitiesTab draft={draft} onChange={handleChange} />
-        </TabsContent>
-        <TabsContent value="spells">
-          <SpellsTab draft={draft} onChange={handleChange} />
-        </TabsContent>
-        <TabsContent value="inventory">
-          <InventoryTab draft={draft} onChange={handleChange} />
-        </TabsContent>
-        <TabsContent value="features">
-          <FeaturesTab draft={draft} onChange={handleChange} />
-        </TabsContent>
-      </Tabs>
-    </div>
+        <Tabs defaultValue="general">
+          <TabsList>
+            <TabsTrigger value="general">Général</TabsTrigger>
+            <TabsTrigger value="abilities">Caractéristiques</TabsTrigger>
+            <TabsTrigger value="spells">Sorts</TabsTrigger>
+            <TabsTrigger value="inventory">Inventaire</TabsTrigger>
+            <TabsTrigger value="features">Capacités</TabsTrigger>
+          </TabsList>
+          <TabsContent value="general">
+            <GeneralTab draft={draft} onChange={handleChange} />
+          </TabsContent>
+          <TabsContent value="abilities">
+            <AbilitiesTab draft={draft} onChange={handleChange} />
+          </TabsContent>
+          <TabsContent value="spells">
+            <SpellsTab draft={draft} onChange={handleChange} />
+          </TabsContent>
+          <TabsContent value="inventory">
+            <InventoryTab draft={draft} onChange={handleChange} />
+          </TabsContent>
+          <TabsContent value="features">
+            <FeaturesTab draft={draft} onChange={handleChange} />
+          </TabsContent>
+        </Tabs>
+      </div>
+    </CharacterThemeScope>
   );
 }

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect } from "react";
 import { useCharacterStore } from "@/stores/store-provider";
 import { Button } from "@/components/ui/button";
+import { CharacterThemeScope } from "@/features/character-theme/character-theme-scope";
 import { ConcentrationMarker } from "./concentration-marker";
 import { FeaturesUsageList } from "./features-usage-list";
 import { HitPointsWidget } from "./hit-points-widget";
@@ -37,32 +38,34 @@ export function CharacterPlay({ characterId }: { characterId: string }) {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-6 py-12">
-      <div className="flex items-start justify-between">
-        <div>
-          <Link href="/" className="text-muted-foreground text-sm underline underline-offset-4">
-            &larr; Mes personnages
-          </Link>
-          <h1 className="text-2xl font-semibold tracking-tight">{character.name}</h1>
-          <p className="text-muted-foreground text-sm">
-            {character.class}
-            {character.subclass ? ` — ${character.subclass}` : ""} · Niveau {character.level}
-          </p>
+    <CharacterThemeScope themeId={character.themeId}>
+      <div className="bg-background text-foreground mx-auto flex w-full max-w-3xl flex-col gap-6 px-6 py-12">
+        <div className="flex items-start justify-between">
+          <div>
+            <Link href="/" className="text-muted-foreground text-sm underline underline-offset-4">
+              &larr; Mes personnages
+            </Link>
+            <h1 className="text-2xl font-semibold tracking-tight">{character.name}</h1>
+            <p className="text-muted-foreground text-sm">
+              {character.class}
+              {character.subclass ? ` — ${character.subclass}` : ""} · Niveau {character.level}
+            </p>
+          </div>
+          <Button type="button" variant="outline" asChild>
+            <Link href={`/characters/${characterId}/edit`}>Configurer</Link>
+          </Button>
         </div>
-        <Button type="button" variant="outline" asChild>
-          <Link href={`/characters/${characterId}/edit`}>Configurer</Link>
-        </Button>
+
+        <HitPointsWidget character={character} />
+
+        <div className="flex flex-wrap items-center gap-2">
+          <ConcentrationMarker character={character} />
+          <RestActions characterId={characterId} />
+        </div>
+
+        <PreparedSpellsList character={character} />
+        <FeaturesUsageList character={character} />
       </div>
-
-      <HitPointsWidget character={character} />
-
-      <div className="flex flex-wrap items-center gap-2">
-        <ConcentrationMarker character={character} />
-        <RestActions characterId={characterId} />
-      </div>
-
-      <PreparedSpellsList character={character} />
-      <FeaturesUsageList character={character} />
-    </div>
+    </CharacterThemeScope>
   );
 }
