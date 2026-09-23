@@ -44,6 +44,9 @@ export function CharacterCard({ character }: { character: Character }) {
       </CardContent>
       <CardFooter className="justify-end gap-2">
         <Button variant="outline" asChild>
+          <Link href={`/characters/${character.id}/edit`}>Configurer</Link>
+        </Button>
+        <Button variant="outline" asChild>
           <Link href={`/characters/${character.id}`}>Voir la fiche</Link>
         </Button>
         <AlertDialog>
