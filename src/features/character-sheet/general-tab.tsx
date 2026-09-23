@@ -6,7 +6,6 @@ import type { Character } from "@/domain/character";
 import { effectiveAbilityScores } from "@/domain/calculations/effective-ability-scores";
 import type { RaceSelection } from "@/domain/race";
 import { RACE_DEFINITIONS, findRaceDefinition } from "@/domain/race";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -196,17 +195,6 @@ export function GeneralTab({ draft, onChange }: CharacterTabProps) {
             }
           />
         </div>
-      </div>
-
-      <div className="flex items-center gap-2">
-        <Checkbox
-          id="concentration-active"
-          checked={draft.concentration.active}
-          onCheckedChange={(checked) =>
-            onChange({ concentration: { ...draft.concentration, active: checked === true } })
-          }
-        />
-        <Label htmlFor="concentration-active">Concentration active</Label>
       </div>
 
       <div className="grid gap-2">
