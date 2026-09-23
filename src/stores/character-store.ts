@@ -9,6 +9,7 @@ export interface CharacterStoreState {
   error: string | null;
   load: () => Promise<void>;
   create: (character: Character) => Promise<void>;
+  update: (id: string, character: Character) => Promise<Character>;
   remove: (id: string) => Promise<void>;
 }
 
@@ -42,6 +43,14 @@ export function createCharacterStore(repository: CharacterRepository): Character
     create: async (character) => {
       await repository.create(character);
       set({ characters: [...get().characters, character] });
+    },
+
+    update: async (id, character) => {
+      const updated = await repository.update(id, character);
+      set({
+        characters: get().characters.map((existing) => (existing.id === id ? updated : existing)),
+      });
+      return updated;
     },
 
     remove: async (id) => {

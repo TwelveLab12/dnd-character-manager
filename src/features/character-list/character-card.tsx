@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import type { Character } from "@/domain/character";
 import { useCharacterStore } from "@/stores/store-provider";
 import {
@@ -41,7 +42,10 @@ export function CharacterCard({ character }: { character: Character }) {
         </span>
         <span>CA {character.armorClass}</span>
       </CardContent>
-      <CardFooter className="justify-end">
+      <CardFooter className="justify-end gap-2">
+        <Button variant="outline" asChild>
+          <Link href={`/characters/${character.id}`}>Voir la fiche</Link>
+        </Button>
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <Button variant="ghost">Supprimer</Button>

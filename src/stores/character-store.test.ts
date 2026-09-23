@@ -47,6 +47,22 @@ describe("createCharacterStore", () => {
     expect(await repository.getById(character.id)).toBeNull();
   });
 
+  it("updates a character and reflects the repository's returned copy in state", async () => {
+    const repository = new InMemoryCharacterRepository();
+    const character = makeTestCharacter();
+    await repository.create(character);
+    const store = createCharacterStore(repository);
+    await store.getState().load();
+
+    const updated = await store.getState().update(character.id, {
+      ...character,
+      name: "New Name",
+    });
+
+    expect(updated.name).toBe("New Name");
+    expect(store.getState().characters).toEqual([updated]);
+  });
+
   it("surfaces a repository error from load() without throwing", async () => {
     const repository = new InMemoryCharacterRepository();
     repository.list = () => Promise.reject(new Error("boom"));
