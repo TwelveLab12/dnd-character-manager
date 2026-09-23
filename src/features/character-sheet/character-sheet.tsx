@@ -77,7 +77,7 @@ export function CharacterSheet({ characterId }: { characterId: string }) {
 
   return (
     <CharacterThemeScope themeId={draft.themeId}>
-      <div className="bg-background text-foreground mx-auto flex w-full max-w-3xl flex-col gap-6 px-6 py-12">
+      <div className="bg-card text-card-foreground ring-foreground/10 mx-auto my-8 flex w-full max-w-3xl flex-col gap-6 rounded-2xl px-6 py-10 shadow-2xl ring-1 shadow-black/70 sm:my-12">
         <div className="flex items-center justify-between">
           <div>
             <Link href="/" className="text-muted-foreground text-sm underline underline-offset-4">
