@@ -37,64 +37,55 @@ export function HitPointsWidget({ character }: { character: Character }) {
       </CardHeader>
       <CardContent className="flex flex-wrap items-start justify-between gap-6">
         <div className="grid gap-3">
-          <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-semibold tabular-nums">{current}</span>
+          <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="icon-sm"
+              onClick={() => void applyDamage(1)}
+              aria-label="Infliger 1 dégât"
+            >
+              <ChevronDown />
+            </Button>
+            <Input
+              id={currentId}
+              type="number"
+              min={0}
+              max={max}
+              value={current}
+              onChange={(event) => void setCurrentHitPoints(toNumber(event.target.value))}
+              aria-label="PV actuels"
+              className="border-border bg-muted focus-visible:border-b-ring h-11 w-16 [appearance:textfield] rounded-t-md rounded-b-none border-0 border-b-2 px-1 text-center text-2xl font-semibold tabular-nums shadow-none focus-visible:ring-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+            />
             <span className="text-muted-foreground text-sm">/ {max}</span>
+            <Button
+              type="button"
+              variant="outline"
+              size="icon-sm"
+              onClick={() => void applyHealing(1)}
+              aria-label="Soigner 1 point de vie"
+            >
+              <ChevronUp />
+            </Button>
           </div>
+
           <Progress
             value={Math.max(0, Math.min(100, ratio * 100))}
             indicatorClassName={indicatorClassName}
           />
 
-          <div className="grid gap-2">
-            <div className="grid gap-1">
-              <Label htmlFor={currentId} className="text-muted-foreground text-xs">
-                PV actuels
-              </Label>
-              <div className="flex items-center gap-1">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon-sm"
-                  onClick={() => void applyDamage(1)}
-                  aria-label="Infliger 1 dégât"
-                >
-                  <ChevronDown />
-                </Button>
-                <Input
-                  id={currentId}
-                  type="number"
-                  min={0}
-                  max={max}
-                  className="w-16 text-center"
-                  value={current}
-                  onChange={(event) => void setCurrentHitPoints(toNumber(event.target.value))}
-                />
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon-sm"
-                  onClick={() => void applyHealing(1)}
-                  aria-label="Soigner 1 point de vie"
-                >
-                  <ChevronUp />
-                </Button>
-              </div>
-            </div>
-
-            <div className="grid gap-1">
-              <Label htmlFor={temporaryId} className="text-muted-foreground text-xs">
-                PV temporaires
-              </Label>
-              <Input
-                id={temporaryId}
-                type="number"
-                min={0}
-                className="w-16 text-center"
-                value={temporary}
-                onChange={(event) => void setTemporaryHitPoints(toNumber(event.target.value))}
-              />
-            </div>
+          <div className="grid gap-1">
+            <Label htmlFor={temporaryId} className="text-muted-foreground text-xs">
+              PV temporaires
+            </Label>
+            <Input
+              id={temporaryId}
+              type="number"
+              min={0}
+              className="w-16 text-center"
+              value={temporary}
+              onChange={(event) => void setTemporaryHitPoints(toNumber(event.target.value))}
+            />
           </div>
         </div>
 
