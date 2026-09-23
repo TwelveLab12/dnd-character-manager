@@ -18,7 +18,7 @@ function renderCharacterList() {
 
 async function createCharacter(user: ReturnType<typeof userEvent.setup>) {
   await user.click(screen.getByRole("button", { name: /nouveau personnage/i }));
-  await user.type(screen.getByLabelText(/^nom$/i), "Yomi Tsuki");
+  await user.type(screen.getByLabelText(/^nom$/i), "Elara Duskwood");
   await user.type(screen.getByLabelText(/^classe$/i), "Clerc");
   await user.click(screen.getByRole("button", { name: /^créer$/i }));
 }
@@ -48,7 +48,7 @@ describe("CharacterList", () => {
 
     await createCharacter(user);
 
-    expect(await screen.findByText("Yomi Tsuki")).toBeInTheDocument();
+    expect(await screen.findByText("Elara Duskwood")).toBeInTheDocument();
     expect(screen.getByText(/clerc — niveau 1/i)).toBeInTheDocument();
   });
 
@@ -57,13 +57,13 @@ describe("CharacterList", () => {
     renderCharacterList();
 
     await createCharacter(user);
-    await screen.findByText("Yomi Tsuki");
+    await screen.findByText("Elara Duskwood");
 
     await user.click(screen.getByRole("button", { name: /supprimer/i }));
     const dialog = await screen.findByRole("alertdialog");
     await user.click(within(dialog).getByRole("button", { name: /^supprimer$/i }));
 
-    await waitFor(() => expect(screen.queryByText("Yomi Tsuki")).not.toBeInTheDocument());
+    await waitFor(() => expect(screen.queryByText("Elara Duskwood")).not.toBeInTheDocument());
     expect(await screen.findByText(/aucun personnage/i)).toBeInTheDocument();
   });
 
@@ -76,16 +76,16 @@ describe("CharacterList", () => {
     await pasteIntoJsonField(
       user,
       dialog,
-      JSON.stringify([makeTestCharacter({ name: "Yomi Tsuki" })]),
+      JSON.stringify([makeTestCharacter({ name: "Elara Duskwood" })]),
     );
     await user.click(within(dialog).getByRole("button", { name: /^analyser$/i }));
 
-    expect(await within(dialog).findByText("Yomi Tsuki")).toBeInTheDocument();
+    expect(await within(dialog).findByText("Elara Duskwood")).toBeInTheDocument();
     await user.click(within(dialog).getByRole("button", { name: /^importer \(1\)$/i }));
     expect(await within(dialog).findByText(/1 ajouté/i)).toBeInTheDocument();
 
     await user.click(within(dialog).getByRole("button", { name: /^fermer$/i }));
-    expect(await screen.findByText("Yomi Tsuki")).toBeInTheDocument();
+    expect(await screen.findByText("Elara Duskwood")).toBeInTheDocument();
   });
 
   it("imports a full backup (characters + spells) from pasted JSON", async () => {
@@ -95,7 +95,7 @@ describe("CharacterList", () => {
     const backup = {
       schemaVersion: 1,
       exportedAt: new Date().toISOString(),
-      characters: [makeTestCharacter({ name: "Yomi Tsuki" })],
+      characters: [makeTestCharacter({ name: "Elara Duskwood" })],
       spells: [makeTestSpell({ id: "fireball" })],
     };
 
@@ -106,6 +106,6 @@ describe("CharacterList", () => {
 
     expect(await within(dialog).findByText(/personnages : 1 ajouté/i)).toBeInTheDocument();
     await user.click(within(dialog).getByRole("button", { name: /^fermer$/i }));
-    expect(await screen.findByText("Yomi Tsuki")).toBeInTheDocument();
+    expect(await screen.findByText("Elara Duskwood")).toBeInTheDocument();
   });
 });

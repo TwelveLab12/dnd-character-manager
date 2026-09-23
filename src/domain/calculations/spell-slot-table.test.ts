@@ -6,7 +6,7 @@ describe("fullCasterSpellSlots", () => {
     expect(fullCasterSpellSlots(1)).toEqual([{ level: 1, total: 2, used: 0 }]);
   });
 
-  it("matches the Yomi Tsuki level 3 reference sheet (4 level-1 / 2 level-2 slots)", () => {
+  it("matches the Elara Duskwood level 3 reference sheet (4 level-1 / 2 level-2 slots)", () => {
     expect(fullCasterSpellSlots(3)).toEqual([
       { level: 1, total: 4, used: 0 },
       { level: 2, total: 2, used: 0 },

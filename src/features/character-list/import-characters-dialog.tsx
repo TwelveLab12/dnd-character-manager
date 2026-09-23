@@ -18,7 +18,7 @@ export function ImportCharactersDialog() {
       triggerLabel="Importer des personnages"
       triggerVariant="ghost"
       triggerSize="sm"
-      placeholder='[{ "name": "Yomi Tsuki", "class": "Clerc", ... }]'
+      placeholder='[{ "name": "Elara Duskwood", "class": "Clerc", ... }]'
       parseEntries={parseCharacterImportEntries}
       preview={(entries) => previewCharacterImport(entries, characters)}
       onImport={upsertMany}

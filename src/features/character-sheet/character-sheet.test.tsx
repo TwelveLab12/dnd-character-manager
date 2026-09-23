@@ -29,22 +29,22 @@ describe("CharacterSheet", () => {
   });
 
   it("loads an existing character and lets you edit and save it", async () => {
-    const character = makeTestCharacter({ name: "Yomi Tsuki", class: "Cleric" });
+    const character = makeTestCharacter({ name: "Elara Duskwood", class: "Cleric" });
     await new LocalStorageCharacterRepository().create(character);
 
     const user = userEvent.setup();
     renderSheet(character.id);
 
-    expect(await screen.findByRole("heading", { name: "Yomi Tsuki" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Elara Duskwood" })).toBeInTheDocument();
 
     const nameInput = screen.getByLabelText(/^nom$/i);
     await user.clear(nameInput);
-    await user.type(nameInput, "Yomi Tsuki-Crépuscule");
+    await user.type(nameInput, "Elara Duskwood-Crépuscule");
     await user.click(screen.getByRole("button", { name: /^enregistrer$/i }));
 
     expect(await screen.findByText(/enregistré/i)).toBeInTheDocument();
     const persisted = await new LocalStorageCharacterRepository().getById(character.id);
-    expect(persisted?.name).toBe("Yomi Tsuki-Crépuscule");
+    expect(persisted?.name).toBe("Elara Duskwood-Crépuscule");
   });
 
   it("computes the ability modifier and saving throw live on the Caractéristiques tab", async () => {

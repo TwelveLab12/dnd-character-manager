@@ -4,21 +4,21 @@ import { parseCharacterImportEntries, previewCharacterImport } from "./character
 
 describe("previewCharacterImport", () => {
   it("classifies a brand new character", () => {
-    const [row] = previewCharacterImport([makeTestCharacter({ id: "yomi" })], []);
+    const [row] = previewCharacterImport([makeTestCharacter({ id: "elara" })], []);
     expect(row).toMatchObject({ status: "new", label: "Test Character" });
   });
 
   it("classifies a same-id character with different content as an update", () => {
-    const existing = makeTestCharacter({ id: "yomi", level: 3 });
+    const existing = makeTestCharacter({ id: "elara", level: 3 });
     const [row] = previewCharacterImport([{ ...existing, level: 5 }], [existing]);
     expect(row?.status).toBe("update");
     expect(row?.entity?.level).toBe(5);
   });
 
   it("generates a random id when absent, never colliding two same-named characters", () => {
-    const [rowA] = previewCharacterImport([makeTestCharacter({ name: "Yomi" })], []);
+    const [rowA] = previewCharacterImport([makeTestCharacter({ name: "Elara" })], []);
     const { id: _idA, ...withoutIdA } = rowA?.entity ?? makeTestCharacter();
-    const [rowB] = previewCharacterImport([{ ...withoutIdA, name: "Yomi" }], []);
+    const [rowB] = previewCharacterImport([{ ...withoutIdA, name: "Elara" }], []);
 
     expect(rowA?.entity?.id).toBeDefined();
     expect(rowB?.entity?.id).toBeDefined();
@@ -26,7 +26,7 @@ describe("previewCharacterImport", () => {
   });
 
   it("reports a humanized error for an invalid entry without blocking other rows", () => {
-    const valid = makeTestCharacter({ id: "yomi" });
+    const valid = makeTestCharacter({ id: "elara" });
     const invalid = { ...makeTestCharacter({ id: "broken" }), level: "not-a-number" };
     const [validRow, invalidRow] = previewCharacterImport([valid, invalid], []);
 

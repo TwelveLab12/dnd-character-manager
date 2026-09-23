@@ -3,9 +3,9 @@ import { createBlankCharacter } from "./factories";
 
 describe("createBlankCharacter", () => {
   it("fills neutral defaults from a minimal input", () => {
-    const character = createBlankCharacter({ name: "Yomi Tsuki", class: "Cleric" });
+    const character = createBlankCharacter({ name: "Elara Duskwood", class: "Cleric" });
 
-    expect(character.name).toBe("Yomi Tsuki");
+    expect(character.name).toBe("Elara Duskwood");
     expect(character.class).toBe("Cleric");
     expect(character.level).toBe(1);
     expect(character.abilityScores).toEqual({

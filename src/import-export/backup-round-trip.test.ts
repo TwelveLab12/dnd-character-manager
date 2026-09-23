@@ -19,7 +19,7 @@ describe("backup export/import round-trip", () => {
     const characterRepository = new LocalStorageCharacterRepository();
     const spellRepository = new LocalStorageSpellRepository();
 
-    const character = makeTestCharacter({ id: "yomi", name: "Yomi Tsuki" });
+    const character = makeTestCharacter({ id: "elara", name: "Elara Duskwood" });
     const spell = makeTestSpell({ id: "fireball" });
     await characterRepository.create(character);
     await spellRepository.upsertMany([spell]);
