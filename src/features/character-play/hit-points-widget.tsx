@@ -37,7 +37,7 @@ export function HitPointsWidget({ character }: { character: Character }) {
         <Progress
           value={Math.max(0, Math.min(100, ratio * 100))}
           indicatorClassName={indicatorClassName}
-          className="w-24 shrink-0 sm:w-40"
+          className="border-border h-2.5 w-24 shrink-0 border sm:w-40"
         />
       </CardHeader>
       <CardContent className="flex flex-wrap items-start justify-between gap-6">
