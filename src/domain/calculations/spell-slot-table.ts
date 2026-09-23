@@ -43,3 +43,8 @@ export function fullCasterSpellSlots(characterLevel: number): SpellSlotLevel[] {
     .map((total, index) => ({ level: index + 1, total, used: 0 }))
     .filter((slot) => slot.total > 0);
 }
+
+/** Ajuste le nombre d'emplacements utilisés pour un niveau, borné à [0, total]. */
+export function adjustSpellSlotUsage(slot: SpellSlotLevel, delta: number): SpellSlotLevel {
+  return { ...slot, used: Math.min(slot.total, Math.max(0, slot.used + delta)) };
+}

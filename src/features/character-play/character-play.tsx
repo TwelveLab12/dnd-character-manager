@@ -5,12 +5,16 @@ import { useEffect } from "react";
 import { useCharacterStore } from "@/stores/store-provider";
 import { Button } from "@/components/ui/button";
 import { PageTitle } from "@/components/ui/page-title";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CharacterThemeScope } from "@/features/character-theme/character-theme-scope";
+import { AbilitiesViewTab } from "./abilities-view-tab";
 import { ConcentrationMarker } from "./concentration-marker";
-import { FeaturesUsageList } from "./features-usage-list";
+import { GeneralViewTab } from "./general-view-tab";
 import { HitPointsWidget } from "./hit-points-widget";
-import { PreparedSpellsList } from "./prepared-spells-list";
+import { InventoryViewTab } from "./inventory-view-tab";
+import { FeaturesViewTab } from "./features-view-tab";
 import { RestActions } from "./rest-actions";
+import { SpellsViewTab } from "./spells-view-tab";
 
 export function CharacterPlay({ characterId }: { characterId: string }) {
   const characters = useCharacterStore((state) => state.characters);
@@ -64,8 +68,30 @@ export function CharacterPlay({ characterId }: { characterId: string }) {
           <RestActions characterId={characterId} />
         </div>
 
-        <PreparedSpellsList character={character} />
-        <FeaturesUsageList character={character} />
+        <Tabs defaultValue="general">
+          <TabsList>
+            <TabsTrigger value="general">Général</TabsTrigger>
+            <TabsTrigger value="abilities">Caractéristiques</TabsTrigger>
+            <TabsTrigger value="spells">Sorts</TabsTrigger>
+            <TabsTrigger value="inventory">Inventaire</TabsTrigger>
+            <TabsTrigger value="features">Capacités</TabsTrigger>
+          </TabsList>
+          <TabsContent value="general">
+            <GeneralViewTab character={character} />
+          </TabsContent>
+          <TabsContent value="abilities">
+            <AbilitiesViewTab character={character} />
+          </TabsContent>
+          <TabsContent value="spells">
+            <SpellsViewTab character={character} />
+          </TabsContent>
+          <TabsContent value="inventory">
+            <InventoryViewTab character={character} />
+          </TabsContent>
+          <TabsContent value="features">
+            <FeaturesViewTab character={character} />
+          </TabsContent>
+        </Tabs>
       </div>
     </CharacterThemeScope>
   );

@@ -13,6 +13,8 @@ import { resolvedSpellAttackBonus, resolvedSpellSaveDC } from "@/domain/calculat
 import type { Spell } from "@/domain/spell";
 import type { CharacterSpellTag } from "@/domain/spell-tag";
 import { useSpellStore } from "@/stores/store-provider";
+import { ABILITY_LABELS } from "@/features/shared/ability-labels";
+import { formatModifier } from "@/features/shared/format";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -25,8 +27,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { ABILITY_LABELS } from "./ability-labels";
-import { formatModifier } from "./format";
 import type { CharacterTabProps } from "./types";
 
 function toNumber(value: string): number {

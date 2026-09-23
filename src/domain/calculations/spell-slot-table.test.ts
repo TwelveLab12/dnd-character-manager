@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { fullCasterSpellSlots } from "./spell-slot-table";
+import { adjustSpellSlotUsage, fullCasterSpellSlots } from "./spell-slot-table";
 
 describe("fullCasterSpellSlots", () => {
   it("returns only non-zero slot levels for level 1 (2 level-1 slots)", () => {
@@ -23,5 +23,31 @@ describe("fullCasterSpellSlots", () => {
 
   it.each([0, -1, 21, 1.5])("rejects invalid level %s", (level) => {
     expect(() => fullCasterSpellSlots(level)).toThrow(RangeError);
+  });
+});
+
+describe("adjustSpellSlotUsage", () => {
+  it("increments used", () => {
+    expect(adjustSpellSlotUsage({ level: 1, total: 4, used: 1 }, 1)).toEqual({
+      level: 1,
+      total: 4,
+      used: 2,
+    });
+  });
+
+  it("decrements used", () => {
+    expect(adjustSpellSlotUsage({ level: 1, total: 4, used: 2 }, -1)).toEqual({
+      level: 1,
+      total: 4,
+      used: 1,
+    });
+  });
+
+  it("clamps at zero", () => {
+    expect(adjustSpellSlotUsage({ level: 1, total: 4, used: 0 }, -1).used).toBe(0);
+  });
+
+  it("clamps at total", () => {
+    expect(adjustSpellSlotUsage({ level: 1, total: 4, used: 4 }, 1).used).toBe(4);
   });
 });
