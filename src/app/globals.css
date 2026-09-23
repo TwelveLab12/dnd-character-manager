@@ -100,30 +100,42 @@
 }
 
 /**
- * Séluné — déesse de la lune. Palette clair-de-lune : nacré/lavande pâle en fond, indigo profond
- * en primaire, argent en accent. Scopée via un attribut data-theme posé par
- * CharacterThemeScope (voir src/features/character-theme/), jamais globale — voir
- * docs/adr/0013-per-character-visual-theme.md. Ne redéfinit pas les tokens sémantiques
- * (success/warning/info/destructive) : ils restent constants d'un thème à l'autre.
+ * Séluné — déesse de la lune. Palette nocturne "Yomi Tsuki" (référence fournie par l'utilisateur) :
+ * nuit profonde en fond, nacré en texte, or en accent héroïque, lueur (bleu-lavande) en focus/info,
+ * vert/sang pour succès/danger. Scopée via un attribut data-theme posé par CharacterThemeScope
+ * (voir src/features/character-theme/), jamais globale.
+ *
+ * Reconsidère docs/adr/0013-per-character-visual-theme.md sur un point : les tokens sémantiques
+ * (success/warning/info/destructive) sont ici recalibrés pour ce fond très sombre plutôt que
+ * réutilisés tels quels — voir docs/adr/0015-selune-night-palette.md. Le sens reste constant
+ * (rouge = danger, vert = succès), seules les valeurs exactes changent, exactement comme `.dark`
+ * le faisait déjà par rapport à `:root` avant que la base sombre ne devienne la valeur par défaut.
+ *
+ * Valeurs en hex/rgba (pas de conversion oklch) pour rester fidèle à la référence approuvée —
+ * CSS accepte de mélanger les deux notations dans la même feuille sans problème.
  */
 [data-theme="selune"] {
-  --background: oklch(0.97 0.012 292);
-  --foreground: oklch(0.24 0.035 280);
-  --card: oklch(0.99 0.006 292);
-  --card-foreground: oklch(0.24 0.035 280);
-  --popover: oklch(0.99 0.006 292);
-  --popover-foreground: oklch(0.24 0.035 280);
-  --primary: oklch(0.4 0.09 280);
-  --primary-foreground: oklch(0.98 0.008 292);
-  --secondary: oklch(0.92 0.02 292);
-  --secondary-foreground: oklch(0.32 0.05 280);
-  --muted: oklch(0.94 0.015 292);
-  --muted-foreground: oklch(0.5 0.03 280);
-  --accent: oklch(0.85 0.045 250);
-  --accent-foreground: oklch(0.24 0.035 280);
-  --border: oklch(0.88 0.025 282);
-  --input: oklch(0.88 0.025 282);
-  --ring: oklch(0.6 0.08 280);
+  --background: #0e1120; /* nuit */
+  --foreground: #edebf5; /* lune */
+  --card: #161b2e; /* nuit-2 */
+  --card-foreground: #edebf5; /* lune */
+  --popover: #272446; /* dusk */
+  --popover-foreground: #edebf5; /* lune */
+  --primary: #d6b25f; /* or */
+  --primary-foreground: #0e1120; /* nuit */
+  --secondary: #161b2e; /* nuit-2 */
+  --secondary-foreground: #98a0c2; /* argent */
+  --muted: #161b2e; /* nuit-2 */
+  --muted-foreground: #98a0c2; /* argent */
+  --accent: #8fa9ff; /* lueur */
+  --accent-foreground: #0e1120; /* nuit */
+  --destructive: #be4e60; /* sang */
+  --success: #5fa98c; /* vert */
+  --warning: #c98a4b; /* cuivre — absent de la référence, choisi distinct de l'or primaire */
+  --info: #8fa9ff; /* lueur */
+  --border: rgba(152, 160, 194, 0.22); /* bord */
+  --input: rgba(152, 160, 194, 0.22); /* bord */
+  --ring: #8fa9ff; /* lueur */
 }
 
 @layer base {
