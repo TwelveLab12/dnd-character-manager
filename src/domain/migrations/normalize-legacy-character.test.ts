@@ -106,4 +106,43 @@ describe("normalizeLegacyCharacter", () => {
       normalizeLegacyCharacter(legacyCleric()),
     );
   });
+
+  it("does not link a feature that only names the pool itself", () => {
+    const legacy = legacyCleric();
+    const normalized = normalizeLegacyCharacter({
+      ...legacy,
+      features: [
+        {
+          id: "pool",
+          name: "Canalisation Divine",
+          source: "Clerc",
+          description: "",
+          usesMax: 1,
+          usesCurrent: 1,
+          recharge: "shortRest",
+        },
+        ...(legacy.features as unknown[]),
+      ],
+    }) as Record<string, unknown>;
+    const [pool, sanctuary] = normalized.features as Record<string, unknown>[];
+    expect(pool).not.toHaveProperty("resourceId");
+    expect(pool).toMatchObject({ usesMax: 1 });
+    expect(sanctuary).toMatchObject({ resourceId: "channel-divinity" });
+  });
+
+  it("never re-links features of a character already in the current format", () => {
+    const current = makeTestCharacter({
+      classId: "clerc",
+      features: [
+        {
+          id: "pool",
+          name: "Canalisation divine (réserve)",
+          source: "Clerc",
+          description: "",
+        },
+        { id: "turn", name: "Renvoi des morts-vivants", source: "Clerc", description: "" },
+      ],
+    });
+    expect(normalizeLegacyCharacter(current)).toEqual(current);
+  });
 });

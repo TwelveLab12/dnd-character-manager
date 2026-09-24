@@ -13,7 +13,19 @@ const CHANNEL_DIVINITY_FEATURE_PATTERNS: readonly RegExp[] = [
   /twilight sanctuary/i,
 ];
 
+/** Noms qui désignent la réserve elle-même (sa description), pas un effet qu'on déclenche. */
+const CHANNEL_DIVINITY_POOL_NAMES: readonly string[] = ["canalisation divine", "channel divinity"];
+
 type RawRecord = Record<string, unknown>;
+
+function normalizeName(name: string): string {
+  return name
+    .replace(/\([^)]*\)/g, "")
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .trim()
+    .toLowerCase();
+}
 
 function isRecord(value: unknown): value is RawRecord {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -56,6 +68,8 @@ function withSpellSlotsUsed(record: RawRecord): RawRecord {
 /**
  * Capacités de Canalisation divine d'un Clerc → liées à la ressource `channel-divinity` (sans
  * compteur propre) ; la plus forte consommation relevée devient la consommation de la réserve.
+ * Une capacité qui ne porte que le nom de la réserve (« Canalisation divine ») la décrit : elle
+ * n'est pas liée, sinon le HUD la proposerait comme un effet à déclencher.
  */
 function withChannelDivinityResource(record: RawRecord): RawRecord {
   const classId = typeof record.classId === "string" ? record.classId : undefined;
@@ -72,8 +86,12 @@ function withChannelDivinityResource(record: RawRecord): RawRecord {
     if (!isRecord(feature) || feature.resourceId !== undefined) {
       return feature;
     }
-    const label = `${String(feature.name ?? "")} ${String(feature.source ?? "")}`;
-    if (!CHANNEL_DIVINITY_FEATURE_PATTERNS.some((pattern) => pattern.test(label))) {
+    const name = String(feature.name ?? "");
+    const label = `${name} ${String(feature.source ?? "")}`;
+    if (
+      CHANNEL_DIVINITY_POOL_NAMES.includes(normalizeName(name)) ||
+      !CHANNEL_DIVINITY_FEATURE_PATTERNS.some((pattern) => pattern.test(label))
+    ) {
       return feature;
     }
     changed = true;
@@ -107,5 +125,9 @@ export function normalizeLegacyCharacter(raw: unknown): unknown {
   if (!isRecord(raw)) {
     return raw;
   }
-  return withChannelDivinityResource(withSpellSlotsUsed(withClassId(raw)));
+  const normalized = withSpellSlotsUsed(withClassId(raw));
+  // Les ressources de classe n'existent pas au format d'origine : un personnage qui porte déjà
+  // `classResourcesUsed` est au format courant, et ses liens capacité → ressource sont des choix
+  // du joueur qu'on ne doit jamais réécrire (ex : une capacité volontairement non liée).
+  return "classResourcesUsed" in raw ? normalized : withChannelDivinityResource(normalized);
 }
