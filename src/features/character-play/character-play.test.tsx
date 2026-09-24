@@ -109,6 +109,39 @@ describe("CharacterPlay", () => {
     expect(screen.getByText("Symbole sacré : pendentif lunaire")).toBeInTheDocument();
   });
 
+  it("highlights the saving throw total and proficiency of each ability in the Caractéristiques tab", async () => {
+    const character = makeTestCharacter({
+      level: 5,
+      abilityScores: {
+        strength: 10,
+        dexterity: 10,
+        constitution: 10,
+        intelligence: 10,
+        wisdom: 16,
+        charisma: 10,
+      },
+      savingThrowProficiencies: ["wisdom"],
+      skillProficiencies: ["Perception"],
+    });
+    await new LocalStorageCharacterRepository().create(character);
+
+    const user = userEvent.setup();
+    renderPlay(character.id);
+    await screen.findByRole("heading", { name: character.name });
+    await user.click(screen.getByRole("tab", { name: "Caractéristiques" }));
+
+    const wisdom = screen.getByRole("region", { name: "Sagesse" });
+    expect(wisdom).toHaveTextContent("Jet de sauvegarde +6");
+    expect(within(wisdom).getByText("mod. +3 · score 16")).toBeInTheDocument();
+    expect(within(wisdom).getByText("Maîtrisé")).toBeInTheDocument();
+
+    const strength = screen.getByRole("region", { name: "Force" });
+    expect(strength).toHaveTextContent("Jet de sauvegarde +0");
+    expect(within(strength).getByText("Non maîtrisé")).toBeInTheDocument();
+
+    expect(screen.getByText("Perception passive").nextSibling).toHaveTextContent("16");
+  });
+
   it("shows no editable inputs on the read-only mirror tabs", async () => {
     const character = makeTestCharacter({
       background: "Ermite",
