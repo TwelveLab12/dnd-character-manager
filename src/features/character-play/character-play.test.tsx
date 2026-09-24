@@ -33,13 +33,17 @@ describe("CharacterPlay", () => {
       class: "Cleric",
       subclass: "Domaine de la Lune",
       level: 5,
+      race: "Humain variant",
+      background: "Acolyte",
     });
     await new LocalStorageCharacterRepository().create(character);
 
     renderPlay(character.id);
 
     expect(await screen.findByRole("heading", { name: "Elara Duskwood" })).toBeInTheDocument();
-    expect(screen.getByText("Cleric — Domaine de la Lune")).toBeInTheDocument();
+    expect(
+      screen.getByText("Cleric — Domaine de la Lune · Humain variant · Acolyte"),
+    ).toBeInTheDocument();
     expect(screen.getByText("niv.")).toHaveTextContent("niv. 5");
     expect(screen.getByRole("link", { name: "Modifier" })).toHaveAttribute(
       "href",
@@ -59,7 +63,7 @@ describe("CharacterPlay", () => {
     renderPlay(character.id);
     await screen.findByRole("heading", { name: character.name });
 
-    for (const tabName of ["Général", "Caractéristiques", "Sorts", "Inventaire", "Capacités"]) {
+    for (const tabName of ["Notes", "Caractéristiques", "Sorts", "Inventaire", "Capacités"]) {
       await user.click(screen.getByRole("tab", { name: tabName }));
       expect(screen.getByRole("img", { name: /classe d'armure/i })).toBeInTheDocument();
       expect(screen.getByRole("img", { name: /points de vie/i })).toBeInTheDocument();
@@ -67,14 +71,42 @@ describe("CharacterPlay", () => {
       expect(screen.getByRole("button", { name: /^repos court$/i })).toBeInTheDocument();
     }
 
-    await user.click(screen.getByRole("tab", { name: "Général" }));
-    expect(screen.getByText("Ermite")).toBeInTheDocument();
+    await user.click(screen.getByRole("tab", { name: "Notes" }));
+    expect(screen.getByRole("heading", { name: "Règles appliquées" })).toBeInTheDocument();
 
     await user.click(screen.getByRole("tab", { name: "Inventaire" }));
     expect(screen.getByText("Sac à dos")).toBeInTheDocument();
 
     await user.click(screen.getByRole("tab", { name: "Capacités" }));
     expect(screen.getByText("Vision dans le noir")).toBeInTheDocument();
+  });
+
+  it("lists the automatically applied rules and the free notes in the Notes tab", async () => {
+    const character = makeTestCharacter({
+      abilityScores: {
+        strength: 13,
+        dexterity: 8,
+        constitution: 14,
+        intelligence: 12,
+        wisdom: 15,
+        charisma: 10,
+      },
+      raceSelection: { raceId: "humain-variant", abilityBonusChoices: ["constitution", "wisdom"] },
+      notes: "Symbole sacré : pendentif lunaire",
+    });
+    await new LocalStorageCharacterRepository().create(character);
+
+    renderPlay(character.id);
+    await screen.findByRole("heading", { name: character.name });
+
+    expect(screen.getByRole("tab", { name: "Notes" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.queryByRole("tab", { name: "Général" })).not.toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Bonus racial (Humain variant) : Constitution 14 → 15 (+1), Sagesse 15 → 16 (+1)",
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Symbole sacré : pendentif lunaire")).toBeInTheDocument();
   });
 
   it("shows no editable inputs on the read-only mirror tabs", async () => {
@@ -88,7 +120,7 @@ describe("CharacterPlay", () => {
     renderPlay(character.id);
     await screen.findByRole("heading", { name: character.name });
 
-    await user.click(screen.getByRole("tab", { name: "Général" }));
+    await user.click(screen.getByRole("tab", { name: "Notes" }));
     let panel = screen.getByRole("tabpanel");
     expect(within(panel).queryByRole("textbox")).not.toBeInTheDocument();
 

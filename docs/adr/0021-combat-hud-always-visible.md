@@ -25,8 +25,15 @@ Pendant une partie, il fallait donc changer d'onglet pour répondre à « quelle
   - les attaques d'armes équipées ;
   - la concentration et les repos.
 
-  Ces valeurs sont retirées des onglets « Général » et « Sorts » pour éviter les doublons. Les
-  avertissements de configuration (CA, attaques) restent dans « Général ».
+  Ces valeurs sont retirées de l'onglet « Sorts » pour éviter les doublons.
+
+- **L'onglet « Général » est remplacé par « Notes »**, en première position et ouvert par défaut.
+  La race et l'historique passent dans l'en-tête, sur la ligne de la classe. L'onglet Notes
+  regroupe :
+  - les **règles appliquées** automatiquement, en texte lisible (ex : « Bonus racial (Humain
+    variant) : Constitution 14 → 15 (+1), Sagesse 15 → 16 (+1) ») ;
+  - les **avertissements** de configuration (CA, attaques) ;
+  - les **notes** libres du personnage.
 
 - **La CA est l'information prioritaire.** Elle est affichée dans un bouclier dessiné, le plus
   grand élément du bloc. Un halo signale qu'un effet temporaire est actif. Les interrupteurs des
@@ -56,8 +63,8 @@ Aucun nouveau calcul métier : le HUD réutilise `computeArmorClass`, `computeWe
 
 - Les valeurs de combat se lisent d'un coup d'œil, sans navigation. La contrepartie est un bloc
   permanent plus haut qu'avant au-dessus des onglets.
-- Les onglets « Général » et « Sorts » s'allègent. « Général » ne montre plus que l'identité, les
-  bonus raciaux, les avertissements et les notes.
+- L'onglet « Sorts » s'allège. L'onglet « Notes » devient le point d'entrée pour comprendre
+  d'où viennent les valeurs calculées : chaque nouvelle règle automatique devra y être listée.
 - Le HUD s'appuie sur les jetons de thème (`primary`, `info`, `success`, `warning`,
   `destructive`). Il suit donc le thème du personnage ([0013](0013-per-character-visual-theme.md))
   sans code spécifique.

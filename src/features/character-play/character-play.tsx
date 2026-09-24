@@ -10,8 +10,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CharacterThemeScope } from "@/features/character-theme/character-theme-scope";
 import { AbilitiesViewTab } from "./abilities-view-tab";
 import { CombatHud } from "./combat-hud";
-import { GeneralViewTab } from "./general-view-tab";
 import { InventoryViewTab } from "./inventory-view-tab";
+import { NotesViewTab } from "./notes-view-tab";
 import { FeaturesViewTab } from "./features-view-tab";
 import { SpellsViewTab } from "./spells-view-tab";
 
@@ -68,6 +68,8 @@ export function CharacterPlay({ characterId }: { characterId: string }) {
             <p className="text-muted-foreground text-sm">
               {character.class}
               {character.subclass ? ` — ${character.subclass}` : ""}
+              {character.race ? ` · ${character.race}` : ""}
+              {character.background ? ` · ${character.background}` : ""}
             </p>
           </div>
           <Button type="button" variant="ghost" asChild>
@@ -80,16 +82,16 @@ export function CharacterPlay({ characterId }: { characterId: string }) {
 
         <CombatHud character={character} />
 
-        <Tabs defaultValue="general">
+        <Tabs defaultValue="notes">
           <TabsList>
-            <TabsTrigger value="general">Général</TabsTrigger>
+            <TabsTrigger value="notes">Notes</TabsTrigger>
             <TabsTrigger value="abilities">Caractéristiques</TabsTrigger>
             <TabsTrigger value="spells">Sorts</TabsTrigger>
             <TabsTrigger value="inventory">Inventaire</TabsTrigger>
             <TabsTrigger value="features">Capacités</TabsTrigger>
           </TabsList>
-          <TabsContent value="general">
-            <GeneralViewTab character={character} />
+          <TabsContent value="notes">
+            <NotesViewTab character={character} />
           </TabsContent>
           <TabsContent value="abilities">
             <AbilitiesViewTab character={character} />
