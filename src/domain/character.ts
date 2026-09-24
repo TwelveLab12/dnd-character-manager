@@ -63,6 +63,8 @@ export interface Character {
    * une arme maîtrisée. Pas de bonus d'attaque stocké : il est calculé par arme équipée — voir
    * src/domain/calculations/weapon-attack.ts. */
   weaponProficiencies?: WeaponCategory[];
+  /** Arts martiaux (Moine, règles 2014) — voir src/domain/calculations/weapon-attack.ts. */
+  martialArts?: boolean;
   spellcasting?: SpellcastingInfo;
   spellSlots: SpellSlotLevel[];
   knownSpellIds: string[];

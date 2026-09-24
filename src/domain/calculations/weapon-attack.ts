@@ -1,11 +1,19 @@
 import type { AbilityName } from "../ability-scores";
 import type { Character } from "../character";
-import type { DamageType, InventoryItem, WeaponRange } from "../inventory";
+import type {
+  DamageType,
+  InventoryItem,
+  ThrownRange,
+  WeaponProperties,
+  WeaponRange,
+} from "../inventory";
 import { effectiveAbilityScores } from "./effective-ability-scores";
 import { abilityModifier } from "./modifiers";
 import { clampCharacterLevel, proficiencyBonusForLevel } from "./proficiency";
 
-const DICE_PATTERN = /^\d+d\d+$/;
+const DICE_PATTERN = /^(\d+)d(\d+)$/;
+
+export const UNARMED_STRIKE_ID = "unarmed-strike";
 
 export interface WeaponAttack {
   itemId: string;
@@ -16,13 +24,29 @@ export interface WeaponAttack {
   attackBonus: number;
   /** Ex : « 1d8+3 », « 1d6-1 », « 2d6 ». */
   damage: string;
+  /** Dégâts à deux mains d'une arme polyvalente — absent si un bouclier est équipé. */
   versatileDamage?: string;
   damageType: DamageType;
+  twoHanded: boolean;
+  thrown?: ThrownRange;
+  /** Arts martiaux appliqués à cette attaque (arme de moine ou mains nues). */
+  martialArts: boolean;
 }
 
 /** Dés valides au format « NdM » (ex : 1d8, 2d6), sans modificateur. */
 export function isValidDamageDice(dice: string): boolean {
   return DICE_PATTERN.test(dice.trim());
+}
+
+/** Moyenne d'un jet « NdM », `undefined` si le format est invalide. */
+function averageRoll(dice: string): number | undefined {
+  const match = DICE_PATTERN.exec(dice.trim());
+  if (!match) {
+    return undefined;
+  }
+  const count = Number(match[1]);
+  const faces = Number(match[2]);
+  return (count * (faces + 1)) / 2;
 }
 
 /** Formule de dégâts « 1d8+3 » : le modificateur est omis quand il vaut 0. */
@@ -34,40 +58,98 @@ export function formatDamage(dice: string, modifier: number): string {
   return `${base}${modifier > 0 ? "+" : "-"}${Math.abs(modifier)}`;
 }
 
-/**
- * Jet d'attaque et dégâts d'une arme (règles 5e 2014) :
- * - caractéristique : Force au corps à corps, Dextérité à distance, la meilleure des deux pour une
- *   arme de finesse ;
- * - attaque = mod + bonus de maîtrise (si la catégorie courante/de guerre est maîtrisée) + bonus
- *   magique ;
- * - dégâts = dé(s) + mod + bonus magique (dé polyvalent en option pour l'usage à deux mains).
- * Retourne `undefined` pour un objet qui n'est pas une arme.
- */
-export function computeWeaponAttack(
+/** Dé d'Arts martiaux du Moine (2014) : d4, d6 au niveau 5, d8 au 11, d10 au 17. */
+export function martialArtsDie(level: number): string {
+  const clamped = clampCharacterLevel(level);
+  if (clamped >= 17) return "1d10";
+  if (clamped >= 11) return "1d8";
+  if (clamped >= 5) return "1d6";
+  return "1d4";
+}
+
+/** Arme de moine (2014) : coutelas (case explicite) ou arme courante de corps à corps qui n'est
+ * pas à deux mains (les armes lourdes sont toutes de guerre). */
+export function isMonkWeapon(weapon: WeaponProperties): boolean {
+  return (
+    weapon.monkWeapon === true ||
+    (weapon.category === "simple" && weapon.range === "melee" && !weapon.twoHanded)
+  );
+}
+
+function equippedArmorItems(character: Character): { armor: boolean; shield: boolean } {
+  const equipped = character.inventory.filter((item) => item.equipped === true && item.armor);
+  return {
+    armor: equipped.some((item) => item.armor?.category !== "shield"),
+    shield: equipped.some((item) => item.armor?.category === "shield"),
+  };
+}
+
+/** Arts martiaux actifs : interrupteur activé et ni armure ni bouclier équipés. */
+export function isMartialArtsActive(character: Character): boolean {
+  if (!character.martialArts) {
+    return false;
+  }
+  const { armor, shield } = equippedArmorItems(character);
+  return !armor && !shield;
+}
+
+interface AttackContext {
+  strength: number;
+  dexterity: number;
+  proficiencyBonus: number;
+  shieldEquipped: boolean;
+  martialArtsActive: boolean;
+  martialArtsDie: string;
+}
+
+function attackContext(character: Character): AttackContext {
+  const scores = effectiveAbilityScores(character.abilityScores, character.raceSelection);
+  return {
+    strength: abilityModifier(scores.strength),
+    dexterity: abilityModifier(scores.dexterity),
+    proficiencyBonus: proficiencyBonusForLevel(clampCharacterLevel(character.level)),
+    shieldEquipped: equippedArmorItems(character).shield,
+    martialArtsActive: isMartialArtsActive(character),
+    martialArtsDie: martialArtsDie(character.level),
+  };
+}
+
+function bestOf(context: AttackContext): AbilityName {
+  return context.dexterity > context.strength ? "dexterity" : "strength";
+}
+
+/** Garde le dé de l'arme, sauf si le dé d'Arts martiaux est strictement meilleur en moyenne. */
+function betterDice(weaponDice: string, martialDie: string): string {
+  const weaponAverage = averageRoll(weaponDice);
+  const martialAverage = averageRoll(martialDie) ?? 0;
+  return weaponAverage !== undefined && weaponAverage >= martialAverage ? weaponDice : martialDie;
+}
+
+function buildWeaponAttack(
   character: Character,
   item: InventoryItem,
-): WeaponAttack | undefined {
-  const { weapon } = item;
-  if (!weapon) {
-    return undefined;
-  }
-
-  const scores = effectiveAbilityScores(character.abilityScores, character.raceSelection);
-  const strength = abilityModifier(scores.strength);
-  const dexterity = abilityModifier(scores.dexterity);
+  weapon: WeaponProperties,
+  context: AttackContext,
+): WeaponAttack {
+  const monkWeapon = isMonkWeapon(weapon);
+  const martialArts = context.martialArtsActive && monkWeapon;
 
   let ability: AbilityName = weapon.range === "ranged" ? "dexterity" : "strength";
-  if (weapon.finesse) {
-    ability = dexterity > strength ? "dexterity" : "strength";
+  if (weapon.finesse || martialArts) {
+    ability = bestOf(context);
   }
-  const modifier = ability === "dexterity" ? dexterity : strength;
+  const modifier = ability === "dexterity" ? context.dexterity : context.strength;
 
-  const proficient = (character.weaponProficiencies ?? []).includes(weapon.category);
-  const proficiencyBonus = proficient
-    ? proficiencyBonusForLevel(clampCharacterLevel(character.level))
-    : 0;
+  // Le Moine maîtrise les armes courantes et le coutelas : toute arme de moine compte comme
+  // maîtrisée dès que les Arts martiaux sont cochés, même s'ils sont inactifs (armure portée).
+  const proficient =
+    (character.weaponProficiencies ?? []).includes(weapon.category) ||
+    (character.martialArts === true && monkWeapon);
   const magicBonus = weapon.magicBonus ?? 0;
   const damageModifier = modifier + magicBonus;
+  const damageDice = martialArts
+    ? betterDice(weapon.damageDice, context.martialArtsDie)
+    : weapon.damageDice;
 
   return {
     itemId: item.id,
@@ -75,23 +157,88 @@ export function computeWeaponAttack(
     range: weapon.range,
     ability,
     proficient,
-    attackBonus: modifier + proficiencyBonus + magicBonus,
-    damage: formatDamage(weapon.damageDice, damageModifier),
-    ...(weapon.versatileDamageDice
+    attackBonus: modifier + (proficient ? context.proficiencyBonus : 0) + magicBonus,
+    damage: formatDamage(damageDice, damageModifier),
+    ...(weapon.versatileDamageDice && !context.shieldEquipped
       ? { versatileDamage: formatDamage(weapon.versatileDamageDice, damageModifier) }
       : {}),
     damageType: weapon.damageType,
+    twoHanded: weapon.twoHanded === true,
+    ...(weapon.thrown && weapon.range === "melee" ? { thrown: weapon.thrown } : {}),
+    martialArts,
   };
 }
 
-/** Attaques des armes équipées, corps à corps d'abord puis distance, dans l'ordre d'inventaire. */
+/**
+ * Jet d'attaque et dégâts d'une arme (règles 5e 2014) :
+ * - caractéristique : Force au corps à corps (et lancer), Dextérité à distance, la meilleure des
+ *   deux pour une arme de finesse ou une arme de moine sous Arts martiaux ;
+ * - attaque = mod + bonus de maîtrise (si la catégorie courante/de guerre est maîtrisée) + bonus
+ *   magique ;
+ * - dégâts = dé(s) (ou dé d'Arts martiaux s'il est meilleur) + mod + bonus magique.
+ * Retourne `undefined` pour un objet qui n'est pas une arme.
+ */
+export function computeWeaponAttack(
+  character: Character,
+  item: InventoryItem,
+): WeaponAttack | undefined {
+  if (!item.weapon) {
+    return undefined;
+  }
+  return buildWeaponAttack(character, item, item.weapon, attackContext(character));
+}
+
+function unarmedStrike(context: AttackContext): WeaponAttack {
+  const ability = bestOf(context);
+  const modifier = ability === "dexterity" ? context.dexterity : context.strength;
+  return {
+    itemId: UNARMED_STRIKE_ID,
+    name: "Mains nues",
+    range: "melee",
+    ability,
+    proficient: true,
+    attackBonus: modifier + context.proficiencyBonus,
+    damage: formatDamage(context.martialArtsDie, modifier),
+    damageType: "bludgeoning",
+    twoHanded: false,
+    martialArts: true,
+  };
+}
+
+/**
+ * Attaques des armes équipées, corps à corps d'abord puis distance, dans l'ordre d'inventaire —
+ * plus l'attaque à mains nues quand les Arts martiaux sont actifs.
+ */
 export function computeWeaponAttacks(character: Character): WeaponAttack[] {
-  const attacks = character.inventory
-    .filter((item) => item.equipped === true)
-    .map((item) => computeWeaponAttack(character, item))
-    .filter((attack): attack is WeaponAttack => attack !== undefined);
+  const context = attackContext(character);
+  const attacks = character.inventory.flatMap((item) =>
+    item.equipped === true && item.weapon
+      ? [buildWeaponAttack(character, item, item.weapon, context)]
+      : [],
+  );
+  if (context.martialArtsActive) {
+    attacks.push(unarmedStrike(context));
+  }
   return [
     ...attacks.filter((attack) => attack.range === "melee"),
     ...attacks.filter((attack) => attack.range === "ranged"),
   ];
+}
+
+/** Avertissements liés aux armes équipées : deux mains + bouclier, Arts martiaux inactifs. */
+export function weaponAttackWarnings(character: Character): string[] {
+  const warnings: string[] = [];
+  const { armor, shield } = equippedArmorItems(character);
+
+  if (shield) {
+    for (const item of character.inventory) {
+      if (item.equipped === true && item.weapon?.twoHanded) {
+        warnings.push(`${item.name || "Arme"} : arme à deux mains avec un bouclier équipé.`);
+      }
+    }
+  }
+  if (character.martialArts && (armor || shield)) {
+    warnings.push("Arts martiaux inactifs : une armure ou un bouclier est équipé.");
+  }
+  return warnings;
 }

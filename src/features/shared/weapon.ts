@@ -28,8 +28,26 @@ export const DAMAGE_TYPE_LABELS: Record<DamageType, string> = {
   thunder: "tonnerre",
 };
 
-/** Résumé compact d'une attaque, ex : « +5 · 1d8+3 tranchant (1d10+3 à deux mains) ». */
+/** Dégâts d'une attaque, ex : « 1d8+3 tranchant · 1d10+3 à deux mains ». */
+export function formatWeaponDamage(attack: WeaponAttack): string {
+  const versatile = attack.versatileDamage ? ` · ${attack.versatileDamage} à deux mains` : "";
+  return `${attack.damage} ${DAMAGE_TYPE_LABELS[attack.damageType]}${versatile}`;
+}
+
+/** Propriétés utiles en partie, ex : [« Deux mains », « Lancer 6/18 m », « Arts martiaux »]. */
+export function weaponAttackTags(attack: WeaponAttack): string[] {
+  return [
+    ...(attack.twoHanded ? ["Deux mains"] : []),
+    ...(attack.thrown ? [`Lancer ${attack.thrown.normal}/${attack.thrown.long} m`] : []),
+    ...(attack.martialArts ? ["Arts martiaux"] : []),
+  ];
+}
+
+/** Résumé compact d'une attaque, ex : « +5 · 1d8+3 tranchant · 1d10+3 à deux mains ». */
 export function formatWeaponAttack(attack: WeaponAttack): string {
-  const versatile = attack.versatileDamage ? ` (${attack.versatileDamage} à deux mains)` : "";
-  return `${formatModifier(attack.attackBonus)} · ${attack.damage} ${DAMAGE_TYPE_LABELS[attack.damageType]}${versatile}`;
+  return [
+    formatModifier(attack.attackBonus),
+    formatWeaponDamage(attack),
+    ...weaponAttackTags(attack),
+  ].join(" · ");
 }

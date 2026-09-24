@@ -54,8 +54,8 @@ export const DAMAGE_TYPES: readonly DamageType[] = [
 
 /**
  * Propriétés d'arme d'un objet d'inventaire — voir src/domain/calculations/weapon-attack.ts.
- * Seules les propriétés qui changent les chiffres sont modélisées (portée, finesse, polyvalente) ;
- * deux mains, lancer, allonge, chargement… viendront plus tard si besoin.
+ * Allonge, chargement, munitions, lourde… ne sont pas modélisées (aucun effet sur les chiffres
+ * affichés).
  */
 export interface WeaponProperties {
   category: WeaponCategory;
@@ -69,6 +69,20 @@ export interface WeaponProperties {
   finesse?: boolean;
   /** Bonus magique (arme +1…) ajouté au jet d'attaque ET aux dégâts. */
   magicBonus?: number;
+  /** Deux mains : incompatible avec un bouclier équipé (avertissement seulement). */
+  twoHanded?: boolean;
+  /** Lancer : l'arme de corps à corps peut être lancée, mêmes chiffres, portées en mètres. */
+  thrown?: ThrownRange;
+  /** Arme de moine explicite (ex : coutelas). Les armes courantes de corps à corps qui ne sont pas
+   * à deux mains le sont d'office — voir isMonkWeapon. */
+  monkWeapon?: boolean;
+}
+
+export interface ThrownRange {
+  /** Portée normale, en mètres. */
+  normal: number;
+  /** Portée longue (désavantage), en mètres. */
+  long: number;
 }
 
 export interface InventoryItem {
