@@ -48,6 +48,10 @@ Tout cela se déduit pourtant de la classe, de la sous-classe et du niveau.
   ressource s'ajoutent aux valeurs calculées. Une capacité liée qui porte le même nom qu'une option
   des règles n'est pas proposée deux fois.
 
+- **Format stocké des personnages en version 3** ([0023](0023-stored-format-migrations.md)) : les
+  personnages déjà enregistrés en version 2 reçoivent leur `subclassId` à la première lecture. La
+  normalisation étant idempotente, elle ne touche à rien d'autre sur une fiche au format courant.
+
 ## Conséquences
 
 - Pour un Clerc du Crépuscule, le HUD propose d'office Renvoi des morts-vivants et Sanctuaire du
