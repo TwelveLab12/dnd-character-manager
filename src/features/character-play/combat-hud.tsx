@@ -33,8 +33,8 @@ export function hasActiveArmorClassEffect(character: Character): boolean {
 
 /**
  * HUD de combat du mode jeu, contenu de l'onglet « Combat » (docs/adr/0031) : CA (prioritaire), PV, valeurs
- * de combat et d'incantation, attaques, ressources (emplacements de sorts, ressources de classe),
- * concentration et repos. Voir docs/adr/0021 et 0024.
+ * de combat et d'incantation, concentration et repos, attaques, ressources (emplacements de sorts,
+ * ressources de classe). Voir docs/adr/0021 et 0024.
  *
  * Bouclier CA et anneau PV partagent les lignes d'une même grille (libellé/contrôles, visuel de même
  * hauteur, pastilles) pour rester alignés ; sur desktop les tuiles occupent une 3e colonne centrée
@@ -123,6 +123,11 @@ export function CombatHud({ character }: { character: Character }) {
         </div>
       </div>
 
+      <div className="flex flex-wrap items-start justify-between gap-3 border-t pt-4">
+        <ConcentrationMarker character={character} />
+        <RestActions characterId={character.id} />
+      </div>
+
       {attacks.length > 0 && (
         <div className="border-t pt-4 sm:pt-5">
           <AttackStrip attacks={attacks} />
@@ -140,11 +145,6 @@ export function CombatHud({ character }: { character: Character }) {
           <FeatureUsageCards character={character} />
         </div>
       )}
-
-      <div className="flex flex-wrap items-start justify-between gap-3 border-t pt-4">
-        <ConcentrationMarker character={character} />
-        <RestActions characterId={character.id} />
-      </div>
     </section>
   );
 }

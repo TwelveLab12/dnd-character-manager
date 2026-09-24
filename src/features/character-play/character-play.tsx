@@ -84,7 +84,7 @@ export function CharacterPlay({ characterId }: { characterId: string }) {
         <CombatSummary character={character} />
 
         <Tabs defaultValue="combat">
-          <TabsList className="max-w-full justify-start overflow-x-auto">
+          <TabsList className="max-w-full [scrollbar-width:none] justify-start overflow-x-auto overflow-y-hidden [&::-webkit-scrollbar]:hidden">
             <TabsTrigger value="combat">Combat</TabsTrigger>
             <TabsTrigger value="abilities">Caractéristiques</TabsTrigger>
             <TabsTrigger value="spells">Sorts</TabsTrigger>
