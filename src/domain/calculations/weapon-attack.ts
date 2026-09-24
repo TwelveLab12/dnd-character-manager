@@ -11,6 +11,7 @@ import type {
 import { effectiveAbilityScores } from "./effective-ability-scores";
 import { abilityModifier } from "./modifiers";
 import { clampCharacterLevel, proficiencyBonusForLevel } from "./proficiency";
+import { effectiveWeaponProficiencies } from "./class-features";
 
 const DICE_PATTERN = /^(\d+)d(\d+)$/;
 
@@ -156,7 +157,7 @@ function buildWeaponAttack(
   // Le Moine maîtrise les armes courantes et le coutelas : toute arme de moine compte comme
   // maîtrisée dès que les Arts martiaux sont cochés, même s'ils sont inactifs (armure portée).
   const proficient =
-    (character.weaponProficiencies ?? []).includes(weapon.category) ||
+    effectiveWeaponProficiencies(character).includes(weapon.category) ||
     (character.martialArts === true && monkWeapon);
   const magicBonus = weapon.magicBonus ?? 0;
   const offHand = item.hand === "off";

@@ -1,18 +1,57 @@
 import type { Character } from "../character";
+import { findSubclassDefinition } from "../character-class";
+import type { Spell } from "../spell";
+import { computeAlwaysPreparedSpells } from "./class-features";
 
-/** Sorts disponibles en jeu sans passer par l'écran de configuration : préparés ∪ toujours-préparés. */
-export function playAvailableSpellIds(character: Character): string[] {
+function computedAlwaysPreparedIds(character: Character, library: readonly Spell[]): string[] {
+  return computeAlwaysPreparedSpells(character, library).flatMap(({ spell }) =>
+    spell ? [spell.id] : [],
+  );
+}
+
+/**
+ * Sorts disponibles en jeu sans passer par l'écran de configuration : préparés ∪ toujours-préparés
+ * (tags de la fiche ∪ sorts de sous-classe calculés, retrouvés dans `library`).
+ */
+export function playAvailableSpellIds(
+  character: Character,
+  library: readonly Spell[] = [],
+): string[] {
   const alwaysPrepared = character.spellTags
     .filter((tag) => tag.alwaysPrepared)
     .map((tag) => tag.spellId);
-  return [...new Set([...character.preparedSpellIds, ...alwaysPrepared])];
+  return [
+    ...new Set([
+      ...character.preparedSpellIds,
+      ...alwaysPrepared,
+      ...computedAlwaysPreparedIds(character, library),
+    ]),
+  ];
 }
 
-/** Domaines distincts (non vides) tagués sur les sorts de ce personnage, pour les filtres. */
-export function spellDomainTags(character: Character): string[] {
-  const domains = character.spellTags
-    .map((tag) => tag.domain)
-    .filter((domain): domain is string => !!domain);
+/** Domaine d'un sort pour ce personnage : tag de la fiche, sinon la sous-classe qui l'accorde. */
+export function spellDomain(
+  character: Character,
+  spellId: string,
+  library: readonly Spell[] = [],
+): string | undefined {
+  const tagged = character.spellTags.find((tag) => tag.spellId === spellId)?.domain;
+  if (tagged) {
+    return tagged;
+  }
+  return computedAlwaysPreparedIds(character, library).includes(spellId)
+    ? findSubclassDefinition(character.classId, character.subclassId)?.name
+    : undefined;
+}
+
+/** Domaines distincts (non vides) des sorts de ce personnage, pour les filtres. */
+export function spellDomainTags(character: Character, library: readonly Spell[] = []): string[] {
+  const domains = [
+    ...character.spellTags.map((tag) => tag.domain),
+    ...computedAlwaysPreparedIds(character, library).map((id) =>
+      spellDomain(character, id, library),
+    ),
+  ].filter((domain): domain is string => !!domain);
   return [...new Set(domains)];
 }
 

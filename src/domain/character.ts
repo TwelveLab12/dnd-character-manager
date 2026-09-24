@@ -51,6 +51,10 @@ export interface Character {
    * Indépendante du libellé `class`, comme `raceSelection` l'est de `race`. */
   classId?: string;
   subclass?: string;
+  /** Sous-classe connue des règles (ex : Domaine du Crépuscule), au sein de `classId` : elle
+   * détermine sorts toujours préparés, maîtrises et options de ressources — voir
+   * src/domain/subclass.ts. Indépendante du libellé libre `subclass`. */
+  subclassId?: string;
   level: number;
   race?: string;
   /** Choix structuré (race + caractéristiques sélectionnées pour un bonus au choix) utilisé pour

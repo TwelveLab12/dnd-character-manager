@@ -92,6 +92,22 @@ describe("LocalStorageCharacterRepository", () => {
     expect(migrated).toMatchObject({ id: "legacy", classId: "clerc", spellSlotsUsed: { "1": 1 } });
     expect(
       JSON.parse(window.localStorage.getItem("dnd-character-manager:v1:characters") ?? "{}"),
-    ).toMatchObject({ schemaVersion: 2 });
+    ).toMatchObject({ schemaVersion: 3 });
+  });
+
+  it("derives subclassId for characters stored in version 2, keeping their choices", async () => {
+    const character = makeTestCharacter({
+      id: "v2",
+      classId: "clerc",
+      subclass: "Domaine du Crépuscule",
+      features: [{ id: "pool", name: "Canalisation divine", source: "Clerc", description: "" }],
+    });
+    window.localStorage.setItem(
+      "dnd-character-manager:v1:characters",
+      JSON.stringify({ schemaVersion: 2, data: [character] }),
+    );
+
+    const [migrated] = await new LocalStorageCharacterRepository().list();
+    expect(migrated).toEqual({ ...character, subclassId: "crepuscule" });
   });
 });

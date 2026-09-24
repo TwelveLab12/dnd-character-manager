@@ -145,4 +145,16 @@ describe("normalizeLegacyCharacter", () => {
     });
     expect(normalizeLegacyCharacter(current)).toEqual(current);
   });
+
+  it("derives subclassId from the free subclass label within the known class", () => {
+    expect(
+      normalizeLegacyCharacter({
+        ...makeTestCharacter({ classId: "clerc" }),
+        subclass: "Domaine du Crépuscule",
+      }),
+    ).toMatchObject({ subclassId: "crepuscule" });
+    expect(
+      normalizeLegacyCharacter({ ...makeTestCharacter(), subclass: "Domaine du Crépuscule" }),
+    ).not.toHaveProperty("subclassId");
+  });
 });

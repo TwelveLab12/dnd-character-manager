@@ -29,7 +29,7 @@ export function ConcentrationMarker({ character }: { character: Character }) {
     void loadSpells();
   }, [loadSpells]);
 
-  const availableIds = new Set(playAvailableSpellIds(character));
+  const availableIds = new Set(playAvailableSpellIds(character, spells));
   const concentrationSpells = spells
     .filter((spell) => spell.concentration && availableIds.has(spell.id))
     .sort((a, b) => a.level - b.level || a.name.localeCompare(b.name));

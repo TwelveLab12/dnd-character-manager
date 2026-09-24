@@ -1,10 +1,21 @@
+"use client";
+
+import { useEffect } from "react";
 import { ABILITY_NAMES } from "@/domain/ability-scores";
 import type { Character } from "@/domain/character";
 import { computeArmorClass } from "@/domain/calculations/armor-class";
 import { weaponAttackWarnings } from "@/domain/calculations/weapon-attack";
 import { effectiveAbilityScores } from "@/domain/calculations/effective-ability-scores";
 import { findRaceDefinition } from "@/domain/race";
-import { findClassDefinition } from "@/domain/character-class";
+import { findClassDefinition, findSubclassDefinition } from "@/domain/character-class";
+import {
+  computeAlwaysPreparedSpells,
+  computeClassResourceOptions,
+  grantedProficiencies,
+} from "@/domain/calculations/class-features";
+import type { Spell } from "@/domain/spell";
+import { useSpellStore } from "@/stores/store-provider";
+import { ARMOR_CATEGORY_LABELS } from "@/features/shared/armor-class";
 import { computeClassResources } from "@/domain/calculations/class-resources";
 import { clampCharacterLevel } from "@/domain/calculations/proficiency";
 import { computeSpellSlots } from "@/domain/calculations/spell-slot-table";
@@ -15,8 +26,52 @@ import { Card, CardContent } from "@/components/ui/card";
 import { SectionTitle } from "@/components/ui/section-title";
 
 /** Règles appliquées automatiquement au personnage, en texte lisible (ex : bonus racial). */
-function appliedRules(character: Character): string[] {
-  return [...raceRules(character), ...classRules(character)];
+function appliedRules(character: Character, library: readonly Spell[]): string[] {
+  return [...raceRules(character), ...classRules(character), ...subclassRules(character, library)];
+}
+
+const WEAPON_PROFICIENCY_TEXT = { simple: "armes courantes", martial: "armes de guerre" } as const;
+
+function joinWithAnd(items: readonly string[]): string {
+  return items.length <= 1
+    ? (items[0] ?? "")
+    : `${items.slice(0, -1).join(", ")} et ${items[items.length - 1]}`;
+}
+
+function subclassRules(character: Character, library: readonly Spell[]): string[] {
+  const subclass = findSubclassDefinition(character.classId, character.subclassId);
+  const classDefinition = findClassDefinition(character.classId);
+  const rules: string[] = [];
+  const level = clampCharacterLevel(character.level);
+
+  const alwaysPrepared = computeAlwaysPreparedSpells(character, library);
+  if (subclass && classDefinition && alwaysPrepared.length > 0) {
+    const missing = alwaysPrepared.filter(({ spell }) => !spell);
+    rules.push(
+      `Sorts toujours préparés (${subclass.name}, ${classDefinition.name} niv. ${level}) : ${joinWithAnd(
+        alwaysPrepared.map(({ reference, spell }) => spell?.name ?? reference.name),
+      )}${
+        missing.length > 0
+          ? ` — absent${missing.length > 1 ? "s" : ""} de la bibliothèque : ${joinWithAnd(
+              missing.map(({ reference }) => reference.name),
+            )}`
+          : ""
+      }`,
+    );
+  }
+
+  for (const grant of grantedProficiencies(character)) {
+    const parts = [
+      ...grant.armor.map((category) =>
+        category === "shield" ? "boucliers" : `armures ${ARMOR_CATEGORY_LABELS[category]}s`,
+      ),
+      ...grant.weapons.map((category) => WEAPON_PROFICIENCY_TEXT[category]),
+    ];
+    if (parts.length > 0) {
+      rules.push(`Maîtrises accordées (${grant.source}) : ${joinWithAnd(parts)}`);
+    }
+  }
+  return rules;
 }
 
 const RECHARGE_TEXT = { shortRest: "repos court ou long", longRest: "repos long" } as const;
@@ -43,8 +98,13 @@ function classRules(character: Character): string[] {
     );
   }
   for (const resource of computeClassResources(character)) {
+    const options = computeClassResourceOptions(character, resource.id).map(
+      (option) => option.name,
+    );
     rules.push(
-      `${resource.name} : ${resource.max} utilisation${resource.max > 1 ? "s" : ""} (${definition.name} niv. ${level}), récupérée au ${RECHARGE_TEXT[resource.recharge]}`,
+      `${resource.name} : ${resource.max} utilisation${resource.max > 1 ? "s" : ""} (${definition.name} niv. ${level}), récupérée au ${RECHARGE_TEXT[resource.recharge]}${
+        options.length > 0 ? ` — options : ${joinWithAnd(options)}` : ""
+      }`,
     );
   }
   return rules;
@@ -70,7 +130,14 @@ function raceRules(character: Character): string[] {
 }
 
 export function NotesViewTab({ character }: { character: Character }) {
-  const rules = appliedRules(character);
+  const spells = useSpellStore((state) => state.spells);
+  const loadSpells = useSpellStore((state) => state.load);
+
+  useEffect(() => {
+    void loadSpells();
+  }, [loadSpells]);
+
+  const rules = appliedRules(character, spells);
   const warnings = [...computeArmorClass(character).warnings, ...weaponAttackWarnings(character)];
 
   return (

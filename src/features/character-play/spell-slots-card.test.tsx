@@ -153,4 +153,19 @@ describe("ClassResourceCards — Canalisation divine dans le HUD (via CharacterP
 
     expect(screen.queryByRole("region", { name: "Canalisation divine" })).not.toBeInTheDocument();
   });
+
+  it("lists the rule-granted options of a Twilight cleric without any linked feature", async () => {
+    const character = makeTestCharacter({ classId: "clerc", subclassId: "crepuscule", level: 3 });
+    await new LocalStorageCharacterRepository().create(character);
+
+    renderPlay(character.id);
+    await screen.findByRole("heading", { name: character.name });
+
+    const card = screen.getByRole("region", { name: "Canalisation divine" });
+    expect(
+      within(card)
+        .getAllByRole("button", { name: /^utiliser/i })
+        .map((button) => button.getAttribute("aria-label")),
+    ).toEqual(["Utiliser Renvoi des morts-vivants", "Utiliser Sanctuaire du Crépuscule"]);
+  });
 });

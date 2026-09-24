@@ -7,9 +7,12 @@ import { LocalStorageClient } from "./local-storage-client";
  * Versions du format des personnages :
  * - 1 : format d'origine ;
  * - 2 : valeurs dérivées calculées (classId, emplacements utilisés seulement, ressources de classe)
- *   — voir docs/adr/0022 et 0023.
+ *   — voir docs/adr/0022 et 0023 ;
+ * - 3 : sous-classe connue (subclassId), déduite du libellé libre — voir docs/adr/0025.
+ *
+ * La normalisation étant idempotente, une seule fonction migre depuis n'importe quelle version.
  */
-const CHARACTERS_SCHEMA_VERSION = 2;
+const CHARACTERS_SCHEMA_VERSION = 3;
 
 function migrateCharacters(data: unknown): Character[] {
   return Array.isArray(data) ? (data.map(normalizeLegacyCharacter) as Character[]) : [];

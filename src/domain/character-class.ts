@@ -1,5 +1,11 @@
 import type { AbilityName } from "./ability-scores";
 import type { FeatureRecharge } from "./feature";
+import type {
+  ClassResourceOptionDefinition,
+  ProficiencyGrants,
+  SubclassDefinition,
+} from "./subclass";
+import { TWILIGHT_DOMAIN } from "./subclass";
 
 /** Progression d'emplacements de sorts. Seuls les lanceurs complets sont modélisés pour l'instant
  * (demi-lanceurs, tiers de lanceurs et magie de pacte viendront avec leurs classes). */
@@ -27,6 +33,14 @@ export interface CharacterClassDefinition {
   aliases: readonly string[];
   spellcasting?: { progression: CasterProgression; ability: AbilityName };
   resources: readonly ClassResourceDefinition[];
+  /** Maîtrises accordées par la classe (renseignées seulement quand elles s'expriment en
+   * catégories d'armures et d'armes ; sinon, celles cochées sur la fiche font foi). */
+  proficiencies?: ProficiencyGrants;
+  /** Options de ressources de classe communes à toute la classe (ex : Renvoi des morts-vivants). */
+  resourceOptions?: readonly ClassResourceOptionDefinition[];
+  /** Nom générique des sous-classes (ex : « Domaine divin ») et sous-classes connues. */
+  subclassLabel?: string;
+  subclasses?: readonly SubclassDefinition[];
 }
 
 /** Canalisation divine du Clerc (règles 2014) : 1 utilisation au niveau 2, 2 au niveau 6, 3 au
@@ -63,6 +77,17 @@ export const CHARACTER_CLASSES: readonly CharacterClassDefinition[] = [
     aliases: ["clerc", "cleric", "pretre", "pretresse"],
     spellcasting: { progression: "full", ability: "wisdom" },
     resources: [CHANNEL_DIVINITY],
+    proficiencies: { armor: ["light", "medium", "shield"], weapons: ["simple"] },
+    resourceOptions: [
+      {
+        id: "turn-undead",
+        name: "Renvoi des morts-vivants",
+        resourceId: "channel-divinity",
+        minLevel: 2,
+      },
+    ],
+    subclassLabel: "Domaine divin",
+    subclasses: [TWILIGHT_DOMAIN],
   },
   {
     id: "druide",
@@ -93,8 +118,10 @@ export function findClassDefinition(
   return classId ? CHARACTER_CLASSES.find((definition) => definition.id === classId) : undefined;
 }
 
-function normalizeLabel(label: string): string {
+/** Libellé comparable : sans accents ni casse, apostrophes typographiques unifiées. */
+export function normalizeLabel(label: string): string {
   return label
+    .replace(/[’‘]/g, "'")
     .normalize("NFD")
     .replace(/\p{Diacritic}/gu, "")
     .trim()
@@ -112,4 +139,25 @@ export function findClassResourceDefinition(
   resourceId: string,
 ): ClassResourceDefinition | undefined {
   return findClassDefinition(classId)?.resources.find((resource) => resource.id === resourceId);
+}
+
+export function findSubclassDefinition(
+  classId: string | undefined,
+  subclassId: string | undefined,
+): SubclassDefinition | undefined {
+  return subclassId
+    ? findClassDefinition(classId)?.subclasses?.find((definition) => definition.id === subclassId)
+    : undefined;
+}
+
+/** Retrouve une sous-classe connue de la classe à partir d'un libellé libre (« Domaine du
+ * Crépuscule », « Twilight »…). */
+export function findSubclassDefinitionByLabel(
+  classId: string | undefined,
+  label: string,
+): SubclassDefinition | undefined {
+  const normalized = normalizeLabel(label);
+  return findClassDefinition(classId)?.subclasses?.find((definition) =>
+    definition.aliases.includes(normalized),
+  );
 }

@@ -143,6 +143,7 @@ const currentCharacterSchema = z.object({
   class: z.string().min(1),
   classId: z.string().min(1).optional(),
   subclass: z.string().min(1).optional(),
+  subclassId: z.string().min(1).optional(),
   level: z.number().int().min(1).max(20),
   race: z.string().min(1).optional(),
   raceSelection: raceSelectionSchema.optional(),

@@ -2,10 +2,38 @@
 
 import { Hourglass, Moon, Sun } from "lucide-react";
 import type { Character } from "@/domain/character";
-import { findClassDefinition } from "@/domain/character-class";
+import type { ClassResourceId } from "@/domain/character-class";
+import { findClassDefinition, normalizeLabel } from "@/domain/character-class";
+import { computeClassResourceOptions } from "@/domain/calculations/class-features";
 import type { ClassResourceState } from "@/domain/calculations/class-resources";
 import { computeClassResources } from "@/domain/calculations/class-resources";
 import { usePlayActions } from "./use-play-actions";
+
+interface ResourceOptionView {
+  key: string;
+  name: string;
+  source: string;
+}
+
+/**
+ * Options de la réserve : celles accordées par les règles au niveau actuel (classe, sous-classe),
+ * puis les capacités de la fiche liées à la ressource qui n'en sont pas un doublon (même nom).
+ */
+function resourceOptions(character: Character, resourceId: ClassResourceId): ResourceOptionView[] {
+  const fromRules = computeClassResourceOptions(character, resourceId).map((option) => ({
+    key: option.id,
+    name: option.name,
+    source: option.source,
+  }));
+  const ruleNames = new Set(fromRules.map((option) => normalizeLabel(option.name)));
+  const fromFeatures = character.features
+    .filter(
+      (feature) =>
+        feature.resourceId === resourceId && !ruleNames.has(normalizeLabel(feature.name)),
+    )
+    .map((feature) => ({ key: feature.id, name: feature.name, source: feature.source }));
+  return [...fromRules, ...fromFeatures];
+}
 
 const RECHARGE_LABELS = { shortRest: "Repos court", longRest: "Repos long" } as const;
 
@@ -29,8 +57,8 @@ export function ClassResourceCards({ character }: { character: Character }) {
 
 /**
  * Réserve d'une ressource de classe : un médaillon par utilisation (allumé si disponible, éteint
- * si dépensée — toucher un médaillon dépense ou récupère une utilisation), puis les capacités qui
- * y puisent (`CharacterFeature.resourceId`), chacune avec son bouton « Utiliser ».
+ * si dépensée — toucher un médaillon dépense ou récupère une utilisation), puis ses options (règles
+ * et capacités liées), chacune avec son bouton « Utiliser ».
  */
 function ClassResourceCard({
   character,
@@ -42,7 +70,7 @@ function ClassResourceCard({
   resource: ClassResourceState;
 }) {
   const { adjustClassResource } = usePlayActions(character.id);
-  const options = character.features.filter((feature) => feature.resourceId === resource.id);
+  const options = resourceOptions(character, resource.id);
   const RechargeIcon = resource.recharge === "shortRest" ? Hourglass : Moon;
   const exhausted = resource.remaining <= 0;
 
@@ -107,7 +135,7 @@ function ClassResourceCard({
         <div className="grid gap-1.5">
           {options.map((feature) => (
             <button
-              key={feature.id}
+              key={feature.key}
               type="button"
               disabled={exhausted}
               onClick={() => void adjustClassResource(resource.id, 1)}
