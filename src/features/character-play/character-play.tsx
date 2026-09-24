@@ -9,8 +9,8 @@ import { PageTitle } from "@/components/ui/page-title";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CharacterThemeScope } from "@/features/character-theme/character-theme-scope";
 import { AbilitiesViewTab } from "./abilities-view-tab";
+import { CombatHud } from "./combat-hud";
 import { GeneralViewTab } from "./general-view-tab";
-import { HitPointsWidget } from "./hit-points-widget";
 import { InventoryViewTab } from "./inventory-view-tab";
 import { FeaturesViewTab } from "./features-view-tab";
 import { SpellsViewTab } from "./spells-view-tab";
@@ -43,9 +43,9 @@ export function CharacterPlay({ characterId }: { characterId: string }) {
 
   return (
     <CharacterThemeScope themeId={character.themeId}>
-      <div className="bg-card text-card-foreground ring-foreground/10 mx-auto my-8 flex w-full max-w-3xl flex-col gap-6 rounded-2xl px-6 py-10 shadow-2xl ring-1 shadow-black/70 sm:my-12">
-        <div className="flex items-start justify-between">
-          <div className="grid gap-1.5">
+      <div className="bg-card text-card-foreground ring-foreground/10 mx-auto my-8 flex w-full max-w-3xl flex-col gap-6 rounded-2xl px-4 py-8 shadow-2xl ring-1 shadow-black/70 sm:my-12 sm:px-6 sm:py-10">
+        <div className="flex items-start justify-between gap-3">
+          <div className="grid min-w-0 gap-1.5">
             <Link
               href="/"
               className="text-muted-foreground inline-flex items-center gap-1 text-sm underline underline-offset-4"
@@ -53,21 +53,32 @@ export function CharacterPlay({ characterId }: { characterId: string }) {
               <ArrowLeft className="size-3.5" aria-hidden />
               Mes personnages
             </Link>
-            <PageTitle>{character.name}</PageTitle>
+            <div className="flex flex-wrap items-baseline gap-x-2.5">
+              <PageTitle className="text-3xl">{character.name}</PageTitle>
+              <span aria-hidden className="text-muted-foreground/60 text-xl">
+                ·
+              </span>
+              <span className="text-muted-foreground text-sm">
+                niv.{" "}
+                <span className="font-heading text-primary text-3xl font-bold tabular-nums">
+                  {character.level}
+                </span>
+              </span>
+            </div>
             <p className="text-muted-foreground text-sm">
               {character.class}
-              {character.subclass ? ` — ${character.subclass}` : ""} · Niveau {character.level}
+              {character.subclass ? ` — ${character.subclass}` : ""}
             </p>
           </div>
           <Button type="button" variant="ghost" asChild>
-            <Link href={`/characters/${characterId}/edit`}>
+            <Link href={`/characters/${characterId}/edit`} aria-label="Modifier">
               <Pencil />
-              Configurer
+              <span className="max-sm:sr-only">Modifier</span>
             </Link>
           </Button>
         </div>
 
-        <HitPointsWidget character={character} />
+        <CombatHud character={character} />
 
         <Tabs defaultValue="general">
           <TabsList>

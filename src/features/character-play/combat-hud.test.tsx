@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it } from "vitest";
 import { LocalStorageCharacterRepository } from "@/repositories/local-storage/local-storage-character-repository";
@@ -17,7 +17,7 @@ function renderPlay(characterId: string) {
   );
 }
 
-describe("HitPointsWidget (via CharacterPlay)", () => {
+describe("CombatHud — points de vie (via CharacterPlay)", () => {
   beforeEach(() => {
     window.localStorage.clear();
   });
@@ -32,7 +32,7 @@ describe("HitPointsWidget (via CharacterPlay)", () => {
     expect(screen.queryByRole("button", { name: /^enregistrer$/i })).not.toBeInTheDocument();
   });
 
-  it("inflicts 1 damage per click on the down chevron, absorbing temporary hit points first", async () => {
+  it("inflicts 1 damage per click on the left chevron, absorbing temporary hit points first", async () => {
     const character = makeTestCharacter({ hitPoints: { current: 10, max: 10, temporary: 2 } });
     await new LocalStorageCharacterRepository().create(character);
 
@@ -48,7 +48,7 @@ describe("HitPointsWidget (via CharacterPlay)", () => {
     expect(persisted?.hitPoints).toEqual({ current: 9, max: 10, temporary: 0 });
   });
 
-  it("heals 1 point per click on the up chevron, capped at max", async () => {
+  it("heals 1 point per click on the right chevron, capped at max", async () => {
     const character = makeTestCharacter({ hitPoints: { current: 9, max: 10, temporary: 0 } });
     await new LocalStorageCharacterRepository().create(character);
 
@@ -95,15 +95,73 @@ describe("HitPointsWidget (via CharacterPlay)", () => {
     expect(persisted?.hitPoints.temporary).toBe(2);
   });
 
-  it("shows the same linear bar presentation regardless of the active theme", async () => {
+  it("describes the hit point ring with current, max and temporary hit points", async () => {
     const character = makeTestCharacter({
-      hitPoints: { current: 7, max: 23, temporary: 0 },
+      hitPoints: { current: 7, max: 23, temporary: 4 },
       themeId: "selune",
     });
     await new LocalStorageCharacterRepository().create(character);
 
     renderPlay(character.id);
     await screen.findByRole("heading", { name: character.name });
-    expect(screen.getByRole("progressbar")).toBeInTheDocument();
+    expect(
+      screen.getByRole("img", { name: "Points de vie 7 sur 23, 4 temporaires" }),
+    ).toBeInTheDocument();
+  });
+});
+
+describe("CombatHud — valeurs de combat (via CharacterPlay)", () => {
+  beforeEach(() => {
+    window.localStorage.clear();
+  });
+
+  it("shows AC, initiative, speed, spell save DC and spell attack bonus", async () => {
+    const character = makeTestCharacter({
+      level: 3,
+      initiativeBonus: -1,
+      speed: 9,
+      abilityScores: {
+        strength: 10,
+        dexterity: 14,
+        constitution: 10,
+        intelligence: 10,
+        wisdom: 16,
+        charisma: 10,
+      },
+      spellcasting: { ability: "wisdom" },
+    });
+    await new LocalStorageCharacterRepository().create(character);
+
+    renderPlay(character.id);
+    await screen.findByRole("heading", { name: character.name });
+
+    const hud = screen.getByRole("region", { name: "Combat" });
+    expect(within(hud).getByRole("img", { name: "Classe d'armure 12" })).toBeInTheDocument();
+    expect(within(hud).getByText("Initiative").previousSibling).toHaveTextContent("-1");
+    expect(within(hud).getByText("Vitesse").previousSibling).toHaveTextContent("9 m");
+    expect(within(hud).getByText("DD sorts").previousSibling).toHaveTextContent("13");
+    expect(within(hud).getByText("Attaque sort").previousSibling).toHaveTextContent("+5");
+  });
+
+  it("hides the spellcasting tiles for a character without spellcasting", async () => {
+    const character = makeTestCharacter();
+    await new LocalStorageCharacterRepository().create(character);
+
+    renderPlay(character.id);
+    await screen.findByRole("heading", { name: character.name });
+
+    expect(screen.getByText("Initiative")).toBeInTheDocument();
+    expect(screen.queryByText("DD sorts")).not.toBeInTheDocument();
+    expect(screen.queryByText("Attaque sort")).not.toBeInTheDocument();
+  });
+
+  it("shows no attack list when no weapon is equipped", async () => {
+    const character = makeTestCharacter();
+    await new LocalStorageCharacterRepository().create(character);
+
+    renderPlay(character.id);
+    await screen.findByRole("heading", { name: character.name });
+
+    expect(screen.queryByRole("list", { name: "Attaques" })).not.toBeInTheDocument();
   });
 });

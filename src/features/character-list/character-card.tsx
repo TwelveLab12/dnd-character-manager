@@ -1,6 +1,6 @@
 "use client";
 
-import { Eye, Trash2 } from "lucide-react";
+import { Eye, Pencil, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { computeArmorClass } from "@/domain/calculations/armor-class";
 import type { Character } from "@/domain/character";
@@ -77,7 +77,10 @@ export function CharacterCard({ character }: { character: Character }) {
       </Link>
       <CardFooter className="justify-end gap-2">
         <Button variant="outline" asChild>
-          <Link href={`/characters/${character.id}/edit`}>Configurer</Link>
+          <Link href={`/characters/${character.id}/edit`}>
+            <Pencil />
+            Modifier
+          </Link>
         </Button>
         <AlertDialog>
           <AlertDialogTrigger asChild>

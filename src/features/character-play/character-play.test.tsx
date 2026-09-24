@@ -27,7 +27,7 @@ describe("CharacterPlay", () => {
     expect(await screen.findByText(/personnage introuvable/i)).toBeInTheDocument();
   });
 
-  it("loads an existing character and shows its identity and a link to configuration", async () => {
+  it("loads an existing character and shows its identity, level and an edit link", async () => {
     const character = makeTestCharacter({
       name: "Elara Duskwood",
       class: "Cleric",
@@ -39,14 +39,15 @@ describe("CharacterPlay", () => {
     renderPlay(character.id);
 
     expect(await screen.findByRole("heading", { name: "Elara Duskwood" })).toBeInTheDocument();
-    expect(screen.getByText(/cleric — domaine de la lune · niveau 5/i)).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /configurer/i })).toHaveAttribute(
+    expect(screen.getByText("Cleric — Domaine de la Lune")).toBeInTheDocument();
+    expect(screen.getByText("niv.")).toHaveTextContent("niv. 5");
+    expect(screen.getByRole("link", { name: "Modifier" })).toHaveAttribute(
       "href",
       `/characters/${character.id}/edit`,
     );
   });
 
-  it("keeps PV/concentration/repos visible while navigating between the 5 mirror tabs", async () => {
+  it("keeps the combat HUD (CA, PV, concentration, repos) visible across the 5 mirror tabs", async () => {
     const character = makeTestCharacter({
       background: "Ermite",
       inventory: [{ id: "item-1", name: "Sac à dos", quantity: 1 }],
@@ -60,7 +61,8 @@ describe("CharacterPlay", () => {
 
     for (const tabName of ["Général", "Caractéristiques", "Sorts", "Inventaire", "Capacités"]) {
       await user.click(screen.getByRole("tab", { name: tabName }));
-      expect(screen.getByRole("heading", { name: /points de vie/i })).toBeInTheDocument();
+      expect(screen.getByRole("img", { name: /classe d'armure/i })).toBeInTheDocument();
+      expect(screen.getByRole("img", { name: /points de vie/i })).toBeInTheDocument();
       expect(screen.getByRole("switch", { name: /concentration/i })).toBeInTheDocument();
       expect(screen.getByRole("button", { name: /^repos court$/i })).toBeInTheDocument();
     }

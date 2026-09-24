@@ -165,9 +165,10 @@ describe("Weapon attacks in play mode", () => {
     await screen.findByRole("heading", { name: character.name });
 
     expect(screen.getByText("Mains nues")).toBeInTheDocument();
-    expect(screen.getByText("Lancer 6/18 m")).toBeInTheDocument();
-    expect(screen.getAllByText("Arts martiaux")).toHaveLength(2);
-    expect(screen.getByText("1d6+3 perforant")).toBeInTheDocument();
+    expect(
+      screen.getByText(/1d6\+3 perforant · Lancer 6\/18 m · Arts martiaux/),
+    ).toBeInTheDocument();
+    expect(screen.getAllByText(/· Arts martiaux$/)).toHaveLength(2);
   });
 });
 
