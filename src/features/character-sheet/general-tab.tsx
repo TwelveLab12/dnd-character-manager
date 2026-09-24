@@ -5,6 +5,7 @@ import type { AbilityName } from "@/domain/ability-scores";
 import type { Character, HitPointMethod } from "@/domain/character";
 import { computeMaxHitPoints, fixedHitDieValue } from "@/domain/calculations/max-hit-points";
 import { CHARACTER_CLASSES, findClassDefinition } from "@/domain/character-class";
+import { FEATS } from "@/domain/feat";
 import type { StatPart } from "@/domain/calculations/combat-stats";
 import { computeInitiative, computeSpeed, DEFAULT_SPEED } from "@/domain/calculations/combat-stats";
 import { effectiveAbilityScores } from "@/domain/calculations/effective-ability-scores";
@@ -22,6 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { ArmorClassSection } from "./armor-class-section";
 import { AttacksSection } from "./attacks-section";
@@ -102,6 +104,8 @@ export function GeneralTab({ draft, onChange }: CharacterTabProps) {
       <ClassRulesSection draft={draft} onChange={onChange} />
 
       <RaceBonusSection draft={draft} onChange={onChange} />
+
+      <FeatsSection draft={draft} onChange={onChange} />
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="grid gap-2">
@@ -310,7 +314,8 @@ function MaxHitPointsSection({ draft, onChange }: CharacterTabProps) {
               />
             )}
             <span className="text-muted-foreground tabular-nums">
-              {formatModifier(entry.constitution)} Con = {entry.total}
+              {formatModifier(entry.constitution)} Con
+              {entry.bonus !== 0 && ` ${formatModifier(entry.bonus)} dons`} = {entry.total}
             </span>
             {entry.level === 1 && (
               <span className="text-muted-foreground text-xs">(maximum du dé)</span>
@@ -326,6 +331,60 @@ function MaxHitPointsSection({ draft, onChange }: CharacterTabProps) {
           ))}
         </ul>
       )}
+    </div>
+  );
+}
+
+/**
+ * Dons connus des règles (src/domain/feat.ts) : leurs effets modélisés s'appliquent d'eux-mêmes
+ * (ex : Robuste → +2 PV max par niveau). Leur description reste dans l'onglet Capacités.
+ */
+function FeatsSection({ draft, onChange }: CharacterTabProps) {
+  const featIds = draft.featIds ?? [];
+
+  function toggle(featId: string, checked: boolean) {
+    const next = checked ? [...featIds, featId] : featIds.filter((id) => id !== featId);
+    onChange({ featIds: next.length > 0 ? next : undefined });
+  }
+
+  return (
+    <div className="grid gap-2">
+      <span className="text-sm font-medium">Dons (règles appliquées)</span>
+      <div className="flex flex-wrap gap-x-6 gap-y-3">
+        {FEATS.map((feat) => (
+          <FeatSwitch
+            key={feat.id}
+            label={
+              feat.hitPointsPerLevel
+                ? `${feat.name} (+${feat.hitPointsPerLevel} PV par niveau)`
+                : feat.name
+            }
+            checked={featIds.includes(feat.id)}
+            onCheckedChange={(checked) => toggle(feat.id, checked)}
+          />
+        ))}
+      </div>
+      <p className="text-muted-foreground text-xs">
+        Un don absent de cette liste reste une capacité, à décrire dans l&rsquo;onglet Capacités.
+      </p>
+    </div>
+  );
+}
+
+function FeatSwitch({
+  label,
+  checked,
+  onCheckedChange,
+}: {
+  label: string;
+  checked: boolean;
+  onCheckedChange: (checked: boolean) => void;
+}) {
+  const id = useId();
+  return (
+    <div className="flex items-center gap-2">
+      <Switch id={id} checked={checked} onCheckedChange={onCheckedChange} />
+      <Label htmlFor={id}>{label}</Label>
     </div>
   );
 }

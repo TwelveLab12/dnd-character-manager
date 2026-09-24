@@ -78,6 +78,9 @@ export interface Character {
   hitPointRolls?: number[];
   /** PV max saisis, uniquement pour une classe hors registre (sans dé de vie connu). */
   baseMaxHitPoints?: number;
+  /** Dons connus des règles (src/domain/feat.ts), dont les effets modélisés sont appliqués
+   * automatiquement (ex : Robuste → PV max). */
+  featIds?: string[];
   /** Pas de champ de CA stocké : elle est toujours calculée — voir
    * src/domain/calculations/armor-class.ts. Maîtrises d'armure : n'influent pas sur la CA (règles
    * 2014), seulement sur les avertissements affichés. */
