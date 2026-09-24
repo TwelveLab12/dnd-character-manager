@@ -65,6 +65,11 @@ export interface Character {
   weaponProficiencies?: WeaponCategory[];
   /** Arts martiaux (Moine, règles 2014) — voir src/domain/calculations/weapon-attack.ts. */
   martialArts?: boolean;
+  /** Don Ambidextre : toute arme de corps à corps à une main peut aller en main secondaire. */
+  dualWielder?: boolean;
+  /** Style de combat « Combat à deux armes » : mod de caractéristique aux dégâts en main
+   * secondaire. */
+  twoWeaponFightingStyle?: boolean;
   spellcasting?: SpellcastingInfo;
   spellSlots: SpellSlotLevel[];
   knownSpellIds: string[];

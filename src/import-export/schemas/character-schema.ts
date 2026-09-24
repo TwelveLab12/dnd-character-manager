@@ -87,6 +87,7 @@ const weaponPropertiesSchema = z.object({
   finesse: z.boolean().optional(),
   magicBonus: z.number().optional(),
   twoHanded: z.boolean().optional(),
+  light: z.boolean().optional(),
   thrown: z.object({ normal: z.number(), long: z.number() }).optional(),
   monkWeapon: z.boolean().optional(),
 });
@@ -100,6 +101,7 @@ const inventoryItemSchema = z.object({
   equipped: z.boolean().optional(),
   armor: armorPropertiesSchema.optional(),
   weapon: weaponPropertiesSchema.optional(),
+  hand: z.enum(["main", "off"]).optional(),
   armorClassBonus: z.number().optional(),
 });
 
@@ -156,6 +158,8 @@ export const characterSchema = z.object({
   // qui les contient reste importable (clés inconnues ignorées par z.object).
   weaponProficiencies: z.array(weaponCategorySchema).optional(),
   martialArts: z.boolean().optional(),
+  dualWielder: z.boolean().optional(),
+  twoWeaponFightingStyle: z.boolean().optional(),
   spellcasting: spellcastingInfoSchema.optional(),
   spellSlots: z.array(spellSlotLevelSchema).default([]),
   knownSpellIds: z.array(z.string()).default([]),

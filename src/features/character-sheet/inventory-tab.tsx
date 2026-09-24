@@ -2,6 +2,9 @@
 
 import { useId } from "react";
 import { isValidDamageDice } from "@/domain/calculations/weapon-attack";
+import type { Character } from "@/domain/character";
+import type { EquipSlot } from "@/domain/equipment";
+import { equipItem } from "@/domain/equipment";
 import type {
   ArmorCategory,
   DamageType,
@@ -25,6 +28,7 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { ARMOR_CATEGORY_LABELS } from "@/features/shared/armor-class";
+import { EquipControl } from "@/features/shared/equip-control";
 import {
   DAMAGE_TYPE_LABELS,
   WEAPON_CATEGORY_LABELS,
@@ -98,7 +102,9 @@ export function InventoryTab({ draft, onChange }: CharacterTabProps) {
           <InventoryRow
             key={item.id}
             item={item}
+            character={draft}
             onChange={(patch) => updateItem(item.id, patch)}
+            onEquip={(slot) => onChange({ inventory: equipItem(draft, item.id, slot) })}
             onRemove={() => removeItem(item.id)}
           />
         ))}
@@ -109,17 +115,20 @@ export function InventoryTab({ draft, onChange }: CharacterTabProps) {
 
 function InventoryRow({
   item,
+  character,
   onChange,
+  onEquip,
   onRemove,
 }: {
   item: InventoryItem;
+  character: Character;
   onChange: (patch: Partial<InventoryItem>) => void;
+  onEquip: (slot: EquipSlot) => void;
   onRemove: () => void;
 }) {
   const nameId = useId();
   const quantityId = useId();
   const weightId = useId();
-  const equippedId = useId();
   const descriptionId = useId();
   const armorTypeId = useId();
   const baseArmorClassId = useId();
@@ -161,7 +170,7 @@ function InventoryRow({
   }
 
   return (
-    <div className="grid gap-2 rounded-lg border p-3 sm:grid-cols-[2fr_1fr_1fr_auto_auto] sm:items-end">
+    <div className="grid gap-2 rounded-lg border p-3 sm:grid-cols-[2fr_1fr_1fr_minmax(9rem,auto)_auto] sm:items-end">
       <div className="grid gap-1">
         <Label htmlFor={nameId} className="text-muted-foreground text-xs">
           Nom
@@ -199,16 +208,7 @@ function InventoryRow({
           }
         />
       </div>
-      <div className="flex items-center gap-2">
-        <Switch
-          id={equippedId}
-          checked={item.equipped ?? false}
-          onCheckedChange={(checked) => onChange({ equipped: checked === true })}
-        />
-        <Label htmlFor={equippedId} className="text-muted-foreground text-xs">
-          Équipé
-        </Label>
-      </div>
+      <EquipControl item={item} character={character} onEquip={onEquip} />
       <Button type="button" variant="ghost" size="sm" onClick={onRemove}>
         Retirer
       </Button>
@@ -419,8 +419,17 @@ function WeaponFields({
         <PropertySwitch
           label="Deux mains"
           checked={weapon.twoHanded ?? false}
-          onCheckedChange={(checked) => update({ twoHanded: checked || undefined })}
+          onCheckedChange={(checked) =>
+            update({ twoHanded: checked || undefined, ...(checked ? { light: undefined } : {}) })
+          }
         />
+        {!weapon.twoHanded && weapon.range === "melee" && (
+          <PropertySwitch
+            label="Légère"
+            checked={weapon.light ?? false}
+            onCheckedChange={(checked) => update({ light: checked || undefined })}
+          />
+        )}
         {weapon.range === "melee" && (
           <PropertySwitch
             label="Lancer"

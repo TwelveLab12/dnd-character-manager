@@ -69,8 +69,10 @@ export interface WeaponProperties {
   finesse?: boolean;
   /** Bonus magique (arme +1…) ajouté au jet d'attaque ET aux dégâts. */
   magicBonus?: number;
-  /** Deux mains : incompatible avec un bouclier équipé (avertissement seulement). */
+  /** Deux mains : occupe les deux mains — équiper l'arme déséquipe bouclier et arme secondaire. */
   twoHanded?: boolean;
+  /** Légère : peut être tenue en main secondaire (combat à deux armes), voir canWieldOffHand. */
+  light?: boolean;
   /** Lancer : l'arme de corps à corps peut être lancée, mêmes chiffres, portées en mètres. */
   thrown?: ThrownRange;
   /** Arme de moine explicite (ex : coutelas). Les armes courantes de corps à corps qui ne sont pas
@@ -85,6 +87,9 @@ export interface ThrownRange {
   long: number;
 }
 
+/** Main qui tient une arme équipée. Absente = main principale. */
+export type WeaponHand = "main" | "off";
+
 export interface InventoryItem {
   id: string;
   name: string;
@@ -92,6 +97,8 @@ export interface InventoryItem {
   weight?: number;
   description?: string;
   equipped?: boolean;
+  /** Main d'une arme équipée — voir src/domain/equipment.ts. */
+  hand?: WeaponHand;
   armor?: ArmorProperties;
   weapon?: WeaponProperties;
   /** Bonus magique à la CA quand l'objet est équipé (armure +1, anneau de protection…). */

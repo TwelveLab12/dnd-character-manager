@@ -170,3 +170,49 @@ describe("Weapon attacks in play mode", () => {
     expect(screen.getByText("1d6+3 perforant")).toBeInTheDocument();
   });
 });
+
+describe("Equipment in play mode", () => {
+  beforeEach(() => {
+    window.localStorage.clear();
+  });
+
+  it("equipping a shield frees the off-hand weapon", async () => {
+    const character = makeTestCharacter({
+      inventory: [
+        {
+          id: "dagger",
+          name: "Dague",
+          quantity: 1,
+          equipped: true,
+          hand: "off",
+          weapon: {
+            category: "simple",
+            range: "melee",
+            damageDice: "1d4",
+            damageType: "piercing",
+            light: true,
+          },
+        },
+        {
+          id: "shield",
+          name: "Bouclier",
+          quantity: 1,
+          armor: { category: "shield", baseArmorClass: 2 },
+        },
+      ],
+    });
+    await new LocalStorageCharacterRepository().create(character);
+
+    const user = userEvent.setup();
+    renderPlay(character.id);
+    await screen.findByRole("heading", { name: character.name });
+    await user.click(screen.getByRole("tab", { name: /inventaire/i }));
+    await user.click(screen.getByRole("switch", { name: /équipé/i }));
+
+    const persisted = await new LocalStorageCharacterRepository().getById(character.id);
+    const byId = Object.fromEntries(persisted!.inventory.map((item) => [item.id, item]));
+    expect(byId.shield?.equipped).toBe(true);
+    expect(byId.dagger?.equipped).toBe(false);
+    expect(byId.dagger?.hand).toBeUndefined();
+  });
+});
