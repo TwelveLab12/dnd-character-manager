@@ -18,13 +18,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { FEATURE_RECHARGE_LABELS } from "@/features/shared/feature";
 import type { CharacterTabProps } from "./types";
 
-const RECHARGE_LABELS: Record<FeatureRecharge, string> = {
-  shortRest: "Repos court",
-  longRest: "Repos long",
-  other: "Autre",
-};
+const RECHARGE_LABELS = FEATURE_RECHARGE_LABELS;
 
 const RECHARGE_VALUES = Object.keys(RECHARGE_LABELS) as FeatureRecharge[];
 
