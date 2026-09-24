@@ -3,15 +3,19 @@
 import { Footprints, Sparkles, WandSparkles, Zap } from "lucide-react";
 import type { Character } from "@/domain/character";
 import { computeArmorClass } from "@/domain/calculations/armor-class";
+import { computeClassResources } from "@/domain/calculations/class-resources";
+import { computeSpellSlots } from "@/domain/calculations/spell-slot-table";
 import { resolveSpellcasting } from "@/domain/calculations/spellcasting";
 import { computeWeaponAttacks } from "@/domain/calculations/weapon-attack";
 import { formatArmorClassBreakdown } from "@/features/shared/armor-class";
 import { formatModifier } from "@/features/shared/format";
 import { ArmorClassEffectChips, ArmorClassHeading, ArmorClassShield } from "./armor-class-shield";
 import { AttackStrip } from "./attack-strip";
+import { ClassResourceCards } from "./class-resource-card";
 import { ConcentrationMarker } from "./concentration-marker";
 import { HitPointsControls, HitPointsRing, TemporaryHitPointsChip } from "./hit-points-ring";
 import { RestActions } from "./rest-actions";
+import { SpellSlotsCard } from "./spell-slots-card";
 import { StatTile } from "./stat-tile";
 
 /** Un effet de CA temporaire est-il actif (interrupteur manuel, ou sort concentré en cours) ? */
@@ -26,7 +30,8 @@ function hasActiveArmorClassEffect(character: Character): boolean {
 
 /**
  * HUD de combat du mode jeu, toujours visible au-dessus des onglets : CA (prioritaire), PV, valeurs
- * de combat et d'incantation, attaques, concentration et repos. Voir docs/adr/0021.
+ * de combat et d'incantation, attaques, ressources (emplacements de sorts, ressources de classe),
+ * concentration et repos. Voir docs/adr/0021 et 0024.
  *
  * Bouclier CA et anneau PV partagent les lignes d'une même grille (libellé/contrôles, visuel de même
  * hauteur, pastilles) pour rester alignés ; sur desktop les tuiles occupent une 3e colonne centrée
@@ -36,6 +41,8 @@ export function CombatHud({ character }: { character: Character }) {
   const armorClass = computeArmorClass(character);
   const attacks = computeWeaponAttacks(character);
   const spellcasting = resolveSpellcasting(character);
+  const hasSpellSlots = computeSpellSlots(character).length > 0;
+  const hasClassResources = computeClassResources(character).length > 0;
 
   return (
     <section
@@ -113,6 +120,17 @@ export function CombatHud({ character }: { character: Character }) {
       {attacks.length > 0 && (
         <div className="border-t pt-4 sm:pt-5">
           <AttackStrip attacks={attacks} />
+        </div>
+      )}
+
+      {(hasSpellSlots || hasClassResources) && (
+        <div
+          className={`grid gap-3 border-t pt-4 sm:pt-5 ${
+            hasSpellSlots && hasClassResources ? "sm:grid-cols-2" : ""
+          }`}
+        >
+          <SpellSlotsCard character={character} />
+          <ClassResourceCards character={character} />
         </div>
       )}
 
