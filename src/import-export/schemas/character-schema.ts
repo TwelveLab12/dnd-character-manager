@@ -25,9 +25,9 @@ const abilityScoresSchema = z.object({
   charisma: z.number(),
 });
 
+// Pas de `max` : les PV max sont calculés (docs/adr/0027).
 const hitPointsSchema = z.object({
   current: z.number(),
-  max: z.number(),
   temporary: z.number(),
 });
 
@@ -149,6 +149,9 @@ const currentCharacterSchema = z.object({
   raceSelection: raceSelectionSchema.optional(),
   background: z.string().min(1).optional(),
   hitPoints: hitPointsSchema,
+  hitPointMethod: z.enum(["fixed", "rolled"]).optional(),
+  hitPointRolls: z.array(z.number().int().min(1)).optional(),
+  baseMaxHitPoints: z.number().int().min(1).optional(),
   // Pas de `armorClass` : la CA est calculée. Un ancien JSON qui la contient reste importable
   // (clé inconnue ignorée par z.object).
   armorProficiencies: z.array(armorCategorySchema).optional(),

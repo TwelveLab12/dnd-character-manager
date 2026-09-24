@@ -12,10 +12,11 @@ export function applyDamage(hitPoints: HitPoints, amount: number): HitPoints {
   };
 }
 
-/** Soigne les PV courants, plafonnés au maximum. Ne touche pas les PV temporaires. */
-export function applyHealing(hitPoints: HitPoints, amount: number): HitPoints {
+/** Soigne les PV courants, plafonnés au maximum calculé (voir computeMaxHitPoints). Ne touche pas
+ * les PV temporaires. */
+export function applyHealing(hitPoints: HitPoints, amount: number, max: number): HitPoints {
   const healing = Math.max(0, amount);
-  return { ...hitPoints, current: Math.min(hitPoints.max, hitPoints.current + healing) };
+  return { ...hitPoints, current: Math.min(max, hitPoints.current + healing) };
 }
 
 /**
@@ -29,6 +30,6 @@ export function setTemporaryHitPoints(hitPoints: HitPoints, amount: number): Hit
 }
 
 /** Fixe les PV courants à une valeur absolue, bornée à [0, max]. Ne touche pas temporary. */
-export function setCurrentHitPoints(hitPoints: HitPoints, value: number): HitPoints {
-  return { ...hitPoints, current: Math.max(0, Math.min(hitPoints.max, value)) };
+export function setCurrentHitPoints(hitPoints: HitPoints, value: number, max: number): HitPoints {
+  return { ...hitPoints, current: Math.max(0, Math.min(max, value)) };
 }

@@ -19,7 +19,8 @@ const BASE: Character = {
   class: "Clerc",
   classId: "clerc",
   level: 5,
-  hitPoints: { current: 3, max: 30, temporary: 4 },
+  hitPoints: { current: 3, temporary: 4 },
+  baseMaxHitPoints: 30,
   abilityScores: {
     strength: 10,
     dexterity: 10,
@@ -43,9 +44,10 @@ const BASE: Character = {
 };
 
 describe("applyLongRest", () => {
-  it("restores current hit points to max without touching temporary hit points", () => {
+  it("restores current hit points to the computed max without touching temporary ones", () => {
+    // Clerc niv. 5, Con 10 : 8 + 4 × 5 = 28.
     const result = applyLongRest(BASE);
-    expect(result.hitPoints).toEqual({ current: 30, max: 30, temporary: 4 });
+    expect(result.hitPoints).toEqual({ current: 28, temporary: 4 });
   });
 
   it("resets all spell slots usage to zero", () => {

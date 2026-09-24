@@ -9,6 +9,7 @@ import { effectiveAbilityScores } from "@/domain/calculations/effective-ability-
 import { findRaceDefinition } from "@/domain/race";
 import { findClassDefinition, findSubclassDefinition } from "@/domain/character-class";
 import { computeInitiative, computeSpeed } from "@/domain/calculations/combat-stats";
+import { computeMaxHitPoints } from "@/domain/calculations/max-hit-points";
 import {
   computeAlwaysPreparedSpells,
   computeClassResourceOptions,
@@ -103,6 +104,18 @@ function classRules(character: Character): string[] {
   }
   const level = clampCharacterLevel(character.level);
   const rules: string[] = [];
+  const hitPoints = computeMaxHitPoints(character);
+  if (hitPoints.hitDie !== undefined) {
+    const [first, ...others] = hitPoints.levels;
+    const perLevel = others.map((entry) => `${entry.die}${formatModifier(entry.constitution)}`);
+    rules.push(
+      `PV max : ${hitPoints.total} (d${hitPoints.hitDie}, ${
+        hitPoints.method === "fixed" ? "valeur fixe" : "dés lancés"
+      } — niv. 1 : ${first ? `${first.die}${formatModifier(first.constitution)}` : ""}${
+        perLevel.length > 0 ? `, niv. 2+ : ${perLevel.join(", ")}` : ""
+      })`,
+    );
+  }
   const saves = definition.savingThrows.map((ability) => ABILITY_LABELS[ability]);
   if (saves.length > 0) {
     rules.push(`Jets de sauvegarde maîtrisés (${definition.name}) : ${joinWithAnd(saves)}`);

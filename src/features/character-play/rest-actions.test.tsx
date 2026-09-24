@@ -25,7 +25,8 @@ describe("RestActions (via CharacterPlay)", () => {
   it("requires confirmation before applying a long rest", async () => {
     const character = makeTestCharacter({
       classId: "clerc",
-      hitPoints: { current: 1, max: 10, temporary: 0 },
+      hitPoints: { current: 1, temporary: 0 },
+      baseMaxHitPoints: 10,
       spellSlotsUsed: { "1": 2 },
     });
     await new LocalStorageCharacterRepository().create(character);
@@ -45,7 +46,8 @@ describe("RestActions (via CharacterPlay)", () => {
   it("restores hit points and spell slots on confirmed long rest", async () => {
     const character = makeTestCharacter({
       classId: "clerc",
-      hitPoints: { current: 1, max: 10, temporary: 0 },
+      hitPoints: { current: 1, temporary: 0 },
+      baseMaxHitPoints: 10,
       spellSlotsUsed: { "1": 2 },
     });
     await new LocalStorageCharacterRepository().create(character);
@@ -59,7 +61,8 @@ describe("RestActions (via CharacterPlay)", () => {
     await user.click(screen.getByRole("button", { name: /^confirmer$/i }));
 
     const persisted = await new LocalStorageCharacterRepository().getById(character.id);
-    expect(persisted?.hitPoints.current).toBe(10);
+    // Clerc niv. 1, Con 10 : PV max calculés = 8.
+    expect(persisted?.hitPoints.current).toBe(8);
     expect(persisted?.spellSlotsUsed).toEqual({});
   });
 

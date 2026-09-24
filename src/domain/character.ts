@@ -6,11 +6,17 @@ import type { ArmorCategory, InventoryItem, WeaponCategory } from "./inventory";
 import type { RaceSelection } from "./race";
 import type { CharacterSpellTag } from "./spell-tag";
 
+/** PV consommés en partie. Le maximum n'est pas stocké : il est calculé (docs/adr/0027). */
 export interface HitPoints {
   current: number;
-  max: number;
   temporary: number;
 }
+
+/**
+ * Méthode de gain de PV à chaque niveau après le 1er (règles 2014) : valeur fixe (moitié du dé de
+ * vie + 1) ou dés lancés (résultats saisis dans `hitPointRolls`).
+ */
+export type HitPointMethod = "fixed" | "rolled";
 
 /** Emplacements d'un niveau de sort, tels que CALCULÉS (voir computeSpellSlots) : le total découle
  * de la classe et du niveau, seul `used` provient de l'état stocké (`Character.spellSlotsUsed`). */
@@ -65,6 +71,13 @@ export interface Character {
   raceSelection?: RaceSelection;
   background?: string;
   hitPoints: HitPoints;
+  /** Absent = valeur fixe. */
+  hitPointMethod?: HitPointMethod;
+  /** Résultats du dé de vie aux niveaux 2, 3… (index 0 = niveau 2), en mode « dés lancés ». La
+   * Constitution s'y ajoute automatiquement. */
+  hitPointRolls?: number[];
+  /** PV max saisis, uniquement pour une classe hors registre (sans dé de vie connu). */
+  baseMaxHitPoints?: number;
   /** Pas de champ de CA stocké : elle est toujours calculée — voir
    * src/domain/calculations/armor-class.ts. Maîtrises d'armure : n'influent pas sur la CA (règles
    * 2014), seulement sur les avertissements affichés. */

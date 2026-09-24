@@ -9,6 +9,7 @@ function legacyCleric(overrides: Record<string, unknown> = {}) {
     classId: _classId,
     spellSlotsUsed: _used,
     classResourcesUsed: _res,
+    baseMaxHitPoints: _baseMax,
     ...current
   } = makeTestCharacter({ class: "Clerc", level: 3 });
   return {
@@ -191,5 +192,23 @@ describe("normalizeLegacyCharacter", () => {
         savingThrowProficiencies: ["wisdom", "charisma", "constitution"],
       }),
     ).toMatchObject({ savingThrowProficiencies: ["constitution"] });
+  });
+
+  it("drops the stored max hit points for a known class, keeps them otherwise", () => {
+    const known = normalizeLegacyCharacter({
+      ...legacyCleric(),
+      hitPoints: { current: 22, max: 23, temporary: 0 },
+    }) as Record<string, unknown>;
+    expect(known.hitPoints).toEqual({ current: 22, temporary: 0 });
+    expect(known).not.toHaveProperty("baseMaxHitPoints");
+
+    const unknown = normalizeLegacyCharacter({
+      ...legacyCleric({ class: "Guerrier" }),
+      hitPoints: { current: 30, max: 44, temporary: 0 },
+    });
+    expect(unknown).toMatchObject({
+      hitPoints: { current: 30, temporary: 0 },
+      baseMaxHitPoints: 44,
+    });
   });
 });

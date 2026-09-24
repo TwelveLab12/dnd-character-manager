@@ -3,6 +3,7 @@
 import { Eye, Pencil, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { computeArmorClass } from "@/domain/calculations/armor-class";
+import { computeMaxHitPoints } from "@/domain/calculations/max-hit-points";
 import type { Character } from "@/domain/character";
 import { useCharacterStore } from "@/stores/store-provider";
 import {
@@ -30,6 +31,7 @@ import {
 export function CharacterCard({ character }: { character: Character }) {
   const remove = useCharacterStore((state) => state.remove);
   const armorClass = computeArmorClass(character).total;
+  const maxHitPoints = computeMaxHitPoints(character).total;
 
   return (
     <Card>
@@ -65,8 +67,8 @@ export function CharacterCard({ character }: { character: Character }) {
         <CardContent className="flex justify-center gap-10 pt-2 pb-3">
           <StatBadge
             label="PV"
-            value={`${character.hitPoints.current}/${character.hitPoints.max}`}
-            description={`Points de vie ${character.hitPoints.current} sur ${character.hitPoints.max}`}
+            value={`${character.hitPoints.current}/${maxHitPoints}`}
+            description={`Points de vie ${character.hitPoints.current} sur ${maxHitPoints}`}
           />
           <StatBadge
             label="CA"

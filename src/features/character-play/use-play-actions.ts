@@ -2,6 +2,7 @@
 
 import type { Character } from "@/domain/character";
 import { adjustFeatureUses } from "@/domain/calculations/feature-uses";
+import { computeMaxHitPoints } from "@/domain/calculations/max-hit-points";
 import {
   applyDamage,
   applyHealing,
@@ -40,10 +41,16 @@ export function usePlayActions(characterId: string) {
     applyDamage: (amount: number) =>
       withCurrent((character) => ({ hitPoints: applyDamage(character.hitPoints, amount) })),
     applyHealing: (amount: number) =>
-      withCurrent((character) => ({ hitPoints: applyHealing(character.hitPoints, amount) })),
+      withCurrent((character) => ({
+        hitPoints: applyHealing(character.hitPoints, amount, computeMaxHitPoints(character).total),
+      })),
     setCurrentHitPoints: (value: number) =>
       withCurrent((character) => ({
-        hitPoints: setCurrentHitPoints(character.hitPoints, value),
+        hitPoints: setCurrentHitPoints(
+          character.hitPoints,
+          value,
+          computeMaxHitPoints(character).total,
+        ),
       })),
     setTemporaryHitPoints: (amount: number) =>
       withCurrent((character) => ({

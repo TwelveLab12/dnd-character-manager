@@ -191,6 +191,22 @@ function withoutClassSavingThrows(record: RawRecord): RawRecord {
     : { ...record, savingThrowProficiencies: extras };
 }
 
+/** Ancien `hitPoints.max` saisi → supprimé pour une classe connue (PV max calculés, valeur fixe par
+ * défaut), sinon conservé comme `baseMaxHitPoints`. */
+function withoutStoredMaxHitPoints(record: RawRecord): RawRecord {
+  if (!isRecord(record.hitPoints) || !("max" in record.hitPoints)) {
+    return record;
+  }
+  const { max, ...hitPoints } = record.hitPoints;
+  const classId = typeof record.classId === "string" ? record.classId : undefined;
+  const value = asNumber(max);
+  const keepAsBase =
+    findClassDefinition(classId) === undefined &&
+    value !== undefined &&
+    record.baseMaxHitPoints === undefined;
+  return keepAsBase ? { ...record, hitPoints, baseMaxHitPoints: value } : { ...record, hitPoints };
+}
+
 /**
  * Convertit un personnage au format antérieur aux valeurs calculées (docs/adr/0022) vers le format
  * courant. Idempotent : un personnage déjà au format courant ressort inchangé. Travaille sur des
@@ -201,8 +217,10 @@ export function normalizeLegacyCharacter(raw: unknown): unknown {
   if (!isRecord(raw)) {
     return raw;
   }
-  const normalized = withoutClassSavingThrows(
-    withBaseSpeed(withInitiativeExtraBonus(withSpellSlotsUsed(withSubclassId(withClassId(raw))))),
+  const normalized = withoutStoredMaxHitPoints(
+    withoutClassSavingThrows(
+      withBaseSpeed(withInitiativeExtraBonus(withSpellSlotsUsed(withSubclassId(withClassId(raw))))),
+    ),
   );
   // Les ressources de classe n'existent pas au format d'origine : un personnage qui porte déjà
   // `classResourcesUsed` est au format courant, et ses liens capacité → ressource sont des choix

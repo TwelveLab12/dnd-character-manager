@@ -2,7 +2,8 @@
 
 import { useId } from "react";
 import type { AbilityName } from "@/domain/ability-scores";
-import type { Character } from "@/domain/character";
+import type { Character, HitPointMethod } from "@/domain/character";
+import { computeMaxHitPoints, fixedHitDieValue } from "@/domain/calculations/max-hit-points";
 import { CHARACTER_CLASSES, findClassDefinition } from "@/domain/character-class";
 import type { StatPart } from "@/domain/calculations/combat-stats";
 import { computeInitiative, computeSpeed, DEFAULT_SPEED } from "@/domain/calculations/combat-stats";
@@ -39,7 +40,6 @@ export function GeneralTab({ draft, onChange }: CharacterTabProps) {
   const backgroundId = useId();
   const levelId = useId();
   const hpCurrentId = useId();
-  const hpMaxId = useId();
   const hpTempId = useId();
   const notesId = useId();
 
@@ -103,7 +103,7 @@ export function GeneralTab({ draft, onChange }: CharacterTabProps) {
 
       <RaceBonusSection draft={draft} onChange={onChange} />
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2">
         <div className="grid gap-2">
           <Label htmlFor={hpCurrentId}>PV actuels</Label>
           <Input
@@ -112,17 +112,6 @@ export function GeneralTab({ draft, onChange }: CharacterTabProps) {
             value={draft.hitPoints.current}
             onChange={(event) =>
               onChange({ hitPoints: { ...draft.hitPoints, current: toNumber(event.target.value) } })
-            }
-          />
-        </div>
-        <div className="grid gap-2">
-          <Label htmlFor={hpMaxId}>PV max</Label>
-          <Input
-            id={hpMaxId}
-            type="number"
-            value={draft.hitPoints.max}
-            onChange={(event) =>
-              onChange({ hitPoints: { ...draft.hitPoints, max: toNumber(event.target.value) } })
             }
           />
         </div>
@@ -140,6 +129,8 @@ export function GeneralTab({ draft, onChange }: CharacterTabProps) {
           />
         </div>
       </div>
+
+      <MaxHitPointsSection draft={draft} onChange={onChange} />
 
       <ArmorClassSection draft={draft} onChange={onChange} />
 
@@ -221,6 +212,119 @@ function ClassRulesSection({ draft, onChange }: CharacterTabProps) {
             </SelectContent>
           </Select>
         </div>
+      )}
+    </div>
+  );
+}
+
+/**
+ * PV max calculés (docs/adr/0027) : valeur fixe par défaut (moitié du dé de vie + 1 par niveau
+ * après le 1er), ou dés lancés — seul le résultat du dé se saisit alors, niveau par niveau ; le
+ * maximum du 1er niveau et la Constitution restent automatiques.
+ */
+function MaxHitPointsSection({ draft, onChange }: CharacterTabProps) {
+  const methodId = useId();
+  const manualId = useId();
+  const result = computeMaxHitPoints(draft);
+
+  if (result.method === "manual" || result.hitDie === undefined) {
+    return (
+      <div className="grid gap-2 sm:max-w-xs">
+        <Label htmlFor={manualId}>PV max</Label>
+        <Input
+          id={manualId}
+          type="number"
+          min={1}
+          value={draft.baseMaxHitPoints ?? ""}
+          onChange={(event) =>
+            onChange({
+              baseMaxHitPoints: event.target.value ? toNumber(event.target.value) : undefined,
+            })
+          }
+        />
+        <p className="text-muted-foreground text-xs">
+          Choisis une classe gérée ci-dessus pour que les PV max soient calculés.
+        </p>
+      </div>
+    );
+  }
+
+  const hitDie = result.hitDie;
+  const rolls = draft.hitPointRolls ?? [];
+
+  function setRoll(level: number, value: number | undefined) {
+    const next = [...rolls];
+    next[level - 2] = value as number;
+    onChange({ hitPointRolls: next });
+  }
+
+  return (
+    <div className="grid gap-3 rounded-lg border p-3">
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div className="grid gap-0.5">
+          <span className="text-sm font-medium">PV max — {result.total}</span>
+          <span className="text-muted-foreground text-xs">
+            Dé de vie d{hitDie}, Constitution appliquée à chaque niveau
+          </span>
+        </div>
+        <div className="grid gap-1 sm:w-64">
+          <Label htmlFor={methodId} className="text-muted-foreground text-xs">
+            Gain de PV à chaque niveau
+          </Label>
+          <Select
+            value={result.method}
+            onValueChange={(value) => onChange({ hitPointMethod: value as HitPointMethod })}
+          >
+            <SelectTrigger id={methodId}>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="fixed">Valeur fixe ({fixedHitDieValue(hitDie)} + Con)</SelectItem>
+              <SelectItem value="rolled">Dés lancés (d{hitDie} + Con)</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      <ul className="grid gap-1.5 text-sm">
+        {result.levels.map((entry) => (
+          <li key={entry.level} className="flex flex-wrap items-center gap-2">
+            <span className="text-muted-foreground w-14">Niv. {entry.level}</span>
+            {entry.level === 1 || result.method === "fixed" ? (
+              <span className="tabular-nums">{entry.die}</span>
+            ) : (
+              <Input
+                type="number"
+                min={1}
+                max={hitDie}
+                aria-label={`Résultat du d${hitDie} au niveau ${entry.level}`}
+                placeholder={String(fixedHitDieValue(hitDie))}
+                className="h-8 w-16"
+                value={rolls[entry.level - 2] ?? ""}
+                onChange={(event) =>
+                  setRoll(
+                    entry.level,
+                    event.target.value ? toNumber(event.target.value) : undefined,
+                  )
+                }
+              />
+            )}
+            <span className="text-muted-foreground tabular-nums">
+              {formatModifier(entry.constitution)} Con = {entry.total}
+            </span>
+            {entry.level === 1 && (
+              <span className="text-muted-foreground text-xs">(maximum du dé)</span>
+            )}
+          </li>
+        ))}
+      </ul>
+
+      {result.warnings.length > 0 && (
+        <ul className="text-warning grid gap-1 text-xs">
+          {result.warnings.map((warning) => (
+            <li key={warning}>{warning}</li>
+          ))}
+        </ul>
       )}
     </div>
   );

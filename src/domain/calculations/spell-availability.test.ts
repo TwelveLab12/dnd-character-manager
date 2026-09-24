@@ -12,7 +12,8 @@ const BASE: Character = {
   name: "Test",
   class: "Clerc",
   level: 5,
-  hitPoints: { current: 30, max: 30, temporary: 0 },
+  hitPoints: { current: 30, temporary: 0 },
+  baseMaxHitPoints: 30,
   abilityScores: {
     strength: 10,
     dexterity: 10,
