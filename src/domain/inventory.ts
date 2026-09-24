@@ -1,3 +1,5 @@
+import { compareNames } from "./names";
+
 /** Catégories d'armure 5e (règles 2014) — le bouclier est traité comme une catégorie à part. */
 export type ArmorCategory = "light" | "medium" | "heavy" | "shield";
 
@@ -126,20 +128,15 @@ export function isGear(item: InventoryItem): boolean {
   return item.weapon !== undefined || item.armor !== undefined;
 }
 
-const NAME_COLLATOR = new Intl.Collator("fr", { sensitivity: "base", numeric: true });
-
 /**
- * Ordre d'affichage par défaut d'un groupe d'objets (docs/adr/0036) : alphabétique, sans tenir
- * compte des majuscules ni des accents ; un objet encore sans nom (juste ajouté) va à la fin. Le
- * stockage garde l'ordre d'ajout : aucun ordre manuel n'est encore enregistré.
+ * Ordre d'affichage par défaut d'un groupe d'objets (docs/adr/0036) : alphabétique (voir
+ * `compareNames`). Le stockage garde l'ordre d'ajout : aucun ordre manuel n'est encore enregistré.
+ * `nameOf` permet de trier sur un autre nom que le nom courant, ex : celui d'un objet en cours
+ * d'édition, figé pour qu'il ne change pas de place à chaque frappe.
  */
-export function sortInventoryByName(items: readonly InventoryItem[]): InventoryItem[] {
-  return [...items].sort((a, b) => {
-    const aName = a.name.trim();
-    const bName = b.name.trim();
-    if (!aName || !bName) {
-      return aName ? -1 : bName ? 1 : 0;
-    }
-    return NAME_COLLATOR.compare(aName, bName);
-  });
+export function sortInventoryByName(
+  items: readonly InventoryItem[],
+  nameOf: (item: InventoryItem) => string = (item) => item.name,
+): InventoryItem[] {
+  return [...items].sort((a, b) => compareNames(nameOf(a), nameOf(b)));
 }

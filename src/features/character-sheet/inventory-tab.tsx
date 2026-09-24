@@ -27,10 +27,22 @@ import type { CharacterTabProps } from "./types";
  * un seul se déplie à la fois pour être modifié, avec les champs propres à son type.
  */
 export function InventoryTab({ draft, onChange }: CharacterTabProps) {
-  const [openId, setOpenId] = useState<string | null>(null);
+  // Objet déplié et son nom à l'ouverture : l'ordre alphabétique utilise ce nom figé, pour que
+  // l'objet ne change pas de place (et ne perde pas le focus) pendant qu'on le renomme.
+  const [open, setOpen] = useState<{ id: string; name: string } | null>(null);
+  const openId = open?.id ?? null;
+  const nameOf = (item: InventoryItem) => (item.id === openId ? (open?.name ?? "") : item.name);
   const currency = characterCurrency(draft);
-  const gear = sortInventoryByName(draft.inventory.filter(isGear));
-  const bag = sortInventoryByName(draft.inventory.filter((item) => !isGear(item)));
+  const gear = sortInventoryByName(draft.inventory.filter(isGear), nameOf);
+  const bag = sortInventoryByName(
+    draft.inventory.filter((item) => !isGear(item)),
+    nameOf,
+  );
+
+  function setOpenId(id: string | null) {
+    const item = draft.inventory.find((candidate) => candidate.id === id);
+    setOpen(id ? { id, name: item?.name ?? "" } : null);
+  }
 
   function updateItem(id: string, patch: Partial<InventoryItem>) {
     onChange({
@@ -41,7 +53,7 @@ export function InventoryTab({ draft, onChange }: CharacterTabProps) {
   function addItem(kind: ItemKind) {
     const item = newItem(generateId(), kind);
     onChange({ inventory: [...draft.inventory, item] });
-    setOpenId(item.id);
+    setOpen({ id: item.id, name: "" });
   }
 
   function renderItems(items: InventoryItem[]) {

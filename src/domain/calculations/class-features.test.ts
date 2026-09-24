@@ -6,6 +6,7 @@ import {
   effectiveArmorProficiencies,
   effectiveWeaponProficiencies,
   grantedProficiencies,
+  ruleClassResourceOptions,
   ruleProficiencyGrants,
   toggleProficiency,
 } from "./class-features";
@@ -124,6 +125,16 @@ describe("toggleProficiency", () => {
 });
 
 describe("computeClassResourceOptions", () => {
+  it("drops the options removed for this character, which the rules still list", () => {
+    const character = { ...twilightCleric(2), removedClassResourceOptions: ["turn-undead"] };
+    expect(
+      computeClassResourceOptions(character, "channel-divinity").map((option) => option.id),
+    ).toEqual(["twilight-sanctuary"]);
+    expect(
+      ruleClassResourceOptions(character, "channel-divinity").map((option) => option.id),
+    ).toEqual(["turn-undead", "twilight-sanctuary"]);
+  });
+
   it("lists Turn Undead and Twilight Sanctuary from cleric level 2", () => {
     expect(computeClassResourceOptions(twilightCleric(2), "channel-divinity")).toEqual([
       { id: "turn-undead", name: "Renvoi des morts-vivants", source: "Clerc" },

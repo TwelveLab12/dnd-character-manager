@@ -105,9 +105,10 @@ export interface ClassResourceOption {
   source: string;
 }
 
-/** Options de la ressource accordées par les règles au niveau actuel (ex : Renvoi des
- * morts-vivants et Sanctuaire du Crépuscule pour la Canalisation divine d'un Clerc niv. 2+). */
-export function computeClassResourceOptions(
+/** Options de la ressource prévues par les règles au niveau actuel (ex : Renvoi des
+ * morts-vivants et Sanctuaire du Crépuscule pour la Canalisation divine d'un Clerc niv. 2+), y
+ * compris celles que le joueur a retirées : pour la configuration, qui les affiche retirées. */
+export function ruleClassResourceOptions(
   character: Character,
   resourceId: ClassResourceId,
 ): ClassResourceOption[] {
@@ -125,6 +126,18 @@ export function computeClassResourceOptions(
   return [...fromClass, ...fromSubclass]
     .filter(({ option }) => option.resourceId === resourceId && option.minLevel <= level)
     .map(({ option, source }) => ({ id: option.id, name: option.name, source }));
+}
+
+/** Options de la ressource accordées par les règles et conservées pour ce personnage (sans celles
+ * retirées, docs/adr/0038) : celles du mode jeu et de l'onglet Notes. */
+export function computeClassResourceOptions(
+  character: Character,
+  resourceId: ClassResourceId,
+): ClassResourceOption[] {
+  const removed = character.removedClassResourceOptions ?? [];
+  return ruleClassResourceOptions(character, resourceId).filter(
+    (option) => !removed.includes(option.id),
+  );
 }
 
 /**

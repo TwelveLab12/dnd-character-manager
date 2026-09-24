@@ -109,6 +109,9 @@ export interface Character {
   /** Jets de sauvegarde accordés par la classe que le joueur a retirés pour ce personnage
    * (docs/adr/0037), comme `removedArmorProficiencies`. */
   removedSavingThrowProficiencies?: AbilityName[];
+  /** Options de ressource de classe accordées par les règles (ex : Renvoi des morts-vivants) que
+   * le joueur a retirées pour ce personnage (docs/adr/0038), par id d'option. */
+  removedClassResourceOptions?: string[];
   skillProficiencies: string[];
   concentration: Concentration;
   /** Maîtrises d'armes par catégorie : le bonus de maîtrise ne s'ajoute au jet d'attaque que pour
