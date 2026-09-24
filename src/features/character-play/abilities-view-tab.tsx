@@ -7,6 +7,7 @@ import { abilityModifier } from "@/domain/calculations/modifiers";
 import { clampCharacterLevel, proficiencyBonusForLevel } from "@/domain/calculations/proficiency";
 import { ABILITY_LABELS, ABILITY_SHORT_LABELS } from "@/features/shared/ability-labels";
 import { formatModifier } from "@/features/shared/format";
+import { ProficiencyDot } from "@/features/shared/proficiency-dot";
 import { SKILL_DEFINITIONS } from "@/features/shared/skills";
 import { SectionTitle } from "@/components/ui/section-title";
 
@@ -166,15 +167,3 @@ function AbilityCard({
 }
 
 /** Pastille de maîtrise : pleine (dorée) si maîtrisé, cercle vide sinon. */
-function ProficiencyDot({ proficient }: { proficient: boolean }) {
-  return (
-    <span
-      aria-hidden
-      className={`size-2.5 shrink-0 rounded-full ${
-        proficient
-          ? "bg-primary shadow-[0_0_8px_color-mix(in_oklab,var(--primary)_55%,transparent)]"
-          : "border-muted-foreground/60 border-[1.5px]"
-      }`}
-    />
-  );
-}

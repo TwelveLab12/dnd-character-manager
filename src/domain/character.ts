@@ -106,6 +106,9 @@ export interface Character {
   /** Maîtrises de jets de sauvegarde EN PLUS de celles de la classe (ex : don Résilient) — les
    * maîtrises de classe sont calculées, voir effectiveSavingThrowProficiencies. */
   savingThrowProficiencies: AbilityName[];
+  /** Jets de sauvegarde accordés par la classe que le joueur a retirés pour ce personnage
+   * (docs/adr/0037), comme `removedArmorProficiencies`. */
+  removedSavingThrowProficiencies?: AbilityName[];
   skillProficiencies: string[];
   concentration: Concentration;
   /** Maîtrises d'armes par catégorie : le bonus de maîtrise ne s'ajoute au jet d'attaque que pour

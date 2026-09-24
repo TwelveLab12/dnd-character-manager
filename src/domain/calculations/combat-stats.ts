@@ -26,17 +26,22 @@ export interface ComputedStat {
   breakdown: StatPart[];
 }
 
-/** Jets de sauvegarde maîtrisés : ceux de la classe ∪ ceux ajoutés sur la fiche. */
+/** Jets de sauvegarde maîtrisés : ceux de la classe, moins ceux que le joueur a retirés pour ce
+ * personnage (docs/adr/0037), ∪ ceux ajoutés sur la fiche. */
 export function effectiveSavingThrowProficiencies(character: Character): AbilityName[] {
+  const removed = character.removedSavingThrowProficiencies ?? [];
   return [
     ...new Set([
-      ...(findClassDefinition(character.classId)?.savingThrows ?? []),
+      ...(findClassDefinition(character.classId)?.savingThrows ?? []).filter(
+        (ability) => !removed.includes(ability),
+      ),
       ...character.savingThrowProficiencies,
     ]),
   ];
 }
 
-/** Classe qui accorde la maîtrise de ce jet de sauvegarde, s'il y en a une. */
+/** Classe dont les règles prévoient la maîtrise de ce jet de sauvegarde, qu'elle soit conservée
+ * ou retirée pour ce personnage. */
 export function savingThrowGrantedBy(
   character: Character,
   ability: AbilityName,

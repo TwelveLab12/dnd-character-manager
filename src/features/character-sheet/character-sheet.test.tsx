@@ -160,14 +160,11 @@ describe("CharacterSheet", () => {
     await user.click(screen.getByRole("tab", { name: /caractéristiques/i }));
 
     // Sagesse 16 -> modificateur +3 ; proficient au niveau 3 (bonus +2) -> jet de sauvegarde +5.
-    // Plusieurs compétences liées à la Sagesse affichent aussi +3 (non maîtrisées) : on se limite
-    // à la ligne "Sagesse" elle-même pour éviter une correspondance ambiguë.
-    const wisdomRow = screen.getByText(/^sagesse$/i).closest(".rounded-lg") as HTMLElement | null;
-    if (!wisdomRow) {
-      throw new Error("expected a row for Sagesse");
-    }
-    expect(within(wisdomRow).getByText("+3")).toBeInTheDocument();
-    expect(within(wisdomRow).getByText(/sauv\. \+5/i)).toBeInTheDocument();
+    const wisdomCard = screen.getByRole("group", { name: "Sagesse" });
+    expect(within(wisdomCard).getByLabelText("Modificateur +3")).toBeInTheDocument();
+    const save = within(wisdomCard).getByRole("button", { name: /maîtrise/i });
+    expect(save).toHaveAttribute("aria-pressed", "true");
+    expect(save).toHaveTextContent("+5");
   });
 
   it("applies a chosen race's ability bonus (Humain variant) to the effective score everywhere", async () => {
@@ -213,11 +210,9 @@ describe("CharacterSheet", () => {
     // Caractéristiques : le modificateur affiché doit utiliser le score EFFECTIF (16 -> +3), pas
     // le score de base saisi (15 -> +2).
     await user.click(screen.getByRole("tab", { name: /caractéristiques/i }));
-    const wisdomRow = screen.getByText(/^sagesse/i).closest(".rounded-lg") as HTMLElement | null;
-    if (!wisdomRow) {
-      throw new Error("expected a row for Sagesse");
-    }
-    expect(within(wisdomRow).getByText("+3")).toBeInTheDocument();
+    const wisdomCard = screen.getByRole("group", { name: "Sagesse" });
+    expect(within(wisdomCard).getByLabelText("Modificateur +3")).toBeInTheDocument();
+    expect(within(wisdomCard).getByText("+1 race → 16")).toBeInTheDocument();
 
     // Sorts : le DD utilise aussi le score effectif (16, mod +3) -> DD 8+2+3=13.
     await user.click(screen.getByRole("tab", { name: /^sorts$/i }));
@@ -247,16 +242,14 @@ describe("CharacterSheet", () => {
     await user.click(screen.getByRole("tab", { name: /caractéristiques/i }));
 
     // Médecine (Sagesse) non maîtrisée au départ -> juste le modificateur, +3.
-    const medicineSwitch = screen.getByRole("switch", { name: /médecine/i });
-    const medicineRow = medicineSwitch.closest("div");
-    if (!medicineRow) {
-      throw new Error("expected a row for Médecine");
-    }
-    expect(within(medicineRow).getByText("+3")).toBeInTheDocument();
+    const medicine = screen.getByRole("button", { name: /médecine/i });
+    expect(medicine).toHaveAttribute("aria-pressed", "false");
+    expect(medicine).toHaveTextContent("+3");
 
     // Maîtrisée -> + bonus de maîtrise (+2 au niveau 3) -> +5.
-    await user.click(medicineSwitch);
-    expect(within(medicineRow).getByText("+5")).toBeInTheDocument();
+    await user.click(medicine);
+    expect(medicine).toHaveAttribute("aria-pressed", "true");
+    expect(medicine).toHaveTextContent("+5");
 
     await user.click(screen.getByRole("button", { name: /^enregistrer$/i }));
     await screen.findByText(/enregistré/i);
