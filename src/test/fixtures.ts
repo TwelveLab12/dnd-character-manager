@@ -6,7 +6,9 @@ export function makeTestCharacter(overrides: Partial<Character> = {}): Character
   return {
     id: "test-character-1",
     name: "Test Character",
-    class: "Cleric",
+    // Classe hors registre : aucun calcul de classe (emplacements, ressources) ne s'applique tant
+    // qu'un test ne fixe pas explicitement `classId`.
+    class: "Guerrier",
     level: 1,
     hitPoints: { current: 10, max: 10, temporary: 0 },
     initiativeBonus: 0,
@@ -22,7 +24,8 @@ export function makeTestCharacter(overrides: Partial<Character> = {}): Character
     savingThrowProficiencies: [],
     skillProficiencies: [],
     concentration: { active: false },
-    spellSlots: [],
+    spellSlotsUsed: {},
+    classResourcesUsed: {},
     knownSpellIds: [],
     preparedSpellIds: [],
     spellTags: [],

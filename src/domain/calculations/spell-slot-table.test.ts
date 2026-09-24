@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { adjustSpellSlotUsage, fullCasterSpellSlots } from "./spell-slot-table";
+import { makeTestCharacter } from "@/test/fixtures";
+import { adjustSpellSlotsUsed, computeSpellSlots, fullCasterSpellSlots } from "./spell-slot-table";
 
 describe("fullCasterSpellSlots", () => {
   it("returns only non-zero slot levels for level 1 (2 level-1 slots)", () => {
@@ -26,28 +27,49 @@ describe("fullCasterSpellSlots", () => {
   });
 });
 
-describe("adjustSpellSlotUsage", () => {
-  it("increments used", () => {
-    expect(adjustSpellSlotUsage({ level: 1, total: 4, used: 1 }, 1)).toEqual({
-      level: 1,
-      total: 4,
-      used: 2,
+describe("computeSpellSlots", () => {
+  it("derives totals from the class and level, with the stored usage", () => {
+    const character = makeTestCharacter({
+      classId: "clerc",
+      level: 3,
+      spellSlotsUsed: { "1": 1 },
     });
+    expect(computeSpellSlots(character)).toEqual([
+      { level: 1, total: 4, used: 1 },
+      { level: 2, total: 2, used: 0 },
+    ]);
   });
 
-  it("decrements used", () => {
-    expect(adjustSpellSlotUsage({ level: 1, total: 4, used: 2 }, -1)).toEqual({
-      level: 1,
-      total: 4,
-      used: 1,
-    });
+  it("follows the level: a level-up raises the totals without touching stored data", () => {
+    const character = makeTestCharacter({ classId: "clerc", level: 5 });
+    expect(computeSpellSlots(character).map((slot) => slot.total)).toEqual([4, 3, 2]);
   });
 
-  it("clamps at zero", () => {
-    expect(adjustSpellSlotUsage({ level: 1, total: 4, used: 0 }, -1).used).toBe(0);
+  it("clamps a stored usage above the computed total", () => {
+    const character = makeTestCharacter({ classId: "clerc", level: 1, spellSlotsUsed: { "1": 9 } });
+    expect(computeSpellSlots(character)).toEqual([{ level: 1, total: 2, used: 2 }]);
   });
 
-  it("clamps at total", () => {
-    expect(adjustSpellSlotUsage({ level: 1, total: 4, used: 4 }, 1).used).toBe(4);
+  it("returns no slots for an unknown or missing class", () => {
+    expect(computeSpellSlots(makeTestCharacter({ classId: undefined }))).toEqual([]);
+    expect(computeSpellSlots(makeTestCharacter({ classId: "inconnue" }))).toEqual([]);
+  });
+});
+
+describe("adjustSpellSlotsUsed", () => {
+  const cleric = makeTestCharacter({ classId: "clerc", level: 3, spellSlotsUsed: { "1": 1 } });
+
+  it("spends and recovers a slot", () => {
+    expect(adjustSpellSlotsUsed(cleric, 1, 1)).toEqual({ "1": 2 });
+    expect(adjustSpellSlotsUsed(cleric, 1, -1)).toEqual({ "1": 0 });
+  });
+
+  it("clamps between zero and the computed total", () => {
+    expect(adjustSpellSlotsUsed(cleric, 1, -5)).toEqual({ "1": 0 });
+    expect(adjustSpellSlotsUsed(cleric, 2, 5)).toEqual({ "1": 1, "2": 2 });
+  });
+
+  it("ignores a spell level the character has no slot for", () => {
+    expect(adjustSpellSlotsUsed(cleric, 5, 1)).toEqual({ "1": 1 });
   });
 });

@@ -11,7 +11,9 @@ import {
 import { applyLongRest, applyShortRest } from "@/domain/calculations/rest";
 import type { EquipSlot } from "@/domain/equipment";
 import { equipItem } from "@/domain/equipment";
-import { adjustSpellSlotUsage } from "@/domain/calculations/spell-slot-table";
+import { adjustSpellSlotsUsed } from "@/domain/calculations/spell-slot-table";
+import { adjustClassResourceUsed } from "@/domain/calculations/class-resources";
+import type { ClassResourceId } from "@/domain/character-class";
 import { useCharacterStoreApi } from "@/stores/store-provider";
 
 /**
@@ -87,9 +89,12 @@ export function usePlayActions(characterId: string) {
       })),
     adjustSpellSlot: (level: number, delta: number) =>
       withCurrent((character) => ({
-        spellSlots: character.spellSlots.map((slot) =>
-          slot.level === level ? adjustSpellSlotUsage(slot, delta) : slot,
-        ),
+        spellSlotsUsed: adjustSpellSlotsUsed(character, level, delta),
+      })),
+    /** `delta` > 0 dépense des utilisations, < 0 en récupère. */
+    adjustClassResource: (resourceId: ClassResourceId, delta: number) =>
+      withCurrent((character) => ({
+        classResourcesUsed: adjustClassResourceUsed(character, resourceId, delta),
       })),
   };
 }

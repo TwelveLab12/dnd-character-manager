@@ -254,8 +254,8 @@ describe("CharacterSheet", () => {
     expect(await screen.findByText(/dd de sauvegarde — 99/i)).toBeInTheDocument();
   });
 
-  it("generates full-caster spell slots from the character's level", async () => {
-    const character = makeTestCharacter({ level: 3, spellSlots: [] });
+  it("computes spell slots from the class chosen in the General tab", async () => {
+    const character = makeTestCharacter({ level: 3 });
     await new LocalStorageCharacterRepository().create(character);
 
     const user = userEvent.setup();
@@ -263,10 +263,17 @@ describe("CharacterSheet", () => {
     await screen.findByRole("heading", { name: character.name });
 
     await user.click(screen.getByRole("tab", { name: /^sorts$/i }));
-    await user.click(screen.getByRole("button", { name: /générer \(lanceur complet\)/i }));
+    expect(screen.getByText(/aucun emplacement/i)).toBeInTheDocument();
 
+    await user.click(screen.getByRole("tab", { name: /^général$/i }));
+    await user.click(screen.getByRole("combobox", { name: /classe \(règles/i }));
+    await user.click(await screen.findByRole("option", { name: "Clerc" }));
+
+    await user.click(screen.getByRole("tab", { name: /^sorts$/i }));
     expect(await screen.findByText("Niveau 1")).toBeInTheDocument();
     expect(screen.getByText("Niveau 2")).toBeInTheDocument();
+    expect(screen.getByText("Calculés : Clerc niv. 3")).toBeInTheDocument();
+    expect(screen.getByText(/sagesse/i)).toBeInTheDocument();
   });
 
   it("lists library spells and toggles known/prepared, un-preparing when un-knowing", async () => {

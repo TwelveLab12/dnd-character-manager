@@ -69,4 +69,29 @@ describe("LocalStorageCharacterRepository", () => {
     expect(result).toEqual({ added: 0, updated: 1, skipped: 0 });
     expect(await repository.getById("a")).toMatchObject({ level: 5 });
   });
+
+  it("migrates characters stored in the original format instead of dropping them", async () => {
+    const {
+      spellSlotsUsed: _used,
+      classResourcesUsed: _res,
+      ...current
+    } = makeTestCharacter({
+      id: "legacy",
+      class: "Clerc",
+      level: 3,
+    });
+    window.localStorage.setItem(
+      "dnd-character-manager:v1:characters",
+      JSON.stringify({
+        schemaVersion: 1,
+        data: [{ ...current, spellSlots: [{ level: 1, total: 4, used: 1 }] }],
+      }),
+    );
+
+    const [migrated] = await new LocalStorageCharacterRepository().list();
+    expect(migrated).toMatchObject({ id: "legacy", classId: "clerc", spellSlotsUsed: { "1": 1 } });
+    expect(
+      JSON.parse(window.localStorage.getItem("dnd-character-manager:v1:characters") ?? "{}"),
+    ).toMatchObject({ schemaVersion: 2 });
+  });
 });

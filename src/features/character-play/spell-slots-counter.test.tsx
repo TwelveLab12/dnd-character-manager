@@ -24,7 +24,9 @@ describe("SpellSlotsCounter (via CharacterPlay)", () => {
 
   it("uses and recovers a spell slot, persisting immediately", async () => {
     const character = makeTestCharacter({
-      spellSlots: [{ level: 1, total: 4, used: 1 }],
+      classId: "clerc",
+      level: 3,
+      spellSlotsUsed: { "1": 1 },
     });
     await new LocalStorageCharacterRepository().create(character);
 
@@ -38,18 +40,16 @@ describe("SpellSlotsCounter (via CharacterPlay)", () => {
     await user.click(screen.getByRole("button", { name: /utiliser un emplacement de niveau 1/i }));
     expect(await screen.findByText("2 / 4")).toBeInTheDocument();
     let persisted = await new LocalStorageCharacterRepository().getById(character.id);
-    expect(persisted?.spellSlots).toEqual([{ level: 1, total: 4, used: 2 }]);
+    expect(persisted?.spellSlotsUsed).toEqual({ "1": 2 });
 
     await user.click(screen.getByRole("button", { name: /récupérer un emplacement de niveau 1/i }));
     expect(await screen.findByText("3 / 4")).toBeInTheDocument();
     persisted = await new LocalStorageCharacterRepository().getById(character.id);
-    expect(persisted?.spellSlots).toEqual([{ level: 1, total: 4, used: 1 }]);
+    expect(persisted?.spellSlotsUsed).toEqual({ "1": 1 });
   });
 
   it("disables the recover button when nothing is used and the use button when fully used", async () => {
-    const character = makeTestCharacter({
-      spellSlots: [{ level: 1, total: 2, used: 0 }],
-    });
+    const character = makeTestCharacter({ classId: "clerc", level: 1 });
     await new LocalStorageCharacterRepository().create(character);
 
     const user = userEvent.setup();

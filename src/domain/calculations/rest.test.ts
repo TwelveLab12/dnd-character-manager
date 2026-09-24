@@ -17,6 +17,7 @@ const BASE: Character = {
   id: "char-1",
   name: "Test",
   class: "Clerc",
+  classId: "clerc",
   level: 5,
   hitPoints: { current: 3, max: 30, temporary: 4 },
   initiativeBonus: 0,
@@ -32,10 +33,8 @@ const BASE: Character = {
   savingThrowProficiencies: [],
   skillProficiencies: [],
   concentration: { active: false },
-  spellSlots: [
-    { level: 1, total: 4, used: 4 },
-    { level: 2, total: 2, used: 1 },
-  ],
+  spellSlotsUsed: { "1": 4, "2": 1 },
+  classResourcesUsed: { "channel-divinity": 1 },
   knownSpellIds: [],
   preparedSpellIds: [],
   spellTags: [],
@@ -52,14 +51,14 @@ describe("applyLongRest", () => {
   });
 
   it("resets all spell slots usage to zero", () => {
-    const result = applyLongRest(BASE);
-    expect(result.spellSlots).toEqual([
-      { level: 1, total: 4, used: 0 },
-      { level: 2, total: 2, used: 0 },
-    ]);
+    expect(applyLongRest(BASE).spellSlotsUsed).toEqual({});
   });
 
-  it("restores usesCurrent to usesMax for longRest features only", () => {
+  it("restores class resources, including those recovered on a short rest", () => {
+    expect(applyLongRest(BASE).classResourcesUsed).toEqual({});
+  });
+
+  it("restores usesCurrent to usesMax for longRest and shortRest features", () => {
     const character: Character = {
       ...BASE,
       features: [
@@ -72,7 +71,7 @@ describe("applyLongRest", () => {
     const result = applyLongRest(character);
     expect(result.features).toEqual([
       makeFeature({ id: "a", recharge: "longRest", usesMax: 3, usesCurrent: 3 }),
-      makeFeature({ id: "b", recharge: "shortRest", usesMax: 2, usesCurrent: 0 }),
+      makeFeature({ id: "b", recharge: "shortRest", usesMax: 2, usesCurrent: 2 }),
       makeFeature({ id: "c", recharge: "other", usesMax: 1, usesCurrent: 0 }),
       makeFeature({ id: "d" }),
     ]);
@@ -88,7 +87,7 @@ describe("applyLongRest", () => {
 });
 
 describe("applyShortRest", () => {
-  it("restores only shortRest features, ignores hit points and spell slots", () => {
+  it("restores only shortRest features and resources, ignores hit points and spell slots", () => {
     const character: Character = {
       ...BASE,
       features: [
@@ -101,7 +100,8 @@ describe("applyShortRest", () => {
       makeFeature({ id: "a", recharge: "longRest", usesMax: 3, usesCurrent: 0 }),
       makeFeature({ id: "b", recharge: "shortRest", usesMax: 2, usesCurrent: 2 }),
     ]);
+    expect(result.classResourcesUsed).toEqual({});
     expect(result.hitPoints).toBeUndefined();
-    expect(result.spellSlots).toBeUndefined();
+    expect(result.spellSlotsUsed).toBeUndefined();
   });
 });

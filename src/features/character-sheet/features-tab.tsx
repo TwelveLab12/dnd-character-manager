@@ -2,6 +2,8 @@
 
 import { Plus, X } from "lucide-react";
 import { useId } from "react";
+import type { ClassResourceDefinition, ClassResourceId } from "@/domain/character-class";
+import { findClassDefinition } from "@/domain/character-class";
 import type { CharacterFeature, FeatureRecharge } from "@/domain/feature";
 import { generateId } from "@/domain/id";
 import { Button } from "@/components/ui/button";
@@ -36,6 +38,8 @@ function createBlankFeature(): CharacterFeature {
 }
 
 export function FeaturesTab({ draft, onChange }: CharacterTabProps) {
+  const classResources = findClassDefinition(draft.classId)?.resources ?? [];
+
   function updateFeature(id: string, patch: Partial<CharacterFeature>) {
     onChange({
       features: draft.features.map((feature) =>
@@ -51,7 +55,7 @@ export function FeaturesTab({ draft, onChange }: CharacterTabProps) {
   return (
     <div className="grid gap-4">
       <div className="flex items-center justify-between">
-        <SectionTitle>Capacités (Channel Divinity, domaine…)</SectionTitle>
+        <SectionTitle>Capacités (Canalisation divine, domaine…)</SectionTitle>
         <Button
           type="button"
           variant="outline"
@@ -72,6 +76,7 @@ export function FeaturesTab({ draft, onChange }: CharacterTabProps) {
           <FeatureRow
             key={feature.id}
             feature={feature}
+            classResources={classResources}
             onChange={(patch) => updateFeature(feature.id, patch)}
             onRemove={() => removeFeature(feature.id)}
           />
@@ -83,10 +88,12 @@ export function FeaturesTab({ draft, onChange }: CharacterTabProps) {
 
 function FeatureRow({
   feature,
+  classResources,
   onChange,
   onRemove,
 }: {
   feature: CharacterFeature;
+  classResources: readonly ClassResourceDefinition[];
   onChange: (patch: Partial<CharacterFeature>) => void;
   onRemove: () => void;
 }) {
@@ -96,6 +103,7 @@ function FeatureRow({
   const usesMaxId = useId();
   const usesCurrentId = useId();
   const rechargeId = useId();
+  const resourceId = useId();
 
   return (
     <div className="grid gap-2 rounded-lg border p-3">
@@ -135,60 +143,101 @@ function FeatureRow({
         />
       </div>
 
-      <div className="grid gap-2 sm:grid-cols-[1fr_1fr_1fr_auto] sm:items-end">
-        <div className="grid gap-1">
-          <Label htmlFor={usesMaxId} className="text-muted-foreground text-xs">
-            Utilisations max
-          </Label>
-          <Input
-            id={usesMaxId}
-            type="number"
-            min={0}
-            value={feature.usesMax ?? ""}
-            onChange={(event) =>
-              onChange({ usesMax: event.target.value ? toNumber(event.target.value) : undefined })
-            }
-          />
-        </div>
-        <div className="grid gap-1">
-          <Label htmlFor={usesCurrentId} className="text-muted-foreground text-xs">
-            Utilisations restantes
-          </Label>
-          <Input
-            id={usesCurrentId}
-            type="number"
-            min={0}
-            value={feature.usesCurrent ?? ""}
-            onChange={(event) =>
-              onChange({
-                usesCurrent: event.target.value ? toNumber(event.target.value) : undefined,
-              })
-            }
-          />
-        </div>
-        <div className="grid gap-1">
-          <Label htmlFor={rechargeId} className="text-muted-foreground text-xs">
-            Récupération
+      {classResources.length > 0 && (
+        <div className="grid gap-1 sm:max-w-xs">
+          <Label htmlFor={resourceId} className="text-muted-foreground text-xs">
+            Consomme
           </Label>
           <Select
-            value={feature.recharge ?? "none"}
+            value={feature.resourceId ?? "none"}
             onValueChange={(value) =>
-              onChange({ recharge: value === "none" ? undefined : (value as FeatureRecharge) })
+              onChange(
+                value === "none"
+                  ? { resourceId: undefined }
+                  : {
+                      resourceId: value as ClassResourceId,
+                      usesMax: undefined,
+                      usesCurrent: undefined,
+                      recharge: undefined,
+                    },
+              )
             }
           >
-            <SelectTrigger id={rechargeId}>
+            <SelectTrigger id={resourceId}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="none">—</SelectItem>
-              {RECHARGE_VALUES.map((recharge) => (
-                <SelectItem key={recharge} value={recharge}>
-                  {RECHARGE_LABELS[recharge]}
+              <SelectItem value="none">Son propre compteur</SelectItem>
+              {classResources.map((resource) => (
+                <SelectItem key={resource.id} value={resource.id}>
+                  {resource.name}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
+      )}
+
+      <div className="grid gap-2 sm:grid-cols-[1fr_1fr_1fr_auto] sm:items-end">
+        {!feature.resourceId && (
+          <>
+            <div className="grid gap-1">
+              <Label htmlFor={usesMaxId} className="text-muted-foreground text-xs">
+                Utilisations max
+              </Label>
+              <Input
+                id={usesMaxId}
+                type="number"
+                min={0}
+                value={feature.usesMax ?? ""}
+                onChange={(event) =>
+                  onChange({
+                    usesMax: event.target.value ? toNumber(event.target.value) : undefined,
+                  })
+                }
+              />
+            </div>
+            <div className="grid gap-1">
+              <Label htmlFor={usesCurrentId} className="text-muted-foreground text-xs">
+                Utilisations restantes
+              </Label>
+              <Input
+                id={usesCurrentId}
+                type="number"
+                min={0}
+                value={feature.usesCurrent ?? ""}
+                onChange={(event) =>
+                  onChange({
+                    usesCurrent: event.target.value ? toNumber(event.target.value) : undefined,
+                  })
+                }
+              />
+            </div>
+            <div className="grid gap-1">
+              <Label htmlFor={rechargeId} className="text-muted-foreground text-xs">
+                Récupération
+              </Label>
+              <Select
+                value={feature.recharge ?? "none"}
+                onValueChange={(value) =>
+                  onChange({ recharge: value === "none" ? undefined : (value as FeatureRecharge) })
+                }
+              >
+                <SelectTrigger id={rechargeId}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">—</SelectItem>
+                  {RECHARGE_VALUES.map((recharge) => (
+                    <SelectItem key={recharge} value={recharge}>
+                      {RECHARGE_LABELS[recharge]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </>
+        )}
         <Button type="button" variant="ghost" size="sm" onClick={onRemove}>
           <X />
           Retirer

@@ -1,5 +1,6 @@
 import type { AbilityScores } from "./ability-scores";
 import type { Character } from "./character";
+import { findClassDefinitionByLabel } from "./character-class";
 import { generateId } from "./id";
 
 export interface NewCharacterInput {
@@ -24,6 +25,7 @@ export function createBlankCharacter(input: NewCharacterInput): Character {
     id: generateId(),
     name: input.name,
     class: input.class,
+    classId: findClassDefinitionByLabel(input.class)?.id,
     level: input.level ?? 1,
     hitPoints: { current: 1, max: 1, temporary: 0 },
     initiativeBonus: 0,
@@ -32,7 +34,8 @@ export function createBlankCharacter(input: NewCharacterInput): Character {
     savingThrowProficiencies: [],
     skillProficiencies: [],
     concentration: { active: false },
-    spellSlots: [],
+    spellSlotsUsed: {},
+    classResourcesUsed: {},
     knownSpellIds: [],
     preparedSpellIds: [],
     spellTags: [],
