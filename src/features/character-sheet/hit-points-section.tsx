@@ -1,13 +1,13 @@
 "use client";
 
 import { useId } from "react";
-import { cn } from "cn";
 import type { HitPointMethod } from "@/domain/character";
 import { computeMaxHitPoints, fixedHitDieValue } from "@/domain/calculations/max-hit-points";
 import { formatModifier } from "@/features/shared/format";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { GeneralSection } from "./general-section";
+import { SegmentedControl } from "./segmented-control";
 import type { CharacterTabProps } from "./types";
 
 function toNumber(value: string): number {
@@ -69,32 +69,12 @@ export function HitPointsSection({ draft, onChange }: CharacterTabProps) {
       title="Points de vie max"
       description={`Dé de vie d${hitDie} · Constitution appliquée à chaque niveau`}
       action={
-        <div
-          role="radiogroup"
-          aria-label="Gain de PV à chaque niveau"
-          className="bg-background/60 flex rounded-xl border p-1"
-        >
-          {METHODS.map((method) => {
-            const checked = result.method === method.value;
-            return (
-              <button
-                key={method.value}
-                type="button"
-                role="radio"
-                aria-checked={checked}
-                onClick={() => onChange({ hitPointMethod: method.value })}
-                className={cn(
-                  "focus-visible:ring-ring/50 h-9 rounded-lg px-3.5 text-sm font-semibold transition-colors outline-none focus-visible:ring-3",
-                  checked
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:text-foreground",
-                )}
-              >
-                {method.label}
-              </button>
-            );
-          })}
-        </div>
+        <SegmentedControl
+          label="Gain de PV à chaque niveau"
+          options={METHODS}
+          value={result.method}
+          onValueChange={(method) => onChange({ hitPointMethod: method })}
+        />
       }
     >
       <ul className="grid grid-cols-3 gap-2 sm:grid-cols-5">

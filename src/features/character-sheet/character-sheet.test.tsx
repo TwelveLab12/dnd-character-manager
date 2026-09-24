@@ -44,7 +44,7 @@ describe("CharacterSheet", () => {
       "aria-selected",
       "true",
     );
-    const gold = screen.getByLabelText("Or (po)");
+    const gold = screen.getByLabelText("Or");
     expect(gold).toHaveValue(0);
     await user.clear(gold);
     await user.type(gold, "12");
