@@ -406,8 +406,8 @@ function SpellSlotCard({ slot, draft, onChange }: CharacterTabProps & { slot: Sp
   );
 }
 
-const PREPARED_GRID = "sm:grid-cols-[minmax(0,1fr)_14rem_6rem_8.5rem_2.75rem]";
-const KNOWN_GRID = "sm:grid-cols-[minmax(0,1fr)_14rem_2.75rem]";
+const PREPARED_GRID = "sm:grid-cols-[minmax(0,1fr)_12rem_6rem_8.5rem_2.75rem]";
+const KNOWN_GRID = "sm:grid-cols-[minmax(0,1fr)_12rem_2.75rem]";
 
 function levelLabel(level: number): string {
   return level === 0 ? "Tours de magie" : `Niveau ${level}`;
@@ -654,8 +654,8 @@ function KnownSpellRow({
     <li
       className={`grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-2 border-t px-4 py-2 sm:min-h-14 ${grid}`}
     >
-      <div className="flex min-w-0 items-center gap-2">
-        <span className="truncate text-sm font-medium">{spell.name}</span>
+      <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
+        <span className="min-w-0 text-sm font-medium break-words">{spell.name}</span>
         {spell.concentration && (
           <Badge variant="outline" title="Concentration" className="px-1.5">
             C
