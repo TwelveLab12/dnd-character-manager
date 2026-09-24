@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { Character } from "../character";
 import type { CharacterSpellTag } from "../spell-tag";
+import { makeTestSpell } from "@/test/fixtures";
 import { isAlwaysAvailable, playAvailableSpellIds, spellDomainTags } from "./spell-availability";
 
 function makeTag(overrides: Partial<CharacterSpellTag> = {}): CharacterSpellTag {
@@ -37,6 +38,15 @@ const BASE: Character = {
 };
 
 describe("playAvailableSpellIds", () => {
+  it("adds known cantrips found in the library without preparing them", () => {
+    const library = [
+      makeTestSpell({ id: "guidance", level: 0 }),
+      makeTestSpell({ id: "moonbeam", level: 2 }),
+      makeTestSpell({ id: "light", level: 0 }),
+    ];
+    expect(playAvailableSpellIds(BASE, library)).toEqual(["cure-wounds", "guidance"]);
+  });
+
   it("returns only prepared spells when no tag is always-prepared", () => {
     const character: Character = {
       ...BASE,

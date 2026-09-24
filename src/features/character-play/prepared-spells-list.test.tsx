@@ -27,9 +27,9 @@ describe("PreparedSpellsList (via CharacterPlay)", () => {
     window.localStorage.clear();
   });
 
-  it("shows only prepared or always-available spells, not merely-known ones", async () => {
+  it("shows prepared, always-available and known cantrips, not merely-known spells", async () => {
     const character = makeTestCharacter({
-      knownSpellIds: ["cure-wounds", "guidance", "moonbeam"],
+      knownSpellIds: ["cure-wounds", "guidance", "moonbeam", "bless"],
       preparedSpellIds: ["cure-wounds"],
       spellTags: [{ spellId: "moonbeam", domain: "Domaine de la Lune", alwaysPrepared: true }],
     });
@@ -38,6 +38,7 @@ describe("PreparedSpellsList (via CharacterPlay)", () => {
       makeTestSpell({ id: "cure-wounds", name: "Soins", level: 1 }),
       makeTestSpell({ id: "guidance", name: "Assistance", level: 0 }),
       makeTestSpell({ id: "moonbeam", name: "Rayon lunaire", level: 2 }),
+      makeTestSpell({ id: "bless", name: "Bénédiction", level: 1 }),
     ]);
 
     const user = userEvent.setup();
@@ -47,7 +48,9 @@ describe("PreparedSpellsList (via CharacterPlay)", () => {
 
     expect(await screen.findByText("Soins")).toBeInTheDocument();
     expect(screen.getByText("Rayon lunaire")).toBeInTheDocument();
-    expect(screen.queryByText("Assistance")).not.toBeInTheDocument();
+    // Tour de magie connu : toujours disponible (5e 2014).
+    expect(screen.getByText("Assistance")).toBeInTheDocument();
+    expect(screen.queryByText("Bénédiction")).not.toBeInTheDocument();
   });
 
   it("filters the list by spell level using the level chips", async () => {

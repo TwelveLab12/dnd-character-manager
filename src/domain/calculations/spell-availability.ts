@@ -11,7 +11,8 @@ function computedAlwaysPreparedIds(character: Character, library: readonly Spell
 
 /**
  * Sorts disponibles en jeu sans passer par l'écran de configuration : préparés ∪ toujours-préparés
- * (tags de la fiche ∪ sorts de sous-classe calculés, retrouvés dans `library`).
+ * (tags de la fiche ∪ sorts de sous-classe calculés, retrouvés dans `library`) ∪ tours de magie
+ * connus (jamais préparés en 5e 2014, retrouvés dans `library` pour connaître leur niveau).
  */
 export function playAvailableSpellIds(
   character: Character,
@@ -20,11 +21,15 @@ export function playAvailableSpellIds(
   const alwaysPrepared = character.spellTags
     .filter((tag) => tag.alwaysPrepared)
     .map((tag) => tag.spellId);
+  const knownCantrips = library
+    .filter((spell) => spell.level === 0 && character.knownSpellIds.includes(spell.id))
+    .map((spell) => spell.id);
   return [
     ...new Set([
       ...character.preparedSpellIds,
       ...alwaysPrepared,
       ...computedAlwaysPreparedIds(character, library),
+      ...knownCantrips,
     ]),
   ];
 }
