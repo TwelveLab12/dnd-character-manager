@@ -6,6 +6,8 @@ import { isValidDamageDice } from "@/domain/calculations/weapon-attack";
 import type { Character } from "@/domain/character";
 import type { EquipSlot } from "@/domain/equipment";
 import { equipItem } from "@/domain/equipment";
+import type { Coin, Currency } from "@/domain/currency";
+import { COINS, characterCurrency, setCoinAmount } from "@/domain/currency";
 import type {
   ArmorCategory,
   DamageType,
@@ -29,6 +31,7 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { ARMOR_CATEGORY_LABELS } from "@/features/shared/armor-class";
+import { COIN_LABELS } from "@/features/shared/currency";
 import { EquipControl } from "@/features/shared/equip-control";
 import {
   DAMAGE_TYPE_LABELS,
@@ -80,8 +83,15 @@ export function InventoryTab({ draft, onChange }: CharacterTabProps) {
     onChange({ inventory: draft.inventory.filter((item) => item.id !== id) });
   }
 
+  const currency = characterCurrency(draft);
+
   return (
     <div className="grid gap-4">
+      <PurseFields
+        currency={currency}
+        onChange={(coin, amount) => onChange({ currency: setCoinAmount(currency, coin, amount) })}
+      />
+
       <div className="flex items-center justify-between">
         <SectionTitle>Inventaire</SectionTitle>
         <Button
@@ -112,6 +122,37 @@ export function InventoryTab({ draft, onChange }: CharacterTabProps) {
         ))}
       </div>
     </div>
+  );
+}
+
+function PurseFields({
+  currency,
+  onChange,
+}: {
+  currency: Currency;
+  onChange: (coin: Coin, amount: number) => void;
+}) {
+  const baseId = useId();
+  return (
+    <fieldset className="grid gap-2">
+      <legend className="font-heading mb-2 text-lg font-medium">Bourse</legend>
+      <div className="grid grid-cols-5 gap-2">
+        {COINS.map((coin) => (
+          <div key={coin} className="grid gap-1">
+            <Label htmlFor={`${baseId}-${coin}`} className="text-muted-foreground text-xs">
+              {COIN_LABELS[coin].name} ({COIN_LABELS[coin].abbreviation})
+            </Label>
+            <Input
+              id={`${baseId}-${coin}`}
+              type="number"
+              min={0}
+              value={currency[coin]}
+              onChange={(event) => onChange(coin, toNumber(event.target.value))}
+            />
+          </div>
+        ))}
+      </div>
+    </fieldset>
   );
 }
 

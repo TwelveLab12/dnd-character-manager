@@ -4,5 +4,11 @@ export default async function CharacterEditPage(
   props: PageProps<"/characters/[characterId]/edit">,
 ) {
   const { characterId } = await props.params;
-  return <CharacterSheet characterId={characterId} />;
+  const { tab } = await props.searchParams;
+  return (
+    <CharacterSheet
+      characterId={characterId}
+      initialTab={typeof tab === "string" ? tab : undefined}
+    />
+  );
 }

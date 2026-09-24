@@ -104,3 +104,19 @@ export interface InventoryItem {
   /** Bonus magique à la CA quand l'objet est équipé (armure +1, anneau de protection…). */
   armorClassBonus?: number;
 }
+
+/** Ajoute `delta` à la quantité d'un objet, sans descendre sous 0 (l'objet reste dans la liste). */
+export function adjustItemQuantity(
+  inventory: readonly InventoryItem[],
+  itemId: string,
+  delta: number,
+): InventoryItem[] {
+  return inventory.map((item) =>
+    item.id === itemId ? { ...item, quantity: Math.max(0, item.quantity + delta) } : item,
+  );
+}
+
+/** Poids total porté, en kg (poids unitaire × quantité ; un objet sans poids compte pour 0). */
+export function totalInventoryWeight(inventory: readonly InventoryItem[]): number {
+  return inventory.reduce((sum, item) => sum + (item.weight ?? 0) * item.quantity, 0);
+}

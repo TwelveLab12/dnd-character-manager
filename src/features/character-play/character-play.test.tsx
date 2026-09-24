@@ -142,6 +142,56 @@ describe("CharacterPlay", () => {
     expect(screen.getByText("Perception passive").nextSibling).toHaveTextContent("16");
   });
 
+  it("lets the player adjust bag quantities and the purse from the Inventaire tab", async () => {
+    const character = makeTestCharacter({
+      inventory: [
+        { id: "torch", name: "Torches", quantity: 2, weight: 0.5 },
+        {
+          id: "mace",
+          name: "Masse d'armes",
+          quantity: 1,
+          weapon: {
+            category: "simple",
+            range: "melee",
+            damageDice: "1d6",
+            damageType: "bludgeoning",
+          },
+        },
+      ],
+      currency: { platinum: 0, gold: 47, electrum: 0, silver: 23, copper: 15 },
+    });
+    const repository = new LocalStorageCharacterRepository();
+    await repository.create(character);
+
+    const user = userEvent.setup();
+    renderPlay(character.id);
+    await screen.findByRole("heading", { name: character.name });
+    await user.click(screen.getByRole("tab", { name: "Inventaire" }));
+
+    expect(screen.getByRole("link", { name: "Modifier l’inventaire" })).toHaveAttribute(
+      "href",
+      `/characters/${character.id}/edit?tab=inventory`,
+    );
+    expect(screen.getByText("2 objets · 1 kg")).toBeInTheDocument();
+    expect(
+      within(screen.getByRole("region", { name: "Armes & armures" })).getByText("Masse d'armes"),
+    ).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Ajouter 1 Torches" }));
+    expect(await screen.findByText("2 objets · 1,5 kg")).toBeInTheDocument();
+
+    const purse = screen.getByRole("region", { name: "Bourse" });
+    expect(within(purse).getByText("49,45")).toBeInTheDocument();
+    const gold = within(purse).getByLabelText("Or");
+    await user.clear(gold);
+    await user.type(gold, "50{Enter}");
+    expect(await within(purse).findByText("52,45")).toBeInTheDocument();
+
+    const stored = await repository.getById(character.id);
+    expect(stored?.inventory.find((item) => item.id === "torch")?.quantity).toBe(3);
+    expect(stored?.currency?.gold).toBe(50);
+  });
+
   it("shows no editable inputs on the read-only mirror tabs", async () => {
     const character = makeTestCharacter({
       background: "Ermite",

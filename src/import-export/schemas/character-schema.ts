@@ -137,6 +137,17 @@ const characterFeatureSchema = z.object({
   resourceId: z.enum(["channel-divinity"]).optional(),
 });
 
+const coinAmountSchema = z.number().int().min(0).default(0);
+
+/** Bourse : une monnaie absente vaut 0 — voir docs/adr/0029. */
+const currencySchema = z.object({
+  platinum: coinAmountSchema,
+  gold: coinAmountSchema,
+  electrum: coinAmountSchema,
+  silver: coinAmountSchema,
+  copper: coinAmountSchema,
+});
+
 const currentCharacterSchema = z.object({
   id: z.string().min(1),
   name: z.string().min(1),
@@ -180,6 +191,7 @@ const currentCharacterSchema = z.object({
   preparedSpellIds: z.array(z.string()).default([]),
   spellTags: z.array(characterSpellTagSchema).default([]),
   inventory: z.array(inventoryItemSchema).default([]),
+  currency: currencySchema.optional(),
   features: z.array(characterFeatureSchema).default([]),
   themeId: z.string().min(1).optional(),
   notes: z.string().min(1).optional(),
