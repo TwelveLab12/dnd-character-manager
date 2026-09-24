@@ -123,7 +123,7 @@ export function CombatHud({ character }: { character: Character }) {
         </div>
       </div>
 
-      <div className="flex flex-wrap items-start justify-between gap-3 border-t pt-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t pt-4">
         <ConcentrationMarker character={character} />
         <RestActions characterId={character.id} />
       </div>
