@@ -19,7 +19,6 @@ const BASE: Character = {
   class: "Clerc",
   level: 5,
   hitPoints: { current: 3, max: 30, temporary: 4 },
-  armorClass: 15,
   initiativeBonus: 0,
   speed: 9,
   abilityScores: {

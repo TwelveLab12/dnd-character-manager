@@ -9,7 +9,6 @@ export function makeTestCharacter(overrides: Partial<Character> = {}): Character
     class: "Cleric",
     level: 1,
     hitPoints: { current: 10, max: 10, temporary: 0 },
-    armorClass: 10,
     initiativeBonus: 0,
     speed: 9,
     abilityScores: {

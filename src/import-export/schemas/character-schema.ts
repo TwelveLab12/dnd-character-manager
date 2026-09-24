@@ -52,6 +52,14 @@ const raceSelectionSchema = z.object({
   abilityBonusChoices: z.array(abilityNameSchema).default([]),
 });
 
+const armorCategorySchema = z.enum(["light", "medium", "heavy", "shield"]);
+
+const armorPropertiesSchema = z.object({
+  category: armorCategorySchema,
+  baseArmorClass: z.number(),
+  strengthRequirement: z.number().optional(),
+});
+
 const inventoryItemSchema = z.object({
   id: z.string().min(1),
   name: z.string().min(1),
@@ -59,6 +67,18 @@ const inventoryItemSchema = z.object({
   weight: z.number().optional(),
   description: z.string().min(1).optional(),
   equipped: z.boolean().optional(),
+  armor: armorPropertiesSchema.optional(),
+  armorClassBonus: z.number().optional(),
+});
+
+const armorClassEffectSchema = z.object({
+  id: z.string().min(1),
+  name: z.string(),
+  bonus: z.number(),
+  trigger: z.discriminatedUnion("type", [
+    z.object({ type: z.literal("concentration"), spellId: z.string().min(1) }),
+    z.object({ type: z.literal("manual"), active: z.boolean() }),
+  ]),
 });
 
 const featureRechargeSchema = z.enum(["shortRest", "longRest", "other"]);
@@ -89,7 +109,11 @@ export const characterSchema = z.object({
   raceSelection: raceSelectionSchema.optional(),
   background: z.string().min(1).optional(),
   hitPoints: hitPointsSchema,
-  armorClass: z.number(),
+  // Pas de `armorClass` : la CA est calculée. Un ancien JSON qui la contient reste importable
+  // (clé inconnue ignorée par z.object).
+  armorProficiencies: z.array(armorCategorySchema).optional(),
+  mediumArmorMaster: z.boolean().optional(),
+  armorClassEffects: z.array(armorClassEffectSchema).optional(),
   initiativeBonus: z.number(),
   speed: z.number(),
   abilityScores: abilityScoresSchema,

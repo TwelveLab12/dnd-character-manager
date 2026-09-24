@@ -26,7 +26,6 @@ export function createBlankCharacter(input: NewCharacterInput): Character {
     class: input.class,
     level: input.level ?? 1,
     hitPoints: { current: 1, max: 1, temporary: 0 },
-    armorClass: 10,
     initiativeBonus: 0,
     speed: 9,
     abilityScores: { ...DEFAULT_ABILITY_SCORES },

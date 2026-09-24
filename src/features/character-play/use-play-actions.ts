@@ -47,7 +47,24 @@ export function usePlayActions(characterId: string) {
       })),
     toggleConcentration: () =>
       withCurrent((character) => ({
-        concentration: { ...character.concentration, active: !character.concentration.active },
+        // Couper la concentration oublie aussi le sort concentré (et donc ses effets de CA).
+        concentration: character.concentration.active
+          ? { active: false }
+          : { ...character.concentration, active: true },
+      })),
+    setConcentrationSpell: (spellId: string | undefined) =>
+      withCurrent((character) => ({
+        concentration: spellId
+          ? { ...character.concentration, spellId }
+          : { active: character.concentration.active },
+      })),
+    toggleArmorClassEffect: (effectId: string) =>
+      withCurrent((character) => ({
+        armorClassEffects: character.armorClassEffects?.map((effect) =>
+          effect.id === effectId && effect.trigger.type === "manual"
+            ? { ...effect, trigger: { type: "manual", active: !effect.trigger.active } }
+            : effect,
+        ),
       })),
     takeShortRest: () => withCurrent((character) => applyShortRest(character)),
     takeLongRest: () => withCurrent((character) => applyLongRest(character)),
