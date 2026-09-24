@@ -1,4 +1,6 @@
-import type { SpellSlotLevel } from "../character";
+import type { Character, SpellSlotLevel, SpellSlotsUsed } from "../character";
+import { findClassDefinition } from "../character-class";
+import { clampCharacterLevel } from "./proficiency";
 
 /**
  * Table de progression des emplacements de sorts des lanceurs de sorts "full caster" (Clerc,
@@ -31,8 +33,8 @@ const FULL_CASTER_SLOT_TABLE: readonly (readonly number[])[] = [
 ];
 
 /**
- * Emplacements de sorts d'un lanceur "full caster" au niveau donné, un `SpellSlotLevel` par
- * niveau de sort disposant d'au moins un emplacement (les niveaux à 0 emplacement sont omis).
+ * Totaux d'emplacements d'un lanceur "full caster" au niveau donné, un `SpellSlotLevel` (avec
+ * `used: 0`) par niveau de sort disposant d'au moins un emplacement (les niveaux à 0 sont omis).
  */
 export function fullCasterSpellSlots(characterLevel: number): SpellSlotLevel[] {
   const row = FULL_CASTER_SLOT_TABLE[characterLevel - 1];
@@ -44,7 +46,34 @@ export function fullCasterSpellSlots(characterLevel: number): SpellSlotLevel[] {
     .filter((slot) => slot.total > 0);
 }
 
-/** Ajuste le nombre d'emplacements utilisés pour un niveau, borné à [0, total]. */
-export function adjustSpellSlotUsage(slot: SpellSlotLevel, delta: number): SpellSlotLevel {
-  return { ...slot, used: Math.min(slot.total, Math.max(0, slot.used + delta)) };
+/**
+ * Emplacements de sorts du personnage : totaux calculés depuis sa classe (progression) et son
+ * niveau, `used` lu dans l'état stocké et borné au total. Aucun emplacement pour une classe hors
+ * registre ou sans incantation — voir docs/adr/0022.
+ */
+export function computeSpellSlots(character: Character): SpellSlotLevel[] {
+  const progression = findClassDefinition(character.classId)?.spellcasting?.progression;
+  if (progression !== "full") {
+    return [];
+  }
+  return fullCasterSpellSlots(clampCharacterLevel(character.level)).map((slot) => ({
+    ...slot,
+    used: Math.min(slot.total, Math.max(0, character.spellSlotsUsed[slot.level] ?? 0)),
+  }));
+}
+
+/** Ajuste les emplacements utilisés d'un niveau, borné à [0, total calculé]. */
+export function adjustSpellSlotsUsed(
+  character: Character,
+  level: number,
+  delta: number,
+): SpellSlotsUsed {
+  const slot = computeSpellSlots(character).find((candidate) => candidate.level === level);
+  if (!slot) {
+    return character.spellSlotsUsed;
+  }
+  return {
+    ...character.spellSlotsUsed,
+    [level]: Math.min(slot.total, Math.max(0, slot.used + delta)),
+  };
 }

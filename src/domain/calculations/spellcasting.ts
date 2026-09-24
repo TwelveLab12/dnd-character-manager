@@ -1,3 +1,7 @@
+import type { AbilityName } from "../ability-scores";
+import type { Character } from "../character";
+import { findClassDefinition } from "../character-class";
+import { effectiveAbilityScores } from "./effective-ability-scores";
 import { abilityModifier } from "./modifiers";
 import { clampCharacterLevel, proficiencyBonusForLevel } from "./proficiency";
 
@@ -44,4 +48,39 @@ export function resolvedSpellAttackBonus(
     proficiencyBonusForLevel(clampCharacterLevel(level)),
     abilityModifier(abilityScore),
   );
+}
+
+export interface ResolvedSpellcasting {
+  ability: AbilityName;
+  spellSaveDC: number;
+  spellAttackBonus: number;
+}
+
+/**
+ * Incantation du personnage : caractéristique déduite de la classe connue (ex : Sagesse pour un
+ * Clerc), sinon celle saisie pour une classe hors registre ; DD et bonus d'attaque calculés, les
+ * surcharges existantes (`spellSaveDCOverride`, `spellAttackBonusOverride`) restant prioritaires.
+ * `undefined` si le personnage ne lance pas de sorts.
+ */
+export function resolveSpellcasting(character: Character): ResolvedSpellcasting | undefined {
+  const ability =
+    findClassDefinition(character.classId)?.spellcasting?.ability ??
+    character.spellcasting?.ability;
+  if (!ability) {
+    return undefined;
+  }
+  const score = effectiveAbilityScores(character.abilityScores, character.raceSelection)[ability];
+  return {
+    ability,
+    spellSaveDC: resolvedSpellSaveDC(
+      character.level,
+      score,
+      character.spellcasting?.spellSaveDCOverride,
+    ),
+    spellAttackBonus: resolvedSpellAttackBonus(
+      character.level,
+      score,
+      character.spellcasting?.spellAttackBonusOverride,
+    ),
+  };
 }

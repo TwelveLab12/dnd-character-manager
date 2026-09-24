@@ -24,8 +24,9 @@ describe("RestActions (via CharacterPlay)", () => {
 
   it("requires confirmation before applying a long rest", async () => {
     const character = makeTestCharacter({
+      classId: "clerc",
       hitPoints: { current: 1, max: 10, temporary: 0 },
-      spellSlots: [{ level: 1, total: 4, used: 4 }],
+      spellSlotsUsed: { "1": 2 },
     });
     await new LocalStorageCharacterRepository().create(character);
 
@@ -43,8 +44,9 @@ describe("RestActions (via CharacterPlay)", () => {
 
   it("restores hit points and spell slots on confirmed long rest", async () => {
     const character = makeTestCharacter({
+      classId: "clerc",
       hitPoints: { current: 1, max: 10, temporary: 0 },
-      spellSlots: [{ level: 1, total: 4, used: 4 }],
+      spellSlotsUsed: { "1": 2 },
     });
     await new LocalStorageCharacterRepository().create(character);
 
@@ -58,23 +60,26 @@ describe("RestActions (via CharacterPlay)", () => {
 
     const persisted = await new LocalStorageCharacterRepository().getById(character.id);
     expect(persisted?.hitPoints.current).toBe(10);
-    expect(persisted?.spellSlots).toEqual([{ level: 1, total: 4, used: 0 }]);
+    expect(persisted?.spellSlotsUsed).toEqual({});
   });
 
-  it("only restores shortRest features on a confirmed short rest", async () => {
+  it("restores short-rest features and Channel Divinity on a confirmed short rest", async () => {
     const character = makeTestCharacter({
+      classId: "clerc",
+      level: 2,
       features: [
         {
-          id: "channel-divinity",
-          name: "Channel Divinity",
-          source: "Clerc",
+          id: "second-wind",
+          name: "Inspiration",
+          source: "Test",
           description: "",
           usesMax: 1,
           usesCurrent: 0,
           recharge: "shortRest",
         },
       ],
-      spellSlots: [{ level: 1, total: 4, used: 4 }],
+      classResourcesUsed: { "channel-divinity": 1 },
+      spellSlotsUsed: { "1": 3 },
     });
     await new LocalStorageCharacterRepository().create(character);
 
@@ -88,7 +93,8 @@ describe("RestActions (via CharacterPlay)", () => {
 
     const persisted = await new LocalStorageCharacterRepository().getById(character.id);
     expect(persisted?.features[0]?.usesCurrent).toBe(1);
+    expect(persisted?.classResourcesUsed).toEqual({});
     // Le repos court ne touche pas aux emplacements de sorts.
-    expect(persisted?.spellSlots).toEqual([{ level: 1, total: 4, used: 4 }]);
+    expect(persisted?.spellSlotsUsed).toEqual({ "1": 3 });
   });
 });

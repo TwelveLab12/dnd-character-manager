@@ -1,16 +1,16 @@
 "use client";
 
-import { CircleOff, Hourglass, Moon, Sparkles, WandSparkles, X } from "lucide-react";
+import { CircleOff, Hourglass, Moon, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useId } from "react";
 import type { AbilityName } from "@/domain/ability-scores";
 import { ABILITY_NAMES } from "@/domain/ability-scores";
-import type { SpellSlotLevel } from "@/domain/character";
+import type { SpellcastingInfo, SpellSlotLevel } from "@/domain/character";
 import { clampCharacterLevel } from "@/domain/calculations/proficiency";
-import { effectiveAbilityScores } from "@/domain/calculations/effective-ability-scores";
 import { applyLongRest, applyShortRest } from "@/domain/calculations/rest";
-import { fullCasterSpellSlots } from "@/domain/calculations/spell-slot-table";
-import { resolvedSpellAttackBonus, resolvedSpellSaveDC } from "@/domain/calculations/spellcasting";
+import { adjustSpellSlotsUsed, computeSpellSlots } from "@/domain/calculations/spell-slot-table";
+import { resolveSpellcasting } from "@/domain/calculations/spellcasting";
+import { findClassDefinition } from "@/domain/character-class";
 import type { Spell } from "@/domain/spell";
 import type { CharacterSpellTag } from "@/domain/spell-tag";
 import { useSpellStore } from "@/stores/store-provider";
@@ -57,9 +57,12 @@ function SpellcastingSection({ draft, onChange }: CharacterTabProps) {
   const abilityId = useId();
   const dcOverrideId = useId();
   const attackOverrideId = useId();
-  const { spellcasting } = draft;
+  const classDefinition = findClassDefinition(draft.classId);
+  const classAbility = classDefinition?.spellcasting?.ability;
+  const resolved = resolveSpellcasting(draft);
+  const overrides = draft.spellcasting ?? {};
 
-  if (!spellcasting) {
+  if (!resolved) {
     return (
       <section className="grid gap-2">
         <SectionTitle>Incantation</SectionTitle>
@@ -70,7 +73,7 @@ function SpellcastingSection({ draft, onChange }: CharacterTabProps) {
           <Button
             type="button"
             variant="outline"
-            onClick={() => onChange({ spellcasting: { ability: "wisdom" } })}
+            onClick={() => onChange({ spellcasting: { ...overrides, ability: "wisdom" } })}
           >
             <Sparkles />
             Activer l&rsquo;incantation
@@ -80,70 +83,68 @@ function SpellcastingSection({ draft, onChange }: CharacterTabProps) {
     );
   }
 
-  const abilityScore = effectiveAbilityScores(draft.abilityScores, draft.raceSelection)[
-    spellcasting.ability
-  ];
-  const dc = resolvedSpellSaveDC(draft.level, abilityScore, spellcasting.spellSaveDCOverride);
-  const attack = resolvedSpellAttackBonus(
-    draft.level,
-    abilityScore,
-    spellcasting.spellAttackBonusOverride,
-  );
+  function setOverride(patch: Partial<SpellcastingInfo>) {
+    onChange({ spellcasting: { ...overrides, ...patch } });
+  }
 
   return (
     <section className="grid gap-4">
       <div className="flex items-center justify-between">
         <SectionTitle>Incantation</SectionTitle>
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          onClick={() => onChange({ spellcasting: undefined })}
-        >
-          <CircleOff />
-          Désactiver
-        </Button>
+        {!classAbility && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => onChange({ spellcasting: undefined })}
+          >
+            <CircleOff />
+            Désactiver
+          </Button>
+        )}
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
         <div className="grid gap-2">
           <Label htmlFor={abilityId}>Caractéristique</Label>
-          <Select
-            value={spellcasting.ability}
-            onValueChange={(value) =>
-              onChange({ spellcasting: { ...spellcasting, ability: value as AbilityName } })
-            }
-          >
-            <SelectTrigger id={abilityId}>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {ABILITY_NAMES.map((ability) => (
-                <SelectItem key={ability} value={ability}>
-                  {ABILITY_LABELS[ability]}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          {classAbility && classDefinition ? (
+            <p id={abilityId} className="text-sm">
+              {ABILITY_LABELS[classAbility]}{" "}
+              <span className="text-muted-foreground text-xs">
+                (déterminée par la classe {classDefinition.name})
+              </span>
+            </p>
+          ) : (
+            <Select
+              value={resolved.ability}
+              onValueChange={(value) => setOverride({ ability: value as AbilityName })}
+            >
+              <SelectTrigger id={abilityId}>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {ABILITY_NAMES.map((ability) => (
+                  <SelectItem key={ability} value={ability}>
+                    {ABILITY_LABELS[ability]}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
         </div>
 
         <div className="grid gap-2">
           <Label htmlFor={dcOverrideId} className="font-semibold">
-            DD de sauvegarde — {dc}
+            DD de sauvegarde — {resolved.spellSaveDC}
           </Label>
           <Input
             id={dcOverrideId}
             type="number"
             placeholder="Calcul automatique"
-            value={spellcasting.spellSaveDCOverride ?? ""}
+            value={overrides.spellSaveDCOverride ?? ""}
             onChange={(event) =>
-              onChange({
-                spellcasting: {
-                  ...spellcasting,
-                  spellSaveDCOverride: event.target.value
-                    ? toNumber(event.target.value)
-                    : undefined,
-                },
+              setOverride({
+                spellSaveDCOverride: event.target.value ? toNumber(event.target.value) : undefined,
               })
             }
           />
@@ -151,21 +152,18 @@ function SpellcastingSection({ draft, onChange }: CharacterTabProps) {
 
         <div className="grid gap-2">
           <Label htmlFor={attackOverrideId} className="font-semibold">
-            Bonus d&rsquo;attaque — {formatModifier(attack)}
+            Bonus d&rsquo;attaque — {formatModifier(resolved.spellAttackBonus)}
           </Label>
           <Input
             id={attackOverrideId}
             type="number"
             placeholder="Calcul automatique"
-            value={spellcasting.spellAttackBonusOverride ?? ""}
+            value={overrides.spellAttackBonusOverride ?? ""}
             onChange={(event) =>
-              onChange({
-                spellcasting: {
-                  ...spellcasting,
-                  spellAttackBonusOverride: event.target.value
-                    ? toNumber(event.target.value)
-                    : undefined,
-                },
+              setOverride({
+                spellAttackBonusOverride: event.target.value
+                  ? toNumber(event.target.value)
+                  : undefined,
               })
             }
           />
@@ -175,37 +173,26 @@ function SpellcastingSection({ draft, onChange }: CharacterTabProps) {
   );
 }
 
+/**
+ * Emplacements CALCULÉS depuis la classe et le niveau (docs/adr/0022) : seuls les emplacements
+ * utilisés sont modifiables ici.
+ */
 function SpellSlotsSection({ draft, onChange }: CharacterTabProps) {
-  function updateSlot(level: number, patch: Partial<SpellSlotLevel>) {
-    onChange({
-      spellSlots: draft.spellSlots.map((slot) =>
-        slot.level === level ? { ...slot, ...patch } : slot,
-      ),
-    });
-  }
-
-  function removeSlot(level: number) {
-    onChange({ spellSlots: draft.spellSlots.filter((slot) => slot.level !== level) });
-  }
-
-  const sortedSlots = [...draft.spellSlots].sort((a, b) => a.level - b.level);
+  const classDefinition = findClassDefinition(draft.classId);
+  const slots = computeSpellSlots(draft);
 
   return (
     <section className="grid gap-3">
-      <div className="flex items-center justify-between">
-        <SectionTitle>Emplacements de sorts</SectionTitle>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="grid gap-0.5">
+          <SectionTitle>Emplacements de sorts</SectionTitle>
+          {slots.length > 0 && classDefinition && (
+            <p className="text-muted-foreground text-xs">
+              Calculés : {classDefinition.name} niv. {clampCharacterLevel(draft.level)}
+            </p>
+          )}
+        </div>
         <div className="flex gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() =>
-              onChange({ spellSlots: fullCasterSpellSlots(clampCharacterLevel(draft.level)) })
-            }
-          >
-            <WandSparkles />
-            Générer (lanceur complet)
-          </Button>
           <Button
             type="button"
             variant="outline"
@@ -227,52 +214,53 @@ function SpellSlotsSection({ draft, onChange }: CharacterTabProps) {
         </div>
       </div>
 
-      {sortedSlots.length === 0 && (
-        <p className="text-muted-foreground text-sm">Aucun emplacement de sort configuré.</p>
+      {slots.length === 0 && (
+        <p className="text-muted-foreground text-sm">
+          Aucun emplacement : choisis une classe de lanceur de sorts dans l&rsquo;onglet Général.
+        </p>
       )}
 
       <div className="grid gap-2 sm:grid-cols-2">
-        {sortedSlots.map((slot) => (
-          <div key={slot.level} className="flex flex-wrap items-center gap-2 rounded-lg border p-2">
-            <span className="w-20 text-sm font-medium">Niveau {slot.level}</span>
-            <Label className="text-muted-foreground text-xs">Utilisés</Label>
-            <Input
-              type="number"
-              className="w-16"
-              min={0}
-              max={slot.total}
-              value={slot.used}
-              onChange={(event) =>
-                updateSlot(slot.level, {
-                  used: Math.min(slot.total, Math.max(0, toNumber(event.target.value))),
-                })
-              }
-            />
-            <span className="text-muted-foreground text-sm">/</span>
-            <Label className="text-muted-foreground text-xs">Total</Label>
-            <Input
-              type="number"
-              className="w-16"
-              min={0}
-              value={slot.total}
-              onChange={(event) =>
-                updateSlot(slot.level, { total: Math.max(0, toNumber(event.target.value)) })
-              }
-            />
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              className="ml-auto"
-              onClick={() => removeSlot(slot.level)}
-            >
-              <X />
-              Retirer
-            </Button>
-          </div>
+        {slots.map((slot) => (
+          <SpellSlotUsedField key={slot.level} slot={slot} draft={draft} onChange={onChange} />
         ))}
       </div>
     </section>
+  );
+}
+
+function SpellSlotUsedField({
+  slot,
+  draft,
+  onChange,
+}: CharacterTabProps & { slot: SpellSlotLevel }) {
+  const usedId = useId();
+
+  return (
+    <div className="flex flex-wrap items-center gap-2 rounded-lg border p-2">
+      <span className="w-20 text-sm font-medium">Niveau {slot.level}</span>
+      <Label htmlFor={usedId} className="text-muted-foreground text-xs">
+        Utilisés
+      </Label>
+      <Input
+        id={usedId}
+        type="number"
+        className="w-16"
+        min={0}
+        max={slot.total}
+        value={slot.used}
+        onChange={(event) =>
+          onChange({
+            spellSlotsUsed: adjustSpellSlotsUsed(
+              draft,
+              slot.level,
+              toNumber(event.target.value) - slot.used,
+            ),
+          })
+        }
+      />
+      <span className="text-muted-foreground text-sm">/ {slot.total}</span>
+    </div>
   );
 }
 

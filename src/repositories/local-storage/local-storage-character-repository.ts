@@ -1,9 +1,25 @@
 import type { Character } from "@/domain/character";
 import type { CharacterRepository, UpsertManyResult } from "../contracts/character-repository";
+import { normalizeLegacyCharacter } from "@/domain/migrations/normalize-legacy-character";
 import { LocalStorageClient } from "./local-storage-client";
 
+/**
+ * Versions du format des personnages :
+ * - 1 : format d'origine ;
+ * - 2 : valeurs dérivées calculées (classId, emplacements utilisés seulement, ressources de classe)
+ *   — voir docs/adr/0022 et 0023.
+ */
+const CHARACTERS_SCHEMA_VERSION = 2;
+
+function migrateCharacters(data: unknown): Character[] {
+  return Array.isArray(data) ? (data.map(normalizeLegacyCharacter) as Character[]) : [];
+}
+
 export class LocalStorageCharacterRepository implements CharacterRepository {
-  private readonly store = new LocalStorageClient<Character[]>("characters", []);
+  private readonly store = new LocalStorageClient<Character[]>("characters", [], {
+    schemaVersion: CHARACTERS_SCHEMA_VERSION,
+    migrate: migrateCharacters,
+  });
 
   async list(): Promise<Character[]> {
     return this.store.read();

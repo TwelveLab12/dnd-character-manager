@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { normalizeLegacyCharacter } from "@/domain/migrations/normalize-legacy-character";
 
 /**
  * Miroir du type domaine `Character` (src/domain/character.ts). `id` est requis ici : l'appelant
@@ -30,14 +31,16 @@ const hitPointsSchema = z.object({
   temporary: z.number(),
 });
 
-const spellSlotLevelSchema = z.object({
-  level: z.number().int().min(1).max(9),
-  total: z.number().int().min(0),
-  used: z.number().int().min(0),
-});
+// Clés = niveau de sort (1-9) ; JSON ne connaît que des clés texte.
+const spellSlotsUsedSchema = z.partialRecord(z.string().regex(/^[1-9]$/), z.number().int().min(0));
+
+const classResourcesUsedSchema = z.partialRecord(
+  z.enum(["channel-divinity"]),
+  z.number().int().min(0),
+);
 
 const spellcastingInfoSchema = z.object({
-  ability: abilityNameSchema,
+  ability: abilityNameSchema.optional(),
   spellSaveDCOverride: z.number().optional(),
   spellAttackBonusOverride: z.number().optional(),
 });
@@ -131,12 +134,14 @@ const characterFeatureSchema = z.object({
   usesMax: z.number().optional(),
   usesCurrent: z.number().optional(),
   recharge: featureRechargeSchema.optional(),
+  resourceId: z.enum(["channel-divinity"]).optional(),
 });
 
-export const characterSchema = z.object({
+const currentCharacterSchema = z.object({
   id: z.string().min(1),
   name: z.string().min(1),
   class: z.string().min(1),
+  classId: z.string().min(1).optional(),
   subclass: z.string().min(1).optional(),
   level: z.number().int().min(1).max(20),
   race: z.string().min(1).optional(),
@@ -161,7 +166,9 @@ export const characterSchema = z.object({
   dualWielder: z.boolean().optional(),
   twoWeaponFightingStyle: z.boolean().optional(),
   spellcasting: spellcastingInfoSchema.optional(),
-  spellSlots: z.array(spellSlotLevelSchema).default([]),
+  // Pas de totaux d'emplacements ni de maximum de ressources : calculés (docs/adr/0022).
+  spellSlotsUsed: spellSlotsUsedSchema.default({}),
+  classResourcesUsed: classResourcesUsedSchema.default({}),
   knownSpellIds: z.array(z.string()).default([]),
   preparedSpellIds: z.array(z.string()).default([]),
   spellTags: z.array(characterSpellTagSchema).default([]),
@@ -178,3 +185,9 @@ export const characterSchema = z.object({
     .min(1)
     .default(() => new Date().toISOString()),
 });
+
+/**
+ * Un JSON au format antérieur (emplacements stockés, compteurs de Canalisation divine par
+ * capacité…) est d'abord normalisé vers le format courant — voir docs/adr/0023.
+ */
+export const characterSchema = z.preprocess(normalizeLegacyCharacter, currentCharacterSchema);

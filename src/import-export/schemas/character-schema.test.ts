@@ -36,10 +36,41 @@ describe("characterSchema", () => {
   it("accepts a character with spellcasting, inventory and features populated", () => {
     const character = makeTestCharacter({
       spellcasting: { ability: "wisdom", spellSaveDCOverride: 15 },
-      spellSlots: [{ level: 1, total: 4, used: 1 }],
+      classId: "clerc",
+      spellSlotsUsed: { "1": 1 },
+      classResourcesUsed: { "channel-divinity": 1 },
       inventory: [{ id: "item-1", name: "Rope", quantity: 1 }],
-      features: [{ id: "feat-1", name: "Channel Divinity", source: "Cleric", description: "..." }],
+      features: [
+        {
+          id: "feat-1",
+          name: "Channel Divinity",
+          source: "Cleric",
+          description: "...",
+          resourceId: "channel-divinity",
+        },
+      ],
     });
     expect(characterSchema.parse(character)).toEqual(character);
+  });
+
+  it("normalizes a character exported in the legacy format (stored spell slot totals)", () => {
+    const {
+      spellSlotsUsed: _used,
+      classResourcesUsed: _res,
+      ...current
+    } = makeTestCharacter({
+      class: "Clerc",
+      level: 3,
+    });
+    const parsed = characterSchema.parse({
+      ...current,
+      spellSlots: [{ level: 1, total: 4, used: 2 }],
+    });
+    expect(parsed).toMatchObject({
+      classId: "clerc",
+      spellSlotsUsed: { "1": 2 },
+      classResourcesUsed: {},
+    });
+    expect(parsed).not.toHaveProperty("spellSlots");
   });
 });

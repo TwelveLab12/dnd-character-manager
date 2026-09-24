@@ -1,3 +1,5 @@
+import type { ClassResourceId } from "./character-class";
+
 export type FeatureRecharge = "shortRest" | "longRest" | "other";
 
 /**
@@ -12,4 +14,8 @@ export interface CharacterFeature {
   usesMax?: number;
   usesCurrent?: number;
   recharge?: FeatureRecharge;
+  /** Ressource de classe consommée à chaque utilisation (ex : les options de Canalisation
+   * divine). Une capacité liée n'a pas de compteur propre (`usesMax`/`usesCurrent`) : elle puise
+   * dans la réserve commune calculée — voir src/domain/calculations/class-resources.ts. */
+  resourceId?: ClassResourceId;
 }

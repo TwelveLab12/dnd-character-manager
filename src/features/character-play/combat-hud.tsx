@@ -3,8 +3,7 @@
 import { Footprints, Sparkles, WandSparkles, Zap } from "lucide-react";
 import type { Character } from "@/domain/character";
 import { computeArmorClass } from "@/domain/calculations/armor-class";
-import { effectiveAbilityScores } from "@/domain/calculations/effective-ability-scores";
-import { resolvedSpellAttackBonus, resolvedSpellSaveDC } from "@/domain/calculations/spellcasting";
+import { resolveSpellcasting } from "@/domain/calculations/spellcasting";
 import { computeWeaponAttacks } from "@/domain/calculations/weapon-attack";
 import { formatArmorClassBreakdown } from "@/features/shared/armor-class";
 import { formatModifier } from "@/features/shared/format";
@@ -36,10 +35,7 @@ function hasActiveArmorClassEffect(character: Character): boolean {
 export function CombatHud({ character }: { character: Character }) {
   const armorClass = computeArmorClass(character);
   const attacks = computeWeaponAttacks(character);
-  const { spellcasting } = character;
-  const castingScore = spellcasting
-    ? effectiveAbilityScores(character.abilityScores, character.raceSelection)[spellcasting.ability]
-    : undefined;
+  const spellcasting = resolveSpellcasting(character);
 
   return (
     <section
@@ -95,28 +91,18 @@ export function CombatHud({ character }: { character: Character }) {
             }
             label="Vitesse"
           />
-          {spellcasting && castingScore !== undefined && (
+          {spellcasting && (
             <>
               <StatTile
                 icon={Sparkles}
                 tone="magic"
-                value={resolvedSpellSaveDC(
-                  character.level,
-                  castingScore,
-                  spellcasting.spellSaveDCOverride,
-                )}
+                value={spellcasting.spellSaveDC}
                 label="DD sorts"
               />
               <StatTile
                 icon={WandSparkles}
                 tone="magic"
-                value={formatModifier(
-                  resolvedSpellAttackBonus(
-                    character.level,
-                    castingScore,
-                    spellcasting.spellAttackBonusOverride,
-                  ),
-                )}
+                value={formatModifier(spellcasting.spellAttackBonus)}
                 label="Attaque sort"
               />
             </>

@@ -39,4 +39,31 @@ describe("LocalStorageClient", () => {
     const client = new LocalStorageClient<string[]>("widgets", []);
     expect(client.read()).toEqual([]);
   });
+
+  it("migrates data from an older version and rewrites it in the current format", () => {
+    window.localStorage.setItem(
+      "dnd-character-manager:v1:widgets",
+      JSON.stringify({ schemaVersion: 1, data: ["a"] }),
+    );
+    const client = new LocalStorageClient<string[]>("widgets", [], {
+      schemaVersion: 2,
+      migrate: (data, fromVersion) => (data as string[]).map((item) => `${item}@${fromVersion}`),
+    });
+    expect(client.read()).toEqual(["a@1"]);
+    expect(window.localStorage.getItem("dnd-character-manager:v1:widgets")).toBe(
+      JSON.stringify({ schemaVersion: 2, data: ["a@1"] }),
+    );
+  });
+
+  it("does not migrate data from a newer version", () => {
+    window.localStorage.setItem(
+      "dnd-character-manager:v1:widgets",
+      JSON.stringify({ schemaVersion: 3, data: ["future"] }),
+    );
+    const client = new LocalStorageClient<string[]>("widgets", [], {
+      schemaVersion: 2,
+      migrate: () => ["migrated"],
+    });
+    expect(client.read()).toEqual([]);
+  });
 });

@@ -1,5 +1,6 @@
 import type { AbilityName, AbilityScores } from "./ability-scores";
 import type { ArmorClassEffect } from "./armor-class-effect";
+import type { ClassResourceId } from "./character-class";
 import type { CharacterFeature } from "./feature";
 import type { ArmorCategory, InventoryItem, WeaponCategory } from "./inventory";
 import type { RaceSelection } from "./race";
@@ -11,14 +12,25 @@ export interface HitPoints {
   temporary: number;
 }
 
+/** Emplacements d'un niveau de sort, tels que CALCULÉS (voir computeSpellSlots) : le total découle
+ * de la classe et du niveau, seul `used` provient de l'état stocké (`Character.spellSlotsUsed`). */
 export interface SpellSlotLevel {
   level: number;
   total: number;
   used: number;
 }
 
+/** Emplacements utilisés par niveau de sort (clé = niveau 1-9, en texte comme en JSON). Les totaux ne sont jamais
+ * stockés : ils sont calculés depuis la classe et le niveau — voir docs/adr/0022. */
+export type SpellSlotsUsed = Partial<Record<string, number>>;
+
+/** Utilisations dépensées par ressource de classe (ex : `{ "channel-divinity": 1 }`). */
+export type ClassResourcesUsed = Partial<Record<ClassResourceId, number>>;
+
 export interface SpellcastingInfo {
-  ability: AbilityName;
+  /** Caractéristique d'incantation, seulement pour une classe absente du registre
+   * (src/domain/character-class.ts) : pour une classe connue, elle est déduite de la classe. */
+  ability?: AbilityName;
   /** La feuille source fige parfois une valeur qui diverge du calcul théorique. */
   spellSaveDCOverride?: number;
   spellAttackBonusOverride?: number;
@@ -32,7 +44,12 @@ export interface Concentration {
 export interface Character {
   id: string;
   name: string;
+  /** Libellé libre affiché (« Clerc », « Cleric »…). */
   class: string;
+  /** Classe connue des règles (src/domain/character-class.ts) : c'est elle qui détermine les
+   * valeurs calculées (emplacements, ressources de classe, caractéristique d'incantation).
+   * Indépendante du libellé `class`, comme `raceSelection` l'est de `race`. */
+  classId?: string;
   subclass?: string;
   level: number;
   race?: string;
@@ -71,7 +88,8 @@ export interface Character {
    * secondaire. */
   twoWeaponFightingStyle?: boolean;
   spellcasting?: SpellcastingInfo;
-  spellSlots: SpellSlotLevel[];
+  spellSlotsUsed: SpellSlotsUsed;
+  classResourcesUsed: ClassResourcesUsed;
   knownSpellIds: string[];
   preparedSpellIds: string[];
   /** Domaine/toujours-préparé par sort connu — voir src/domain/spell-tag.ts. */

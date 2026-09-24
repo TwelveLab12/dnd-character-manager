@@ -2,13 +2,14 @@
 
 import { Minus, Plus } from "lucide-react";
 import type { Character } from "@/domain/character";
+import { computeSpellSlots } from "@/domain/calculations/spell-slot-table";
 import { Button } from "@/components/ui/button";
 import { usePlayActions } from "./use-play-actions";
 
 export function SpellSlotsCounter({ character }: { character: Character }) {
   const { adjustSpellSlot } = usePlayActions(character.id);
 
-  const sortedSlots = [...character.spellSlots].sort((a, b) => a.level - b.level);
+  const sortedSlots = computeSpellSlots(character);
 
   if (sortedSlots.length === 0) {
     return null;
