@@ -86,3 +86,47 @@ describe("Armor class in play mode", () => {
     expect(persisted?.armorClassEffects?.[0]?.trigger).toEqual({ type: "manual", active: true });
   });
 });
+
+describe("Weapon attacks in play mode", () => {
+  beforeEach(() => {
+    window.localStorage.clear();
+  });
+
+  it("shows computed attack bonus and damage of equipped weapons", async () => {
+    const character = makeTestCharacter({
+      level: 5,
+      abilityScores: {
+        strength: 16,
+        dexterity: 10,
+        constitution: 10,
+        intelligence: 10,
+        wisdom: 10,
+        charisma: 10,
+      },
+      weaponProficiencies: ["simple"],
+      inventory: [
+        {
+          id: "longsword",
+          name: "Épée longue",
+          quantity: 1,
+          equipped: true,
+          weapon: {
+            category: "martial",
+            range: "melee",
+            damageDice: "1d8",
+            versatileDamageDice: "1d10",
+            damageType: "slashing",
+          },
+        },
+      ],
+    });
+    await new LocalStorageCharacterRepository().create(character);
+
+    renderPlay(character.id);
+    await screen.findByRole("heading", { name: character.name });
+
+    expect(screen.getByText("+3")).toBeInTheDocument();
+    expect(screen.getByText(/1d8\+3 tranchant · 1d10\+3 à deux mains/)).toBeInTheDocument();
+    expect(screen.getByText(/non maîtrisée/i)).toBeInTheDocument();
+  });
+});

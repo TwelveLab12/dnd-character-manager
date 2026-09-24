@@ -1,7 +1,7 @@
 import type { AbilityName, AbilityScores } from "./ability-scores";
 import type { ArmorClassEffect } from "./armor-class-effect";
 import type { CharacterFeature } from "./feature";
-import type { ArmorCategory, InventoryItem } from "./inventory";
+import type { ArmorCategory, InventoryItem, WeaponCategory } from "./inventory";
 import type { RaceSelection } from "./race";
 import type { CharacterSpellTag } from "./spell-tag";
 
@@ -59,8 +59,10 @@ export interface Character {
   savingThrowProficiencies: AbilityName[];
   skillProficiencies: string[];
   concentration: Concentration;
-  meleeAttackBonus?: number;
-  rangedAttackBonus?: number;
+  /** Maîtrises d'armes par catégorie : le bonus de maîtrise ne s'ajoute au jet d'attaque que pour
+   * une arme maîtrisée. Pas de bonus d'attaque stocké : il est calculé par arme équipée — voir
+   * src/domain/calculations/weapon-attack.ts. */
+  weaponProficiencies?: WeaponCategory[];
   spellcasting?: SpellcastingInfo;
   spellSlots: SpellSlotLevel[];
   knownSpellIds: string[];

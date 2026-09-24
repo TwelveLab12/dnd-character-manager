@@ -60,6 +60,34 @@ const armorPropertiesSchema = z.object({
   strengthRequirement: z.number().optional(),
 });
 
+const weaponCategorySchema = z.enum(["simple", "martial"]);
+
+const weaponPropertiesSchema = z.object({
+  category: weaponCategorySchema,
+  range: z.enum(["melee", "ranged"]),
+  // Pas de regex stricte sur les dés : une faute de frappe ne doit pas rendre tout un personnage
+  // non importable depuis une sauvegarde — l'UI signale le format invalide à la saisie.
+  damageDice: z.string(),
+  versatileDamageDice: z.string().min(1).optional(),
+  damageType: z.enum([
+    "bludgeoning",
+    "piercing",
+    "slashing",
+    "acid",
+    "cold",
+    "fire",
+    "force",
+    "lightning",
+    "necrotic",
+    "poison",
+    "psychic",
+    "radiant",
+    "thunder",
+  ]),
+  finesse: z.boolean().optional(),
+  magicBonus: z.number().optional(),
+});
+
 const inventoryItemSchema = z.object({
   id: z.string().min(1),
   name: z.string().min(1),
@@ -68,6 +96,7 @@ const inventoryItemSchema = z.object({
   description: z.string().min(1).optional(),
   equipped: z.boolean().optional(),
   armor: armorPropertiesSchema.optional(),
+  weapon: weaponPropertiesSchema.optional(),
   armorClassBonus: z.number().optional(),
 });
 
@@ -120,8 +149,9 @@ export const characterSchema = z.object({
   savingThrowProficiencies: z.array(abilityNameSchema).default([]),
   skillProficiencies: z.array(z.string()).default([]),
   concentration: concentrationSchema,
-  meleeAttackBonus: z.number().optional(),
-  rangedAttackBonus: z.number().optional(),
+  // Pas de `meleeAttackBonus`/`rangedAttackBonus` : calculés par arme équipée. Un ancien JSON
+  // qui les contient reste importable (clés inconnues ignorées par z.object).
+  weaponProficiencies: z.array(weaponCategorySchema).optional(),
   spellcasting: spellcastingInfoSchema.optional(),
   spellSlots: z.array(spellSlotLevelSchema).default([]),
   knownSpellIds: z.array(z.string()).default([]),

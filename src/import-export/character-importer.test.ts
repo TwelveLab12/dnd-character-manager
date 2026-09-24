@@ -71,6 +71,43 @@ describe("previewCharacterImport", () => {
     expect(row?.entity?.inventory[0]?.armor?.baseArmorClass).toBe(16);
     expect(row?.entity?.armorClassEffects?.[0]?.trigger.type).toBe("concentration");
   });
+
+  it("still imports a legacy character with stored attack bonuses, dropping the keys", () => {
+    const legacy = {
+      ...makeTestCharacter({ id: "elara" }),
+      meleeAttackBonus: 5,
+      rangedAttackBonus: 3,
+    };
+    const [row] = previewCharacterImport([legacy], []);
+
+    expect(row?.status).toBe("new");
+    expect(row?.entity).not.toHaveProperty("meleeAttackBonus");
+    expect(row?.entity).not.toHaveProperty("rangedAttackBonus");
+  });
+
+  it("imports weapons", () => {
+    const weaponItem = {
+      id: "mace",
+      name: "Masse d'armes",
+      quantity: 1,
+      equipped: true,
+      weapon: {
+        category: "simple" as const,
+        range: "melee" as const,
+        damageDice: "1d6",
+        damageType: "bludgeoning" as const,
+      },
+    };
+    const valid = makeTestCharacter({
+      id: "elara",
+      weaponProficiencies: ["simple"],
+      inventory: [weaponItem],
+    });
+    const [row] = previewCharacterImport([valid], []);
+
+    expect(row?.status).toBe("new");
+    expect(row?.entity?.inventory[0]?.weapon?.damageDice).toBe("1d6");
+  });
 });
 
 describe("parseCharacterImportEntries", () => {

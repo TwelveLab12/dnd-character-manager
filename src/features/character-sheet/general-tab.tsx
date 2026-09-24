@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { ArmorClassSection } from "./armor-class-section";
+import { AttacksSection } from "./attacks-section";
 import type { CharacterTabProps } from "./types";
 
 function toNumber(value: string): number {
@@ -39,8 +40,6 @@ export function GeneralTab({ draft, onChange }: CharacterTabProps) {
   const hpTempId = useId();
   const initiativeId = useId();
   const speedId = useId();
-  const meleeId = useId();
-  const rangedId = useId();
   const notesId = useId();
 
   return (
@@ -162,34 +161,7 @@ export function GeneralTab({ draft, onChange }: CharacterTabProps) {
         </div>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div className="grid gap-2">
-          <Label htmlFor={meleeId}>Bonus d&rsquo;attaque en mêlée</Label>
-          <Input
-            id={meleeId}
-            type="number"
-            value={draft.meleeAttackBonus ?? ""}
-            onChange={(event) =>
-              onChange({
-                meleeAttackBonus: event.target.value ? toNumber(event.target.value) : undefined,
-              })
-            }
-          />
-        </div>
-        <div className="grid gap-2">
-          <Label htmlFor={rangedId}>Bonus d&rsquo;attaque à distance</Label>
-          <Input
-            id={rangedId}
-            type="number"
-            value={draft.rangedAttackBonus ?? ""}
-            onChange={(event) =>
-              onChange({
-                rangedAttackBonus: event.target.value ? toNumber(event.target.value) : undefined,
-              })
-            }
-          />
-        </div>
-      </div>
+      <AttacksSection draft={draft} onChange={onChange} />
 
       <ThemeSection draft={draft} onChange={onChange} />
 

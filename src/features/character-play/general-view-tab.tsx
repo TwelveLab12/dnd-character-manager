@@ -5,11 +5,13 @@ import { ABILITY_NAMES } from "@/domain/ability-scores";
 import type { ArmorClassEffect } from "@/domain/armor-class-effect";
 import type { Character } from "@/domain/character";
 import { computeArmorClass } from "@/domain/calculations/armor-class";
+import { computeWeaponAttacks } from "@/domain/calculations/weapon-attack";
 import { effectiveAbilityScores } from "@/domain/calculations/effective-ability-scores";
 import { findRaceDefinition } from "@/domain/race";
 import { ABILITY_LABELS } from "@/features/shared/ability-labels";
 import { formatArmorClassBreakdown } from "@/features/shared/armor-class";
 import { formatModifier } from "@/features/shared/format";
+import { DAMAGE_TYPE_LABELS } from "@/features/shared/weapon";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -30,6 +32,7 @@ export function GeneralViewTab({ character }: { character: Character }) {
     : [];
 
   const armorClass = computeArmorClass(character);
+  const attacks = computeWeaponAttacks(character);
   const manualEffects = (character.armorClassEffects ?? []).filter(
     (effect) => effect.trigger.type === "manual",
   );
@@ -91,23 +94,33 @@ export function GeneralViewTab({ character }: { character: Character }) {
           </div>
         )}
 
-        <div className="grid gap-4 sm:grid-cols-3">
-          <ReadOnlyField
-            label="Bonus d'attaque en mêlée"
-            value={
-              character.meleeAttackBonus !== undefined
-                ? formatModifier(character.meleeAttackBonus)
-                : "—"
-            }
-          />
-          <ReadOnlyField
-            label="Bonus d'attaque à distance"
-            value={
-              character.rangedAttackBonus !== undefined
-                ? formatModifier(character.rangedAttackBonus)
-                : "—"
-            }
-          />
+        <div className="grid gap-2">
+          <span className="text-muted-foreground text-xs">Attaques</span>
+          {attacks.length === 0 ? (
+            <span className="text-sm">—</span>
+          ) : (
+            <ul className="grid gap-2 sm:grid-cols-3">
+              {attacks.map((attack) => (
+                <li key={attack.itemId} className="grid gap-0.5">
+                  <span className="text-sm font-medium">
+                    {attack.name || "Arme"}{" "}
+                    <span className="text-base font-semibold">
+                      {formatModifier(attack.attackBonus)}
+                    </span>
+                  </span>
+                  <span className="text-muted-foreground text-xs">
+                    {attack.damage} {DAMAGE_TYPE_LABELS[attack.damageType]}
+                    {attack.versatileDamage && ` · ${attack.versatileDamage} à deux mains`}
+                  </span>
+                  {!attack.proficient && (
+                    <span className="text-warning text-xs">
+                      Non maîtrisée (sans bonus de maîtrise)
+                    </span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
 
         {character.notes && <ReadOnlyField label="Notes" value={character.notes} />}
