@@ -41,6 +41,8 @@ export interface SpellcastingInfo {
   /** La feuille source fige parfois une valeur qui diverge du calcul théorique. */
   spellSaveDCOverride?: number;
   spellAttackBonusOverride?: number;
+  /** Remplace le nombre maximum de sorts préparés calculé (don, règle maison…). */
+  preparedSpellsMaxOverride?: number;
 }
 
 export interface Concentration {

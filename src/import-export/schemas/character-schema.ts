@@ -43,6 +43,7 @@ const spellcastingInfoSchema = z.object({
   ability: abilityNameSchema.optional(),
   spellSaveDCOverride: z.number().optional(),
   spellAttackBonusOverride: z.number().optional(),
+  preparedSpellsMaxOverride: z.number().int().min(0).optional(),
 });
 
 const concentrationSchema = z.object({

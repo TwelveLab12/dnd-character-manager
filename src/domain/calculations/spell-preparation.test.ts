@@ -3,6 +3,7 @@ import { makeTestSpell } from "@/test/fixtures";
 import type { KnownSpellsPatch } from "./spell-preparation";
 import {
   addKnownSpells,
+  countPreparedSpells,
   removeKnownSpell,
   setSpellDomain,
   setSpellPreparation,
@@ -91,5 +92,22 @@ describe("spellBelongsToClass", () => {
       true,
     );
     expect(spellBelongsToClass(makeTestSpell({ classes: ["Wizard"] }), "clerc")).toBe(false);
+  });
+});
+
+describe("countPreparedSpells", () => {
+  it("counts only known, leveled, prepared spells (not cantrips nor always-prepared)", () => {
+    const library = [
+      makeTestSpell({ id: "cure", level: 1 }),
+      makeTestSpell({ id: "moonbeam", level: 2 }),
+      makeTestSpell({ id: "bless", level: 1 }),
+      makeTestSpell({ id: "light", level: 0 }),
+    ];
+    const character = {
+      ...BASE,
+      knownSpellIds: [...BASE.knownSpellIds, "light"],
+      preparedSpellIds: ["cure", "moonbeam", "light", "unknown"],
+    };
+    expect(countPreparedSpells(character, library)).toBe(1);
   });
 });

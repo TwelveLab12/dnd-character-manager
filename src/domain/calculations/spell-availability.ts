@@ -1,5 +1,5 @@
 import type { Character } from "../character";
-import { findSubclassDefinition } from "../character-class";
+import { findClassDefinition, findSubclassDefinition } from "../character-class";
 import type { Spell } from "../spell";
 import { computeAlwaysPreparedSpells } from "./class-features";
 
@@ -12,7 +12,8 @@ function computedAlwaysPreparedIds(character: Character, library: readonly Spell
 /**
  * Sorts disponibles en jeu sans passer par l'écran de configuration : préparés ∪ toujours-préparés
  * (tags de la fiche ∪ sorts de sous-classe calculés, retrouvés dans `library`) ∪ tours de magie
- * connus (jamais préparés en 5e 2014, retrouvés dans `library` pour connaître leur niveau).
+ * connus (jamais préparés en 5e 2014, retrouvés dans `library` pour connaître leur niveau). Pour un
+ * lanceur sans préparation (Barde, Ensorceleur), tous les sorts connus.
  */
 export function playAvailableSpellIds(
   character: Character,
@@ -21,6 +22,12 @@ export function playAvailableSpellIds(
   const alwaysPrepared = character.spellTags
     .filter((tag) => tag.alwaysPrepared)
     .map((tag) => tag.spellId);
+  // Barde, Ensorceleur… : pas de préparation, tous les sorts connus sont disponibles.
+  if (findClassDefinition(character.classId)?.spellcasting?.preparation === "known") {
+    return [
+      ...new Set([...character.knownSpellIds, ...computedAlwaysPreparedIds(character, library)]),
+    ];
+  }
   const knownCantrips = library
     .filter((spell) => spell.level === 0 && character.knownSpellIds.includes(spell.id))
     .map((spell) => spell.id);

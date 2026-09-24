@@ -96,3 +96,16 @@ export function removeKnownSpell(character: SpellsState, spellId: string): Known
 export function spellBelongsToClass(spell: Spell, classId: string): boolean {
   return spell.classes.some((label) => findClassDefinitionByLabel(label)?.id === classId);
 }
+
+/**
+ * Sorts comptés dans la limite de préparation : seulement ceux marqués « préparé », connus, de
+ * niveau 1+ (les tours de magie et les sorts toujours préparés ne comptent pas).
+ */
+export function countPreparedSpells(character: SpellsState, library: readonly Spell[]): number {
+  return library.filter(
+    (spell) =>
+      spell.level > 0 &&
+      character.knownSpellIds.includes(spell.id) &&
+      spellPreparationState(character, spell.id) === "prepared",
+  ).length;
+}

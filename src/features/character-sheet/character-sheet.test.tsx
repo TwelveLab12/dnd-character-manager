@@ -216,7 +216,9 @@ describe("CharacterSheet", () => {
     // Sorts : le DD utilise aussi le score effectif (16, mod +3) -> DD 8+2+3=13.
     await user.click(screen.getByRole("tab", { name: /^sorts$/i }));
     await user.click(screen.getByRole("button", { name: /activer l.incantation/i }));
-    expect(await screen.findByText(/dd de sauvegarde — 13/i)).toBeInTheDocument();
+    expect(
+      within(await screen.findByRole("group", { name: "DD de sauvegarde" })).getByText("13"),
+    ).toBeInTheDocument();
   });
 
   it("toggles a skill proficiency and computes its total live on the Caractéristiques tab", async () => {
@@ -278,12 +280,21 @@ describe("CharacterSheet", () => {
     await user.click(screen.getByRole("button", { name: /activer l.incantation/i }));
 
     // Sagesse 16 (+3), niveau 3 (bonus de maîtrise +2) -> DD 13, bonus d'attaque +5.
-    expect(await screen.findByText(/dd de sauvegarde — 13/i)).toBeInTheDocument();
-    expect(screen.getByText(/bonus d.attaque — \+5/i)).toBeInTheDocument();
+    const dcTile = await screen.findByRole("group", { name: "DD de sauvegarde" });
+    expect(within(dcTile).getByText("13")).toBeInTheDocument();
+    expect(within(dcTile).getByText("8 + maîtrise 2 + Sag 3")).toBeInTheDocument();
+    expect(
+      within(screen.getByRole("group", { name: "Attaque de sort" })).getByText("+5"),
+    ).toBeInTheDocument();
+    // Classe hors registre : pas de limite de préparation calculée.
+    expect(
+      within(screen.getByRole("group", { name: "Sorts préparés" })).getByText("—"),
+    ).toBeInTheDocument();
 
-    const dcOverrideInput = screen.getByLabelText(/dd de sauvegarde/i);
-    await user.type(dcOverrideInput, "99");
-    expect(await screen.findByText(/dd de sauvegarde — 99/i)).toBeInTheDocument();
+    await user.click(within(dcTile).getByRole("button", { name: /ajuster/i }));
+    await user.type(await screen.findByLabelText(/dd de sauvegarde — valeur forcée/i), "99");
+    expect(within(dcTile).getByText("99")).toBeInTheDocument();
+    expect(within(dcTile).getByText("valeur forcée (calcul : 13)")).toBeInTheDocument();
   });
 
   it("computes spell slots from the class chosen in the General tab", async () => {
@@ -304,8 +315,22 @@ describe("CharacterSheet", () => {
     await user.click(screen.getByRole("tab", { name: /^sorts$/i }));
     expect(await screen.findByText("Niveau 1")).toBeInTheDocument();
     expect(screen.getByText("Niveau 2")).toBeInTheDocument();
-    expect(screen.getByText("Calculés : Clerc niv. 3")).toBeInTheDocument();
-    expect(screen.getByText(/sagesse/i)).toBeInTheDocument();
+    expect(screen.getByText(/clerc niv\. 3/i)).toBeInTheDocument();
+    expect(
+      within(screen.getByRole("group", { name: "Caractéristique" })).getByText("Sagesse"),
+    ).toBeInTheDocument();
+
+    // Clerc niv. 3 : 4 emplacements de niveau 1 ; toucher un jeton le dépense, le retoucher le rend.
+    const levelOnePips = screen.getAllByRole("button", { name: /^emplacement de niveau 1 /i });
+    expect(levelOnePips).toHaveLength(4);
+    await user.click(levelOnePips[0]!);
+    expect(
+      screen.getAllByRole("button", { name: /^emplacement de niveau 1 .*dépensé/i }),
+    ).toHaveLength(1);
+    await user.click(screen.getByRole("button", { name: /^emplacement de niveau 1 .*dépensé/i }));
+    expect(
+      screen.queryAllByRole("button", { name: /^emplacement de niveau 1 .*dépensé/i }),
+    ).toHaveLength(0);
   });
 
   it("adds known spells from the picker and keeps prepared / always-prepared exclusive", async () => {
@@ -360,6 +385,55 @@ describe("CharacterSheet", () => {
 
     await user.click(screen.getByRole("button", { name: /retirer test bless/i }));
     expect(screen.queryByText("Test Bless")).not.toBeInTheDocument();
+  });
+
+  it("locks the other Préparé switches once the prepared-spell limit is reached", async () => {
+    // Clerc niv. 1, Sagesse 10 (+0) -> limite 1. Un sort toujours préparé ne compte pas.
+    const character = makeTestCharacter({
+      classId: "clerc",
+      knownSpellIds: ["bless", "cure", "shield"],
+      spellTags: [{ spellId: "shield", alwaysPrepared: true }],
+    });
+    await new LocalStorageCharacterRepository().create(character);
+    await new LocalStorageSpellRepository().upsertMany([
+      makeTestSpell({ id: "bless", name: "Test Bless" }),
+      makeTestSpell({ id: "cure", name: "Test Cure" }),
+      makeTestSpell({ id: "shield", name: "Test Shield" }),
+    ]);
+
+    const user = userEvent.setup();
+    renderSheet(character.id);
+    await screen.findByRole("heading", { name: character.name });
+    await user.click(screen.getByRole("tab", { name: /^sorts$/i }));
+
+    expect(await screen.findByLabelText("0 sorts préparés sur 1")).toBeInTheDocument();
+    const bless = screen.getByRole("switch", { name: "Préparé : Test Bless" });
+    const cure = screen.getByRole("switch", { name: "Préparé : Test Cure" });
+    await user.click(bless);
+
+    expect(screen.getByLabelText("1 sorts préparés sur 1")).toBeInTheDocument();
+    expect(cure).toBeDisabled();
+    expect(screen.getByRole("switch", { name: "Préparé : Test Shield" })).toBeDisabled();
+
+    await user.click(bless);
+    expect(cure).toBeEnabled();
+  });
+
+  it("hides preparation for a caster that knows its spells (Sorcerer)", async () => {
+    const character = makeTestCharacter({ classId: "ensorceleur", knownSpellIds: ["bless"] });
+    await new LocalStorageCharacterRepository().create(character);
+    await new LocalStorageSpellRepository().upsertMany([
+      makeTestSpell({ id: "bless", name: "Test Bless" }),
+    ]);
+
+    const user = userEvent.setup();
+    renderSheet(character.id);
+    await screen.findByRole("heading", { name: character.name });
+    await user.click(screen.getByRole("tab", { name: /^sorts$/i }));
+
+    expect(await screen.findByText("Test Bless")).toBeInTheDocument();
+    expect(screen.getByText(/ne prépare pas ses sorts/i)).toBeInTheDocument();
+    expect(screen.queryByRole("switch", { name: /préparé : test bless/i })).not.toBeInTheDocument();
   });
 
   it("adds, edits and persists an inventory item", async () => {
