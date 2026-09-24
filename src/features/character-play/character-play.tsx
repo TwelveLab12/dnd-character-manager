@@ -11,6 +11,7 @@ import { CharacterThemeScope } from "@/features/character-theme/character-theme-
 import { AbilitiesViewTab } from "./abilities-view-tab";
 import { CombatHud } from "./combat-hud";
 import { CombatSummary } from "./combat-summary";
+import { FullscreenToggle } from "./fullscreen-toggle";
 import { InventoryViewTab } from "./inventory-view-tab";
 import { NotesViewTab } from "./notes-view-tab";
 import { FeaturesViewTab } from "./features-view-tab";
@@ -73,12 +74,15 @@ export function CharacterPlay({ characterId }: { characterId: string }) {
               {character.background ? ` · ${character.background}` : ""}
             </p>
           </div>
-          <Button type="button" variant="ghost" asChild>
-            <Link href={`/characters/${characterId}/edit`} aria-label="Modifier">
-              <Pencil />
-              <span className="max-sm:sr-only">Modifier</span>
-            </Link>
-          </Button>
+          <div className="flex shrink-0 items-center gap-1">
+            <FullscreenToggle />
+            <Button type="button" variant="ghost" asChild>
+              <Link href={`/characters/${characterId}/edit`} aria-label="Modifier">
+                <Pencil />
+                <span className="max-sm:sr-only">Modifier</span>
+              </Link>
+            </Button>
+          </div>
         </div>
 
         <CombatSummary character={character} />
