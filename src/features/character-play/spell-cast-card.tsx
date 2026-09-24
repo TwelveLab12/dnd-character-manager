@@ -85,7 +85,10 @@ export function SpellCastCard({
         : defaultMode.type === "ritual"
           ? "Rituel"
           : "Lancer";
-  const hasMenu = options.slots.length + (options.canRitual ? 1 : 0) > 1;
+  // Le chevron n'apparaît que s'il offre une autre option réellement utilisable.
+  const selectableOptions =
+    options.slots.filter((slot) => slot.available > 0).length + (options.canRitual ? 1 : 0);
+  const hasMenu = selectableOptions > 1;
 
   function cast(mode: CastMode) {
     const replaced =
@@ -118,32 +121,69 @@ export function SpellCastCard({
   return (
     <article
       aria-label={spell.name}
-      className={`bg-card grid gap-3 rounded-xl border p-4 transition-shadow ${
+      className={`bg-card flex flex-col gap-3 rounded-xl border p-4 transition-shadow ${
         concentrating ? "border-info ring-info/60 shadow-info/20 shadow-lg ring-1" : ""
       }`}
     >
-      <div className="flex items-start gap-3">
-        <button
-          type="button"
-          aria-expanded={open}
-          onClick={() => setOpen((current) => !current)}
-          className="grid min-w-0 flex-1 gap-1.5 text-left outline-none focus-visible:underline"
-        >
-          <span className="flex flex-wrap items-center gap-1.5">
-            <span className="font-semibold break-words">{spell.name}</span>
-            {spell.concentration && <ConcentrationTag />}
-            {spell.ritual && <RitualTag />}
-            {domain && <Badge variant="secondary">{domain}</Badge>}
-          </span>
-          <span className="text-muted-foreground text-xs">
-            {[spell.castingTime, spell.range, spell.duration].filter(Boolean).join(" · ")}
-          </span>
-        </button>
+      <button
+        type="button"
+        aria-expanded={open}
+        onClick={() => setOpen((current) => !current)}
+        className="grid min-w-0 gap-1.5 text-left outline-none focus-visible:underline"
+      >
+        <span className="flex flex-wrap items-center gap-1.5">
+          <span className="font-semibold break-words">{spell.name}</span>
+          {spell.concentration && <ConcentrationTag />}
+          {spell.ritual && <RitualTag />}
+          {domain && <Badge variant="secondary">{domain}</Badge>}
+        </span>
+        <span className="text-muted-foreground text-xs">
+          {[spell.castingTime, spell.range, spell.duration].filter(Boolean).join(" · ")}
+        </span>
+      </button>
 
-        <div className="flex shrink-0">
+      {open && (
+        <div className="text-muted-foreground grid gap-2 border-t pt-3 text-sm leading-relaxed">
+          <p>
+            <span className="text-foreground font-medium">Composantes :</span>{" "}
+            {componentsLabel(spell)}
+          </p>
+          <p className="whitespace-pre-line">{spell.description}</p>
+          {spell.higherLevel && (
+            <p className="whitespace-pre-line">
+              <span className="text-foreground font-medium">Aux niveaux supérieurs :</span>{" "}
+              {spell.higherLevel}
+            </p>
+          )}
+        </div>
+      )}
+
+      {/* Pied de carte : état de concentration à gauche, lancement à droite — le nom garde toute
+          la largeur, quelle que soit la longueur du libellé du bouton. */}
+      <div className="mt-auto flex flex-wrap items-center justify-between gap-2">
+        {concentrating ? (
+          <span className="text-info flex items-center gap-1 text-xs font-semibold">
+            <Focus aria-hidden className="size-3.5" />
+            En concentration
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="text-info h-7"
+              onClick={() => void toggleConcentration()}
+            >
+              Rompre
+            </Button>
+          </span>
+        ) : (
+          <span />
+        )}
+
+        <div className="ml-auto flex">
           <Button
             type="button"
             disabled={defaultMode === undefined}
+            variant={defaultMode === undefined ? "outline" : "default"}
             className={`${hasMenu ? "rounded-r-none" : ""} ${
               defaultMode?.type === "ritual" ? "bg-warning hover:bg-warning/90 text-background" : ""
             }`}
@@ -195,40 +235,6 @@ export function SpellCastCard({
           )}
         </div>
       </div>
-
-      {concentrating && (
-        <div className="text-info flex items-center justify-between gap-2 text-xs font-semibold">
-          <span className="flex items-center gap-1.5">
-            <Focus aria-hidden className="size-3.5" />
-            En concentration
-          </span>
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            className="text-info h-7"
-            onClick={() => void toggleConcentration()}
-          >
-            Rompre
-          </Button>
-        </div>
-      )}
-
-      {open && (
-        <div className="text-muted-foreground grid gap-2 border-t pt-3 text-sm leading-relaxed">
-          <p>
-            <span className="text-foreground font-medium">Composantes :</span>{" "}
-            {componentsLabel(spell)}
-          </p>
-          <p className="whitespace-pre-line">{spell.description}</p>
-          {spell.higherLevel && (
-            <p className="whitespace-pre-line">
-              <span className="text-foreground font-medium">Aux niveaux supérieurs :</span>{" "}
-              {spell.higherLevel}
-            </p>
-          )}
-        </div>
-      )}
     </article>
   );
 }
