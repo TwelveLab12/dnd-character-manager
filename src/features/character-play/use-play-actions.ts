@@ -15,7 +15,12 @@ import { equipItem } from "@/domain/equipment";
 import type { Coin } from "@/domain/currency";
 import { characterCurrency, setCoinAmount } from "@/domain/currency";
 import { adjustItemQuantity } from "@/domain/inventory";
+import type { CastingPatch, CastMode } from "@/domain/calculations/spell-casting";
+import { castSpell } from "@/domain/calculations/spell-casting";
+import type { SpellPreparationState } from "@/domain/calculations/spell-preparation";
+import { setSpellPreparation } from "@/domain/calculations/spell-preparation";
 import { adjustSpellSlotsUsed } from "@/domain/calculations/spell-slot-table";
+import type { Spell } from "@/domain/spell";
 import { adjustClassResourceUsed } from "@/domain/calculations/class-resources";
 import type { ClassResourceId } from "@/domain/character-class";
 import { useCharacterStoreApi } from "@/stores/store-provider";
@@ -82,13 +87,24 @@ export function usePlayActions(characterId: string) {
       })),
     takeShortRest: () => withCurrent((character) => applyShortRest(character)),
     takeLongRest: () => withCurrent((character) => applyLongRest(character)),
-    togglePreparedSpell: (spellId: string, prepared: boolean) =>
-      withCurrent((character) => ({
-        preparedSpellIds:
-          prepared && character.knownSpellIds.includes(spellId)
-            ? [...character.preparedSpellIds, spellId]
-            : character.preparedSpellIds.filter((id) => id !== spellId),
-      })),
+    setSpellPreparation: (spellId: string, state: SpellPreparationState) =>
+      withCurrent((character) => setSpellPreparation(character, spellId, state)),
+    /** Lance un sort et renvoie l'état d'avant (emplacements + concentration), pour « Annuler ». */
+    castSpell: (spell: Spell, mode: CastMode): CastingPatch | undefined => {
+      const current = characterStore
+        .getState()
+        .characters.find((character) => character.id === characterId);
+      if (!current) {
+        return undefined;
+      }
+      const previous = {
+        spellSlotsUsed: current.spellSlotsUsed,
+        concentration: current.concentration,
+      };
+      void withCurrent((character) => castSpell(character, spell, mode));
+      return previous;
+    },
+    restoreCasting: (previous: CastingPatch) => withCurrent(() => previous),
     equipItem: (itemId: string, slot: EquipSlot) =>
       withCurrent((character) => ({ inventory: equipItem(character, itemId, slot) })),
     adjustItemQuantity: (itemId: string, delta: number) =>
