@@ -1,8 +1,16 @@
 "use client";
 
 import { useId } from "react";
-import type { ArmorCategory, InventoryItem } from "@/domain/inventory";
-import { ARMOR_CATEGORIES } from "@/domain/inventory";
+import { isValidDamageDice } from "@/domain/calculations/weapon-attack";
+import type {
+  ArmorCategory,
+  DamageType,
+  InventoryItem,
+  WeaponCategory,
+  WeaponProperties,
+  WeaponRange,
+} from "@/domain/inventory";
+import { ARMOR_CATEGORIES, DAMAGE_TYPES, WEAPON_CATEGORIES } from "@/domain/inventory";
 import { generateId } from "@/domain/id";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,6 +25,11 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { ARMOR_CATEGORY_LABELS } from "@/features/shared/armor-class";
+import {
+  DAMAGE_TYPE_LABELS,
+  WEAPON_CATEGORY_LABELS,
+  WEAPON_RANGE_LABELS,
+} from "@/features/shared/weapon";
 import type { CharacterTabProps } from "./types";
 
 function toNumber(value: string): number {
@@ -24,7 +37,15 @@ function toNumber(value: string): number {
   return Number.isFinite(parsed) ? parsed : 0;
 }
 
-const NO_ARMOR = "none";
+/** Valeur du sélecteur « Type » : objet simple, catégorie d'armure, ou `weapon-<catégorie>`. */
+const PLAIN_ITEM = "none";
+const WEAPON_PREFIX = "weapon-";
+
+const DEFAULT_WEAPON: Omit<WeaponProperties, "category"> = {
+  range: "melee",
+  damageDice: "1d6",
+  damageType: "slashing",
+};
 
 /** CA de base proposée au choix d'une catégorie (armure de cuir, cuirasse, cotte de mailles,
  * bouclier) — simple point de départ, modifiable ensuite. */
@@ -106,13 +127,26 @@ function InventoryRow({
   const bonusId = useId();
   const { armor } = item;
 
-  function selectArmorCategory(value: string) {
-    if (value === NO_ARMOR) {
-      onChange({ armor: undefined });
+  const { weapon } = item;
+  const itemType = weapon ? `${WEAPON_PREFIX}${weapon.category}` : (armor?.category ?? PLAIN_ITEM);
+
+  function selectItemType(value: string) {
+    if (value === PLAIN_ITEM) {
+      onChange({ armor: undefined, weapon: undefined });
+      return;
+    }
+    if (value.startsWith(WEAPON_PREFIX)) {
+      const category = value.slice(WEAPON_PREFIX.length) as WeaponCategory;
+      onChange({
+        armor: undefined,
+        armorClassBonus: undefined,
+        weapon: { ...DEFAULT_WEAPON, ...weapon, category },
+      });
       return;
     }
     const category = value as ArmorCategory;
     onChange({
+      weapon: undefined,
       armor: {
         category,
         baseArmorClass:
@@ -181,17 +215,22 @@ function InventoryRow({
       <div className="grid gap-2 sm:col-span-5 sm:grid-cols-4">
         <div className="grid gap-1">
           <Label htmlFor={armorTypeId} className="text-muted-foreground text-xs">
-            Armure
+            Type
           </Label>
-          <Select value={armor?.category ?? NO_ARMOR} onValueChange={selectArmorCategory}>
+          <Select value={itemType} onValueChange={selectItemType}>
             <SelectTrigger id={armorTypeId}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={NO_ARMOR}>Aucune</SelectItem>
+              <SelectItem value={PLAIN_ITEM}>Objet</SelectItem>
               {ARMOR_CATEGORIES.map((category) => (
                 <SelectItem key={category} value={category}>
                   {category === "shield" ? "Bouclier" : `Armure ${ARMOR_CATEGORY_LABELS[category]}`}
+                </SelectItem>
+              ))}
+              {WEAPON_CATEGORIES.map((category) => (
+                <SelectItem key={category} value={`${WEAPON_PREFIX}${category}`}>
+                  Arme {WEAPON_CATEGORY_LABELS[category]}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -230,18 +269,23 @@ function InventoryRow({
             />
           </div>
         )}
-        <div className="grid gap-1">
-          <Label htmlFor={bonusId} className="text-muted-foreground text-xs">
-            Bonus CA (magique)
-          </Label>
-          <Input
-            id={bonusId}
-            type="number"
-            value={item.armorClassBonus ?? ""}
-            onChange={(event) => onChange({ armorClassBonus: optionalNumber(event.target.value) })}
-          />
-        </div>
+        {!weapon && (
+          <div className="grid gap-1">
+            <Label htmlFor={bonusId} className="text-muted-foreground text-xs">
+              Bonus CA (magique)
+            </Label>
+            <Input
+              id={bonusId}
+              type="number"
+              value={item.armorClassBonus ?? ""}
+              onChange={(event) =>
+                onChange({ armorClassBonus: optionalNumber(event.target.value) })
+              }
+            />
+          </div>
+        )}
       </div>
+      {weapon && <WeaponFields weapon={weapon} onChange={(next) => onChange({ weapon: next })} />}
       <div className="grid gap-1 sm:col-span-5">
         <Label htmlFor={descriptionId} className="text-muted-foreground text-xs">
           Description
@@ -250,6 +294,120 @@ function InventoryRow({
           id={descriptionId}
           value={item.description ?? ""}
           onChange={(event) => onChange({ description: event.target.value || undefined })}
+        />
+      </div>
+    </div>
+  );
+}
+
+function WeaponFields({
+  weapon,
+  onChange,
+}: {
+  weapon: WeaponProperties;
+  onChange: (weapon: WeaponProperties) => void;
+}) {
+  const rangeId = useId();
+  const diceId = useId();
+  const versatileId = useId();
+  const damageTypeId = useId();
+  const finesseId = useId();
+  const magicId = useId();
+
+  function update(patch: Partial<WeaponProperties>) {
+    onChange({ ...weapon, ...patch });
+  }
+
+  return (
+    <div className="grid gap-2 sm:col-span-5 sm:grid-cols-[1.5fr_1fr_1fr_1.5fr_auto_1fr] sm:items-end">
+      <div className="grid gap-1">
+        <Label htmlFor={rangeId} className="text-muted-foreground text-xs">
+          Portée
+        </Label>
+        <Select
+          value={weapon.range}
+          onValueChange={(value) => update({ range: value as WeaponRange })}
+        >
+          <SelectTrigger id={rangeId}>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {(Object.keys(WEAPON_RANGE_LABELS) as WeaponRange[]).map((range) => (
+              <SelectItem key={range} value={range}>
+                {WEAPON_RANGE_LABELS[range]}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="grid gap-1">
+        <Label htmlFor={diceId} className="text-muted-foreground text-xs">
+          Dégâts
+        </Label>
+        <Input
+          id={diceId}
+          value={weapon.damageDice}
+          placeholder="1d8"
+          aria-invalid={!isValidDamageDice(weapon.damageDice)}
+          onChange={(event) => update({ damageDice: event.target.value.trim() })}
+        />
+      </div>
+      <div className="grid gap-1">
+        <Label htmlFor={versatileId} className="text-muted-foreground text-xs">
+          À deux mains
+        </Label>
+        <Input
+          id={versatileId}
+          value={weapon.versatileDamageDice ?? ""}
+          placeholder="—"
+          aria-invalid={
+            weapon.versatileDamageDice !== undefined &&
+            !isValidDamageDice(weapon.versatileDamageDice)
+          }
+          onChange={(event) =>
+            update({ versatileDamageDice: event.target.value.trim() || undefined })
+          }
+        />
+      </div>
+      <div className="grid gap-1">
+        <Label htmlFor={damageTypeId} className="text-muted-foreground text-xs">
+          Type de dégâts
+        </Label>
+        <Select
+          value={weapon.damageType}
+          onValueChange={(value) => update({ damageType: value as DamageType })}
+        >
+          <SelectTrigger id={damageTypeId}>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {DAMAGE_TYPES.map((type) => (
+              <SelectItem key={type} value={type}>
+                {DAMAGE_TYPE_LABELS[type]}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="flex h-9 items-center gap-2">
+        <Switch
+          id={finesseId}
+          checked={weapon.finesse ?? false}
+          onCheckedChange={(checked) => update({ finesse: checked || undefined })}
+        />
+        <Label htmlFor={finesseId} className="text-muted-foreground text-xs">
+          Finesse
+        </Label>
+      </div>
+      <div className="grid gap-1">
+        <Label htmlFor={magicId} className="text-muted-foreground text-xs">
+          Bonus magique
+        </Label>
+        <Input
+          id={magicId}
+          type="number"
+          value={weapon.magicBonus ?? ""}
+          onChange={(event) => update({ magicBonus: optionalNumber(event.target.value) })}
         />
       </div>
     </div>
