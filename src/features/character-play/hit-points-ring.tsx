@@ -2,6 +2,7 @@
 
 import { ChevronLeft, ChevronRight, Heart, ShieldPlus } from "lucide-react";
 import type { Character } from "@/domain/character";
+import { computeMaxHitPoints } from "@/domain/calculations/max-hit-points";
 import { Button } from "@/components/ui/button";
 import { usePlayActions } from "./use-play-actions";
 
@@ -50,7 +51,7 @@ export function HitPointsControls({ character }: { character: Character }) {
         <span>
           max{" "}
           <strong className="text-foreground font-semibold tabular-nums">
-            {character.hitPoints.max}
+            {computeMaxHitPoints(character).total}
           </strong>
         </span>
       </span>
@@ -70,7 +71,8 @@ export function HitPointsControls({ character }: { character: Character }) {
 
 export function HitPointsRing({ character }: { character: Character }) {
   const { setCurrentHitPoints } = usePlayActions(character.id);
-  const { current, max, temporary } = character.hitPoints;
+  const { current, temporary } = character.hitPoints;
+  const max = computeMaxHitPoints(character).total;
   const ratio = max > 0 ? clampRatio(current / max) : 0;
   const temporaryRatio = max > 0 ? clampRatio(temporary / max) : 0;
   const arcClassName =

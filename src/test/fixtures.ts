@@ -10,7 +10,8 @@ export function makeTestCharacter(overrides: Partial<Character> = {}): Character
     // qu'un test ne fixe pas explicitement `classId`.
     class: "Guerrier",
     level: 1,
-    hitPoints: { current: 10, max: 10, temporary: 0 },
+    hitPoints: { current: 10, temporary: 0 },
+    baseMaxHitPoints: 10,
     abilityScores: {
       strength: 10,
       dexterity: 10,

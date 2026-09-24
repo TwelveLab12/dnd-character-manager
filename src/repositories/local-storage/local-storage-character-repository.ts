@@ -9,11 +9,12 @@ import { LocalStorageClient } from "./local-storage-client";
  * - 2 : valeurs dérivées calculées (classId, emplacements utilisés seulement, ressources de classe)
  *   — voir docs/adr/0022 et 0023 ;
  * - 3 : sous-classe connue (subclassId), déduite du libellé libre — voir docs/adr/0025 ;
- * - 4 : jets de sauvegarde de classe, vitesse et initiative calculés — voir docs/adr/0026.
+ * - 4 : jets de sauvegarde de classe, vitesse et initiative calculés — voir docs/adr/0026 ;
+ * - 5 : PV max calculés (dé de vie, valeur fixe ou dés lancés) — voir docs/adr/0027.
  *
  * La normalisation étant idempotente, une seule fonction migre depuis n'importe quelle version.
  */
-const CHARACTERS_SCHEMA_VERSION = 4;
+const CHARACTERS_SCHEMA_VERSION = 5;
 
 function migrateCharacters(data: unknown): Character[] {
   return Array.isArray(data) ? (data.map(normalizeLegacyCharacter) as Character[]) : [];

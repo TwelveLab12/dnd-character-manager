@@ -1,6 +1,7 @@
 import type { Character } from "../character";
 import type { CharacterFeature, FeatureRecharge } from "../feature";
 import { restoreClassResources } from "./class-resources";
+import { computeMaxHitPoints } from "./max-hit-points";
 
 function resetFeaturesForRecharge(
   features: CharacterFeature[],
@@ -35,7 +36,7 @@ export function applyShortRest(character: Character): Partial<Character> {
  */
 export function applyLongRest(character: Character): Partial<Character> {
   return {
-    hitPoints: { ...character.hitPoints, current: character.hitPoints.max },
+    hitPoints: { ...character.hitPoints, current: computeMaxHitPoints(character).total },
     spellSlotsUsed: {},
     features: resetFeaturesForRecharge(character.features, ["shortRest", "longRest"]),
     classResourcesUsed: restoreClassResources(character, "longRest"),

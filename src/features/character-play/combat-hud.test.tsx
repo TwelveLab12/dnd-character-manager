@@ -23,7 +23,7 @@ describe("CombatHud — points de vie (via CharacterPlay)", () => {
   });
 
   it("has no Save button — every action persists immediately", async () => {
-    const character = makeTestCharacter({ hitPoints: { current: 10, max: 10, temporary: 0 } });
+    const character = makeTestCharacter({ hitPoints: { current: 10, temporary: 0 } });
     await new LocalStorageCharacterRepository().create(character);
 
     renderPlay(character.id);
@@ -33,7 +33,7 @@ describe("CombatHud — points de vie (via CharacterPlay)", () => {
   });
 
   it("inflicts 1 damage per click on the left chevron, absorbing temporary hit points first", async () => {
-    const character = makeTestCharacter({ hitPoints: { current: 10, max: 10, temporary: 2 } });
+    const character = makeTestCharacter({ hitPoints: { current: 10, temporary: 2 } });
     await new LocalStorageCharacterRepository().create(character);
 
     const user = userEvent.setup();
@@ -45,11 +45,11 @@ describe("CombatHud — points de vie (via CharacterPlay)", () => {
     await user.click(screen.getByRole("button", { name: /infliger 1 dégât/i }));
 
     const persisted = await new LocalStorageCharacterRepository().getById(character.id);
-    expect(persisted?.hitPoints).toEqual({ current: 9, max: 10, temporary: 0 });
+    expect(persisted?.hitPoints).toEqual({ current: 9, temporary: 0 });
   });
 
   it("heals 1 point per click on the right chevron, capped at max", async () => {
-    const character = makeTestCharacter({ hitPoints: { current: 9, max: 10, temporary: 0 } });
+    const character = makeTestCharacter({ hitPoints: { current: 9, temporary: 0 } });
     await new LocalStorageCharacterRepository().create(character);
 
     const user = userEvent.setup();
@@ -60,11 +60,11 @@ describe("CombatHud — points de vie (via CharacterPlay)", () => {
     await user.click(screen.getByRole("button", { name: /soigner 1 point de vie/i }));
 
     const persisted = await new LocalStorageCharacterRepository().getById(character.id);
-    expect(persisted?.hitPoints).toEqual({ current: 10, max: 10, temporary: 0 });
+    expect(persisted?.hitPoints).toEqual({ current: 10, temporary: 0 });
   });
 
   it("edits current hit points directly, clamped to max", async () => {
-    const character = makeTestCharacter({ hitPoints: { current: 10, max: 10, temporary: 0 } });
+    const character = makeTestCharacter({ hitPoints: { current: 10, temporary: 0 } });
     await new LocalStorageCharacterRepository().create(character);
 
     const user = userEvent.setup();
@@ -80,7 +80,7 @@ describe("CombatHud — points de vie (via CharacterPlay)", () => {
   });
 
   it("edits temporary hit points directly, including lowering an existing value", async () => {
-    const character = makeTestCharacter({ hitPoints: { current: 10, max: 10, temporary: 5 } });
+    const character = makeTestCharacter({ hitPoints: { current: 10, temporary: 5 } });
     await new LocalStorageCharacterRepository().create(character);
 
     const user = userEvent.setup();
@@ -97,7 +97,8 @@ describe("CombatHud — points de vie (via CharacterPlay)", () => {
 
   it("describes the hit point ring with current, max and temporary hit points", async () => {
     const character = makeTestCharacter({
-      hitPoints: { current: 7, max: 23, temporary: 4 },
+      hitPoints: { current: 7, temporary: 4 },
+      baseMaxHitPoints: 23,
       themeId: "selune",
     });
     await new LocalStorageCharacterRepository().create(character);
