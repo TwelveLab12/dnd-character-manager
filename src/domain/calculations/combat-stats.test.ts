@@ -28,6 +28,15 @@ describe("effectiveSavingThrowProficiencies", () => {
     const character = makeTestCharacter({ savingThrowProficiencies: ["strength"] });
     expect(effectiveSavingThrowProficiencies(character)).toEqual(["strength"]);
   });
+
+  it("drops a class saving throw removed for this character, keeping its rule source", () => {
+    const character = makeTestCharacter({
+      classId: "clerc",
+      removedSavingThrowProficiencies: ["charisma"],
+    });
+    expect(effectiveSavingThrowProficiencies(character)).toEqual(["wisdom"]);
+    expect(savingThrowGrantedBy(character, "charisma")).toBe("Clerc");
+  });
 });
 
 describe("computeInitiative", () => {
