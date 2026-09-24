@@ -1,5 +1,6 @@
 "use client";
 
+import { grantedProficiencies } from "@/domain/calculations/class-features";
 import { useId } from "react";
 import {
   computeWeaponAttacks,
@@ -47,6 +48,10 @@ export function AttacksSection({ draft, onChange }: CharacterTabProps) {
               key={category}
               label={`Armes ${WEAPON_CATEGORY_LABELS[category]}s`}
               checked={proficiencies.includes(category)}
+              grantedBy={
+                grantedProficiencies(draft).find((grant) => grant.weapons.includes(category))
+                  ?.source
+              }
               onCheckedChange={(checked) => toggleProficiency(category, checked)}
             />
           ))}
@@ -106,16 +111,27 @@ function ProficiencySwitch({
   label,
   checked,
   onCheckedChange,
+  grantedBy,
 }: {
   label: string;
   checked: boolean;
   onCheckedChange: (checked: boolean) => void;
+  /** Maîtrise accordée par la classe ou la sous-classe : toujours active, non modifiable ici. */
+  grantedBy?: string;
 }) {
   const id = useId();
   return (
     <div className="flex items-center gap-2">
-      <Switch id={id} checked={checked} onCheckedChange={(value) => onCheckedChange(value)} />
-      <Label htmlFor={id}>{label}</Label>
+      <Switch
+        id={id}
+        checked={checked || grantedBy !== undefined}
+        disabled={grantedBy !== undefined}
+        onCheckedChange={(value) => onCheckedChange(value)}
+      />
+      <Label htmlFor={id}>
+        {label}
+        {grantedBy && <span className="text-muted-foreground text-xs">({grantedBy})</span>}
+      </Label>
     </div>
   );
 }

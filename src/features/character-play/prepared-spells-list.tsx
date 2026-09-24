@@ -2,7 +2,11 @@
 
 import { useEffect, useMemo, useState } from "react";
 import type { Character } from "@/domain/character";
-import { playAvailableSpellIds, spellDomainTags } from "@/domain/calculations/spell-availability";
+import {
+  playAvailableSpellIds,
+  spellDomain,
+  spellDomainTags,
+} from "@/domain/calculations/spell-availability";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { SectionTitle } from "@/components/ui/section-title";
@@ -23,7 +27,10 @@ export function PreparedSpellsList({ character }: { character: Character }) {
   const [levelFilters, setLevelFilters] = useState<number[]>([]);
   const [domainFilters, setDomainFilters] = useState<string[]>([]);
 
-  const availableIds = useMemo(() => new Set(playAvailableSpellIds(character)), [character]);
+  const availableIds = useMemo(
+    () => new Set(playAvailableSpellIds(character, spells)),
+    [character, spells],
+  );
   const availableSpells = useMemo(
     () =>
       spells
@@ -36,10 +43,10 @@ export function PreparedSpellsList({ character }: { character: Character }) {
     () => [...new Set(availableSpells.map((spell) => spell.level))].sort((a, b) => a - b),
     [availableSpells],
   );
-  const domains = spellDomainTags(character);
+  const domains = spellDomainTags(character, spells);
 
   function domainForSpell(spellId: string): string | undefined {
-    return character.spellTags.find((tag) => tag.spellId === spellId)?.domain;
+    return spellDomain(character, spellId, spells);
   }
 
   const filteredSpells = availableSpells.filter((spell) => {

@@ -2,6 +2,7 @@ import type { Character } from "../character";
 import type { ArmorCategory, InventoryItem } from "../inventory";
 import { effectiveAbilityScores } from "./effective-ability-scores";
 import { abilityModifier } from "./modifiers";
+import { effectiveArmorProficiencies } from "./class-features";
 
 export const UNARMORED_BASE_ARMOR_CLASS = 10;
 export const MEDIUM_ARMOR_DEX_CAP = 2;
@@ -59,7 +60,7 @@ export function computeArmorClass(character: Character): ArmorClassResult {
   const scores = effectiveAbilityScores(character.abilityScores, character.raceSelection);
   const dexterityModifier = abilityModifier(scores.dexterity);
   const mediumArmorMaster = character.mediumArmorMaster ?? false;
-  const proficiencies = character.armorProficiencies ?? [];
+  const proficiencies = effectiveArmorProficiencies(character);
   const warnings: string[] = [];
 
   const equipped = character.inventory.filter(isEquippedArmor);

@@ -3,7 +3,7 @@
 import { useId } from "react";
 import type { AbilityName } from "@/domain/ability-scores";
 import type { Character } from "@/domain/character";
-import { CHARACTER_CLASSES } from "@/domain/character-class";
+import { CHARACTER_CLASSES, findClassDefinition } from "@/domain/character-class";
 import { effectiveAbilityScores } from "@/domain/calculations/effective-ability-scores";
 import type { RaceSelection } from "@/domain/race";
 import { RACE_DEFINITIONS, findRaceDefinition } from "@/domain/race";
@@ -182,32 +182,65 @@ export function GeneralTab({ draft, onChange }: CharacterTabProps) {
 }
 
 /**
- * Classe connue des règles (src/domain/character-class.ts) : c'est elle qui détermine les valeurs
- * calculées (emplacements de sorts, Canalisation divine, caractéristique d'incantation). Édite
- * `classId`, indépendant du libellé libre `class` ci-dessus.
+ * Classe et sous-classe connues des règles (src/domain/character-class.ts, src/domain/subclass.ts) :
+ * elles déterminent les valeurs calculées (emplacements, Canalisation divine et ses options,
+ * caractéristique d'incantation, sorts toujours préparés, maîtrises). Éditent `classId` et
+ * `subclassId`, indépendants des libellés libres `class` et `subclass` ci-dessus.
  */
 function ClassRulesSection({ draft, onChange }: CharacterTabProps) {
-  const selectId = useId();
+  const classSelectId = useId();
+  const subclassSelectId = useId();
+  const classDefinition = findClassDefinition(draft.classId);
+  const subclasses = classDefinition?.subclasses ?? [];
 
   return (
-    <div className="grid gap-2 sm:max-w-xs">
-      <Label htmlFor={selectId}>Classe (règles appliquées)</Label>
-      <Select
-        value={draft.classId ?? "none"}
-        onValueChange={(value) => onChange({ classId: value === "none" ? undefined : value })}
-      >
-        <SelectTrigger id={selectId}>
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="none">Aucune / non gérée</SelectItem>
-          {CHARACTER_CLASSES.map((definition) => (
-            <SelectItem key={definition.id} value={definition.id}>
-              {definition.name}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+    <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-2">
+        <Label htmlFor={classSelectId}>Classe (règles appliquées)</Label>
+        <Select
+          value={draft.classId ?? "none"}
+          onValueChange={(value) =>
+            onChange({ classId: value === "none" ? undefined : value, subclassId: undefined })
+          }
+        >
+          <SelectTrigger id={classSelectId}>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="none">Aucune / non gérée</SelectItem>
+            {CHARACTER_CLASSES.map((definition) => (
+              <SelectItem key={definition.id} value={definition.id}>
+                {definition.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      {subclasses.length > 0 && (
+        <div className="grid gap-2">
+          <Label htmlFor={subclassSelectId}>
+            {classDefinition?.subclassLabel ?? "Sous-classe"} (règles appliquées)
+          </Label>
+          <Select
+            value={draft.subclassId ?? "none"}
+            onValueChange={(value) =>
+              onChange({ subclassId: value === "none" ? undefined : value })
+            }
+          >
+            <SelectTrigger id={subclassSelectId}>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">Aucun / non géré</SelectItem>
+              {subclasses.map((definition) => (
+                <SelectItem key={definition.id} value={definition.id}>
+                  {definition.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
     </div>
   );
 }

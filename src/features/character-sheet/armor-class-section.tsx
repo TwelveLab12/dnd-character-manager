@@ -3,6 +3,7 @@
 import { Plus, X } from "lucide-react";
 import { useEffect, useId } from "react";
 import type { ArmorClassEffect, ArmorClassEffectTrigger } from "@/domain/armor-class-effect";
+import { grantedProficiencies } from "@/domain/calculations/class-features";
 import { computeArmorClass } from "@/domain/calculations/armor-class";
 import { generateId } from "@/domain/id";
 import type { ArmorCategory } from "@/domain/inventory";
@@ -97,6 +98,9 @@ export function ArmorClassSection({ draft, onChange }: CharacterTabProps) {
               key={category}
               label={ARMOR_CATEGORY_LABELS[category]}
               checked={proficiencies.includes(category)}
+              grantedBy={
+                grantedProficiencies(draft).find((grant) => grant.armor.includes(category))?.source
+              }
               onCheckedChange={(checked) => toggleProficiency(category, checked)}
             />
           ))}
@@ -157,17 +161,28 @@ function ProficiencySwitch({
   label,
   checked,
   onCheckedChange,
+  grantedBy,
 }: {
   label: string;
   checked: boolean;
   onCheckedChange: (checked: boolean) => void;
+  /** Maîtrise accordée par la classe ou la sous-classe : toujours active, non modifiable ici. */
+  grantedBy?: string;
 }) {
   const id = useId();
   return (
     <div className="flex items-center gap-2">
-      <Switch id={id} checked={checked} onCheckedChange={(value) => onCheckedChange(value)} />
+      <Switch
+        id={id}
+        checked={checked || grantedBy !== undefined}
+        disabled={grantedBy !== undefined}
+        onCheckedChange={(value) => onCheckedChange(value)}
+      />
       <Label htmlFor={id} className="capitalize">
         {label}
+        {grantedBy && (
+          <span className="text-muted-foreground text-xs normal-case">({grantedBy})</span>
+        )}
       </Label>
     </div>
   );

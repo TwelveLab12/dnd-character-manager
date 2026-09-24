@@ -1,4 +1,8 @@
-import { findClassDefinition, findClassDefinitionByLabel } from "../character-class";
+import {
+  findClassDefinition,
+  findClassDefinitionByLabel,
+  findSubclassDefinitionByLabel,
+} from "../character-class";
 
 /**
  * Capacités reconnues comme puisant dans la Canalisation divine du Clerc, dans les données
@@ -42,6 +46,16 @@ function withClassId(record: RawRecord): RawRecord {
   }
   const definition = findClassDefinitionByLabel(record.class);
   return definition ? { ...record, classId: definition.id } : record;
+}
+
+/** `subclass` libre → `subclassId` connu de la classe, si absent et reconnaissable. */
+function withSubclassId(record: RawRecord): RawRecord {
+  if (typeof record.subclassId === "string" || typeof record.subclass !== "string") {
+    return record;
+  }
+  const classId = typeof record.classId === "string" ? record.classId : undefined;
+  const definition = findSubclassDefinitionByLabel(classId, record.subclass);
+  return definition ? { ...record, subclassId: definition.id } : record;
 }
 
 /** Ancien `spellSlots: { level, total, used }[]` → `spellSlotsUsed` (les totaux sont calculés). */
@@ -125,7 +139,7 @@ export function normalizeLegacyCharacter(raw: unknown): unknown {
   if (!isRecord(raw)) {
     return raw;
   }
-  const normalized = withSpellSlotsUsed(withClassId(raw));
+  const normalized = withSpellSlotsUsed(withSubclassId(withClassId(raw)));
   // Les ressources de classe n'existent pas au format d'origine : un personnage qui porte déjà
   // `classResourcesUsed` est au format courant, et ses liens capacité → ressource sont des choix
   // du joueur qu'on ne doit jamais réécrire (ex : une capacité volontairement non liée).
