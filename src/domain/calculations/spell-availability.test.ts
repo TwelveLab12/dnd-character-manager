@@ -38,6 +38,11 @@ const BASE: Character = {
 };
 
 describe("playAvailableSpellIds", () => {
+  it("makes every known spell available for a caster without preparation (Sorcerer)", () => {
+    const sorcerer: Character = { ...BASE, classId: "ensorceleur", preparedSpellIds: [] };
+    expect(playAvailableSpellIds(sorcerer)).toEqual(["cure-wounds", "guidance", "moonbeam"]);
+  });
+
   it("adds known cantrips found in the library without preparing them", () => {
     const library = [
       makeTestSpell({ id: "guidance", level: 0 }),

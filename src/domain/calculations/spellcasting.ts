@@ -1,5 +1,6 @@
 import type { AbilityName } from "../ability-scores";
 import type { Character } from "../character";
+import type { SpellPreparation } from "../character-class";
 import { findClassDefinition } from "../character-class";
 import { effectiveAbilityScores } from "./effective-ability-scores";
 import { abilityModifier } from "./modifiers";
@@ -50,37 +51,62 @@ export function resolvedSpellAttackBonus(
   );
 }
 
+/** Nombre maximum de sorts préparés (5e 2014) : mod. de caractéristique + niveau, minimum 1. */
+export function preparedSpellsMax(level: number, castingAbilityModifier: number): number {
+  return Math.max(1, castingAbilityModifier + clampCharacterLevel(level));
+}
+
 export interface ResolvedSpellcasting {
   ability: AbilityName;
+  abilityModifier: number;
+  proficiencyBonus: number;
   spellSaveDC: number;
   spellAttackBonus: number;
+  /** « known » : tous les sorts connus sont disponibles, sans préparation (Barde, Ensorceleur). Une
+   * classe hors registre est traitée comme « prepared », sans limite calculée. */
+  preparation: SpellPreparation;
+  /** Limite de sorts préparés (override compris), `undefined` = pas de limite. */
+  preparedSpellsMax: number | undefined;
+  /** Valeurs calculées, avant override, pour les afficher à côté d'une valeur forcée. */
+  computed: {
+    spellSaveDC: number;
+    spellAttackBonus: number;
+    preparedSpellsMax: number | undefined;
+  };
 }
 
 /**
  * Incantation du personnage : caractéristique déduite de la classe connue (ex : Sagesse pour un
- * Clerc), sinon celle saisie pour une classe hors registre ; DD et bonus d'attaque calculés, les
- * surcharges existantes (`spellSaveDCOverride`, `spellAttackBonusOverride`) restant prioritaires.
+ * Clerc), sinon celle saisie pour une classe hors registre ; DD, bonus d'attaque et limite de sorts
+ * préparés calculés, les surcharges (`SpellcastingInfo.*Override`) restant prioritaires.
  * `undefined` si le personnage ne lance pas de sorts.
  */
 export function resolveSpellcasting(character: Character): ResolvedSpellcasting | undefined {
-  const ability =
-    findClassDefinition(character.classId)?.spellcasting?.ability ??
-    character.spellcasting?.ability;
+  const classSpellcasting = findClassDefinition(character.classId)?.spellcasting;
+  const ability = classSpellcasting?.ability ?? character.spellcasting?.ability;
   if (!ability) {
     return undefined;
   }
+  const overrides = character.spellcasting ?? {};
   const score = effectiveAbilityScores(character.abilityScores, character.raceSelection)[ability];
+  const modifier = abilityModifier(score);
+  const preparation = classSpellcasting?.preparation ?? "prepared";
+  const computed = {
+    spellSaveDC: resolvedSpellSaveDC(character.level, score),
+    spellAttackBonus: resolvedSpellAttackBonus(character.level, score),
+    preparedSpellsMax: classSpellcasting ? preparedSpellsMax(character.level, modifier) : undefined,
+  };
   return {
     ability,
-    spellSaveDC: resolvedSpellSaveDC(
-      character.level,
-      score,
-      character.spellcasting?.spellSaveDCOverride,
-    ),
-    spellAttackBonus: resolvedSpellAttackBonus(
-      character.level,
-      score,
-      character.spellcasting?.spellAttackBonusOverride,
-    ),
+    abilityModifier: modifier,
+    proficiencyBonus: proficiencyBonusForLevel(clampCharacterLevel(character.level)),
+    spellSaveDC: overrides.spellSaveDCOverride ?? computed.spellSaveDC,
+    spellAttackBonus: overrides.spellAttackBonusOverride ?? computed.spellAttackBonus,
+    preparation,
+    preparedSpellsMax:
+      preparation === "known"
+        ? undefined
+        : (overrides.preparedSpellsMaxOverride ?? computed.preparedSpellsMax),
+    computed,
   };
 }

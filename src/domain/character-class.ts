@@ -11,6 +11,13 @@ import { TWILIGHT_DOMAIN } from "./subclass";
  * (demi-lanceurs, tiers de lanceurs et magie de pacte viendront avec leurs classes). */
 export type CasterProgression = "full";
 
+/**
+ * Mode d'accès aux sorts (5e 2014) : « prepared » = le lanceur prépare chaque jour une partie de ses
+ * sorts (Clerc, Druide, Magicien : mod. de caractéristique + niveau, minimum 1) ; « known » = tous
+ * ses sorts connus sont utilisables (Barde, Ensorceleur).
+ */
+export type SpellPreparation = "prepared" | "known";
+
 export type ClassResourceId = "channel-divinity";
 
 /**
@@ -31,7 +38,11 @@ export interface CharacterClassDefinition {
   /** Libellés reconnus dans le champ texte `Character.class` pour la migration des anciennes
    * données (comparaison insensible à la casse et aux accents). */
   aliases: readonly string[];
-  spellcasting?: { progression: CasterProgression; ability: AbilityName };
+  spellcasting?: {
+    progression: CasterProgression;
+    ability: AbilityName;
+    preparation: SpellPreparation;
+  };
   /** Dé de vie (nombre de faces) : base des PV max — voir src/domain/calculations/max-hit-points.ts. */
   hitDie: number;
   /** Jets de sauvegarde maîtrisés grâce à la classe (niveau 1). */
@@ -72,7 +83,7 @@ export const CHARACTER_CLASSES: readonly CharacterClassDefinition[] = [
     id: "barde",
     name: "Barde",
     aliases: ["barde", "bard"],
-    spellcasting: { progression: "full", ability: "charisma" },
+    spellcasting: { progression: "full", ability: "charisma", preparation: "known" },
     hitDie: 8,
     savingThrows: ["dexterity", "charisma"],
     resources: [],
@@ -81,7 +92,7 @@ export const CHARACTER_CLASSES: readonly CharacterClassDefinition[] = [
     id: "clerc",
     name: "Clerc",
     aliases: ["clerc", "cleric", "pretre", "pretresse"],
-    spellcasting: { progression: "full", ability: "wisdom" },
+    spellcasting: { progression: "full", ability: "wisdom", preparation: "prepared" },
     hitDie: 8,
     savingThrows: ["wisdom", "charisma"],
     resources: [CHANNEL_DIVINITY],
@@ -101,7 +112,7 @@ export const CHARACTER_CLASSES: readonly CharacterClassDefinition[] = [
     id: "druide",
     name: "Druide",
     aliases: ["druide", "druid"],
-    spellcasting: { progression: "full", ability: "wisdom" },
+    spellcasting: { progression: "full", ability: "wisdom", preparation: "prepared" },
     hitDie: 8,
     savingThrows: ["intelligence", "wisdom"],
     resources: [],
@@ -110,7 +121,7 @@ export const CHARACTER_CLASSES: readonly CharacterClassDefinition[] = [
     id: "ensorceleur",
     name: "Ensorceleur",
     aliases: ["ensorceleur", "ensorceleuse", "sorcerer"],
-    spellcasting: { progression: "full", ability: "charisma" },
+    spellcasting: { progression: "full", ability: "charisma", preparation: "known" },
     hitDie: 6,
     savingThrows: ["constitution", "charisma"],
     resources: [],
@@ -119,7 +130,7 @@ export const CHARACTER_CLASSES: readonly CharacterClassDefinition[] = [
     id: "magicien",
     name: "Magicien",
     aliases: ["magicien", "magicienne", "wizard", "mage"],
-    spellcasting: { progression: "full", ability: "intelligence" },
+    spellcasting: { progression: "full", ability: "intelligence", preparation: "prepared" },
     hitDie: 6,
     savingThrows: ["intelligence", "wisdom"],
     resources: [],
