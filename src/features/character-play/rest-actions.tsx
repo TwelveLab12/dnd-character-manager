@@ -1,5 +1,7 @@
 "use client";
 
+import { Hourglass, Moon } from "lucide-react";
+import type { ReactNode } from "react";
 import { toast } from "sonner";
 import {
   AlertDialog,
@@ -32,11 +34,13 @@ export function RestActions({ characterId }: { characterId: string }) {
     <div className="flex gap-2">
       <RestConfirmButton
         label="Repos court"
+        icon={<Hourglass />}
         description="Restaure les capacités qui se rechargent au repos court."
         onConfirm={handleShortRest}
       />
       <RestConfirmButton
         label="Repos long"
+        icon={<Moon />}
         description="Restaure les PV au maximum, tous les emplacements de sorts et les capacités qui se rechargent au repos long."
         onConfirm={handleLongRest}
       />
@@ -46,10 +50,12 @@ export function RestActions({ characterId }: { characterId: string }) {
 
 function RestConfirmButton({
   label,
+  icon,
   description,
   onConfirm,
 }: {
   label: string;
+  icon: ReactNode;
   description: string;
   onConfirm: () => void | Promise<void>;
 }) {
@@ -57,6 +63,7 @@ function RestConfirmButton({
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <Button type="button" variant="outline">
+          {icon}
           {label}
         </Button>
       </AlertDialogTrigger>

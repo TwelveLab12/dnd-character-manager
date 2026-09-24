@@ -49,7 +49,22 @@ describe("CharacterList", () => {
     await createCharacter(user);
 
     expect(await screen.findByText("Elara Duskwood")).toBeInTheDocument();
-    expect(screen.getByText(/clerc — niveau 1/i)).toBeInTheDocument();
+    expect(screen.getByText(/^clerc$/i)).toBeInTheDocument();
+    expect(screen.getByText(/niv\./i)).toHaveTextContent(/niv\.\s*1/i);
+  });
+
+  it("makes the whole info block a link to the play sheet, with HP and AC highlighted", async () => {
+    const user = userEvent.setup();
+    renderCharacterList();
+
+    await createCharacter(user);
+    const link = await screen.findByRole("link", { name: /voir la fiche de elara duskwood/i });
+
+    expect(link).toHaveAttribute("href", expect.stringMatching(/^\/characters\/[^/]+$/));
+    expect(within(link).getByText("Elara Duskwood")).toBeInTheDocument();
+    expect(within(link).getByRole("img", { name: /points de vie/i })).toBeInTheDocument();
+    expect(within(link).getByRole("img", { name: /classe d'armure/i })).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /^voir la fiche$/i })).not.toBeInTheDocument();
   });
 
   it("deletes a character after confirmation", async () => {

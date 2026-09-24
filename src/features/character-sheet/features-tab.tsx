@@ -1,5 +1,6 @@
 "use client";
 
+import { Plus, X } from "lucide-react";
 import { useId } from "react";
 import type { CharacterFeature, FeatureRecharge } from "@/domain/feature";
 import { generateId } from "@/domain/id";
@@ -57,6 +58,7 @@ export function FeaturesTab({ draft, onChange }: CharacterTabProps) {
           size="sm"
           onClick={() => onChange({ features: [...draft.features, createBlankFeature()] })}
         >
+          <Plus />
           Ajouter une capacité
         </Button>
       </div>
@@ -188,6 +190,7 @@ function FeatureRow({
           </Select>
         </div>
         <Button type="button" variant="ghost" size="sm" onClick={onRemove}>
+          <X />
           Retirer
         </Button>
       </div>

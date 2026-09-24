@@ -1,5 +1,6 @@
 "use client";
 
+import { UserPlus } from "lucide-react";
 import { useId, useState } from "react";
 import type { FormEvent } from "react";
 import { createBlankCharacter } from "@/domain/factories";
@@ -63,7 +64,10 @@ export function CreateCharacterDialog() {
       }}
     >
       <DialogTrigger asChild>
-        <Button>Nouveau personnage</Button>
+        <Button>
+          <UserPlus />
+          Nouveau personnage
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <form onSubmit={(event) => void handleSubmit(event)}>

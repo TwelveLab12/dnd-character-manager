@@ -1,5 +1,6 @@
 "use client";
 
+import { ArrowLeft, Download, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useEffect } from "react";
 import { downloadJson, exportSpellsToJson } from "@/import-export/exporter";
@@ -38,8 +39,12 @@ export function SpellLibrary() {
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 px-6 py-12">
       <div className="flex items-center justify-between">
         <div>
-          <Link href="/" className="text-muted-foreground text-sm underline underline-offset-4">
-            &larr; Mes personnages
+          <Link
+            href="/"
+            className="text-muted-foreground inline-flex items-center gap-1 text-sm underline underline-offset-4"
+          >
+            <ArrowLeft className="size-3.5" aria-hidden />
+            Mes personnages
           </Link>
           <PageTitle>Bibliothèque de sorts</PageTitle>
         </div>
@@ -49,6 +54,7 @@ export function SpellLibrary() {
             disabled={spells.length === 0}
             onClick={() => downloadJson("sorts.json", exportSpellsToJson(spells))}
           >
+            <Download />
             Exporter
           </Button>
           <ImportSpellsDialog />
@@ -105,7 +111,12 @@ export function SpellLibrary() {
                 <td className="py-2 text-right">
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
-                      <Button variant="ghost" size="sm">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-destructive hover:bg-destructive/10 hover:text-destructive dark:hover:bg-destructive/20"
+                      >
+                        <Trash2 />
                         Supprimer
                       </Button>
                     </AlertDialogTrigger>
@@ -119,7 +130,11 @@ export function SpellLibrary() {
                       </AlertDialogHeader>
                       <AlertDialogFooter>
                         <AlertDialogCancel>Annuler</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => void remove(spell.id)}>
+                        <AlertDialogAction
+                          variant="destructive"
+                          className="bg-destructive hover:bg-destructive/90 text-white"
+                          onClick={() => void remove(spell.id)}
+                        >
                           Supprimer
                         </AlertDialogAction>
                       </AlertDialogFooter>

@@ -1,5 +1,6 @@
 "use client";
 
+import { Plus, X } from "lucide-react";
 import { useEffect, useId } from "react";
 import type { ArmorClassEffect, ArmorClassEffectTrigger } from "@/domain/armor-class-effect";
 import { computeArmorClass } from "@/domain/calculations/armor-class";
@@ -132,6 +133,7 @@ export function ArmorClassSection({ draft, onChange }: CharacterTabProps) {
               })
             }
           >
+            <Plus />
             Ajouter un effet
           </Button>
         </div>
@@ -239,6 +241,7 @@ function EffectRow({
         </Select>
       </div>
       <Button type="button" variant="ghost" size="sm" onClick={onRemove}>
+        <X />
         Retirer
       </Button>
     </div>

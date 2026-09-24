@@ -1,5 +1,6 @@
 "use client";
 
+import { Plus, X } from "lucide-react";
 import { useId } from "react";
 import { isValidDamageDice } from "@/domain/calculations/weapon-attack";
 import type { Character } from "@/domain/character";
@@ -89,6 +90,7 @@ export function InventoryTab({ draft, onChange }: CharacterTabProps) {
           size="sm"
           onClick={() => onChange({ inventory: [...draft.inventory, createBlankItem()] })}
         >
+          <Plus />
           Ajouter un objet
         </Button>
       </div>
@@ -210,6 +212,7 @@ function InventoryRow({
       </div>
       <EquipControl item={item} character={character} onEquip={onEquip} />
       <Button type="button" variant="ghost" size="sm" onClick={onRemove}>
+        <X />
         Retirer
       </Button>
       <div className="grid gap-2 sm:col-span-5 sm:grid-cols-4">

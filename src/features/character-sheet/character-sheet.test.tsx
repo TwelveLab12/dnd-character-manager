@@ -1,12 +1,15 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { LocalStorageCharacterRepository } from "@/repositories/local-storage/local-storage-character-repository";
 import { LocalStorageSpellRepository } from "@/repositories/local-storage/local-storage-spell-repository";
 import { RepositoryProvider } from "@/repositories/repository-provider";
 import { StoreProvider } from "@/stores/store-provider";
 import { makeTestCharacter, makeTestSpell } from "@/test/fixtures";
 import { CharacterSheet } from "./character-sheet";
+
+const push = vi.fn();
+vi.mock("next/navigation", () => ({ useRouter: () => ({ push }) }));
 
 function renderSheet(characterId: string) {
   return render(
@@ -21,6 +24,7 @@ function renderSheet(characterId: string) {
 describe("CharacterSheet", () => {
   beforeEach(() => {
     window.localStorage.clear();
+    push.mockClear();
   });
 
   it("shows a not-found message for an unknown id", async () => {
@@ -45,6 +49,61 @@ describe("CharacterSheet", () => {
     expect(await screen.findByText(/enregistré/i)).toBeInTheDocument();
     const persisted = await new LocalStorageCharacterRepository().getById(character.id);
     expect(persisted?.name).toBe("Elara Duskwood-Crépuscule");
+  });
+
+  it("links to the character's play sheet without prompting when nothing changed", async () => {
+    const character = makeTestCharacter({ name: "Elara Duskwood" });
+    await new LocalStorageCharacterRepository().create(character);
+
+    const user = userEvent.setup();
+    renderSheet(character.id);
+    await screen.findByRole("heading", { name: "Elara Duskwood" });
+
+    const sheetLink = screen.getByRole("link", { name: /voir la fiche/i });
+    expect(sheetLink).toHaveAttribute("href", `/characters/${character.id}`);
+
+    await user.click(sheetLink);
+    expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument();
+  });
+
+  it("asks before leaving with unsaved changes, and can save then navigate", async () => {
+    const character = makeTestCharacter({ name: "Elara Duskwood" });
+    await new LocalStorageCharacterRepository().create(character);
+
+    const user = userEvent.setup();
+    renderSheet(character.id);
+    await screen.findByRole("heading", { name: "Elara Duskwood" });
+
+    const nameInput = screen.getByLabelText(/^nom$/i);
+    await user.clear(nameInput);
+    await user.type(nameInput, "Elara la Grise");
+    await user.click(screen.getByRole("link", { name: /voir la fiche/i }));
+
+    const dialog = await screen.findByRole("alertdialog");
+    await user.click(within(dialog).getByRole("button", { name: /enregistrer et quitter/i }));
+
+    await vi.waitFor(() => expect(push).toHaveBeenCalledWith(`/characters/${character.id}`));
+    const persisted = await new LocalStorageCharacterRepository().getById(character.id);
+    expect(persisted?.name).toBe("Elara la Grise");
+  });
+
+  it("can leave without saving from the unsaved-changes prompt", async () => {
+    const character = makeTestCharacter({ name: "Elara Duskwood" });
+    await new LocalStorageCharacterRepository().create(character);
+
+    const user = userEvent.setup();
+    renderSheet(character.id);
+    await screen.findByRole("heading", { name: "Elara Duskwood" });
+
+    await user.type(screen.getByLabelText(/^nom$/i), "!");
+    await user.click(screen.getByRole("link", { name: /mes personnages/i }));
+
+    const dialog = await screen.findByRole("alertdialog");
+    await user.click(within(dialog).getByRole("button", { name: /quitter sans enregistrer/i }));
+
+    expect(push).toHaveBeenCalledWith("/");
+    const persisted = await new LocalStorageCharacterRepository().getById(character.id);
+    expect(persisted?.name).toBe("Elara Duskwood");
   });
 
   it("computes the ability modifier and saving throw live on the Caractéristiques tab", async () => {

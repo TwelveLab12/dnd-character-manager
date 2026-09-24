@@ -1,5 +1,6 @@
 "use client";
 
+import { CircleOff, Hourglass, Moon, Sparkles, WandSparkles, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useId } from "react";
 import type { AbilityName } from "@/domain/ability-scores";
@@ -71,6 +72,7 @@ function SpellcastingSection({ draft, onChange }: CharacterTabProps) {
             variant="outline"
             onClick={() => onChange({ spellcasting: { ability: "wisdom" } })}
           >
+            <Sparkles />
             Activer l&rsquo;incantation
           </Button>
         </div>
@@ -98,6 +100,7 @@ function SpellcastingSection({ draft, onChange }: CharacterTabProps) {
           size="sm"
           onClick={() => onChange({ spellcasting: undefined })}
         >
+          <CircleOff />
           Désactiver
         </Button>
       </div>
@@ -200,6 +203,7 @@ function SpellSlotsSection({ draft, onChange }: CharacterTabProps) {
               onChange({ spellSlots: fullCasterSpellSlots(clampCharacterLevel(draft.level)) })
             }
           >
+            <WandSparkles />
             Générer (lanceur complet)
           </Button>
           <Button
@@ -208,6 +212,7 @@ function SpellSlotsSection({ draft, onChange }: CharacterTabProps) {
             size="sm"
             onClick={() => onChange(applyShortRest(draft))}
           >
+            <Hourglass />
             Repos court
           </Button>
           <Button
@@ -216,6 +221,7 @@ function SpellSlotsSection({ draft, onChange }: CharacterTabProps) {
             size="sm"
             onClick={() => onChange(applyLongRest(draft))}
           >
+            <Moon />
             Repos long
           </Button>
         </div>
@@ -260,6 +266,7 @@ function SpellSlotsSection({ draft, onChange }: CharacterTabProps) {
               className="ml-auto"
               onClick={() => removeSlot(slot.level)}
             >
+              <X />
               Retirer
             </Button>
           </div>

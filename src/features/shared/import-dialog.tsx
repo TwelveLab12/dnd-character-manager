@@ -1,5 +1,6 @@
 "use client";
 
+import { FileUp, ScanSearch, Upload } from "lucide-react";
 import { useId, useRef, useState } from "react";
 import type { ChangeEvent, ReactNode } from "react";
 import type { VariantProps } from "class-variance-authority";
@@ -118,6 +119,7 @@ export function ImportDialog<T>({
     >
       <DialogTrigger asChild>
         <Button variant={triggerVariant} size={triggerSize}>
+          <Upload />
           {triggerLabel}
         </Button>
       </DialogTrigger>
@@ -152,9 +154,11 @@ export function ImportDialog<T>({
               onChange={handleFileChange}
             />
             <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
+              <FileUp />
               Choisir un fichier
             </Button>
             <Button type="button" onClick={handleAnalyze} disabled={text.trim() === ""}>
+              <ScanSearch />
               Analyser
             </Button>
           </div>
@@ -182,6 +186,7 @@ export function ImportDialog<T>({
               onClick={() => void handleImport()}
               disabled={importable.length === 0}
             >
+              <Upload />
               Importer ({importable.length})
             </Button>
           )}

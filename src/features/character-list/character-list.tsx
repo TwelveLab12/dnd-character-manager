@@ -1,5 +1,6 @@
 "use client";
 
+import { BookOpen, Download } from "lucide-react";
 import Link from "next/link";
 import { useEffect } from "react";
 import { downloadJson, exportBackupToJson, exportCharactersToJson } from "@/import-export/exporter";
@@ -31,7 +32,10 @@ export function CharacterList() {
         <PageTitle>Mes personnages</PageTitle>
         <div className="flex items-center gap-2">
           <Button variant="outline" asChild>
-            <Link href="/spells">Bibliothèque de sorts</Link>
+            <Link href="/spells">
+              <BookOpen />
+              Bibliothèque de sorts
+            </Link>
           </Button>
           <CreateCharacterDialog />
         </div>
@@ -45,6 +49,7 @@ export function CharacterList() {
           disabled={characters.length === 0}
           onClick={() => downloadJson("personnages.json", exportCharactersToJson(characters))}
         >
+          <Download />
           Exporter personnages
         </Button>
         <ImportCharactersDialog />
@@ -55,6 +60,7 @@ export function CharacterList() {
           disabled={characters.length === 0 && spells.length === 0}
           onClick={() => downloadJson("sauvegarde.json", exportBackupToJson(characters, spells))}
         >
+          <Download />
           Exporter tout (sauvegarde)
         </Button>
         <ImportBackupDialog />

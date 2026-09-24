@@ -1,5 +1,6 @@
 "use client";
 
+import { FileUp, ScanSearch, Upload } from "lucide-react";
 import { useId, useRef, useState } from "react";
 import type { ChangeEvent } from "react";
 import type { CharacterImportRow } from "@/import-export/character-importer";
@@ -126,6 +127,7 @@ export function ImportBackupDialog() {
     >
       <DialogTrigger asChild>
         <Button variant="ghost" size="sm">
+          <Upload />
           Importer une sauvegarde
         </Button>
       </DialogTrigger>
@@ -163,9 +165,11 @@ export function ImportBackupDialog() {
               onChange={handleFileChange}
             />
             <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
+              <FileUp />
               Choisir un fichier
             </Button>
             <Button type="button" onClick={handleAnalyze} disabled={text.trim() === ""}>
+              <ScanSearch />
               Analyser
             </Button>
           </div>
@@ -204,6 +208,7 @@ export function ImportBackupDialog() {
               onClick={() => void handleImport()}
               disabled={importableCharacters.length === 0 && importableSpells.length === 0}
             >
+              <Upload />
               Importer ({importableCharacters.length + importableSpells.length})
             </Button>
           )}
