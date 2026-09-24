@@ -138,6 +138,38 @@
   --ring: #8fa9ff; /* lueur */
 }
 
+/**
+ * Forge naine — Murrik Ronin, nain des collines barbare (voie du totem de l'ours), forgeron. Suie et
+ * cuir sombre en fond, os en texte, braise en accent héroïque (feu de forge, rage), granit en
+ * lueur froide pour le focus/info (son regard « dur comme du granit »), sang pour le danger,
+ * lichen pour le succès, laiton pour l'avertissement — distinct de la braise. Même principe que
+ * Séluné : tokens sémantiques recalibrés pour ce fond sombre (voir
+ * docs/adr/0040-forge-naine-palette.md).
+ */
+[data-theme="forge-naine"] {
+  --background: #14100d; /* suie */
+  --foreground: #efe4d4; /* os */
+  --card: #1f1914; /* cuir */
+  --card-foreground: #efe4d4; /* os */
+  --popover: #2a211a; /* fourrure */
+  --popover-foreground: #efe4d4; /* os */
+  --primary: #e8913a; /* braise */
+  --primary-foreground: #14100d; /* suie */
+  --secondary: #1f1914; /* cuir */
+  --secondary-foreground: #a8998a; /* cendre */
+  --muted: #1f1914; /* cuir */
+  --muted-foreground: #a8998a; /* cendre */
+  --accent: #9fb0bb; /* granit */
+  --accent-foreground: #14100d; /* suie */
+  --destructive: #c8483f; /* sang */
+  --success: #7fa35a; /* lichen */
+  --warning: #d8c26a; /* laiton */
+  --info: #9fb0bb; /* granit */
+  --border: rgba(168, 153, 138, 0.22); /* cendre */
+  --input: rgba(168, 153, 138, 0.22); /* cendre */
+  --ring: #9fb0bb; /* granit */
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

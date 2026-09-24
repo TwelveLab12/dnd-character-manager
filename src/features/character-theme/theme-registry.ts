@@ -19,6 +19,11 @@ export const DEFAULT_THEME_SWATCHES: readonly [string, string, string] = [
  */
 export const CHARACTER_THEMES: readonly CharacterTheme[] = [
   { id: "selune", label: "Séluné (Lune, Clerc)", swatches: ["#0e1120", "#d6b25f", "#8fa9ff"] },
+  {
+    id: "forge-naine",
+    label: "Forge naine (Ours, Barbare)",
+    swatches: ["#14100d", "#e8913a", "#9fb0bb"],
+  },
 ];
 
 export function isKnownThemeId(themeId: string | undefined): boolean {
