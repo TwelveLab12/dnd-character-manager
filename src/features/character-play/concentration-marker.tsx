@@ -1,5 +1,6 @@
 "use client";
 
+import { Focus } from "lucide-react";
 import { useEffect, useId } from "react";
 import type { Character } from "@/domain/character";
 import { playAvailableSpellIds } from "@/domain/calculations/spell-availability";
@@ -34,9 +35,10 @@ export function ConcentrationMarker({ character }: { character: Character }) {
     .sort((a, b) => a.level - b.level || a.name.localeCompare(b.name));
 
   return (
-    <div className="grid justify-items-end gap-2">
+    <div className="grid justify-items-start gap-2">
       <div className="flex items-center gap-2">
         <Label htmlFor={switchId} className={active ? "text-info" : "text-muted-foreground"}>
+          <Focus aria-hidden className="size-4" />
           Concentration
         </Label>
         <Switch id={switchId} checked={active} onCheckedChange={() => void toggleConcentration()} />
