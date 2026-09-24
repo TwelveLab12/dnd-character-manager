@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { computeArmorClass } from "@/domain/calculations/armor-class";
 import type { Character } from "@/domain/character";
 import { useCharacterStore } from "@/stores/store-provider";
 import {
@@ -40,7 +41,7 @@ export function CharacterCard({ character }: { character: Character }) {
         <span>
           PV {character.hitPoints.current}/{character.hitPoints.max}
         </span>
-        <span>CA {character.armorClass}</span>
+        <span>CA {computeArmorClass(character).total}</span>
       </CardContent>
       <CardFooter className="justify-end gap-2">
         <Button variant="outline" asChild>

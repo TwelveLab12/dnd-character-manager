@@ -34,6 +34,43 @@ describe("previewCharacterImport", () => {
     expect(invalidRow?.status).toBe("invalid");
     expect(invalidRow?.errors?.[0]).toMatch(/level/);
   });
+
+  it("still imports a legacy character with a stored armorClass, dropping the key", () => {
+    const legacy = { ...makeTestCharacter({ id: "elara" }), armorClass: 17 };
+    const [row] = previewCharacterImport([legacy], []);
+
+    expect(row?.status).toBe("new");
+    expect(row?.entity).not.toHaveProperty("armorClass");
+  });
+
+  it("imports equipped armor and armor class effects", () => {
+    const character = makeTestCharacter({
+      id: "elara",
+      inventory: [
+        {
+          id: "chain-mail",
+          name: "Cotte de mailles",
+          quantity: 1,
+          equipped: true,
+          armor: { category: "heavy", baseArmorClass: 16, strengthRequirement: 13 },
+        },
+      ],
+      armorProficiencies: ["light", "medium", "heavy", "shield"],
+      armorClassEffects: [
+        {
+          id: "shield-of-faith",
+          name: "Bouclier de la foi",
+          bonus: 2,
+          trigger: { type: "concentration", spellId: "shield-of-faith" },
+        },
+      ],
+    });
+    const [row] = previewCharacterImport([character], []);
+
+    expect(row?.status).toBe("new");
+    expect(row?.entity?.inventory[0]?.armor?.baseArmorClass).toBe(16);
+    expect(row?.entity?.armorClassEffects?.[0]?.trigger.type).toBe("concentration");
+  });
 });
 
 describe("parseCharacterImportEntries", () => {

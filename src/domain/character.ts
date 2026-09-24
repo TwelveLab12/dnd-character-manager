@@ -1,6 +1,7 @@
 import type { AbilityName, AbilityScores } from "./ability-scores";
+import type { ArmorClassEffect } from "./armor-class-effect";
 import type { CharacterFeature } from "./feature";
-import type { InventoryItem } from "./inventory";
+import type { ArmorCategory, InventoryItem } from "./inventory";
 import type { RaceSelection } from "./race";
 import type { CharacterSpellTag } from "./spell-tag";
 
@@ -43,7 +44,13 @@ export interface Character {
   raceSelection?: RaceSelection;
   background?: string;
   hitPoints: HitPoints;
-  armorClass: number;
+  /** Pas de champ de CA stocké : elle est toujours calculée — voir
+   * src/domain/calculations/armor-class.ts. Maîtrises d'armure : n'influent pas sur la CA (règles
+   * 2014), seulement sur les avertissements affichés. */
+  armorProficiencies?: ArmorCategory[];
+  /** Don « Maître des armures intermédiaires » : plafond de Dextérité +3 au lieu de +2. */
+  mediumArmorMaster?: boolean;
+  armorClassEffects?: ArmorClassEffect[];
   initiativeBonus: number;
   speed: number;
   /** Scores DE BASE (avant bonus racial) — voir effectiveAbilityScores pour les valeurs utilisées

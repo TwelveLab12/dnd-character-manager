@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { ArmorClassSection } from "./armor-class-section";
 import type { CharacterTabProps } from "./types";
 
 function toNumber(value: string): number {
@@ -36,7 +37,6 @@ export function GeneralTab({ draft, onChange }: CharacterTabProps) {
   const hpCurrentId = useId();
   const hpMaxId = useId();
   const hpTempId = useId();
-  const acId = useId();
   const initiativeId = useId();
   const speedId = useId();
   const meleeId = useId();
@@ -139,16 +139,9 @@ export function GeneralTab({ draft, onChange }: CharacterTabProps) {
         </div>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-3">
-        <div className="grid gap-2">
-          <Label htmlFor={acId}>Classe d&rsquo;armure</Label>
-          <Input
-            id={acId}
-            type="number"
-            value={draft.armorClass}
-            onChange={(event) => onChange({ armorClass: toNumber(event.target.value) })}
-          />
-        </div>
+      <ArmorClassSection draft={draft} onChange={onChange} />
+
+      <div className="grid gap-4 sm:grid-cols-2">
         <div className="grid gap-2">
           <Label htmlFor={initiativeId}>Bonus d&rsquo;initiative</Label>
           <Input
