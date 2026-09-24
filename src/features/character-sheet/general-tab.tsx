@@ -1,32 +1,28 @@
 "use client";
 
 import { useId } from "react";
-import type { AbilityName } from "@/domain/ability-scores";
-import type { Character, HitPointMethod } from "@/domain/character";
-import { computeMaxHitPoints, fixedHitDieValue } from "@/domain/calculations/max-hit-points";
-import { CHARACTER_CLASSES, findClassDefinition } from "@/domain/character-class";
-import { FEATS } from "@/domain/feat";
+import { cn } from "cn";
 import type { StatPart } from "@/domain/calculations/combat-stats";
-import { computeInitiative, computeSpeed, DEFAULT_SPEED } from "@/domain/calculations/combat-stats";
-import { effectiveAbilityScores } from "@/domain/calculations/effective-ability-scores";
-import type { RaceSelection } from "@/domain/race";
-import { RACE_DEFINITIONS, findRaceDefinition } from "@/domain/race";
-import { CHARACTER_THEMES } from "@/features/character-theme/theme-registry";
-import { ABILITY_LABELS } from "@/features/shared/ability-labels";
+import { computeArmorClass } from "@/domain/calculations/armor-class";
+import { computeInitiative, computeSpeed } from "@/domain/calculations/combat-stats";
+import { computeMaxHitPoints } from "@/domain/calculations/max-hit-points";
+import { martialArtsDie } from "@/domain/calculations/weapon-attack";
+import { FEATS } from "@/domain/feat";
+import { findRaceDefinition } from "@/domain/race";
+import {
+  CHARACTER_THEMES,
+  DEFAULT_THEME_SWATCHES,
+} from "@/features/character-theme/theme-registry";
+import { formatArmorClassBreakdown } from "@/features/shared/armor-class";
 import { formatModifier } from "@/features/shared/format";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { ArmorClassSection } from "./armor-class-section";
 import { AttacksSection } from "./attacks-section";
+import { GeneralSection, RuleSwitchRow } from "./general-section";
+import { HitPointsSection } from "./hit-points-section";
+import { IdentitySection } from "./identity-section";
 import type { CharacterTabProps } from "./types";
 
 function toNumber(value: string): number {
@@ -34,357 +30,20 @@ function toNumber(value: string): number {
   return Number.isFinite(parsed) ? parsed : 0;
 }
 
+/**
+ * Onglet Général de la configuration (docs/adr/0035) : identité, résumé des valeurs calculées,
+ * puis une section par réglage (PV max, défense, attaques, dons et bonus, thème et notes).
+ */
 export function GeneralTab({ draft, onChange }: CharacterTabProps) {
-  const nameId = useId();
-  const classId = useId();
-  const subclassId = useId();
-  const raceId = useId();
-  const backgroundId = useId();
-  const levelId = useId();
-  const hpCurrentId = useId();
-  const hpTempId = useId();
-  const notesId = useId();
-
   return (
-    <div className="grid gap-6">
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div className="grid gap-2">
-          <Label htmlFor={nameId}>Nom</Label>
-          <Input
-            id={nameId}
-            value={draft.name}
-            onChange={(event) => onChange({ name: event.target.value })}
-          />
-        </div>
-        <div className="grid gap-2">
-          <Label htmlFor={levelId}>Niveau</Label>
-          <Input
-            id={levelId}
-            type="number"
-            min={1}
-            max={20}
-            value={draft.level}
-            onChange={(event) => onChange({ level: toNumber(event.target.value) })}
-          />
-        </div>
-        <div className="grid gap-2">
-          <Label htmlFor={classId}>Classe</Label>
-          <Input
-            id={classId}
-            value={draft.class}
-            onChange={(event) => onChange({ class: event.target.value })}
-          />
-        </div>
-        <div className="grid gap-2">
-          <Label htmlFor={subclassId}>Sous-classe</Label>
-          <Input
-            id={subclassId}
-            value={draft.subclass ?? ""}
-            onChange={(event) => onChange({ subclass: event.target.value || undefined })}
-          />
-        </div>
-        <div className="grid gap-2">
-          <Label htmlFor={raceId}>Race</Label>
-          <Input
-            id={raceId}
-            value={draft.race ?? ""}
-            onChange={(event) => onChange({ race: event.target.value || undefined })}
-          />
-        </div>
-        <div className="grid gap-2">
-          <Label htmlFor={backgroundId}>Historique</Label>
-          <Input
-            id={backgroundId}
-            value={draft.background ?? ""}
-            onChange={(event) => onChange({ background: event.target.value || undefined })}
-          />
-        </div>
-      </div>
-
-      <ClassRulesSection draft={draft} onChange={onChange} />
-
-      <RaceBonusSection draft={draft} onChange={onChange} />
-
-      <FeatsSection draft={draft} onChange={onChange} />
-
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div className="grid gap-2">
-          <Label htmlFor={hpCurrentId}>PV actuels</Label>
-          <Input
-            id={hpCurrentId}
-            type="number"
-            value={draft.hitPoints.current}
-            onChange={(event) =>
-              onChange({ hitPoints: { ...draft.hitPoints, current: toNumber(event.target.value) } })
-            }
-          />
-        </div>
-        <div className="grid gap-2">
-          <Label htmlFor={hpTempId}>PV temporaires</Label>
-          <Input
-            id={hpTempId}
-            type="number"
-            value={draft.hitPoints.temporary}
-            onChange={(event) =>
-              onChange({
-                hitPoints: { ...draft.hitPoints, temporary: toNumber(event.target.value) },
-              })
-            }
-          />
-        </div>
-      </div>
-
-      <MaxHitPointsSection draft={draft} onChange={onChange} />
-
+    <div className="grid gap-7 pt-2">
+      <IdentitySection draft={draft} onChange={onChange} />
+      <SummaryTiles draft={draft} />
+      <HitPointsSection draft={draft} onChange={onChange} />
       <ArmorClassSection draft={draft} onChange={onChange} />
-
-      <InitiativeAndSpeedSection draft={draft} onChange={onChange} />
-
       <AttacksSection draft={draft} onChange={onChange} />
-
-      <ThemeSection draft={draft} onChange={onChange} />
-
-      <div className="grid gap-2">
-        <Label htmlFor={notesId}>Notes</Label>
-        <Textarea
-          id={notesId}
-          value={draft.notes ?? ""}
-          onChange={(event) => onChange({ notes: event.target.value || undefined })}
-          rows={4}
-        />
-      </div>
-    </div>
-  );
-}
-
-/**
- * Classe et sous-classe connues des règles (src/domain/character-class.ts, src/domain/subclass.ts) :
- * elles déterminent les valeurs calculées (emplacements, Canalisation divine et ses options,
- * caractéristique d'incantation, sorts toujours préparés, maîtrises). Éditent `classId` et
- * `subclassId`, indépendants des libellés libres `class` et `subclass` ci-dessus.
- */
-function ClassRulesSection({ draft, onChange }: CharacterTabProps) {
-  const classSelectId = useId();
-  const subclassSelectId = useId();
-  const classDefinition = findClassDefinition(draft.classId);
-  const subclasses = classDefinition?.subclasses ?? [];
-
-  return (
-    <div className="grid gap-4 sm:grid-cols-2">
-      <div className="grid gap-2">
-        <Label htmlFor={classSelectId}>Classe (règles appliquées)</Label>
-        <Select
-          value={draft.classId ?? "none"}
-          onValueChange={(value) =>
-            onChange({ classId: value === "none" ? undefined : value, subclassId: undefined })
-          }
-        >
-          <SelectTrigger id={classSelectId}>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="none">Aucune / non gérée</SelectItem>
-            {CHARACTER_CLASSES.map((definition) => (
-              <SelectItem key={definition.id} value={definition.id}>
-                {definition.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      {subclasses.length > 0 && (
-        <div className="grid gap-2">
-          <Label htmlFor={subclassSelectId}>
-            {classDefinition?.subclassLabel ?? "Sous-classe"} (règles appliquées)
-          </Label>
-          <Select
-            value={draft.subclassId ?? "none"}
-            onValueChange={(value) =>
-              onChange({ subclassId: value === "none" ? undefined : value })
-            }
-          >
-            <SelectTrigger id={subclassSelectId}>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="none">Aucun / non géré</SelectItem>
-              {subclasses.map((definition) => (
-                <SelectItem key={definition.id} value={definition.id}>
-                  {definition.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      )}
-    </div>
-  );
-}
-
-/**
- * PV max calculés (docs/adr/0027) : valeur fixe par défaut (moitié du dé de vie + 1 par niveau
- * après le 1er), ou dés lancés — seul le résultat du dé se saisit alors, niveau par niveau ; le
- * maximum du 1er niveau et la Constitution restent automatiques.
- */
-function MaxHitPointsSection({ draft, onChange }: CharacterTabProps) {
-  const methodId = useId();
-  const manualId = useId();
-  const result = computeMaxHitPoints(draft);
-
-  if (result.method === "manual" || result.hitDie === undefined) {
-    return (
-      <div className="grid gap-2 sm:max-w-xs">
-        <Label htmlFor={manualId}>PV max</Label>
-        <Input
-          id={manualId}
-          type="number"
-          min={1}
-          value={draft.baseMaxHitPoints ?? ""}
-          onChange={(event) =>
-            onChange({
-              baseMaxHitPoints: event.target.value ? toNumber(event.target.value) : undefined,
-            })
-          }
-        />
-        <p className="text-muted-foreground text-xs">
-          Choisis une classe gérée ci-dessus pour que les PV max soient calculés.
-        </p>
-      </div>
-    );
-  }
-
-  const hitDie = result.hitDie;
-  const rolls = draft.hitPointRolls ?? [];
-
-  function setRoll(level: number, value: number | undefined) {
-    const next = [...rolls];
-    next[level - 2] = value as number;
-    onChange({ hitPointRolls: next });
-  }
-
-  return (
-    <div className="grid gap-3 rounded-lg border p-3">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div className="grid gap-0.5">
-          <span className="text-sm font-medium">PV max — {result.total}</span>
-          <span className="text-muted-foreground text-xs">
-            Dé de vie d{hitDie}, Constitution appliquée à chaque niveau
-          </span>
-        </div>
-        <div className="grid gap-1 sm:w-64">
-          <Label htmlFor={methodId} className="text-muted-foreground text-xs">
-            Gain de PV à chaque niveau
-          </Label>
-          <Select
-            value={result.method}
-            onValueChange={(value) => onChange({ hitPointMethod: value as HitPointMethod })}
-          >
-            <SelectTrigger id={methodId}>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="fixed">Valeur fixe ({fixedHitDieValue(hitDie)} + Con)</SelectItem>
-              <SelectItem value="rolled">Dés lancés (d{hitDie} + Con)</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-
-      <ul className="grid gap-1.5 text-sm">
-        {result.levels.map((entry) => (
-          <li key={entry.level} className="flex flex-wrap items-center gap-2">
-            <span className="text-muted-foreground w-14">Niv. {entry.level}</span>
-            {entry.level === 1 || result.method === "fixed" ? (
-              <span className="tabular-nums">{entry.die}</span>
-            ) : (
-              <Input
-                type="number"
-                min={1}
-                max={hitDie}
-                aria-label={`Résultat du d${hitDie} au niveau ${entry.level}`}
-                placeholder={String(fixedHitDieValue(hitDie))}
-                className="h-8 w-16"
-                value={rolls[entry.level - 2] ?? ""}
-                onChange={(event) =>
-                  setRoll(
-                    entry.level,
-                    event.target.value ? toNumber(event.target.value) : undefined,
-                  )
-                }
-              />
-            )}
-            <span className="text-muted-foreground tabular-nums">
-              {formatModifier(entry.constitution)} Con
-              {entry.bonus !== 0 && ` ${formatModifier(entry.bonus)} dons`} = {entry.total}
-            </span>
-            {entry.level === 1 && (
-              <span className="text-muted-foreground text-xs">(maximum du dé)</span>
-            )}
-          </li>
-        ))}
-      </ul>
-
-      {result.warnings.length > 0 && (
-        <ul className="text-warning grid gap-1 text-xs">
-          {result.warnings.map((warning) => (
-            <li key={warning}>{warning}</li>
-          ))}
-        </ul>
-      )}
-    </div>
-  );
-}
-
-/**
- * Dons connus des règles (src/domain/feat.ts) : leurs effets modélisés s'appliquent d'eux-mêmes
- * (ex : Robuste → +2 PV max par niveau). Leur description reste dans l'onglet Capacités.
- */
-function FeatsSection({ draft, onChange }: CharacterTabProps) {
-  const featIds = draft.featIds ?? [];
-
-  function toggle(featId: string, checked: boolean) {
-    const next = checked ? [...featIds, featId] : featIds.filter((id) => id !== featId);
-    onChange({ featIds: next.length > 0 ? next : undefined });
-  }
-
-  return (
-    <div className="grid gap-2">
-      <span className="text-sm font-medium">Dons (règles appliquées)</span>
-      <div className="flex flex-wrap gap-x-6 gap-y-3">
-        {FEATS.map((feat) => (
-          <FeatSwitch
-            key={feat.id}
-            label={
-              feat.hitPointsPerLevel
-                ? `${feat.name} (+${feat.hitPointsPerLevel} PV par niveau)`
-                : feat.name
-            }
-            checked={featIds.includes(feat.id)}
-            onCheckedChange={(checked) => toggle(feat.id, checked)}
-          />
-        ))}
-      </div>
-      <p className="text-muted-foreground text-xs">
-        Un don absent de cette liste reste une capacité, à décrire dans l&rsquo;onglet Capacités.
-      </p>
-    </div>
-  );
-}
-
-function FeatSwitch({
-  label,
-  checked,
-  onCheckedChange,
-}: {
-  label: string;
-  checked: boolean;
-  onCheckedChange: (checked: boolean) => void;
-}) {
-  const id = useId();
-  return (
-    <div className="flex items-center gap-2">
-      <Switch id={id} checked={checked} onCheckedChange={onCheckedChange} />
-      <Label htmlFor={id}>{label}</Label>
+      <RulesSection draft={draft} onChange={onChange} />
+      <ThemeAndNotesSection draft={draft} onChange={onChange} />
     </div>
   );
 }
@@ -399,32 +58,151 @@ function formatBreakdown(parts: readonly StatPart[], unit = ""): string {
     .join(" ");
 }
 
-/**
- * Initiative et vitesse calculées (docs/adr/0026) : seuls un bonus d'initiative hors Dextérité et,
- * pour une race hors registre, une vitesse de base se saisissent ici.
- */
-function InitiativeAndSpeedSection({ draft, onChange }: CharacterTabProps) {
-  const extraId = useId();
-  const baseSpeedId = useId();
+/** Valeurs calculées en un coup d'œil ; chaque tuile mène à la section qui la règle. */
+function SummaryTiles({ draft }: { draft: CharacterTabProps["draft"] }) {
+  const hitPoints = computeMaxHitPoints(draft);
+  const armorClass = computeArmorClass(draft);
   const initiative = computeInitiative(draft);
   const speed = computeSpeed(draft);
-  const raceKnown = draft.raceSelection
-    ? findRaceDefinition(draft.raceSelection.raceId) !== undefined
-    : false;
+  const race = draft.raceSelection ? findRaceDefinition(draft.raceSelection.raceId) : undefined;
+
+  const tiles = [
+    {
+      label: "PV max",
+      value: String(hitPoints.total),
+      detail:
+        hitPoints.hitDie === undefined
+          ? "Saisis à la main"
+          : `${draft.level}d${hitPoints.hitDie} ${hitPoints.method === "rolled" ? "lancés" : "fixes"} + Con`,
+      href: "#general-hit-points",
+    },
+    {
+      label: "Classe d’armure",
+      value: String(armorClass.total),
+      detail: formatArmorClassBreakdown(armorClass),
+      href: "#general-defense",
+    },
+    {
+      label: "Initiative",
+      value: formatModifier(initiative.total),
+      detail: initiative.breakdown
+        .map((part) => `${part.label} ${formatModifier(part.value)}`)
+        .join(" "),
+      href: "#general-rules",
+    },
+    {
+      label: "Vitesse",
+      value: `${speed.total} m`,
+      detail: race ? race.name : formatBreakdown(speed.breakdown, " m"),
+      href: "#general-identity",
+    },
+  ];
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2">
-      <div className="grid gap-2">
-        <Label htmlFor={extraId}>
-          Initiative — {formatModifier(initiative.total)}{" "}
-          <span className="text-muted-foreground text-xs font-normal">
-            (Dex {formatModifier(initiative.breakdown[0]?.value ?? 0)} + bonus)
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      {tiles.map((tile) => (
+        <a
+          key={tile.label}
+          href={tile.href}
+          className="bg-background/60 border-primary/30 hover:border-primary/60 focus-visible:ring-ring/50 grid content-start gap-1 rounded-xl border px-4 py-3 transition-colors outline-none focus-visible:ring-3"
+        >
+          <span className="text-muted-foreground text-[11px] font-semibold tracking-widest uppercase">
+            {tile.label}
+          </span>
+          <span className="font-heading text-primary text-3xl leading-tight font-semibold tabular-nums">
+            {tile.value}
+          </span>
+          <span className="text-muted-foreground line-clamp-2 text-xs">{tile.detail}</span>
+        </a>
+      ))}
+    </div>
+  );
+}
+
+/** Résumés d'effet des dons du registre (src/domain/feat.ts ne stocke que leur mécanique). */
+const FEAT_EFFECTS: Record<string, string> = {
+  "lanceur-de-sorts-de-bataille": "Avantage aux JS de concentration",
+};
+
+/**
+ * Dons, styles et capacités de classe appliqués aux valeurs calculées, plus le bonus d'initiative
+ * hors Dextérité : réunis ici plutôt qu'éparpillés dans les sections PV, CA et attaques
+ * (docs/adr/0035). Les données restent celles d'avant (`featIds`, `mediumArmorMaster`…).
+ */
+function RulesSection({ draft, onChange }: CharacterTabProps) {
+  const initiativeId = useId();
+  const initiativeHintId = useId();
+  const featIds = draft.featIds ?? [];
+
+  function toggleFeat(featId: string, checked: boolean) {
+    const next = checked ? [...featIds, featId] : featIds.filter((id) => id !== featId);
+    onChange({ featIds: next.length > 0 ? next : undefined });
+  }
+
+  return (
+    <GeneralSection
+      id="general-rules"
+      title="Dons, styles et bonus"
+      description={
+        <>
+          Leurs effets s&rsquo;appliquent aux valeurs calculées. Les autres dons se décrivent dans
+          l&rsquo;onglet Capacités.
+        </>
+      }
+    >
+      <div className="grid gap-2 sm:grid-cols-2">
+        {FEATS.map((feat) => (
+          <RuleSwitchRow
+            key={feat.id}
+            name={feat.name}
+            effect={
+              feat.hitPointsPerLevel
+                ? `+${feat.hitPointsPerLevel} PV max par niveau`
+                : (FEAT_EFFECTS[feat.id] ?? "Reconnu par les règles")
+            }
+            checked={featIds.includes(feat.id)}
+            onCheckedChange={(checked) => toggleFeat(feat.id, checked)}
+          />
+        ))}
+        <RuleSwitchRow
+          name="Maître des armures intermédiaires"
+          effect="Dex max +3 en armure intermédiaire"
+          checked={draft.mediumArmorMaster ?? false}
+          onCheckedChange={(checked) => onChange({ mediumArmorMaster: checked || undefined })}
+        />
+        <RuleSwitchRow
+          name="Ambidextre"
+          effect="Deux armes à une main, même non légères"
+          checked={draft.dualWielder ?? false}
+          onCheckedChange={(checked) => onChange({ dualWielder: checked || undefined })}
+        />
+        <RuleSwitchRow
+          name="Style : Combat à deux armes"
+          effect="Modificateur aux dégâts de la main secondaire"
+          checked={draft.twoWeaponFightingStyle ?? false}
+          onCheckedChange={(checked) => onChange({ twoWeaponFightingStyle: checked || undefined })}
+        />
+        <RuleSwitchRow
+          name="Arts martiaux (Moine)"
+          effect={`Dé ${martialArtsDie(draft.level).slice(1)}, armes de moine et mains nues`}
+          checked={draft.martialArts ?? false}
+          onCheckedChange={(checked) => onChange({ martialArts: checked || undefined })}
+        />
+      </div>
+
+      <div className="bg-background/60 flex items-center gap-3 rounded-xl border px-3.5 py-2.5">
+        <Label htmlFor={initiativeId} className="grid flex-1 gap-0.5">
+          <span className="text-sm font-medium">Bonus d&rsquo;initiative hors Dextérité</span>
+          <span id={initiativeHintId} className="text-muted-foreground text-xs font-normal">
+            Ex : don Vigilant +5
           </span>
         </Label>
         <Input
-          id={extraId}
+          id={initiativeId}
+          aria-describedby={initiativeHintId}
           type="number"
-          placeholder="Bonus hors Dextérité (ex : don Vigilant)"
+          placeholder="0"
+          className="w-20 text-center font-semibold"
           value={draft.initiativeExtraBonus ?? ""}
           onChange={(event) =>
             onChange({
@@ -433,213 +211,71 @@ function InitiativeAndSpeedSection({ draft, onChange }: CharacterTabProps) {
           }
         />
       </div>
-      <div className="grid gap-2">
-        {raceKnown ? (
-          <>
-            <span className="text-sm font-medium">Vitesse — {speed.total} m</span>
-            <p className="text-muted-foreground text-xs">
-              Calculée : {formatBreakdown(speed.breakdown, " m")}
-            </p>
-          </>
-        ) : (
-          <>
-            <Label htmlFor={baseSpeedId}>Vitesse — {speed.total} m</Label>
-            <Input
-              id={baseSpeedId}
-              type="number"
-              placeholder={`Vitesse de base (${DEFAULT_SPEED} m par défaut)`}
-              value={draft.baseSpeed ?? ""}
-              onChange={(event) =>
-                onChange({
-                  baseSpeed: event.target.value ? toNumber(event.target.value) : undefined,
-                })
+    </GeneralSection>
+  );
+}
+
+const DEFAULT_THEME = "none";
+
+function ThemeAndNotesSection({ draft, onChange }: CharacterTabProps) {
+  const notesId = useId();
+  const themes = [
+    {
+      id: DEFAULT_THEME,
+      label: "Par défaut",
+      hint: "Sobre, gris neutres",
+      swatches: DEFAULT_THEME_SWATCHES,
+    },
+    ...CHARACTER_THEMES.map((theme) => ({ ...theme, hint: undefined })),
+  ];
+  const current = draft.themeId ?? DEFAULT_THEME;
+
+  return (
+    <GeneralSection title="Thème et notes">
+      <div role="radiogroup" aria-label="Thème visuel" className="grid gap-2 sm:grid-cols-2">
+        {themes.map((theme) => {
+          const checked = current === theme.id;
+          return (
+            <button
+              key={theme.id}
+              type="button"
+              role="radio"
+              aria-checked={checked}
+              onClick={() =>
+                onChange({ themeId: theme.id === DEFAULT_THEME ? undefined : theme.id })
               }
-            />
-            <p className="text-muted-foreground text-xs">
-              Choisis une race gérée ci-dessus pour que la vitesse soit calculée.
-            </p>
-          </>
-        )}
+              className={cn(
+                "focus-visible:ring-ring/50 flex min-h-16 items-center gap-3.5 rounded-xl border px-3.5 py-2.5 text-left transition-colors outline-none focus-visible:ring-3",
+                checked ? "border-primary bg-primary/10" : "bg-background/60 hover:bg-muted/40",
+              )}
+            >
+              <span className="flex gap-1" aria-hidden>
+                {theme.swatches.map((color) => (
+                  <span
+                    key={color}
+                    className="size-5.5 rounded-md border border-white/10"
+                    style={{ backgroundColor: color }}
+                  />
+                ))}
+              </span>
+              <span className="grid gap-0.5">
+                <span className="text-sm font-semibold">{theme.label}</span>
+                {theme.hint && <span className="text-muted-foreground text-xs">{theme.hint}</span>}
+              </span>
+            </button>
+          );
+        })}
       </div>
-    </div>
-  );
-}
-
-function ThemeSection({ draft, onChange }: CharacterTabProps) {
-  const selectId = useId();
-
-  return (
-    <div className="grid gap-2 sm:max-w-xs">
-      <Label htmlFor={selectId}>Thème visuel</Label>
-      <Select
-        value={draft.themeId ?? "none"}
-        onValueChange={(value) => onChange({ themeId: value === "none" ? undefined : value })}
-      >
-        <SelectTrigger id={selectId}>
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="none">Aucun / thème par défaut</SelectItem>
-          {CHARACTER_THEMES.map((theme) => (
-            <SelectItem key={theme.id} value={theme.id}>
-              {theme.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    </div>
-  );
-}
-
-/**
- * Bonus de caractéristiques liés à la race — voir src/domain/race.ts. Édite `raceSelection`
- * (indépendant du champ `race` texte libre ci-dessus) ; les scores de base saisis dans l'onglet
- * Caractéristiques ne changent pas, seul le score EFFECTIF (affiché ici en aperçu) en tient compte.
- */
-function RaceBonusSection({ draft, onChange }: CharacterTabProps) {
-  const selectId = useId();
-  const race = draft.raceSelection ? findRaceDefinition(draft.raceSelection.raceId) : undefined;
-  const choiceRule = race?.abilityBonusRules.find((rule) => rule.type === "choice");
-  const choices = draft.raceSelection?.abilityBonusChoices ?? [];
-
-  function selectRace(raceId: string) {
-    if (raceId === "none") {
-      onChange({ raceSelection: undefined });
-      return;
-    }
-    onChange({ raceSelection: { raceId, abilityBonusChoices: [] } });
-  }
-
-  function selectChoice(index: number, ability: AbilityName) {
-    const raceId = draft.raceSelection?.raceId;
-    if (!raceId) {
-      return;
-    }
-    const next = [...choices];
-    next[index] = ability;
-    onChange({ raceSelection: { raceId, abilityBonusChoices: next } });
-  }
-
-  return (
-    <div className="grid gap-3 rounded-lg border p-3">
-      <div className="grid gap-2 sm:max-w-xs">
-        <Label htmlFor={selectId}>Race (bonus de caractéristiques)</Label>
-        <Select value={draft.raceSelection?.raceId ?? "none"} onValueChange={selectRace}>
-          <SelectTrigger id={selectId}>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="none">Aucune / non renseignée</SelectItem>
-            {RACE_DEFINITIONS.map((definition) => (
-              <SelectItem key={definition.id} value={definition.id}>
-                {definition.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+      <div className="grid gap-1.5">
+        <Label htmlFor={notesId}>Notes</Label>
+        <Textarea
+          id={notesId}
+          placeholder="Personnalité, liens, objectifs…"
+          value={draft.notes ?? ""}
+          onChange={(event) => onChange({ notes: event.target.value || undefined })}
+          rows={4}
+        />
       </div>
-
-      {choiceRule && choiceRule.type === "choice" && (
-        <div className="grid gap-2 sm:grid-cols-2">
-          {Array.from({ length: choiceRule.count }, (_, index) => (
-            <AbilityChoiceSelect
-              key={index}
-              index={index}
-              value={choices[index]}
-              excluded={choiceRule.exclude ?? []}
-              taken={choices.filter((_, otherIndex) => otherIndex !== index)}
-              onSelect={(ability) => selectChoice(index, ability)}
-            />
-          ))}
-        </div>
-      )}
-
-      {draft.raceSelection && (
-        <RaceBonusPreview abilityScores={draft.abilityScores} raceSelection={draft.raceSelection} />
-      )}
-    </div>
-  );
-}
-
-const ABILITY_NAMES_LIST: AbilityName[] = [
-  "strength",
-  "dexterity",
-  "constitution",
-  "intelligence",
-  "wisdom",
-  "charisma",
-];
-
-function AbilityChoiceSelect({
-  index,
-  value,
-  excluded,
-  taken,
-  onSelect,
-}: {
-  index: number;
-  value: AbilityName | undefined;
-  excluded: AbilityName[];
-  taken: AbilityName[];
-  onSelect: (ability: AbilityName) => void;
-}) {
-  const selectId = useId();
-  const options = ABILITY_NAMES_LIST.filter(
-    (ability) => !excluded.includes(ability) && (ability === value || !taken.includes(ability)),
-  );
-
-  return (
-    <div className="grid gap-1">
-      <Label htmlFor={selectId} className="text-muted-foreground text-xs">
-        Choix {index + 1}
-      </Label>
-      <Select value={value ?? ""} onValueChange={(next) => onSelect(next as AbilityName)}>
-        <SelectTrigger id={selectId}>
-          <SelectValue placeholder="Choisir…" />
-        </SelectTrigger>
-        <SelectContent>
-          {options.map((ability) => (
-            <SelectItem key={ability} value={ability}>
-              {ABILITY_LABELS[ability]}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    </div>
-  );
-}
-
-function RaceBonusPreview({
-  abilityScores,
-  raceSelection,
-}: {
-  abilityScores: Character["abilityScores"];
-  raceSelection: RaceSelection;
-}) {
-  const effective = effectiveAbilityScores(abilityScores, raceSelection);
-  const changed = ABILITY_NAMES_LIST.filter(
-    (ability) => effective[ability] !== abilityScores[ability],
-  );
-
-  if (changed.length === 0) {
-    return (
-      <p className="text-muted-foreground text-xs">
-        Sélectionnez les caractéristiques à bonifier ci-dessus.
-      </p>
-    );
-  }
-
-  return (
-    <p className="text-muted-foreground text-xs">
-      Scores effectifs (base + race) :{" "}
-      {changed
-        .map(
-          (ability) =>
-            `${ABILITY_LABELS[ability]} ${abilityScores[ability]} → ${effective[ability]} (${formatModifier(
-              effective[ability] - abilityScores[ability],
-            )})`,
-        )
-        .join(", ")}
-    </p>
+    </GeneralSection>
   );
 }

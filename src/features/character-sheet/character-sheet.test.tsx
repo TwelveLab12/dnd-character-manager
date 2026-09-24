@@ -73,7 +73,7 @@ describe("CharacterSheet", () => {
 
     expect(await screen.findByRole("heading", { name: "Elara Duskwood" })).toBeInTheDocument();
 
-    const nameInput = screen.getByLabelText(/^nom$/i);
+    const nameInput = screen.getByLabelText(/nom du personnage/i);
     await user.clear(nameInput);
     await user.type(nameInput, "Elara Duskwood-Crépuscule");
     await user.click(screen.getByRole("button", { name: /^enregistrer$/i }));
@@ -106,7 +106,7 @@ describe("CharacterSheet", () => {
     renderSheet(character.id);
     await screen.findByRole("heading", { name: "Elara Duskwood" });
 
-    const nameInput = screen.getByLabelText(/^nom$/i);
+    const nameInput = screen.getByLabelText(/nom du personnage/i);
     await user.clear(nameInput);
     await user.type(nameInput, "Elara la Grise");
     await user.click(screen.getByRole("link", { name: /voir la fiche/i }));
@@ -127,7 +127,7 @@ describe("CharacterSheet", () => {
     renderSheet(character.id);
     await screen.findByRole("heading", { name: "Elara Duskwood" });
 
-    await user.type(screen.getByLabelText(/^nom$/i), "!");
+    await user.type(screen.getByLabelText(/nom du personnage/i), "!");
     await user.click(screen.getByRole("link", { name: /mes personnages/i }));
 
     const dialog = await screen.findByRole("alertdialog");
@@ -189,20 +189,26 @@ describe("CharacterSheet", () => {
     await screen.findByRole("heading", { name: character.name });
 
     // Général : choisir Humain variant, puis Sagesse + Constitution pour le bonus au choix.
-    await user.click(screen.getByRole("combobox", { name: /race \(bonus/i }));
+    await user.click(screen.getByRole("combobox", { name: "Race" }));
     await user.click(await screen.findByRole("option", { name: "Humain variant" }));
 
-    await user.click(screen.getByRole("combobox", { name: /choix 1/i }));
-    await user.click(await screen.findByRole("option", { name: "Sagesse" }));
+    await user.click(screen.getByRole("button", { name: /^sagesse 15$/i }));
+    await user.click(screen.getByRole("button", { name: /^constitution 14$/i }));
 
-    await user.click(screen.getByRole("combobox", { name: /choix 2/i }));
-    await user.click(await screen.findByRole("option", { name: "Constitution" }));
+    expect(screen.getByRole("button", { name: "Sagesse 15 → 16 (+1)" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+    expect(screen.getByText("2 / 2 choisies")).toBeInTheDocument();
 
-    // L'ordre d'affichage suit l'ordre canonique des caractéristiques (Constitution avant
-    // Sagesse), pas l'ordre dans lequel elles ont été choisies.
-    expect(
-      await screen.findByText(/constitution 14 → 15 \(\+1\), sagesse 15 → 16 \(\+1\)/i),
-    ).toBeInTheDocument();
+    // Un troisième choix remplace le plus ancien (Sagesse).
+    await user.click(screen.getByRole("button", { name: /^force 13$/i }));
+    expect(screen.getByRole("button", { name: /^sagesse 15$/i })).toHaveAttribute(
+      "aria-pressed",
+      "false",
+    );
+    await user.click(screen.getByRole("button", { name: /^force 13/i }));
+    await user.click(screen.getByRole("button", { name: /^sagesse 15$/i }));
 
     // Caractéristiques : le modificateur affiché doit utiliser le score EFFECTIF (16 -> +3), pas
     // le score de base saisi (15 -> +2).
@@ -309,7 +315,7 @@ describe("CharacterSheet", () => {
     expect(screen.getByText(/aucun emplacement/i)).toBeInTheDocument();
 
     await user.click(screen.getByRole("tab", { name: /^général$/i }));
-    await user.click(screen.getByRole("combobox", { name: /classe \(règles/i }));
+    await user.click(screen.getByRole("combobox", { name: "Classe" }));
     await user.click(await screen.findByRole("option", { name: "Clerc" }));
 
     await user.click(screen.getByRole("tab", { name: /^sorts$/i }));

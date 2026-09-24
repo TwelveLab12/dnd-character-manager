@@ -168,6 +168,7 @@ const currentCharacterSchema = z.object({
   // Pas de `armorClass` : la CA est calculée. Un ancien JSON qui la contient reste importable
   // (clé inconnue ignorée par z.object).
   armorProficiencies: z.array(armorCategorySchema).optional(),
+  removedArmorProficiencies: z.array(armorCategorySchema).optional(),
   mediumArmorMaster: z.boolean().optional(),
   armorClassEffects: z.array(armorClassEffectSchema).optional(),
   // Initiative et vitesse sont calculées (docs/adr/0026) : seuls un bonus d'initiative hors
@@ -181,6 +182,7 @@ const currentCharacterSchema = z.object({
   // Pas de `meleeAttackBonus`/`rangedAttackBonus` : calculés par arme équipée. Un ancien JSON
   // qui les contient reste importable (clés inconnues ignorées par z.object).
   weaponProficiencies: z.array(weaponCategorySchema).optional(),
+  removedWeaponProficiencies: z.array(weaponCategorySchema).optional(),
   martialArts: z.boolean().optional(),
   dualWielder: z.boolean().optional(),
   twoWeaponFightingStyle: z.boolean().optional(),

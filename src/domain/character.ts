@@ -88,6 +88,9 @@ export interface Character {
    * src/domain/calculations/armor-class.ts. Maîtrises d'armure : n'influent pas sur la CA (règles
    * 2014), seulement sur les avertissements affichés. */
   armorProficiencies?: ArmorCategory[];
+  /** Maîtrises d'armure accordées par la classe ou la sous-classe que le joueur a retirées pour ce
+   * personnage (docs/adr/0035) : les règles restent la valeur par défaut, ceci l'exception. */
+  removedArmorProficiencies?: ArmorCategory[];
   /** Don « Maître des armures intermédiaires » : plafond de Dextérité +3 au lieu de +2. */
   mediumArmorMaster?: boolean;
   armorClassEffects?: ArmorClassEffect[];
@@ -109,6 +112,9 @@ export interface Character {
    * une arme maîtrisée. Pas de bonus d'attaque stocké : il est calculé par arme équipée — voir
    * src/domain/calculations/weapon-attack.ts. */
   weaponProficiencies?: WeaponCategory[];
+  /** Maîtrises d'armes accordées par les règles que le joueur a retirées, comme
+   * `removedArmorProficiencies`. */
+  removedWeaponProficiencies?: WeaponCategory[];
   /** Arts martiaux (Moine, règles 2014) — voir src/domain/calculations/weapon-attack.ts. */
   martialArts?: boolean;
   /** Don Ambidextre : toute arme de corps à corps à une main peut aller en main secondaire. */

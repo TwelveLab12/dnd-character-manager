@@ -1,7 +1,16 @@
 export interface CharacterTheme {
   id: string;
   label: string;
+  /** Trois couleurs représentatives (fond, accent, lueur) pour l'aperçu du sélecteur de thème. */
+  swatches: readonly [string, string, string];
 }
+
+/** Aperçu du thème par défaut (gris neutres de `:root`, src/app/globals.css). */
+export const DEFAULT_THEME_SWATCHES: readonly [string, string, string] = [
+  "#1b1b1f",
+  "#ebebeb",
+  "#8a8a8a",
+];
 
 /**
  * Palettes visuelles disponibles, sélectionnables par personnage (voir
@@ -9,7 +18,7 @@ export interface CharacterTheme {
  * `[data-theme="<id>"]` correspondant dans src/app/globals.css.
  */
 export const CHARACTER_THEMES: readonly CharacterTheme[] = [
-  { id: "selune", label: "Séluné (Lune, Clerc)" },
+  { id: "selune", label: "Séluné (Lune, Clerc)", swatches: ["#0e1120", "#d6b25f", "#8fa9ff"] },
 ];
 
 export function isKnownThemeId(themeId: string | undefined): boolean {
