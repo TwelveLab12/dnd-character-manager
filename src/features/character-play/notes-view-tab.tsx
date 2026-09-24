@@ -10,6 +10,7 @@ import { findRaceDefinition } from "@/domain/race";
 import { findClassDefinition, findSubclassDefinition } from "@/domain/character-class";
 import { computeInitiative, computeSpeed } from "@/domain/calculations/combat-stats";
 import { computeMaxHitPoints } from "@/domain/calculations/max-hit-points";
+import { characterFeats } from "@/domain/feat";
 import {
   computeAlwaysPreparedSpells,
   computeClassResourceOptions,
@@ -28,9 +29,25 @@ import { Card, CardContent } from "@/components/ui/card";
 import { SectionTitle } from "@/components/ui/section-title";
 
 /** Règles appliquées automatiquement au personnage, en texte lisible (ex : bonus racial). */
+function featRules(character: Character): string[] {
+  const feats = characterFeats(character.featIds);
+  return feats.length > 0
+    ? [
+        `Dons : ${joinWithAnd(
+          feats.map((feat) =>
+            feat.hitPointsPerLevel
+              ? `${feat.name} (+${feat.hitPointsPerLevel} PV/niveau)`
+              : feat.name,
+          ),
+        )}`,
+      ]
+    : [];
+}
+
 function appliedRules(character: Character, library: readonly Spell[]): string[] {
   return [
     ...raceRules(character),
+    ...featRules(character),
     ...combatRules(character),
     ...classRules(character),
     ...subclassRules(character, library),
@@ -113,7 +130,9 @@ function classRules(character: Character): string[] {
         hitPoints.method === "fixed" ? "valeur fixe" : "dés lancés"
       } — niv. 1 : ${first ? `${first.die}${formatModifier(first.constitution)}` : ""}${
         perLevel.length > 0 ? `, niv. 2+ : ${perLevel.join(", ")}` : ""
-      })`,
+      }${hitPoints.bonusSources
+        .map((source) => `, ${source.name} +${source.perLevel} × ${level}`)
+        .join("")})`,
     );
   }
   const saves = definition.savingThrows.map((ability) => ABILITY_LABELS[ability]);

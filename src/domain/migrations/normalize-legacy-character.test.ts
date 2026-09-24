@@ -211,4 +211,24 @@ describe("normalizeLegacyCharacter", () => {
       baseMaxHitPoints: 44,
     });
   });
+
+  it("detects registered feats among the features, once", () => {
+    const withFeat = {
+      ...makeTestCharacter(),
+      features: [
+        {
+          id: "war-caster",
+          name: "Lanceur de sorts de bataille (War Caster)",
+          source: "Don (humain variant)",
+          description: "",
+        },
+        { id: "sight", name: "Yeux de la nuit", source: "Domaine", description: "" },
+      ],
+    };
+    expect(normalizeLegacyCharacter(withFeat)).toMatchObject({
+      featIds: ["lanceur-de-sorts-de-bataille"],
+    });
+    // Choix du joueur déjà exprimé (même vide) : jamais réécrit.
+    expect(normalizeLegacyCharacter({ ...withFeat, featIds: [] })).toMatchObject({ featIds: [] });
+  });
 });

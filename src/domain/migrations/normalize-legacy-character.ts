@@ -6,6 +6,7 @@ import {
   findClassDefinitionByLabel,
   findSubclassDefinitionByLabel,
 } from "../character-class";
+import { findFeatDefinitionInLabel } from "../feat";
 import type { RaceSelection } from "../race";
 import { findRaceDefinition } from "../race";
 
@@ -207,6 +208,24 @@ function withoutStoredMaxHitPoints(record: RawRecord): RawRecord {
   return keepAsBase ? { ...record, hitPoints, baseMaxHitPoints: value } : { ...record, hitPoints };
 }
 
+/** Dons saisis comme capacités (ex : « Lanceur de sorts de bataille (War Caster) ») → `featIds`,
+ * une seule fois : une fiche qui porte déjà `featIds` reflète les choix du joueur. */
+function withFeatIds(record: RawRecord): RawRecord {
+  if ("featIds" in record || !Array.isArray(record.features)) {
+    return record;
+  }
+  const featIds = [
+    ...new Set(
+      record.features.flatMap((feature) => {
+        if (!isRecord(feature) || typeof feature.name !== "string") return [];
+        const feat = findFeatDefinitionInLabel(feature.name);
+        return feat ? [feat.id] : [];
+      }),
+    ),
+  ];
+  return featIds.length > 0 ? { ...record, featIds } : record;
+}
+
 /**
  * Convertit un personnage au format antérieur aux valeurs calculées (docs/adr/0022) vers le format
  * courant. Idempotent : un personnage déjà au format courant ressort inchangé. Travaille sur des
@@ -217,9 +236,13 @@ export function normalizeLegacyCharacter(raw: unknown): unknown {
   if (!isRecord(raw)) {
     return raw;
   }
-  const normalized = withoutStoredMaxHitPoints(
-    withoutClassSavingThrows(
-      withBaseSpeed(withInitiativeExtraBonus(withSpellSlotsUsed(withSubclassId(withClassId(raw))))),
+  const normalized = withFeatIds(
+    withoutStoredMaxHitPoints(
+      withoutClassSavingThrows(
+        withBaseSpeed(
+          withInitiativeExtraBonus(withSpellSlotsUsed(withSubclassId(withClassId(raw)))),
+        ),
+      ),
     ),
   );
   // Les ressources de classe n'existent pas au format d'origine : un personnage qui porte déjà

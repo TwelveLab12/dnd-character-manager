@@ -152,6 +152,7 @@ const currentCharacterSchema = z.object({
   hitPointMethod: z.enum(["fixed", "rolled"]).optional(),
   hitPointRolls: z.array(z.number().int().min(1)).optional(),
   baseMaxHitPoints: z.number().int().min(1).optional(),
+  featIds: z.array(z.string().min(1)).optional(),
   // Pas de `armorClass` : la CA est calculée. Un ancien JSON qui la contient reste importable
   // (clé inconnue ignorée par z.object).
   armorProficiencies: z.array(armorCategorySchema).optional(),

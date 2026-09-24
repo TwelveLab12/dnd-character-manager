@@ -69,4 +69,17 @@ describe("computeMaxHitPoints", () => {
       method: "manual",
     });
   });
+
+  it("adds Tough (+2 per level) retroactively on every level (Yomi : 24 + 6)", () => {
+    const result = computeMaxHitPoints(yomi({ featIds: ["robuste"] }));
+    expect(result.total).toBe(30);
+    expect(result.levels.map((entry) => entry.total)).toEqual([12, 9, 9]);
+    expect(result.bonusSources).toEqual([{ name: "Robuste", perLevel: 2 }]);
+  });
+
+  it("ignores feats without hit point effect and unknown feat ids", () => {
+    expect(
+      computeMaxHitPoints(yomi({ featIds: ["lanceur-de-sorts-de-bataille", "inconnu"] })).total,
+    ).toBe(24);
+  });
 });
