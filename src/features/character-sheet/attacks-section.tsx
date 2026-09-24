@@ -1,7 +1,11 @@
 "use client";
 
 import { useId } from "react";
-import { computeWeaponAttacks } from "@/domain/calculations/weapon-attack";
+import {
+  computeWeaponAttacks,
+  martialArtsDie,
+  weaponAttackWarnings,
+} from "@/domain/calculations/weapon-attack";
 import type { WeaponCategory } from "@/domain/inventory";
 import { WEAPON_CATEGORIES } from "@/domain/inventory";
 import { WEAPON_CATEGORY_LABELS, formatWeaponAttack } from "@/features/shared/weapon";
@@ -17,6 +21,8 @@ import type { CharacterTabProps } from "./types";
 export function AttacksSection({ draft, onChange }: CharacterTabProps) {
   const proficiencies = draft.weaponProficiencies ?? [];
   const attacks = computeWeaponAttacks(draft);
+  const warnings = weaponAttackWarnings(draft);
+  const martialArtsId = useId();
 
   function toggleProficiency(category: WeaponCategory, checked: boolean) {
     onChange({
@@ -46,6 +52,26 @@ export function AttacksSection({ draft, onChange }: CharacterTabProps) {
           ))}
         </div>
       </div>
+
+      <div className="flex items-center gap-2">
+        <Switch
+          id={martialArtsId}
+          checked={draft.martialArts ?? false}
+          onCheckedChange={(checked) => onChange({ martialArts: checked || undefined })}
+        />
+        <Label htmlFor={martialArtsId}>
+          Arts martiaux (Moine) — dé {martialArtsDie(draft.level).slice(1)}, armes de moine et mains
+          nues
+        </Label>
+      </div>
+
+      {warnings.length > 0 && (
+        <ul className="text-warning grid gap-1 text-xs">
+          {warnings.map((warning) => (
+            <li key={warning}>{warning}</li>
+          ))}
+        </ul>
+      )}
 
       {attacks.length === 0 ? (
         <p className="text-muted-foreground text-sm">Aucune arme équipée.</p>

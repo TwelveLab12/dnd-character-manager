@@ -86,6 +86,9 @@ const weaponPropertiesSchema = z.object({
   ]),
   finesse: z.boolean().optional(),
   magicBonus: z.number().optional(),
+  twoHanded: z.boolean().optional(),
+  thrown: z.object({ normal: z.number(), long: z.number() }).optional(),
+  monkWeapon: z.boolean().optional(),
 });
 
 const inventoryItemSchema = z.object({
@@ -152,6 +155,7 @@ export const characterSchema = z.object({
   // Pas de `meleeAttackBonus`/`rangedAttackBonus` : calculés par arme équipée. Un ancien JSON
   // qui les contient reste importable (clés inconnues ignorées par z.object).
   weaponProficiencies: z.array(weaponCategorySchema).optional(),
+  martialArts: z.boolean().optional(),
   spellcasting: spellcastingInfoSchema.optional(),
   spellSlots: z.array(spellSlotLevelSchema).default([]),
   knownSpellIds: z.array(z.string()).default([]),

@@ -5,13 +5,14 @@ import { ABILITY_NAMES } from "@/domain/ability-scores";
 import type { ArmorClassEffect } from "@/domain/armor-class-effect";
 import type { Character } from "@/domain/character";
 import { computeArmorClass } from "@/domain/calculations/armor-class";
-import { computeWeaponAttacks } from "@/domain/calculations/weapon-attack";
+import { computeWeaponAttacks, weaponAttackWarnings } from "@/domain/calculations/weapon-attack";
 import { effectiveAbilityScores } from "@/domain/calculations/effective-ability-scores";
 import { findRaceDefinition } from "@/domain/race";
 import { ABILITY_LABELS } from "@/features/shared/ability-labels";
 import { formatArmorClassBreakdown } from "@/features/shared/armor-class";
 import { formatModifier } from "@/features/shared/format";
-import { DAMAGE_TYPE_LABELS } from "@/features/shared/weapon";
+import { formatWeaponDamage, weaponAttackTags } from "@/features/shared/weapon";
+import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -33,6 +34,7 @@ export function GeneralViewTab({ character }: { character: Character }) {
 
   const armorClass = computeArmorClass(character);
   const attacks = computeWeaponAttacks(character);
+  const attackWarnings = weaponAttackWarnings(character);
   const manualEffects = (character.armorClassEffects ?? []).filter(
     (effect) => effect.trigger.type === "manual",
   );
@@ -109,15 +111,30 @@ export function GeneralViewTab({ character }: { character: Character }) {
                     </span>
                   </span>
                   <span className="text-muted-foreground text-xs">
-                    {attack.damage} {DAMAGE_TYPE_LABELS[attack.damageType]}
-                    {attack.versatileDamage && ` · ${attack.versatileDamage} à deux mains`}
+                    {formatWeaponDamage(attack)}
                   </span>
+                  {weaponAttackTags(attack).length > 0 && (
+                    <span className="flex flex-wrap gap-1">
+                      {weaponAttackTags(attack).map((tag) => (
+                        <Badge key={tag} variant="secondary">
+                          {tag}
+                        </Badge>
+                      ))}
+                    </span>
+                  )}
                   {!attack.proficient && (
                     <span className="text-warning text-xs">
                       Non maîtrisée (sans bonus de maîtrise)
                     </span>
                   )}
                 </li>
+              ))}
+            </ul>
+          )}
+          {attackWarnings.length > 0 && (
+            <ul className="text-warning grid gap-1 text-xs">
+              {attackWarnings.map((warning) => (
+                <li key={warning}>{warning}</li>
               ))}
             </ul>
           )}
