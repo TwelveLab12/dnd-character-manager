@@ -51,7 +51,7 @@ describe("CharacterPlay", () => {
     );
   });
 
-  it("keeps the combat HUD (CA, PV, concentration, repos) visible across the 5 mirror tabs", async () => {
+  it("opens on the Combat tab, orders the tabs and keeps a CA/PV summary above every tab", async () => {
     const character = makeTestCharacter({
       background: "Ermite",
       inventory: [{ id: "item-1", name: "Sac à dos", quantity: 1 }],
@@ -63,12 +63,27 @@ describe("CharacterPlay", () => {
     renderPlay(character.id);
     await screen.findByRole("heading", { name: character.name });
 
-    for (const tabName of ["Notes", "Caractéristiques", "Sorts", "Inventaire", "Capacités"]) {
+    expect(screen.getAllByRole("tab").map((tab) => tab.textContent)).toEqual([
+      "Combat",
+      "Caractéristiques",
+      "Sorts",
+      "Inventaire",
+      "Capacités",
+      "Notes",
+    ]);
+    expect(screen.getByRole("tab", { name: "Combat" })).toHaveAttribute("aria-selected", "true");
+    const combat = screen.getByRole("tabpanel");
+    expect(within(combat).getByRole("img", { name: /classe d'armure/i })).toBeInTheDocument();
+    expect(within(combat).getByRole("img", { name: /points de vie/i })).toBeInTheDocument();
+    expect(within(combat).getByRole("switch", { name: /concentration/i })).toBeInTheDocument();
+    expect(within(combat).getByRole("button", { name: /^repos court$/i })).toBeInTheDocument();
+
+    for (const tabName of ["Caractéristiques", "Sorts", "Inventaire", "Capacités", "Notes"]) {
       await user.click(screen.getByRole("tab", { name: tabName }));
-      expect(screen.getByRole("img", { name: /classe d'armure/i })).toBeInTheDocument();
-      expect(screen.getByRole("img", { name: /points de vie/i })).toBeInTheDocument();
-      expect(screen.getByRole("switch", { name: /concentration/i })).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: /^repos court$/i })).toBeInTheDocument();
+      const summary = screen.getByRole("region", { name: "Résumé" });
+      expect(summary).toHaveTextContent("CA10");
+      expect(summary).toHaveTextContent("PV10 / 10");
+      expect(screen.queryByRole("img", { name: /classe d'armure/i })).not.toBeInTheDocument();
     }
 
     await user.click(screen.getByRole("tab", { name: "Notes" }));
@@ -96,11 +111,12 @@ describe("CharacterPlay", () => {
     });
     await new LocalStorageCharacterRepository().create(character);
 
+    const user = userEvent.setup();
     renderPlay(character.id);
     await screen.findByRole("heading", { name: character.name });
 
-    expect(screen.getByRole("tab", { name: "Notes" })).toHaveAttribute("aria-selected", "true");
     expect(screen.queryByRole("tab", { name: "Général" })).not.toBeInTheDocument();
+    await user.click(screen.getByRole("tab", { name: "Notes" }));
     expect(
       screen.getByText(
         "Bonus racial (Humain variant) : Constitution 14 → 15 (+1), Sagesse 15 → 16 (+1)",
