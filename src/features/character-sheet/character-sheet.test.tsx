@@ -308,38 +308,58 @@ describe("CharacterSheet", () => {
     expect(screen.getByText(/sagesse/i)).toBeInTheDocument();
   });
 
-  it("lists library spells and toggles known/prepared, un-preparing when un-knowing", async () => {
-    const character = makeTestCharacter();
+  it("adds known spells from the picker and keeps prepared / always-prepared exclusive", async () => {
+    const character = makeTestCharacter({ classId: "clerc" });
     await new LocalStorageCharacterRepository().create(character);
     await new LocalStorageSpellRepository().upsertMany([
-      makeTestSpell({ id: "fireball", name: "Test Fireball" }),
+      makeTestSpell({ id: "bless", name: "Test Bless" }),
+      makeTestSpell({ id: "light", name: "Test Light", level: 0 }),
+      makeTestSpell({ id: "fireball", name: "Test Fireball", level: 3, classes: ["Wizard"] }),
     ]);
 
     const user = userEvent.setup();
     renderSheet(character.id);
     await screen.findByRole("heading", { name: character.name });
-
     await user.click(screen.getByRole("tab", { name: /^sorts$/i }));
-    const row = (await screen.findByText("Test Fireball")).closest("tr");
-    if (!row) {
-      throw new Error("expected a table row for the spell");
-    }
+    expect(await screen.findByText(/aucun sort connu/i)).toBeInTheDocument();
 
-    const knownSwitch = within(row).getAllByRole("switch")[0];
-    const preparedSwitch = within(row).getAllByRole("switch")[1];
-    if (!knownSwitch || !preparedSwitch) {
-      throw new Error("expected known/prepared switches");
-    }
+    // Le panneau filtre par défaut sur la classe du personnage.
+    await user.click(screen.getByRole("button", { name: /ajouter des sorts/i }));
+    const panel = await screen.findByRole("dialog");
+    expect(within(panel).queryByText("Test Fireball")).not.toBeInTheDocument();
+    await user.click(within(panel).getByRole("checkbox", { name: /test bless/i }));
+    await user.click(within(panel).getByRole("checkbox", { name: /test light/i }));
+    await user.click(within(panel).getByRole("button", { name: "Ajouter 2 sorts" }));
 
-    await user.click(knownSwitch);
-    expect(await screen.findByText(/1 connu\(s\), 0 préparé\(s\)/)).toBeInTheDocument();
+    // Un tour de magie n'a pas de switch : il est toujours disponible.
+    expect(await screen.findByText("Toujours disponible")).toBeInTheDocument();
+    const prepared = screen.getByRole("switch", { name: "Préparé : Test Bless" });
+    const always = screen.getByRole("switch", { name: "Toujours préparé : Test Bless" });
 
-    await user.click(preparedSwitch);
-    expect(await screen.findByText(/1 connu\(s\), 1 préparé\(s\)/)).toBeInTheDocument();
+    await user.click(prepared);
+    expect(prepared).toBeChecked();
 
-    // Un-knowing a spell un-prepares it too.
-    await user.click(knownSwitch);
-    expect(await screen.findByText(/0 connu\(s\), 0 préparé\(s\)/)).toBeInTheDocument();
+    // Préparé -> toujours préparé : bascule directe.
+    await user.click(always);
+    expect(always).toBeChecked();
+    expect(prepared).not.toBeChecked();
+
+    // Toujours préparé -> préparé : confirmation (Annuler garde l'état).
+    await user.click(prepared);
+    const confirm = await screen.findByRole("alertdialog");
+    await user.click(within(confirm).getByRole("button", { name: "Annuler" }));
+    expect(always).toBeChecked();
+    expect(prepared).not.toBeChecked();
+
+    await user.click(prepared);
+    await user.click(
+      within(await screen.findByRole("alertdialog")).getByRole("button", { name: "Confirmer" }),
+    );
+    expect(prepared).toBeChecked();
+    expect(always).not.toBeChecked();
+
+    await user.click(screen.getByRole("button", { name: /retirer test bless/i }));
+    expect(screen.queryByText("Test Bless")).not.toBeInTheDocument();
   });
 
   it("adds, edits and persists an inventory item", async () => {
