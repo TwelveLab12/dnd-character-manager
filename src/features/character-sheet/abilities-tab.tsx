@@ -5,6 +5,10 @@ import type { AbilityName } from "@/domain/ability-scores";
 import { ABILITY_NAMES } from "@/domain/ability-scores";
 import { abilityModifier } from "@/domain/calculations/modifiers";
 import { clampCharacterLevel, proficiencyBonusForLevel } from "@/domain/calculations/proficiency";
+import {
+  effectiveSavingThrowProficiencies,
+  savingThrowGrantedBy,
+} from "@/domain/calculations/combat-stats";
 import { effectiveAbilityScores } from "@/domain/calculations/effective-ability-scores";
 import { ABILITY_LABELS, ABILITY_SHORT_LABELS } from "@/features/shared/ability-labels";
 import { formatModifier } from "@/features/shared/format";
@@ -40,7 +44,8 @@ export function AbilitiesTab({ draft, onChange }: CharacterTabProps) {
               ability={ability}
               baseScore={draft.abilityScores[ability]}
               effectiveScore={effectiveScores[ability]}
-              proficient={draft.savingThrowProficiencies.includes(ability)}
+              proficient={effectiveSavingThrowProficiencies(draft).includes(ability)}
+              grantedBy={savingThrowGrantedBy(draft, ability)}
               proficiencyBonus={proficiencyBonus}
               onScoreChange={(score) =>
                 onChange({ abilityScores: { ...draft.abilityScores, [ability]: score } })
@@ -88,6 +93,8 @@ interface AbilityRowProps {
    * modificateur et le jet de sauvegarde affichés. */
   effectiveScore: number;
   proficient: boolean;
+  /** Classe qui accorde la maîtrise du jet de sauvegarde : toujours active, non modifiable. */
+  grantedBy?: string;
   proficiencyBonus: number;
   onScoreChange: (score: number) => void;
   onProficiencyChange: (proficient: boolean) => void;
@@ -98,6 +105,7 @@ function AbilityRow({
   baseScore,
   effectiveScore,
   proficient,
+  grantedBy,
   proficiencyBonus,
   onScoreChange,
   onProficiencyChange,
@@ -131,10 +139,12 @@ function AbilityRow({
         <Switch
           id={saveId}
           checked={proficient}
+          disabled={grantedBy !== undefined}
           onCheckedChange={(checked) => onProficiencyChange(checked === true)}
         />
         <Label htmlFor={saveId} className="text-muted-foreground text-xs">
           Sauv. {formatModifier(savingThrow)}
+          {grantedBy && <span className="text-muted-foreground/80">({grantedBy})</span>}
         </Label>
       </div>
     </div>

@@ -154,8 +154,10 @@ const currentCharacterSchema = z.object({
   armorProficiencies: z.array(armorCategorySchema).optional(),
   mediumArmorMaster: z.boolean().optional(),
   armorClassEffects: z.array(armorClassEffectSchema).optional(),
-  initiativeBonus: z.number(),
-  speed: z.number(),
+  // Initiative et vitesse sont calculées (docs/adr/0026) : seuls un bonus d'initiative hors
+  // Dextérité et une vitesse de base pour une race hors registre sont stockés.
+  initiativeExtraBonus: z.number().optional(),
+  baseSpeed: z.number().optional(),
   abilityScores: abilityScoresSchema,
   savingThrowProficiencies: z.array(abilityNameSchema).default([]),
   skillProficiencies: z.array(z.string()).default([]),

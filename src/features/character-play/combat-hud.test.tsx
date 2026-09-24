@@ -118,8 +118,7 @@ describe("CombatHud — valeurs de combat (via CharacterPlay)", () => {
   it("shows AC, initiative, speed, spell save DC and spell attack bonus", async () => {
     const character = makeTestCharacter({
       level: 3,
-      initiativeBonus: -1,
-      speed: 9,
+      initiativeExtraBonus: 1,
       abilityScores: {
         strength: 10,
         dexterity: 14,
@@ -137,7 +136,8 @@ describe("CombatHud — valeurs de combat (via CharacterPlay)", () => {
 
     const hud = screen.getByRole("region", { name: "Combat" });
     expect(within(hud).getByRole("img", { name: "Classe d'armure 12" })).toBeInTheDocument();
-    expect(within(hud).getByText("Initiative").previousSibling).toHaveTextContent("-1");
+    // Initiative = Dex +2 + bonus 1 ; vitesse = 9 m par défaut (race hors registre).
+    expect(within(hud).getByText("Initiative").previousSibling).toHaveTextContent("+3");
     expect(within(hud).getByText("Vitesse").previousSibling).toHaveTextContent("9 m");
     expect(within(hud).getByText("DD sorts").previousSibling).toHaveTextContent("13");
     expect(within(hud).getByText("Attaque sort").previousSibling).toHaveTextContent("+5");

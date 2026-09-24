@@ -1,8 +1,13 @@
+import type { AbilityScores } from "../ability-scores";
+import { effectiveAbilityScores } from "../calculations/effective-ability-scores";
+import { abilityModifier } from "../calculations/modifiers";
 import {
   findClassDefinition,
   findClassDefinitionByLabel,
   findSubclassDefinitionByLabel,
 } from "../character-class";
+import type { RaceSelection } from "../race";
+import { findRaceDefinition } from "../race";
 
 /**
  * Capacités reconnues comme puisant dans la Canalisation divine du Clerc, dans les données
@@ -129,6 +134,63 @@ function withChannelDivinityResource(record: RawRecord): RawRecord {
   return { ...record, features, classResourcesUsed };
 }
 
+function raceSelectionOf(record: RawRecord): RaceSelection | undefined {
+  const selection = record.raceSelection;
+  return isRecord(selection) && typeof selection.raceId === "string"
+    ? (selection as unknown as RaceSelection)
+    : undefined;
+}
+
+/** Ancien `initiativeBonus` (total saisi) → `initiativeExtraBonus` (bonus hors Dextérité). */
+function withInitiativeExtraBonus(record: RawRecord): RawRecord {
+  if (!("initiativeBonus" in record)) {
+    return record;
+  }
+  const { initiativeBonus, ...rest } = record;
+  const total = asNumber(initiativeBonus);
+  const scores = isRecord(record.abilityScores)
+    ? (record.abilityScores as unknown as AbilityScores)
+    : undefined;
+  const dexterity = asNumber(scores?.dexterity);
+  if (total === undefined || !scores || dexterity === undefined) {
+    return rest;
+  }
+  const effectiveDexterity = effectiveAbilityScores(scores, raceSelectionOf(record)).dexterity;
+  const extra = total - abilityModifier(effectiveDexterity);
+  return extra !== 0 ? { ...rest, initiativeExtraBonus: extra } : rest;
+}
+
+/** Ancienne `speed` saisie → supprimée pour une race connue (vitesse calculée), sinon conservée
+ * comme `baseSpeed`. */
+function withBaseSpeed(record: RawRecord): RawRecord {
+  if (!("speed" in record)) {
+    return record;
+  }
+  const { speed, ...rest } = record;
+  const raceSelection = raceSelectionOf(record);
+  if (raceSelection && findRaceDefinition(raceSelection.raceId)) {
+    return rest;
+  }
+  const value = asNumber(speed);
+  return value !== undefined && rest.baseSpeed === undefined ? { ...rest, baseSpeed: value } : rest;
+}
+
+/** Les maîtrises de jets de sauvegarde accordées par la classe sont calculées : seules les
+ * maîtrises supplémentaires restent stockées. */
+function withoutClassSavingThrows(record: RawRecord): RawRecord {
+  const classId = typeof record.classId === "string" ? record.classId : undefined;
+  const granted = findClassDefinition(classId)?.savingThrows ?? [];
+  if (granted.length === 0 || !Array.isArray(record.savingThrowProficiencies)) {
+    return record;
+  }
+  const extras = record.savingThrowProficiencies.filter(
+    (ability) => !granted.includes(ability as never),
+  );
+  return extras.length === record.savingThrowProficiencies.length
+    ? record
+    : { ...record, savingThrowProficiencies: extras };
+}
+
 /**
  * Convertit un personnage au format antérieur aux valeurs calculées (docs/adr/0022) vers le format
  * courant. Idempotent : un personnage déjà au format courant ressort inchangé. Travaille sur des
@@ -139,7 +201,9 @@ export function normalizeLegacyCharacter(raw: unknown): unknown {
   if (!isRecord(raw)) {
     return raw;
   }
-  const normalized = withSpellSlotsUsed(withSubclassId(withClassId(raw)));
+  const normalized = withoutClassSavingThrows(
+    withBaseSpeed(withInitiativeExtraBonus(withSpellSlotsUsed(withSubclassId(withClassId(raw))))),
+  );
   // Les ressources de classe n'existent pas au format d'origine : un personnage qui porte déjà
   // `classResourcesUsed` est au format courant, et ses liens capacité → ressource sont des choix
   // du joueur qu'on ne doit jamais réécrire (ex : une capacité volontairement non liée).

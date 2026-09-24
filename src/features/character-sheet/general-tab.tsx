@@ -4,6 +4,8 @@ import { useId } from "react";
 import type { AbilityName } from "@/domain/ability-scores";
 import type { Character } from "@/domain/character";
 import { CHARACTER_CLASSES, findClassDefinition } from "@/domain/character-class";
+import type { StatPart } from "@/domain/calculations/combat-stats";
+import { computeInitiative, computeSpeed, DEFAULT_SPEED } from "@/domain/calculations/combat-stats";
 import { effectiveAbilityScores } from "@/domain/calculations/effective-ability-scores";
 import type { RaceSelection } from "@/domain/race";
 import { RACE_DEFINITIONS, findRaceDefinition } from "@/domain/race";
@@ -39,8 +41,6 @@ export function GeneralTab({ draft, onChange }: CharacterTabProps) {
   const hpCurrentId = useId();
   const hpMaxId = useId();
   const hpTempId = useId();
-  const initiativeId = useId();
-  const speedId = useId();
   const notesId = useId();
 
   return (
@@ -143,26 +143,7 @@ export function GeneralTab({ draft, onChange }: CharacterTabProps) {
 
       <ArmorClassSection draft={draft} onChange={onChange} />
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div className="grid gap-2">
-          <Label htmlFor={initiativeId}>Bonus d&rsquo;initiative</Label>
-          <Input
-            id={initiativeId}
-            type="number"
-            value={draft.initiativeBonus}
-            onChange={(event) => onChange({ initiativeBonus: toNumber(event.target.value) })}
-          />
-        </div>
-        <div className="grid gap-2">
-          <Label htmlFor={speedId}>Vitesse (m)</Label>
-          <Input
-            id={speedId}
-            type="number"
-            value={draft.speed}
-            onChange={(event) => onChange({ speed: toNumber(event.target.value) })}
-          />
-        </div>
-      </div>
+      <InitiativeAndSpeedSection draft={draft} onChange={onChange} />
 
       <AttacksSection draft={draft} onChange={onChange} />
 
@@ -241,6 +222,82 @@ function ClassRulesSection({ draft, onChange }: CharacterTabProps) {
           </Select>
         </div>
       )}
+    </div>
+  );
+}
+
+function formatBreakdown(parts: readonly StatPart[], unit = ""): string {
+  return parts
+    .map((part, index) =>
+      index === 0
+        ? `${part.label} ${part.value}${unit}`
+        : `${part.label} ${formatModifier(part.value)}${unit}`,
+    )
+    .join(" ");
+}
+
+/**
+ * Initiative et vitesse calculées (docs/adr/0026) : seuls un bonus d'initiative hors Dextérité et,
+ * pour une race hors registre, une vitesse de base se saisissent ici.
+ */
+function InitiativeAndSpeedSection({ draft, onChange }: CharacterTabProps) {
+  const extraId = useId();
+  const baseSpeedId = useId();
+  const initiative = computeInitiative(draft);
+  const speed = computeSpeed(draft);
+  const raceKnown = draft.raceSelection
+    ? findRaceDefinition(draft.raceSelection.raceId) !== undefined
+    : false;
+
+  return (
+    <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-2">
+        <Label htmlFor={extraId}>
+          Initiative — {formatModifier(initiative.total)}{" "}
+          <span className="text-muted-foreground text-xs font-normal">
+            (Dex {formatModifier(initiative.breakdown[0]?.value ?? 0)} + bonus)
+          </span>
+        </Label>
+        <Input
+          id={extraId}
+          type="number"
+          placeholder="Bonus hors Dextérité (ex : don Vigilant)"
+          value={draft.initiativeExtraBonus ?? ""}
+          onChange={(event) =>
+            onChange({
+              initiativeExtraBonus: event.target.value ? toNumber(event.target.value) : undefined,
+            })
+          }
+        />
+      </div>
+      <div className="grid gap-2">
+        {raceKnown ? (
+          <>
+            <span className="text-sm font-medium">Vitesse — {speed.total} m</span>
+            <p className="text-muted-foreground text-xs">
+              Calculée : {formatBreakdown(speed.breakdown, " m")}
+            </p>
+          </>
+        ) : (
+          <>
+            <Label htmlFor={baseSpeedId}>Vitesse — {speed.total} m</Label>
+            <Input
+              id={baseSpeedId}
+              type="number"
+              placeholder={`Vitesse de base (${DEFAULT_SPEED} m par défaut)`}
+              value={draft.baseSpeed ?? ""}
+              onChange={(event) =>
+                onChange({
+                  baseSpeed: event.target.value ? toNumber(event.target.value) : undefined,
+                })
+              }
+            />
+            <p className="text-muted-foreground text-xs">
+              Choisis une race gérée ci-dessus pour que la vitesse soit calculée.
+            </p>
+          </>
+        )}
+      </div>
     </div>
   );
 }

@@ -15,6 +15,8 @@ export interface RaceDefinition {
   id: string;
   name: string;
   abilityBonusRules: AbilityBonusRule[];
+  /** Vitesse de marche de base, en mètres (9 m = 30 pieds). */
+  speed: number;
 }
 
 /**
@@ -38,6 +40,7 @@ export const RACE_DEFINITIONS: readonly RaceDefinition[] = [
   {
     id: "humain",
     name: "Humain",
+    speed: 9,
     abilityBonusRules: [
       { type: "fixed", ability: "strength", amount: 1 },
       { type: "fixed", ability: "dexterity", amount: 1 },
@@ -50,6 +53,7 @@ export const RACE_DEFINITIONS: readonly RaceDefinition[] = [
   {
     id: "humain-variant",
     name: "Humain variant",
+    speed: 9,
     abilityBonusRules: [{ type: "choice", amount: 1, count: 2 }],
   },
 ];

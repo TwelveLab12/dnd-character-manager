@@ -57,6 +57,7 @@ describe("applyRaceBonuses", () => {
     const halfElf: RaceDefinition = {
       id: "test-demi-elfe",
       name: "Demi-Elfe (test)",
+      speed: 9,
       abilityBonusRules: [
         { type: "fixed", ability: "charisma", amount: 2 },
         { type: "choice", amount: 1, count: 2, exclude: ["charisma"] },

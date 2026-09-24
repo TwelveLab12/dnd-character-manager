@@ -92,7 +92,7 @@ describe("LocalStorageCharacterRepository", () => {
     expect(migrated).toMatchObject({ id: "legacy", classId: "clerc", spellSlotsUsed: { "1": 1 } });
     expect(
       JSON.parse(window.localStorage.getItem("dnd-character-manager:v1:characters") ?? "{}"),
-    ).toMatchObject({ schemaVersion: 3 });
+    ).toMatchObject({ schemaVersion: 4 });
   });
 
   it("derives subclassId for characters stored in version 2, keeping their choices", async () => {
