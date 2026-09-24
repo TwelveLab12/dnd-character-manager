@@ -9,10 +9,12 @@ import { computeSpellSlots } from "@/domain/calculations/spell-slot-table";
 import { resolveSpellcasting } from "@/domain/calculations/spellcasting";
 import { computeWeaponAttacks } from "@/domain/calculations/weapon-attack";
 import { formatArmorClassBreakdown } from "@/features/shared/armor-class";
+import { hasOwnUses } from "@/features/shared/feature";
 import { formatModifier } from "@/features/shared/format";
 import { ArmorClassEffectChips, ArmorClassHeading, ArmorClassShield } from "./armor-class-shield";
 import { AttackStrip } from "./attack-strip";
 import { ClassResourceCards } from "./class-resource-card";
+import { FeatureUsageCards } from "./feature-usage-card";
 import { ConcentrationMarker } from "./concentration-marker";
 import { HitPointsControls, HitPointsRing, TemporaryHitPointsChip } from "./hit-points-ring";
 import { RestActions } from "./rest-actions";
@@ -43,7 +45,10 @@ export function CombatHud({ character }: { character: Character }) {
   const attacks = computeWeaponAttacks(character);
   const spellcasting = resolveSpellcasting(character);
   const hasSpellSlots = computeSpellSlots(character).length > 0;
-  const hasClassResources = computeClassResources(character).length > 0;
+  const classResourceCount = computeClassResources(character).length;
+  const featureUsageCount = character.features.filter(hasOwnUses).length;
+  // Bande des ressources : emplacements de sorts, réserves de classe, capacités à utilisations.
+  const resourceCardCount = (hasSpellSlots ? 1 : 0) + classResourceCount + featureUsageCount;
 
   return (
     <section
@@ -124,14 +129,15 @@ export function CombatHud({ character }: { character: Character }) {
         </div>
       )}
 
-      {(hasSpellSlots || hasClassResources) && (
+      {resourceCardCount > 0 && (
         <div
           className={`grid gap-3 border-t pt-4 sm:pt-5 ${
-            hasSpellSlots && hasClassResources ? "sm:grid-cols-2" : ""
+            resourceCardCount > 1 ? "sm:grid-cols-2" : ""
           }`}
         >
           <SpellSlotsCard character={character} />
           <ClassResourceCards character={character} />
+          <FeatureUsageCards character={character} />
         </div>
       )}
 

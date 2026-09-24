@@ -192,6 +192,58 @@ describe("CharacterPlay", () => {
     expect(stored?.currency?.gold).toBe(50);
   });
 
+  it("puts features with uses first, in the Capacités tab and in the combat HUD", async () => {
+    const character = makeTestCharacter({
+      features: [
+        {
+          id: "skill",
+          name: "Compétence supplémentaire",
+          source: "Race",
+          description: "Une compétence.",
+        },
+        {
+          id: "eyes",
+          name: "Yeux de la nuit",
+          source: "Domaine du Crépuscule",
+          description: "Partagez votre vision dans le noir.",
+          usesMax: 1,
+          recharge: "longRest",
+        },
+      ],
+    });
+    const repository = new LocalStorageCharacterRepository();
+    await repository.create(character);
+
+    const user = userEvent.setup();
+    renderPlay(character.id);
+    await screen.findByRole("heading", { name: character.name });
+
+    // Bandeau de combat : la carte est là avant même d'ouvrir l'onglet.
+    const hud = screen.getByRole("region", { name: "Combat" });
+    expect(within(hud).getByRole("region", { name: "Yeux de la nuit" })).toBeInTheDocument();
+
+    await user.click(screen.getByRole("tab", { name: "Capacités" }));
+    const panel = screen.getByRole("tabpanel");
+    expect(screen.getByRole("link", { name: "Modifier les capacités" })).toHaveAttribute(
+      "href",
+      `/characters/${character.id}/edit?tab=features`,
+    );
+    const card = within(panel).getByRole("region", { name: "Yeux de la nuit" });
+    expect(within(card).getByText("Repos long")).toBeInTheDocument();
+    expect(within(card).getByText("Partagez votre vision dans le noir.")).toBeInTheDocument();
+    expect(within(panel).getByRole("region", { name: "Race" })).toHaveTextContent(
+      "Compétence supplémentaire",
+    );
+
+    await user.click(within(card).getByRole("button", { name: "Utiliser Yeux de la nuit" }));
+    expect(await within(card).findByText("Revient au prochain repos long")).toBeInTheDocument();
+    expect(within(card).getByRole("button", { name: "Utiliser Yeux de la nuit" })).toBeDisabled();
+    expect((await repository.getById(character.id))?.features[1]?.usesCurrent).toBe(0);
+
+    await user.click(within(card).getByRole("button", { name: "Récupérer : Yeux de la nuit" }));
+    expect(await within(card).findByText("Disponible")).toBeInTheDocument();
+  });
+
   it("shows no editable inputs on the read-only mirror tabs", async () => {
     const character = makeTestCharacter({
       background: "Ermite",
