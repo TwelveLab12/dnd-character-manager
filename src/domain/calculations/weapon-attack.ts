@@ -1,5 +1,6 @@
 import type { AbilityName } from "../ability-scores";
 import type { Character } from "../character";
+import { canWieldOffHand } from "../equipment";
 import type {
   DamageType,
   InventoryItem,
@@ -24,13 +25,16 @@ export interface WeaponAttack {
   attackBonus: number;
   /** Ex : « 1d8+3 », « 1d6-1 », « 2d6 ». */
   damage: string;
-  /** Dégâts à deux mains d'une arme polyvalente — absent si un bouclier est équipé. */
+  /** Dégâts à deux mains d'une arme polyvalente — absent si la main secondaire est occupée
+   * (bouclier ou arme) ou si l'arme est elle-même en main secondaire. */
   versatileDamage?: string;
   damageType: DamageType;
   twoHanded: boolean;
   thrown?: ThrownRange;
   /** Arts martiaux appliqués à cette attaque (arme de moine ou mains nues). */
   martialArts: boolean;
+  /** Arme en main secondaire : attaque en action bonus (combat à deux armes). */
+  offHand: boolean;
 }
 
 /** Dés valides au format « NdM » (ex : 1d8, 2d6), sans modificateur. */
@@ -84,6 +88,12 @@ function equippedArmorItems(character: Character): { armor: boolean; shield: boo
   };
 }
 
+function hasOffHandWeapon(character: Character): boolean {
+  return character.inventory.some(
+    (item) => item.equipped === true && item.weapon && item.hand === "off",
+  );
+}
+
 /** Arts martiaux actifs : interrupteur activé et ni armure ni bouclier équipés. */
 export function isMartialArtsActive(character: Character): boolean {
   if (!character.martialArts) {
@@ -97,7 +107,9 @@ interface AttackContext {
   strength: number;
   dexterity: number;
   proficiencyBonus: number;
-  shieldEquipped: boolean;
+  /** Main secondaire occupée (bouclier ou arme) : pas d'usage à deux mains d'une polyvalente. */
+  offHandBusy: boolean;
+  twoWeaponFightingStyle: boolean;
   martialArtsActive: boolean;
   martialArtsDie: string;
 }
@@ -108,7 +120,8 @@ function attackContext(character: Character): AttackContext {
     strength: abilityModifier(scores.strength),
     dexterity: abilityModifier(scores.dexterity),
     proficiencyBonus: proficiencyBonusForLevel(clampCharacterLevel(character.level)),
-    shieldEquipped: equippedArmorItems(character).shield,
+    offHandBusy: equippedArmorItems(character).shield || hasOffHandWeapon(character),
+    twoWeaponFightingStyle: character.twoWeaponFightingStyle === true,
     martialArtsActive: isMartialArtsActive(character),
     martialArtsDie: martialArtsDie(character.level),
   };
@@ -146,7 +159,11 @@ function buildWeaponAttack(
     (character.weaponProficiencies ?? []).includes(weapon.category) ||
     (character.martialArts === true && monkWeapon);
   const magicBonus = weapon.magicBonus ?? 0;
-  const damageModifier = modifier + magicBonus;
+  const offHand = item.hand === "off";
+  // Main secondaire (2014) : pas de mod positif aux dégâts, sauf style Combat à deux armes.
+  const abilityDamage =
+    offHand && !context.twoWeaponFightingStyle ? Math.min(modifier, 0) : modifier;
+  const damageModifier = abilityDamage + magicBonus;
   const damageDice = martialArts
     ? betterDice(weapon.damageDice, context.martialArtsDie)
     : weapon.damageDice;
@@ -159,13 +176,14 @@ function buildWeaponAttack(
     proficient,
     attackBonus: modifier + (proficient ? context.proficiencyBonus : 0) + magicBonus,
     damage: formatDamage(damageDice, damageModifier),
-    ...(weapon.versatileDamageDice && !context.shieldEquipped
+    ...(weapon.versatileDamageDice && !context.offHandBusy && !offHand
       ? { versatileDamage: formatDamage(weapon.versatileDamageDice, damageModifier) }
       : {}),
     damageType: weapon.damageType,
     twoHanded: weapon.twoHanded === true,
     ...(weapon.thrown && weapon.range === "melee" ? { thrown: weapon.thrown } : {}),
     martialArts,
+    offHand,
   };
 }
 
@@ -202,6 +220,7 @@ function unarmedStrike(context: AttackContext): WeaponAttack {
     damageType: "bludgeoning",
     twoHanded: false,
     martialArts: true,
+    offHand: false,
   };
 }
 
@@ -225,7 +244,9 @@ export function computeWeaponAttacks(character: Character): WeaponAttack[] {
   ];
 }
 
-/** Avertissements liés aux armes équipées : deux mains + bouclier, Arts martiaux inactifs. */
+/** Avertissements liés aux armes équipées : deux mains + bouclier, main secondaire non permise,
+ * Arts martiaux inactifs. Ces cas ne se produisent plus via equipItem, mais restent possibles
+ * sur des données importées ou antérieures. */
 export function weaponAttackWarnings(character: Character): string[] {
   const warnings: string[] = [];
   const { armor, shield } = equippedArmorItems(character);
@@ -235,6 +256,18 @@ export function weaponAttackWarnings(character: Character): string[] {
       if (item.equipped === true && item.weapon?.twoHanded) {
         warnings.push(`${item.name || "Arme"} : arme à deux mains avec un bouclier équipé.`);
       }
+    }
+  }
+  for (const item of character.inventory) {
+    if (
+      item.equipped === true &&
+      item.hand === "off" &&
+      item.weapon &&
+      !canWieldOffHand(character, item.weapon)
+    ) {
+      warnings.push(
+        `${item.name || "Arme"} : ne peut pas être tenue en main secondaire (arme légère de corps à corps requise, sauf Ambidextre).`,
+      );
     }
   }
   if (character.martialArts && (armor || shield)) {

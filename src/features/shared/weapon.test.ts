@@ -16,6 +16,7 @@ describe("formatWeaponAttack", () => {
         damageType: "slashing",
         twoHanded: false,
         martialArts: false,
+        offHand: false,
       }),
     ).toBe("+5 · 1d8+3 tranchant · 1d10+3 à deux mains");
   });
@@ -34,6 +35,7 @@ describe("formatWeaponAttack", () => {
         twoHanded: true,
         thrown: { normal: 6, long: 18 },
         martialArts: true,
+        offHand: false,
       }),
     ).toBe("+5 · 1d6+3 tranchant · Deux mains · Lancer 6/18 m · Arts martiaux");
   });

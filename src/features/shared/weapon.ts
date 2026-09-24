@@ -34,9 +34,11 @@ export function formatWeaponDamage(attack: WeaponAttack): string {
   return `${attack.damage} ${DAMAGE_TYPE_LABELS[attack.damageType]}${versatile}`;
 }
 
-/** Propriétés utiles en partie, ex : [« Deux mains », « Lancer 6/18 m », « Arts martiaux »]. */
+/** Propriétés utiles en partie, ex : [« Main secondaire (action bonus) », « Deux mains »,
+ * « Lancer 6/18 m », « Arts martiaux »]. */
 export function weaponAttackTags(attack: WeaponAttack): string[] {
   return [
+    ...(attack.offHand ? ["Main secondaire (action bonus)"] : []),
     ...(attack.twoHanded ? ["Deux mains"] : []),
     ...(attack.thrown ? [`Lancer ${attack.thrown.normal}/${attack.thrown.long} m`] : []),
     ...(attack.martialArts ? ["Arts martiaux"] : []),

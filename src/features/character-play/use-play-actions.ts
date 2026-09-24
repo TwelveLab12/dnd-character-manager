@@ -9,6 +9,8 @@ import {
   setTemporaryHitPoints,
 } from "@/domain/calculations/hit-points";
 import { applyLongRest, applyShortRest } from "@/domain/calculations/rest";
+import type { EquipSlot } from "@/domain/equipment";
+import { equipItem } from "@/domain/equipment";
 import { adjustSpellSlotUsage } from "@/domain/calculations/spell-slot-table";
 import { useCharacterStoreApi } from "@/stores/store-provider";
 
@@ -75,6 +77,8 @@ export function usePlayActions(characterId: string) {
             ? [...character.preparedSpellIds, spellId]
             : character.preparedSpellIds.filter((id) => id !== spellId),
       })),
+    equipItem: (itemId: string, slot: EquipSlot) =>
+      withCurrent((character) => ({ inventory: equipItem(character, itemId, slot) })),
     adjustFeatureUse: (featureId: string, delta: number) =>
       withCurrent((character) => ({
         features: character.features.map((feature) =>

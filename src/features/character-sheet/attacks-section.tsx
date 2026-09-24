@@ -65,6 +65,19 @@ export function AttacksSection({ draft, onChange }: CharacterTabProps) {
         </Label>
       </div>
 
+      <div className="flex flex-wrap gap-x-6 gap-y-3">
+        <ProficiencySwitch
+          label="Don Ambidextre"
+          checked={draft.dualWielder ?? false}
+          onCheckedChange={(checked) => onChange({ dualWielder: checked || undefined })}
+        />
+        <ProficiencySwitch
+          label="Style : Combat à deux armes"
+          checked={draft.twoWeaponFightingStyle ?? false}
+          onCheckedChange={(checked) => onChange({ twoWeaponFightingStyle: checked || undefined })}
+        />
+      </div>
+
       {warnings.length > 0 && (
         <ul className="text-warning grid gap-1 text-xs">
           {warnings.map((warning) => (

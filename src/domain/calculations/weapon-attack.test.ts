@@ -338,3 +338,75 @@ describe("martial arts", () => {
     expect(computeWeaponAttacks(character)).toHaveLength(1);
   });
 });
+
+describe("off-hand attacks", () => {
+  const shortswordMain: InventoryItem = {
+    ...weaponItem("Épée courte", {
+      category: "martial",
+      range: "melee",
+      damageDice: "1d6",
+      damageType: "piercing",
+      light: true,
+    }),
+  };
+  const daggerOff: InventoryItem = {
+    ...weaponItem("Dague", {
+      category: "simple",
+      range: "melee",
+      damageDice: "1d4",
+      damageType: "piercing",
+      light: true,
+      finesse: true,
+    }),
+    hand: "off",
+  };
+
+  it("drops the positive ability modifier from off-hand damage", () => {
+    const character = makeTestCharacter({
+      abilityScores: scores(16, 14),
+      weaponProficiencies: ["simple", "martial"],
+      inventory: [shortswordMain, daggerOff],
+    });
+    expect(computeWeaponAttack(character, daggerOff)).toMatchObject({
+      offHand: true,
+      attackBonus: 5,
+      damage: "1d4",
+    });
+    expect(computeWeaponAttack(character, shortswordMain)?.damage).toBe("1d6+3");
+  });
+
+  it("keeps a negative modifier and the magic bonus off-hand", () => {
+    const character = makeTestCharacter({ abilityScores: scores(8, 8) });
+    const magicDagger = { ...daggerOff, weapon: { ...daggerOff.weapon!, magicBonus: 1 } };
+    // mod -1 conservé en main secondaire, + 1 magique = 0.
+    expect(computeWeaponAttack(character, magicDagger)?.damage).toBe("1d4");
+  });
+
+  it("adds the modifier with the Two-Weapon Fighting style", () => {
+    const character = makeTestCharacter({
+      abilityScores: scores(16, 14),
+      twoWeaponFightingStyle: true,
+      inventory: [shortswordMain, daggerOff],
+    });
+    expect(computeWeaponAttack(character, daggerOff)?.damage).toBe("1d4+3");
+  });
+
+  it("hides versatile damage when the off hand is busy", () => {
+    const quarterstaffMain = weaponItem("Bâton", {
+      category: "simple",
+      range: "melee",
+      damageDice: "1d6",
+      versatileDamageDice: "1d8",
+      damageType: "bludgeoning",
+    });
+    const character = makeTestCharacter({ inventory: [quarterstaffMain, daggerOff] });
+    expect(computeWeaponAttack(character, quarterstaffMain)?.versatileDamage).toBeUndefined();
+  });
+
+  it("warns about an off-hand weapon that is not allowed there", () => {
+    const longswordOff = { ...longsword, hand: "off" as const };
+    const character = makeTestCharacter({ inventory: [longswordOff] });
+    expect(weaponAttackWarnings(character)).toEqual([expect.stringMatching(/main secondaire/)]);
+    expect(weaponAttackWarnings({ ...character, dualWielder: true })).toEqual([]);
+  });
+});
