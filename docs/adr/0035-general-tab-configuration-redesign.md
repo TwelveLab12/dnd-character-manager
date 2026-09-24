@@ -21,8 +21,7 @@ validée par l'utilisateur.
   - « Autre » retire l'id et fait apparaître le libellé en texte libre. Pour une race hors
     registre, la vitesse de base se saisit à côté.
   - Une pastille indique « Règles appliquées » ou « Texte libre ».
-  - Le modèle de données ne change pas : libellé et id restent deux champs, seule l'interface les
-    synchronise.
+  - Libellé et id restent deux champs, seule l'interface les synchronise.
 - **Identité en tête** : le nom en grand, le niveau avec des boutons − / + (bornés à 1–20).
 - **Bonus raciaux en jetons** : les six caractéristiques, avec le score effectif. Pour un bonus au
   choix, les jetons se cliquent ; au-delà du nombre permis, le choix le plus ancien cède sa place.
@@ -31,8 +30,13 @@ validée par l'utilisateur.
   est un lien vers la section qui la règle.
 - **PV max** : un sélecteur « Valeur fixe / Dés lancés » et une case par niveau, où se saisit le
   résultat du dé.
-- **Maîtrises d'armure et d'armes en jetons.** Celles accordées par la classe ou la sous-classe
-  sont verrouillées, avec leur source.
+- **Maîtrises d'armure et d'armes en jetons, toutes modifiables par personnage.** Celles prévues
+  par la classe ou la sous-classe sont cochées par défaut et affichent leur source. Les décocher
+  les inscrit dans `removedArmorProficiencies` / `removedWeaponProficiencies` (« Retirée ·
+  Clerc ») ; les recocher les en sort. Les règles restent la valeur par défaut et le personnage
+  ne stocke que ses exceptions : changer de classe ou de sous-classe met donc à jour les
+  maîtrises accordées. Les maîtrises effectives (avertissements de CA, bonus d'attaque, onglet
+  Notes) tiennent compte de ces retraits.
 - **Dons, styles et bonus réunis dans une section** : les dons du registre, Maître des armures
   intermédiaires, Ambidextre, le style Combat à deux armes, Arts martiaux et le bonus d'initiative
   hors Dextérité.

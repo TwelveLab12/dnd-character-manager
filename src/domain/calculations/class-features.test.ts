@@ -5,6 +5,9 @@ import {
   computeClassResourceOptions,
   effectiveArmorProficiencies,
   effectiveWeaponProficiencies,
+  grantedProficiencies,
+  ruleProficiencyGrants,
+  toggleProficiency,
 } from "./class-features";
 import { playAvailableSpellIds, spellDomain } from "./spell-availability";
 
@@ -69,6 +72,54 @@ describe("effective proficiencies", () => {
   it("keeps the sheet's proficiencies for a class outside the registry", () => {
     const character = makeTestCharacter({ weaponProficiencies: ["martial"] });
     expect(effectiveWeaponProficiencies(character)).toEqual(["martial"]);
+  });
+
+  it("drops the grants removed for this character, everywhere", () => {
+    const character = makeTestCharacter({
+      classId: "clerc",
+      subclassId: "crepuscule",
+      removedArmorProficiencies: ["heavy"],
+      removedWeaponProficiencies: ["martial"],
+    });
+    expect(effectiveArmorProficiencies(character)).not.toContain("heavy");
+    expect(effectiveWeaponProficiencies(character)).toEqual(["simple"]);
+    expect(
+      grantedProficiencies(character).find((grant) => grant.source === "Domaine du Crépuscule"),
+    ).toMatchObject({ armor: [], weapons: [] });
+    expect(ruleProficiencyGrants(character)[1]).toMatchObject({
+      armor: ["heavy"],
+      weapons: ["martial"],
+    });
+  });
+});
+
+describe("toggleProficiency", () => {
+  const order = ["light", "medium", "heavy", "shield"] as const;
+
+  it("records a removed grant and restores it when checked again", () => {
+    const removed = toggleProficiency(
+      order,
+      { manual: [], removed: [], granted: true },
+      "shield",
+      false,
+    );
+    expect(removed).toEqual({ manual: undefined, removed: ["shield"] });
+    const restored = toggleProficiency(
+      order,
+      { manual: [], removed: ["shield"], granted: true },
+      "shield",
+      true,
+    );
+    expect(restored).toEqual({ manual: undefined, removed: undefined });
+  });
+
+  it("adds and removes a proficiency outside the rules, in a stable order", () => {
+    expect(
+      toggleProficiency(order, { manual: ["shield"], removed: [], granted: false }, "light", true),
+    ).toEqual({ manual: ["light", "shield"], removed: undefined });
+    expect(
+      toggleProficiency(order, { manual: ["light"], removed: [], granted: false }, "light", false),
+    ).toEqual({ manual: undefined, removed: undefined });
   });
 });
 

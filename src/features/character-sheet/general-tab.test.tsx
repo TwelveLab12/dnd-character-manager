@@ -84,16 +84,32 @@ describe("GeneralTab", () => {
     expect(latest.hitPointRolls?.[0]).toBe(7);
   });
 
-  it("locks the proficiencies granted by the class and picks a theme from cards", async () => {
+  it("lets each character remove or add proficiencies, even those granted by the class", async () => {
     const user = userEvent.setup();
     renderTab({ classId: "clerc" });
 
     const shield = screen.getByRole("button", { name: /bouclier/i });
-    expect(shield).toBeDisabled();
     expect(shield).toHaveAttribute("aria-pressed", "true");
+    expect(shield).toHaveTextContent("Clerc");
+
+    await user.click(shield);
+    expect(latest.removedArmorProficiencies).toEqual(["shield"]);
+    expect(shield).toHaveAttribute("aria-pressed", "false");
+    expect(shield).toHaveTextContent("Retirée · Clerc");
+
+    await user.click(shield);
+    expect(latest.removedArmorProficiencies).toBeUndefined();
 
     await user.click(screen.getByRole("button", { name: /^lourde/i }));
     expect(latest.armorProficiencies).toEqual(["heavy"]);
+
+    await user.click(screen.getByRole("button", { name: /armes courantes/i }));
+    expect(latest.removedWeaponProficiencies).toEqual(["simple"]);
+  });
+
+  it("picks a theme from cards", async () => {
+    const user = userEvent.setup();
+    renderTab();
 
     await user.click(screen.getByRole("radio", { name: /séluné/i }));
     expect(latest.themeId).toBe("selune");

@@ -47,13 +47,12 @@ export function computeAlwaysPreparedSpells(
 }
 
 /** Maîtrises d'armures effectives : celles cochées sur la fiche ∪ celles de la classe et de la
- * sous-classe. */
+ * sous-classe, moins celles que le joueur a retirées pour ce personnage (docs/adr/0035). */
 export function effectiveArmorProficiencies(character: Character): ArmorCategory[] {
   return [
     ...new Set([
       ...(character.armorProficiencies ?? []),
-      ...(findClassDefinition(character.classId)?.proficiencies?.armor ?? []),
-      ...(subclassOf(character)?.proficiencies.armor ?? []),
+      ...grantedProficiencies(character).flatMap((grant) => grant.armor),
     ]),
   ];
 }
@@ -63,19 +62,20 @@ export function effectiveWeaponProficiencies(character: Character): WeaponCatego
   return [
     ...new Set([
       ...(character.weaponProficiencies ?? []),
-      ...(findClassDefinition(character.classId)?.proficiencies?.weapons ?? []),
-      ...(subclassOf(character)?.proficiencies.weapons ?? []),
+      ...grantedProficiencies(character).flatMap((grant) => grant.weapons),
     ]),
   ];
 }
 
-/** Maîtrises accordées par les règles seules (sans celles cochées sur la fiche), avec leur
- * source, pour l'affichage en configuration et dans l'onglet Notes. */
-export function grantedProficiencies(character: Character): {
+export interface ProficiencyGrant {
   source: string;
   armor: readonly ArmorCategory[];
   weapons: readonly WeaponCategory[];
-}[] {
+}
+
+/** Maîtrises prévues par les règles (classe, sous-classe) avec leur source, y compris celles que
+ * le joueur a retirées : pour la configuration, qui affiche la source d'une maîtrise retirée. */
+export function ruleProficiencyGrants(character: Character): ProficiencyGrant[] {
   const classDefinition = findClassDefinition(character.classId);
   const subclass = subclassOf(character);
   return [
@@ -84,6 +84,18 @@ export function grantedProficiencies(character: Character): {
       : []),
     ...(subclass ? [{ source: subclass.name, ...subclass.proficiencies }] : []),
   ];
+}
+
+/** Maîtrises accordées par les règles et conservées pour ce personnage (sans celles cochées sur
+ * la fiche ni celles retirées), avec leur source, pour les calculs et l'onglet Notes. */
+export function grantedProficiencies(character: Character): ProficiencyGrant[] {
+  const removedArmor = character.removedArmorProficiencies ?? [];
+  const removedWeapons = character.removedWeaponProficiencies ?? [];
+  return ruleProficiencyGrants(character).map((grant) => ({
+    source: grant.source,
+    armor: grant.armor.filter((category) => !removedArmor.includes(category)),
+    weapons: grant.weapons.filter((category) => !removedWeapons.includes(category)),
+  }));
 }
 
 export interface ClassResourceOption {
@@ -113,4 +125,28 @@ export function computeClassResourceOptions(
   return [...fromClass, ...fromSubclass]
     .filter(({ option }) => option.resourceId === resourceId && option.minLevel <= level)
     .map(({ option, source }) => ({ id: option.id, name: option.name, source }));
+}
+
+/**
+ * Coche ou décoche une maîtrise (armure ou arme) pour ce personnage (docs/adr/0035). Pour une
+ * maîtrise prévue par les règles, décocher l'inscrit dans les maîtrises retirées et recocher l'en
+ * sort ; sinon, elle s'ajoute ou se retire des maîtrises cochées à la main. `order` garde un ordre
+ * stable d'une modification à l'autre.
+ */
+export function toggleProficiency<T extends string>(
+  order: readonly T[],
+  state: { manual: readonly T[]; removed: readonly T[]; granted: boolean },
+  category: T,
+  checked: boolean,
+): { manual: T[] | undefined; removed: T[] | undefined } {
+  const manual = order.filter((item) =>
+    item === category ? checked && !state.granted : state.manual.includes(item),
+  );
+  const removed = order.filter((item) =>
+    item === category ? !checked && state.granted : state.removed.includes(item),
+  );
+  return {
+    manual: manual.length > 0 ? manual : undefined,
+    removed: removed.length > 0 ? removed : undefined,
+  };
 }

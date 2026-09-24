@@ -3,7 +3,11 @@
 import { Plus, Trash2 } from "lucide-react";
 import { useEffect, useId } from "react";
 import type { ArmorClassEffect, ArmorClassEffectTrigger } from "@/domain/armor-class-effect";
-import { grantedProficiencies } from "@/domain/calculations/class-features";
+import {
+  effectiveArmorProficiencies,
+  ruleProficiencyGrants,
+  toggleProficiency,
+} from "@/domain/calculations/class-features";
 import { computeArmorClass } from "@/domain/calculations/armor-class";
 import { generateId } from "@/domain/id";
 import type { ArmorCategory } from "@/domain/inventory";
@@ -42,7 +46,6 @@ function capitalize(label: string): string {
 export function ArmorClassSection({ draft, onChange }: CharacterTabProps) {
   const proficienciesId = useId();
   const result = computeArmorClass(draft);
-  const proficiencies = draft.armorProficiencies ?? [];
   const effects = draft.armorClassEffects ?? [];
   const spells = useSpellStore((state) => state.spells);
   const loadSpells = useSpellStore((state) => state.load);
@@ -55,12 +58,25 @@ export function ArmorClassSection({ draft, onChange }: CharacterTabProps) {
     .filter((spell) => spell.concentration && draft.knownSpellIds.includes(spell.id))
     .sort((a, b) => a.name.localeCompare(b.name));
 
-  function toggleProficiency(category: ArmorCategory, checked: boolean) {
-    onChange({
-      armorProficiencies: checked
-        ? ARMOR_CATEGORIES.filter((item) => item === category || proficiencies.includes(item))
-        : proficiencies.filter((item) => item !== category),
-    });
+  const effective = effectiveArmorProficiencies(draft);
+  const grants = ruleProficiencyGrants(draft);
+
+  function grantSource(category: ArmorCategory): string | undefined {
+    return grants.find((grant) => grant.armor.includes(category))?.source;
+  }
+
+  function setProficiency(category: ArmorCategory, checked: boolean) {
+    const next = toggleProficiency(
+      ARMOR_CATEGORIES,
+      {
+        manual: draft.armorProficiencies ?? [],
+        removed: draft.removedArmorProficiencies ?? [],
+        granted: grantSource(category) !== undefined,
+      },
+      category,
+      checked,
+    );
+    onChange({ armorProficiencies: next.manual, removedArmorProficiencies: next.removed });
   }
 
   function updateEffect(id: string, patch: Partial<ArmorClassEffect>) {
@@ -97,11 +113,9 @@ export function ArmorClassSection({ draft, onChange }: CharacterTabProps) {
             <ProficiencyChip
               key={category}
               label={capitalize(ARMOR_CATEGORY_LABELS[category])}
-              checked={proficiencies.includes(category)}
-              grantedBy={
-                grantedProficiencies(draft).find((grant) => grant.armor.includes(category))?.source
-              }
-              onCheckedChange={(checked) => toggleProficiency(category, checked)}
+              checked={effective.includes(category)}
+              grantedBy={grantSource(category)}
+              onCheckedChange={(checked) => setProficiency(category, checked)}
             />
           ))}
         </div>

@@ -1,6 +1,10 @@
 "use client";
 
-import { grantedProficiencies } from "@/domain/calculations/class-features";
+import {
+  effectiveWeaponProficiencies,
+  ruleProficiencyGrants,
+  toggleProficiency,
+} from "@/domain/calculations/class-features";
 import { useId } from "react";
 import { computeWeaponAttacks, weaponAttackWarnings } from "@/domain/calculations/weapon-attack";
 import type { WeaponCategory } from "@/domain/inventory";
@@ -21,16 +25,28 @@ import type { CharacterTabProps } from "./types";
  */
 export function AttacksSection({ draft, onChange }: CharacterTabProps) {
   const proficienciesId = useId();
-  const proficiencies = draft.weaponProficiencies ?? [];
   const attacks = computeWeaponAttacks(draft);
   const warnings = weaponAttackWarnings(draft);
 
-  function toggleProficiency(category: WeaponCategory, checked: boolean) {
-    onChange({
-      weaponProficiencies: checked
-        ? WEAPON_CATEGORIES.filter((item) => item === category || proficiencies.includes(item))
-        : proficiencies.filter((item) => item !== category),
-    });
+  const effective = effectiveWeaponProficiencies(draft);
+  const grants = ruleProficiencyGrants(draft);
+
+  function grantSource(category: WeaponCategory): string | undefined {
+    return grants.find((grant) => grant.weapons.includes(category))?.source;
+  }
+
+  function setProficiency(category: WeaponCategory, checked: boolean) {
+    const next = toggleProficiency(
+      WEAPON_CATEGORIES,
+      {
+        manual: draft.weaponProficiencies ?? [],
+        removed: draft.removedWeaponProficiencies ?? [],
+        granted: grantSource(category) !== undefined,
+      },
+      category,
+      checked,
+    );
+    onChange({ weaponProficiencies: next.manual, removedWeaponProficiencies: next.removed });
   }
 
   return (
@@ -45,12 +61,9 @@ export function AttacksSection({ draft, onChange }: CharacterTabProps) {
             <ProficiencyChip
               key={category}
               label={`Armes ${WEAPON_CATEGORY_LABELS[category]}s`}
-              checked={proficiencies.includes(category)}
-              grantedBy={
-                grantedProficiencies(draft).find((grant) => grant.weapons.includes(category))
-                  ?.source
-              }
-              onCheckedChange={(checked) => toggleProficiency(category, checked)}
+              checked={effective.includes(category)}
+              grantedBy={grantSource(category)}
+              onCheckedChange={(checked) => setProficiency(category, checked)}
             />
           ))}
         </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Lock } from "lucide-react";
+import { Check } from "lucide-react";
 import type { ReactNode } from "react";
 import { useId } from "react";
 import { cn } from "cn";
@@ -50,8 +50,9 @@ export function GroupLabel({ id, children }: { id?: string; children: ReactNode 
 }
 
 /**
- * Maîtrise en jeton : cliquable quand elle se règle à la main, verrouillée (cadenas + source)
- * quand la classe ou la sous-classe l'accorde.
+ * Maîtrise en jeton, toujours modifiable (docs/adr/0035). Une maîtrise prévue par la classe ou la
+ * sous-classe (`grantedBy`) est active par défaut et affiche sa source ; la décocher la retire
+ * pour ce personnage seulement (« Retirée · Clerc »).
  */
 export function ProficiencyChip({
   label,
@@ -60,33 +61,40 @@ export function ProficiencyChip({
   onCheckedChange,
 }: {
   label: string;
+  /** Maîtrise effective pour ce personnage. */
   checked: boolean;
-  /** Maîtrise accordée par la classe ou la sous-classe : toujours active, non modifiable ici. */
+  /** Classe ou sous-classe qui prévoit cette maîtrise, qu'elle soit conservée ou retirée. */
   grantedBy?: string;
   onCheckedChange: (checked: boolean) => void;
 }) {
-  const granted = grantedBy !== undefined;
-  const on = checked || granted;
+  const detail = grantedBy
+    ? checked
+      ? grantedBy
+      : `Retirée · ${grantedBy}`
+    : checked
+      ? "Ajoutée à la main"
+      : "Non maîtrisée";
   return (
     <button
       type="button"
-      aria-pressed={on}
-      disabled={granted}
+      aria-pressed={checked}
       onClick={() => onCheckedChange(!checked)}
       className={cn(
         "focus-visible:ring-ring/50 flex min-h-14 flex-col items-start justify-center gap-0.5 rounded-xl border px-3 py-2 text-left transition-colors outline-none focus-visible:ring-3",
-        granted && "border-primary/35 bg-primary/10 text-primary",
-        !granted && on && "border-primary bg-primary/15 text-foreground",
-        !granted && !on && "text-muted-foreground hover:bg-muted/40",
+        checked
+          ? "border-primary bg-primary/15 text-foreground"
+          : "text-muted-foreground hover:bg-muted/40",
+        !checked && grantedBy && "border-dashed",
       )}
     >
       <span className="flex items-center gap-1.5 text-sm font-medium">
-        {granted && <Lock className="size-3.5" aria-hidden />}
-        {!granted && on && <Check className="size-3.5" aria-hidden />}
+        {checked && <Check className="size-3.5" aria-hidden />}
         {label}
       </span>
-      <span className="text-muted-foreground text-xs">
-        {grantedBy ?? (on ? "Ajoutée à la main" : "Non maîtrisée")}
+      <span
+        className={cn("text-xs", checked && grantedBy ? "text-primary" : "text-muted-foreground")}
+      >
+        {detail}
       </span>
     </button>
   );
