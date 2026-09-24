@@ -24,6 +24,20 @@ describe("characterSchema", () => {
     expect(parsed.inventory).toEqual([]);
   });
 
+  it("imports a purse, filling missing coins with 0 and rejecting negative or fractional amounts", () => {
+    const parsed = characterSchema.parse(
+      makeTestCharacter({ currency: { gold: 15, silver: 8 } as never }),
+    );
+    expect(parsed.currency).toEqual({ platinum: 0, gold: 15, electrum: 0, silver: 8, copper: 0 });
+    expect(characterSchema.parse(makeTestCharacter()).currency).toBeUndefined();
+    expect(() =>
+      characterSchema.parse(makeTestCharacter({ currency: { gold: -1 } as never })),
+    ).toThrow();
+    expect(() =>
+      characterSchema.parse(makeTestCharacter({ currency: { gold: 1.5 } as never })),
+    ).toThrow();
+  });
+
   it("rejects a level outside 1-20", () => {
     expect(() => characterSchema.parse(makeTestCharacter({ level: 21 }))).toThrow();
   });

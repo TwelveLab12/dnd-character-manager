@@ -11,11 +11,11 @@ import { CharacterSheet } from "./character-sheet";
 const push = vi.fn();
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push }) }));
 
-function renderSheet(characterId: string) {
+function renderSheet(characterId: string, initialTab?: string) {
   return render(
     <RepositoryProvider>
       <StoreProvider>
-        <CharacterSheet characterId={characterId} />
+        <CharacterSheet characterId={characterId} initialTab={initialTab} />
       </StoreProvider>
     </RepositoryProvider>,
   );
@@ -30,6 +30,38 @@ describe("CharacterSheet", () => {
   it("shows a not-found message for an unknown id", async () => {
     renderSheet("does-not-exist");
     expect(await screen.findByText(/personnage introuvable/i)).toBeInTheDocument();
+  });
+
+  it("opens the requested tab and edits the purse there", async () => {
+    const character = makeTestCharacter({ name: "Elara Duskwood" });
+    await new LocalStorageCharacterRepository().create(character);
+
+    const user = userEvent.setup();
+    renderSheet(character.id, "inventory");
+    await screen.findByRole("heading", { name: "Elara Duskwood" });
+
+    expect(screen.getByRole("tab", { name: "Inventaire" })).toHaveAttribute(
+      "aria-selected",
+      "true",
+    );
+    const gold = screen.getByLabelText("Or (po)");
+    expect(gold).toHaveValue(0);
+    await user.clear(gold);
+    await user.type(gold, "12");
+    await user.click(screen.getByRole("button", { name: /^enregistrer$/i }));
+
+    expect(await screen.findByText(/enregistré/i)).toBeInTheDocument();
+    const persisted = await new LocalStorageCharacterRepository().getById(character.id);
+    expect(persisted?.currency?.gold).toBe(12);
+  });
+
+  it("falls back to the Général tab for an unknown tab", async () => {
+    const character = makeTestCharacter({ name: "Elara Duskwood" });
+    await new LocalStorageCharacterRepository().create(character);
+
+    renderSheet(character.id, "nope");
+    await screen.findByRole("heading", { name: "Elara Duskwood" });
+    expect(screen.getByRole("tab", { name: "Général" })).toHaveAttribute("aria-selected", "true");
   });
 
   it("loads an existing character and lets you edit and save it", async () => {

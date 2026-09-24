@@ -12,6 +12,9 @@ import {
 import { applyLongRest, applyShortRest } from "@/domain/calculations/rest";
 import type { EquipSlot } from "@/domain/equipment";
 import { equipItem } from "@/domain/equipment";
+import type { Coin } from "@/domain/currency";
+import { characterCurrency, setCoinAmount } from "@/domain/currency";
+import { adjustItemQuantity } from "@/domain/inventory";
 import { adjustSpellSlotsUsed } from "@/domain/calculations/spell-slot-table";
 import { adjustClassResourceUsed } from "@/domain/calculations/class-resources";
 import type { ClassResourceId } from "@/domain/character-class";
@@ -88,6 +91,14 @@ export function usePlayActions(characterId: string) {
       })),
     equipItem: (itemId: string, slot: EquipSlot) =>
       withCurrent((character) => ({ inventory: equipItem(character, itemId, slot) })),
+    adjustItemQuantity: (itemId: string, delta: number) =>
+      withCurrent((character) => ({
+        inventory: adjustItemQuantity(character.inventory, itemId, delta),
+      })),
+    setCoinAmount: (coin: Coin, amount: number) =>
+      withCurrent((character) => ({
+        currency: setCoinAmount(characterCurrency(character), coin, amount),
+      })),
     adjustFeatureUse: (featureId: string, delta: number) =>
       withCurrent((character) => ({
         features: character.features.map((feature) =>

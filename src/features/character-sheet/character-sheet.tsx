@@ -26,7 +26,16 @@ import { GeneralTab } from "./general-tab";
 import { InventoryTab } from "./inventory-tab";
 import { SpellsTab } from "./spells-tab";
 
-export function CharacterSheet({ characterId }: { characterId: string }) {
+const TAB_VALUES = ["general", "abilities", "spells", "inventory", "features"] as const;
+
+export function CharacterSheet({
+  characterId,
+  initialTab,
+}: {
+  characterId: string;
+  /** Onglet ouvert à l'arrivée (`?tab=inventory` depuis le mode jeu) ; Général par défaut. */
+  initialTab?: string;
+}) {
   const characters = useCharacterStore((state) => state.characters);
   const isLoading = useCharacterStore((state) => state.isLoading);
   const load = useCharacterStore((state) => state.load);
@@ -179,7 +188,7 @@ export function CharacterSheet({ characterId }: { characterId: string }) {
           </AlertDialogContent>
         </AlertDialog>
 
-        <Tabs defaultValue="general">
+        <Tabs defaultValue={TAB_VALUES.find((value) => value === initialTab) ?? "general"}>
           <TabsList>
             <TabsTrigger value="general">Général</TabsTrigger>
             <TabsTrigger value="abilities">Caractéristiques</TabsTrigger>

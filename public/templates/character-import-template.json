@@ -33,6 +33,7 @@
       { "id": "exemple-objet-1", "name": "Sac à dos", "quantity": 1 },
       { "id": "exemple-objet-2", "name": "Armure d'écailles", "quantity": 1, "equipped": true }
     ],
+    "currency": { "platinum": 0, "gold": 15, "electrum": 0, "silver": 8, "copper": 0 },
     "features": [
       {
         "id": "exemple-capacite-1",
