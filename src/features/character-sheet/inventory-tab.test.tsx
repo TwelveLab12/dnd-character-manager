@@ -78,6 +78,22 @@ describe("InventoryTab", () => {
     expect(screen.getByText("Attaque calculée")).toBeInTheDocument();
   });
 
+  it("keeps an item in place while it is renamed, then re-sorts it once closed", async () => {
+    const user = userEvent.setup();
+    renderTab([ROPE, BOLTS]);
+
+    await user.click(screen.getByRole("button", { name: /carreaux/i }));
+    const name = screen.getByLabelText(/^nom$/i);
+    await user.clear(name);
+    await user.type(name, "Zéphyr");
+    expect(name).toHaveFocus();
+    expect(name).toHaveValue("Zéphyr");
+    expect(itemNames("Sac")[0]).toMatch(/^Corde de chanvre/);
+
+    await user.click(screen.getByRole("button", { name: "Replier" }));
+    expect(itemNames("Sac")[1]).toMatch(/^Zéphyr/);
+  });
+
   it("adds a typed item already open, then removes it", async () => {
     const user = userEvent.setup();
     renderTab([]);
