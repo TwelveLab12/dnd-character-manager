@@ -10,13 +10,14 @@ import { computeWeaponAttacks, weaponAttackWarnings } from "@/domain/calculation
 import type { WeaponCategory } from "@/domain/inventory";
 import { WEAPON_CATEGORIES } from "@/domain/inventory";
 import { formatModifier } from "@/features/shared/format";
-import {
-  WEAPON_CATEGORY_LABELS,
-  formatWeaponDamage,
-  weaponAttackTags,
-} from "@/features/shared/weapon";
+import { formatWeaponDamage, weaponAttackTags } from "@/features/shared/weapon";
 import { GeneralSection, GroupLabel, ProficiencyChip } from "./general-section";
 import type { CharacterTabProps } from "./types";
+
+const WEAPON_PROFICIENCY_LABELS: Record<WeaponCategory, string> = {
+  simple: "Armes courantes",
+  martial: "Armes de guerre",
+};
 
 /**
  * Attaques calculées par arme équipée (voir src/domain/calculations/weapon-attack.ts) : les armes
@@ -60,7 +61,7 @@ export function AttacksSection({ draft, onChange }: CharacterTabProps) {
           {WEAPON_CATEGORIES.map((category) => (
             <ProficiencyChip
               key={category}
-              label={`Armes ${WEAPON_CATEGORY_LABELS[category]}s`}
+              label={WEAPON_PROFICIENCY_LABELS[category]}
               checked={effective.includes(category)}
               grantedBy={grantSource(category)}
               onCheckedChange={(checked) => setProficiency(category, checked)}

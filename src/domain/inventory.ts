@@ -120,3 +120,26 @@ export function adjustItemQuantity(
 export function totalInventoryWeight(inventory: readonly InventoryItem[]): number {
   return inventory.reduce((sum, item) => sum + (item.weight ?? 0) * item.quantity, 0);
 }
+
+/** Arme, armure ou bouclier : rangé dans « Armes & armures » plutôt que dans le sac. */
+export function isGear(item: InventoryItem): boolean {
+  return item.weapon !== undefined || item.armor !== undefined;
+}
+
+const NAME_COLLATOR = new Intl.Collator("fr", { sensitivity: "base", numeric: true });
+
+/**
+ * Ordre d'affichage par défaut d'un groupe d'objets (docs/adr/0036) : alphabétique, sans tenir
+ * compte des majuscules ni des accents ; un objet encore sans nom (juste ajouté) va à la fin. Le
+ * stockage garde l'ordre d'ajout : aucun ordre manuel n'est encore enregistré.
+ */
+export function sortInventoryByName(items: readonly InventoryItem[]): InventoryItem[] {
+  return [...items].sort((a, b) => {
+    const aName = a.name.trim();
+    const bName = b.name.trim();
+    if (!aName || !bName) {
+      return aName ? -1 : bName ? 1 : 0;
+    }
+    return NAME_COLLATOR.compare(aName, bName);
+  });
+}

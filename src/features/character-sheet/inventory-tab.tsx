@@ -1,552 +1,278 @@
 "use client";
 
-import { Plus, X } from "lucide-react";
-import { useId } from "react";
-import { isValidDamageDice } from "@/domain/calculations/weapon-attack";
-import type { Character } from "@/domain/character";
+import { Backpack, ChevronDown, Plus, Shield, Shirt, Sword } from "lucide-react";
+import type { ReactNode } from "react";
+import { useId, useState } from "react";
+import { cn } from "cn";
 import type { EquipSlot } from "@/domain/equipment";
 import { equipItem } from "@/domain/equipment";
-import type { Coin, Currency } from "@/domain/currency";
-import { COINS, characterCurrency, setCoinAmount } from "@/domain/currency";
-import type {
-  ArmorCategory,
-  DamageType,
-  InventoryItem,
-  WeaponCategory,
-  WeaponProperties,
-  WeaponRange,
-} from "@/domain/inventory";
-import { ARMOR_CATEGORIES, DAMAGE_TYPES, WEAPON_CATEGORIES } from "@/domain/inventory";
+import { characterCurrency, setCoinAmount } from "@/domain/currency";
 import { generateId } from "@/domain/id";
+import type { InventoryItem } from "@/domain/inventory";
+import { isGear, sortInventoryByName, totalInventoryWeight } from "@/domain/inventory";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { SectionTitle } from "@/components/ui/section-title";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
 import { ARMOR_CATEGORY_LABELS } from "@/features/shared/armor-class";
-import { COIN_LABELS } from "@/features/shared/currency";
 import { EquipControl } from "@/features/shared/equip-control";
-import {
-  DAMAGE_TYPE_LABELS,
-  WEAPON_CATEGORY_LABELS,
-  WEAPON_RANGE_LABELS,
-} from "@/features/shared/weapon";
+import { formatDecimal } from "@/features/shared/format";
+import { Purse } from "@/features/shared/purse";
+import { DAMAGE_TYPE_LABELS, WEAPON_CATEGORY_LABELS } from "@/features/shared/weapon";
+import { InventoryItemEditor } from "./inventory-item-editor";
+import { itemKind, newItem, type ItemKind } from "./inventory-item-kind";
 import type { CharacterTabProps } from "./types";
 
-function toNumber(value: string): number {
-  const parsed = Number.parseFloat(value);
-  return Number.isFinite(parsed) ? parsed : 0;
-}
-
-/** Valeur du sélecteur « Type » : objet simple, catégorie d'armure, ou `weapon-<catégorie>`. */
-const PLAIN_ITEM = "none";
-const WEAPON_PREFIX = "weapon-";
-
-const DEFAULT_WEAPON: Omit<WeaponProperties, "category"> = {
-  range: "melee",
-  damageDice: "1d6",
-  damageType: "slashing",
-};
-
-/** CA de base proposée au choix d'une catégorie (armure de cuir, cuirasse, cotte de mailles,
- * bouclier) — simple point de départ, modifiable ensuite. */
-const DEFAULT_BASE_ARMOR_CLASS: Record<ArmorCategory, number> = {
-  light: 11,
-  medium: 14,
-  heavy: 16,
-  shield: 2,
-};
-
-function optionalNumber(value: string): number | undefined {
-  return value ? toNumber(value) : undefined;
-}
-
-function createBlankItem(): InventoryItem {
-  return { id: generateId(), name: "", quantity: 1 };
-}
-
+/**
+ * Onglet Inventaire de la configuration (docs/adr/0036) : la bourse, puis les objets en deux
+ * groupes triés par nom (« Armes & armures », « Sac »). Chaque objet tient sur une ligne résumée ;
+ * un seul se déplie à la fois pour être modifié, avec les champs propres à son type.
+ */
 export function InventoryTab({ draft, onChange }: CharacterTabProps) {
+  const [openId, setOpenId] = useState<string | null>(null);
+  const currency = characterCurrency(draft);
+  const gear = sortInventoryByName(draft.inventory.filter(isGear));
+  const bag = sortInventoryByName(draft.inventory.filter((item) => !isGear(item)));
+
   function updateItem(id: string, patch: Partial<InventoryItem>) {
     onChange({
       inventory: draft.inventory.map((item) => (item.id === id ? { ...item, ...patch } : item)),
     });
   }
 
-  function removeItem(id: string) {
-    onChange({ inventory: draft.inventory.filter((item) => item.id !== id) });
+  function addItem(kind: ItemKind) {
+    const item = newItem(generateId(), kind);
+    onChange({ inventory: [...draft.inventory, item] });
+    setOpenId(item.id);
   }
 
-  const currency = characterCurrency(draft);
+  function renderItems(items: InventoryItem[]) {
+    return items.map((item) => (
+      <ItemCard
+        key={item.id}
+        item={item}
+        open={openId === item.id}
+        onToggle={() => setOpenId(openId === item.id ? null : item.id)}
+        trailing={
+          isGear(item) ? (
+            <div className="w-full sm:w-44">
+              <EquipControl
+                item={item}
+                character={draft}
+                onEquip={(slot: EquipSlot) =>
+                  onChange({ inventory: equipItem(draft, item.id, slot) })
+                }
+              />
+            </div>
+          ) : item.quantity !== 1 ? (
+            <span className="text-muted-foreground text-sm font-semibold tabular-nums">
+              ×{item.quantity}
+            </span>
+          ) : null
+        }
+      >
+        <InventoryItemEditor
+          item={item}
+          character={draft}
+          onChange={(patch) => updateItem(item.id, patch)}
+          onEquip={(slot) => onChange({ inventory: equipItem(draft, item.id, slot) })}
+          onRemove={() => {
+            onChange({ inventory: draft.inventory.filter((other) => other.id !== item.id) });
+            setOpenId(null);
+          }}
+          onClose={() => setOpenId(null)}
+        />
+      </ItemCard>
+    ));
+  }
 
   return (
-    <div className="grid gap-4">
-      <PurseFields
+    <div className="grid gap-7 pt-2">
+      <Purse
         currency={currency}
         onChange={(coin, amount) => onChange({ currency: setCoinAmount(currency, coin, amount) })}
       />
 
-      <div className="flex items-center justify-between">
-        <SectionTitle>Inventaire</SectionTitle>
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={() => onChange({ inventory: [...draft.inventory, createBlankItem()] })}
-        >
-          <Plus />
-          Ajouter un objet
-        </Button>
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div className="grid gap-0.5">
+          <h3 className="font-heading text-xl font-semibold">Objets</h3>
+          <p className="text-muted-foreground text-sm">
+            {draft.inventory.length} objet{draft.inventory.length > 1 ? "s" : ""} ·{" "}
+            {formatDecimal(totalInventoryWeight(draft.inventory))} kg portés
+          </p>
+        </div>
+        <div className="flex gap-1.5">
+          <Button
+            type="button"
+            variant="outline"
+            size="lg"
+            aria-label="Ajouter une arme"
+            onClick={() => addItem("weapon")}
+          >
+            <Plus />
+            Arme
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="lg"
+            aria-label="Ajouter une armure"
+            onClick={() => addItem("armor")}
+          >
+            <Plus />
+            Armure
+          </Button>
+          <Button
+            type="button"
+            size="lg"
+            aria-label="Ajouter un objet"
+            onClick={() => addItem("item")}
+          >
+            <Plus />
+            Objet
+          </Button>
+        </div>
       </div>
 
-      {draft.inventory.length === 0 && (
-        <p className="text-muted-foreground text-sm">Aucun objet pour l&rsquo;instant.</p>
-      )}
-
-      <div className="grid gap-3">
-        {draft.inventory.map((item) => (
-          <InventoryRow
-            key={item.id}
-            item={item}
-            character={draft}
-            onChange={(patch) => updateItem(item.id, patch)}
-            onEquip={(slot) => onChange({ inventory: equipItem(draft, item.id, slot) })}
-            onRemove={() => removeItem(item.id)}
-          />
-        ))}
-      </div>
+      <ItemGroup title="Armes & armures" items={gear} empty="Aucune arme ni armure.">
+        {renderItems(gear)}
+      </ItemGroup>
+      <ItemGroup title="Sac" items={bag} empty="Aucun objet pour l’instant.">
+        {renderItems(bag)}
+      </ItemGroup>
     </div>
   );
 }
 
-function PurseFields({
-  currency,
-  onChange,
+function ItemGroup({
+  title,
+  items,
+  empty,
+  children,
 }: {
-  currency: Currency;
-  onChange: (coin: Coin, amount: number) => void;
+  title: string;
+  items: InventoryItem[];
+  empty: string;
+  children: ReactNode;
 }) {
-  const baseId = useId();
   return (
-    <fieldset className="grid gap-2">
-      <legend className="font-heading mb-2 text-lg font-medium">Bourse</legend>
-      <div className="grid grid-cols-5 gap-2">
-        {COINS.map((coin) => (
-          <div key={coin} className="grid gap-1">
-            <Label htmlFor={`${baseId}-${coin}`} className="text-muted-foreground text-xs">
-              {COIN_LABELS[coin].name} ({COIN_LABELS[coin].abbreviation})
-            </Label>
-            <Input
-              id={`${baseId}-${coin}`}
-              type="number"
-              min={0}
-              value={currency[coin]}
-              onChange={(event) => onChange(coin, toNumber(event.target.value))}
-            />
-          </div>
-        ))}
+    <section aria-label={title} className="grid gap-2">
+      <div className="flex items-baseline justify-between gap-2">
+        <h4 className="text-muted-foreground text-xs font-semibold tracking-widest uppercase">
+          {title}
+        </h4>
+        {items.length > 0 && (
+          <span className="text-muted-foreground text-xs">
+            {formatDecimal(totalInventoryWeight(items))} kg
+          </span>
+        )}
       </div>
-    </fieldset>
+      {items.length === 0 ? (
+        <p className="text-muted-foreground rounded-xl border border-dashed p-3 text-center text-sm">
+          {empty}
+        </p>
+      ) : (
+        children
+      )}
+    </section>
   );
 }
 
-function InventoryRow({
+const KIND_ICONS: Record<ItemKind, typeof Sword> = {
+  weapon: Sword,
+  armor: Shirt,
+  shield: Shield,
+  item: Backpack,
+};
+
+/** Résumé d'une ligne, ex : « Arme courante · 1d6 contondant · 2 kg ». */
+function itemSummary(item: InventoryItem): string {
+  const { weapon, armor } = item;
+  const magic = weapon?.magicBonus ?? item.armorClassBonus;
+  const parts = [
+    weapon
+      ? `Arme ${WEAPON_CATEGORY_LABELS[weapon.category]} · ${weapon.damageDice} ${
+          DAMAGE_TYPE_LABELS[weapon.damageType]
+        }${weapon.range === "ranged" ? " · distance" : ""}`
+      : armor
+        ? armor.category === "shield"
+          ? `Bouclier · +${armor.baseArmorClass} CA`
+          : `Armure ${ARMOR_CATEGORY_LABELS[armor.category]} · CA ${armor.baseArmorClass}`
+        : item.description,
+    magic ? `+${magic} magique` : undefined,
+    item.weight !== undefined ? `${formatDecimal(item.weight)} kg` : undefined,
+  ];
+  return parts.filter(Boolean).join(" · ");
+}
+
+function ItemCard({
   item,
-  character,
-  onChange,
-  onEquip,
-  onRemove,
+  open,
+  onToggle,
+  trailing,
+  children,
 }: {
   item: InventoryItem;
-  character: Character;
-  onChange: (patch: Partial<InventoryItem>) => void;
-  onEquip: (slot: EquipSlot) => void;
-  onRemove: () => void;
+  open: boolean;
+  onToggle: () => void;
+  trailing: ReactNode;
+  children: ReactNode;
 }) {
-  const nameId = useId();
-  const quantityId = useId();
-  const weightId = useId();
-  const descriptionId = useId();
-  const armorTypeId = useId();
-  const baseArmorClassId = useId();
-  const strengthId = useId();
-  const bonusId = useId();
-  const { armor } = item;
-
-  const { weapon } = item;
-  const itemType = weapon ? `${WEAPON_PREFIX}${weapon.category}` : (armor?.category ?? PLAIN_ITEM);
-
-  function selectItemType(value: string) {
-    if (value === PLAIN_ITEM) {
-      onChange({ armor: undefined, weapon: undefined });
-      return;
-    }
-    if (value.startsWith(WEAPON_PREFIX)) {
-      const category = value.slice(WEAPON_PREFIX.length) as WeaponCategory;
-      onChange({
-        armor: undefined,
-        armorClassBonus: undefined,
-        weapon: { ...DEFAULT_WEAPON, ...weapon, category },
-      });
-      return;
-    }
-    const category = value as ArmorCategory;
-    onChange({
-      weapon: undefined,
-      armor: {
-        category,
-        baseArmorClass:
-          armor && armor.category !== "shield" && category !== "shield"
-            ? armor.baseArmorClass
-            : DEFAULT_BASE_ARMOR_CLASS[category],
-        ...(category === "heavy" && armor?.strengthRequirement !== undefined
-          ? { strengthRequirement: armor.strengthRequirement }
-          : {}),
-      },
-    });
-  }
+  const panelId = useId();
+  const kind = itemKind(item);
+  const Icon = KIND_ICONS[kind];
+  const summary = itemSummary(item);
+  const equipped = item.equipped === true;
 
   return (
-    <div className="grid gap-2 rounded-lg border p-3 sm:grid-cols-[2fr_1fr_1fr_minmax(9rem,auto)_auto] sm:items-end">
-      <div className="grid gap-1">
-        <Label htmlFor={nameId} className="text-muted-foreground text-xs">
-          Nom
-        </Label>
-        <Input
-          id={nameId}
-          value={item.name}
-          onChange={(event) => onChange({ name: event.target.value })}
-        />
-      </div>
-      <div className="grid gap-1">
-        <Label htmlFor={quantityId} className="text-muted-foreground text-xs">
-          Quantité
-        </Label>
-        <Input
-          id={quantityId}
-          type="number"
-          min={0}
-          value={item.quantity}
-          onChange={(event) => onChange({ quantity: toNumber(event.target.value) })}
-        />
-      </div>
-      <div className="grid gap-1">
-        <Label htmlFor={weightId} className="text-muted-foreground text-xs">
-          Poids
-        </Label>
-        <Input
-          id={weightId}
-          type="number"
-          min={0}
-          step="0.1"
-          value={item.weight ?? ""}
-          onChange={(event) =>
-            onChange({ weight: event.target.value ? toNumber(event.target.value) : undefined })
-          }
-        />
-      </div>
-      <EquipControl item={item} character={character} onEquip={onEquip} />
-      <Button type="button" variant="ghost" size="sm" onClick={onRemove}>
-        <X />
-        Retirer
-      </Button>
-      <div className="grid gap-2 sm:col-span-5 sm:grid-cols-4">
-        <div className="grid gap-1">
-          <Label htmlFor={armorTypeId} className="text-muted-foreground text-xs">
-            Type
-          </Label>
-          <Select value={itemType} onValueChange={selectItemType}>
-            <SelectTrigger id={armorTypeId}>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={PLAIN_ITEM}>Objet</SelectItem>
-              {ARMOR_CATEGORIES.map((category) => (
-                <SelectItem key={category} value={category}>
-                  {category === "shield" ? "Bouclier" : `Armure ${ARMOR_CATEGORY_LABELS[category]}`}
-                </SelectItem>
-              ))}
-              {WEAPON_CATEGORIES.map((category) => (
-                <SelectItem key={category} value={`${WEAPON_PREFIX}${category}`}>
-                  Arme {WEAPON_CATEGORY_LABELS[category]}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        {armor && (
-          <div className="grid gap-1">
-            <Label htmlFor={baseArmorClassId} className="text-muted-foreground text-xs">
-              {armor.category === "shield" ? "Bonus bouclier" : "CA de base"}
-            </Label>
-            <Input
-              id={baseArmorClassId}
-              type="number"
-              value={armor.baseArmorClass}
-              onChange={(event) =>
-                onChange({ armor: { ...armor, baseArmorClass: toNumber(event.target.value) } })
-              }
-            />
-          </div>
-        )}
-        {armor?.category === "heavy" && (
-          <div className="grid gap-1">
-            <Label htmlFor={strengthId} className="text-muted-foreground text-xs">
-              Force min.
-            </Label>
-            <Input
-              id={strengthId}
-              type="number"
-              min={0}
-              value={armor.strengthRequirement ?? ""}
-              onChange={(event) =>
-                onChange({
-                  armor: { ...armor, strengthRequirement: optionalNumber(event.target.value) },
-                })
-              }
-            />
-          </div>
-        )}
-        {!weapon && (
-          <div className="grid gap-1">
-            <Label htmlFor={bonusId} className="text-muted-foreground text-xs">
-              Bonus CA (magique)
-            </Label>
-            <Input
-              id={bonusId}
-              type="number"
-              value={item.armorClassBonus ?? ""}
-              onChange={(event) =>
-                onChange({ armorClassBonus: optionalNumber(event.target.value) })
-              }
-            />
-          </div>
-        )}
-      </div>
-      {weapon && <WeaponFields weapon={weapon} onChange={(next) => onChange({ weapon: next })} />}
-      <div className="grid gap-1 sm:col-span-5">
-        <Label htmlFor={descriptionId} className="text-muted-foreground text-xs">
-          Description
-        </Label>
-        <Input
-          id={descriptionId}
-          value={item.description ?? ""}
-          onChange={(event) => onChange({ description: event.target.value || undefined })}
-        />
-      </div>
-    </div>
-  );
-}
-
-function WeaponFields({
-  weapon,
-  onChange,
-}: {
-  weapon: WeaponProperties;
-  onChange: (weapon: WeaponProperties) => void;
-}) {
-  const rangeId = useId();
-  const diceId = useId();
-  const versatileId = useId();
-  const damageTypeId = useId();
-  const finesseId = useId();
-  const magicId = useId();
-  const thrownNormalId = useId();
-  const thrownLongId = useId();
-  const { thrown } = weapon;
-
-  function update(patch: Partial<WeaponProperties>) {
-    onChange({ ...weapon, ...patch });
-  }
-
-  return (
-    <>
-      <div className="grid gap-2 sm:col-span-5 sm:grid-cols-[1.5fr_1fr_1fr_1.5fr_auto_1fr] sm:items-end">
-        <div className="grid gap-1">
-          <Label htmlFor={rangeId} className="text-muted-foreground text-xs">
-            Portée
-          </Label>
-          <Select
-            value={weapon.range}
-            onValueChange={(value) => update({ range: value as WeaponRange })}
+    <div
+      className={cn(
+        "rounded-xl border transition-colors",
+        open
+          ? "border-primary/50 bg-background/70"
+          : equipped && kind !== "item"
+            ? "border-primary/30 bg-primary/5"
+            : "bg-background/35",
+        item.quantity === 0 && !open && "opacity-60",
+      )}
+    >
+      <div className="flex flex-wrap items-center gap-3 py-2 pr-2 pl-3">
+        <button
+          type="button"
+          aria-expanded={open}
+          aria-controls={panelId}
+          onClick={onToggle}
+          className="focus-visible:ring-ring/50 flex min-w-0 flex-1 basis-56 items-center gap-3 rounded-lg py-1 text-left outline-none focus-visible:ring-3"
+        >
+          <span
+            aria-hidden
+            className={cn(
+              "flex size-9 shrink-0 items-center justify-center rounded-lg",
+              kind === "item" ? "bg-muted text-muted-foreground" : "bg-primary/15 text-primary",
+            )}
           >
-            <SelectTrigger id={rangeId}>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {(Object.keys(WEAPON_RANGE_LABELS) as WeaponRange[]).map((range) => (
-                <SelectItem key={range} value={range}>
-                  {WEAPON_RANGE_LABELS[range]}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="grid gap-1">
-          <Label htmlFor={diceId} className="text-muted-foreground text-xs">
-            Dégâts
-          </Label>
-          <Input
-            id={diceId}
-            value={weapon.damageDice}
-            placeholder="1d8"
-            aria-invalid={!isValidDamageDice(weapon.damageDice)}
-            onChange={(event) => update({ damageDice: event.target.value.trim() })}
+            <Icon className="size-4.5" />
+          </span>
+          <span className="grid min-w-0 flex-1 gap-0.5">
+            <span className="flex flex-wrap items-center gap-2 text-[15px] font-medium">
+              {item.name || "Nouvel objet"}
+              {kind === "item" && equipped && <Badge variant="secondary">Équipé</Badge>}
+            </span>
+            {summary && <span className="text-muted-foreground truncate text-xs">{summary}</span>}
+          </span>
+          <ChevronDown
+            aria-hidden
+            className={cn(
+              "text-muted-foreground size-4.5 shrink-0 transition-transform",
+              open && "rotate-180",
+            )}
           />
-        </div>
-        <div className="grid gap-1">
-          <Label htmlFor={versatileId} className="text-muted-foreground text-xs">
-            À deux mains
-          </Label>
-          <Input
-            id={versatileId}
-            value={weapon.versatileDamageDice ?? ""}
-            placeholder="—"
-            aria-invalid={
-              weapon.versatileDamageDice !== undefined &&
-              !isValidDamageDice(weapon.versatileDamageDice)
-            }
-            onChange={(event) =>
-              update({ versatileDamageDice: event.target.value.trim() || undefined })
-            }
-          />
-        </div>
-        <div className="grid gap-1">
-          <Label htmlFor={damageTypeId} className="text-muted-foreground text-xs">
-            Type de dégâts
-          </Label>
-          <Select
-            value={weapon.damageType}
-            onValueChange={(value) => update({ damageType: value as DamageType })}
-          >
-            <SelectTrigger id={damageTypeId}>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {DAMAGE_TYPES.map((type) => (
-                <SelectItem key={type} value={type}>
-                  {DAMAGE_TYPE_LABELS[type]}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="flex h-9 items-center gap-2">
-          <Switch
-            id={finesseId}
-            checked={weapon.finesse ?? false}
-            onCheckedChange={(checked) => update({ finesse: checked || undefined })}
-          />
-          <Label htmlFor={finesseId} className="text-muted-foreground text-xs">
-            Finesse
-          </Label>
-        </div>
-        <div className="grid gap-1">
-          <Label htmlFor={magicId} className="text-muted-foreground text-xs">
-            Bonus magique
-          </Label>
-          <Input
-            id={magicId}
-            type="number"
-            value={weapon.magicBonus ?? ""}
-            onChange={(event) => update({ magicBonus: optionalNumber(event.target.value) })}
-          />
-        </div>
+        </button>
+        {trailing}
       </div>
-      <div className="flex flex-wrap items-end gap-x-6 gap-y-2 sm:col-span-5">
-        <PropertySwitch
-          label="Deux mains"
-          checked={weapon.twoHanded ?? false}
-          onCheckedChange={(checked) =>
-            update({ twoHanded: checked || undefined, ...(checked ? { light: undefined } : {}) })
-          }
-        />
-        {!weapon.twoHanded && weapon.range === "melee" && (
-          <PropertySwitch
-            label="Légère"
-            checked={weapon.light ?? false}
-            onCheckedChange={(checked) => update({ light: checked || undefined })}
-          />
-        )}
-        {weapon.range === "melee" && (
-          <PropertySwitch
-            label="Lancer"
-            checked={weapon.thrown !== undefined}
-            onCheckedChange={(checked) =>
-              update({ thrown: checked ? { normal: 6, long: 18 } : undefined })
-            }
-          />
-        )}
-        {weapon.range === "melee" && thrown && (
-          <div className="flex items-end gap-2">
-            <div className="grid gap-1">
-              <Label htmlFor={thrownNormalId} className="text-muted-foreground text-xs">
-                Portée (m)
-              </Label>
-              <Input
-                id={thrownNormalId}
-                type="number"
-                min={0}
-                className="w-20"
-                value={thrown.normal}
-                onChange={(event) =>
-                  update({
-                    thrown: { ...thrown, normal: toNumber(event.target.value) },
-                  })
-                }
-              />
-            </div>
-            <div className="grid gap-1">
-              <Label htmlFor={thrownLongId} className="text-muted-foreground text-xs">
-                Longue (m)
-              </Label>
-              <Input
-                id={thrownLongId}
-                type="number"
-                min={0}
-                className="w-20"
-                value={thrown.long}
-                onChange={(event) =>
-                  update({ thrown: { ...thrown, long: toNumber(event.target.value) } })
-                }
-              />
-            </div>
-          </div>
-        )}
-        {weapon.category === "martial" && weapon.range === "melee" && (
-          <PropertySwitch
-            label="Arme de moine (coutelas)"
-            checked={weapon.monkWeapon ?? false}
-            onCheckedChange={(checked) => update({ monkWeapon: checked || undefined })}
-          />
-        )}
-      </div>
-    </>
-  );
-}
-
-function PropertySwitch({
-  label,
-  checked,
-  onCheckedChange,
-}: {
-  label: string;
-  checked: boolean;
-  onCheckedChange: (checked: boolean) => void;
-}) {
-  const id = useId();
-  return (
-    <div className="flex h-9 items-center gap-2">
-      <Switch id={id} checked={checked} onCheckedChange={(value) => onCheckedChange(value)} />
-      <Label htmlFor={id} className="text-muted-foreground text-xs">
-        {label}
-      </Label>
+      {open && (
+        <div id={panelId} className="border-t p-4">
+          {children}
+        </div>
+      )}
     </div>
   );
 }
