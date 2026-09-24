@@ -1,6 +1,7 @@
 import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it } from "vitest";
+import { LocalStorageCharacterRepository } from "@/repositories/local-storage/local-storage-character-repository";
 import { RepositoryProvider } from "@/repositories/repository-provider";
 import { StoreProvider } from "@/stores/store-provider";
 import { makeTestCharacter, makeTestSpell } from "@/test/fixtures";
@@ -59,18 +60,33 @@ describe("CharacterList", () => {
     expect(screen.getByText(/niv\./i)).toHaveTextContent(/niv\.\s*1/i);
   });
 
-  it("makes the whole info block a link to the play sheet, with HP and AC highlighted", async () => {
+  it("shows AC and HP like the play summary, and makes the whole card a link to play", async () => {
     const user = userEvent.setup();
     renderCharacterList();
 
     await createCharacter(user);
-    const link = await screen.findByRole("link", { name: /voir la fiche de elara duskwood/i });
+    const card = await screen.findByRole("article", { name: "Elara Duskwood" });
 
-    expect(link).toHaveAttribute("href", expect.stringMatching(/^\/characters\/[^/]+$/));
-    expect(within(link).getByText("Elara Duskwood")).toBeInTheDocument();
-    expect(within(link).getByRole("img", { name: /points de vie/i })).toBeInTheDocument();
-    expect(within(link).getByRole("img", { name: /classe d'armure/i })).toBeInTheDocument();
-    expect(screen.queryByRole("link", { name: /^voir la fiche$/i })).not.toBeInTheDocument();
+    expect(within(card).getByRole("img", { name: /points de vie/i })).toBeInTheDocument();
+    expect(within(card).getByRole("img", { name: /classe d'armure/i })).toBeInTheDocument();
+    expect(within(card).getByRole("link", { name: /jouer avec elara duskwood/i })).toHaveAttribute(
+      "href",
+      expect.stringMatching(/^\/characters\/[^/]+$/),
+    );
+    expect(within(card).getByRole("link", { name: /modifier/i })).toHaveAttribute(
+      "href",
+      expect.stringMatching(/^\/characters\/[^/]+\/edit$/),
+    );
+  });
+
+  it("applies each character's theme to its card", async () => {
+    await new LocalStorageCharacterRepository().create(
+      makeTestCharacter({ name: "Ilyana", themeId: "selune" }),
+    );
+    renderCharacterList();
+
+    const card = await screen.findByRole("article", { name: "Ilyana" });
+    expect(card.closest("[data-theme]")).toHaveAttribute("data-theme", "selune");
   });
 
   it("deletes a character after confirmation", async () => {
