@@ -1,3 +1,4 @@
+import type { AbilityName } from "@/domain/ability-scores";
 import { ABILITY_NAMES } from "@/domain/ability-scores";
 import type { Character } from "@/domain/character";
 import { effectiveSavingThrowProficiencies } from "@/domain/calculations/combat-stats";
@@ -7,72 +8,173 @@ import { clampCharacterLevel, proficiencyBonusForLevel } from "@/domain/calculat
 import { ABILITY_LABELS, ABILITY_SHORT_LABELS } from "@/features/shared/ability-labels";
 import { formatModifier } from "@/features/shared/format";
 import { SKILL_DEFINITIONS } from "@/features/shared/skills";
-import { Badge } from "@/components/ui/badge";
 import { SectionTitle } from "@/components/ui/section-title";
 
+/**
+ * Onglet « Caractéristiques » du mode jeu (lecture seule). Chaque carte met en avant le total du jet
+ * de sauvegarde (modificateur + bonus de maîtrise si maîtrisé), la valeur utilisée en partie ;
+ * modificateur et score restent en petit, pour information. Le bonus de maîtrise, commun à toutes
+ * les cartes, n'est affiché qu'une fois en en-tête.
+ */
 export function AbilitiesViewTab({ character }: { character: Character }) {
   const proficiencyBonus = proficiencyBonusForLevel(clampCharacterLevel(character.level));
   const effectiveScores = effectiveAbilityScores(character.abilityScores, character.raceSelection);
   const savingThrows = effectiveSavingThrowProficiencies(character);
 
-  return (
-    <div className="grid gap-8">
-      <div className="grid gap-4">
-        <p className="text-muted-foreground text-sm">
-          Bonus de maîtrise (niveau {character.level}) :{" "}
-          <span className="text-foreground font-medium">{formatModifier(proficiencyBonus)}</span>
-        </p>
+  const skillTotal = (skillName: string, ability: AbilityName) =>
+    abilityModifier(effectiveScores[ability]) +
+    (character.skillProficiencies.includes(skillName) ? proficiencyBonus : 0);
+  const passivePerception = 10 + skillTotal("Perception", "wisdom");
 
-        <div className="grid gap-4 sm:grid-cols-2">
-          {ABILITY_NAMES.map((ability) => {
-            const score = effectiveScores[ability];
-            const modifier = abilityModifier(score);
-            const proficient = savingThrows.includes(ability);
-            const savingThrow = modifier + (proficient ? proficiencyBonus : 0);
-            return (
-              <div key={ability} className="flex items-center gap-3 rounded-lg border p-3">
-                <div className="flex-1">
-                  <p className="text-sm font-medium">{ABILITY_LABELS[ability]}</p>
-                  <p className="text-muted-foreground text-xs">Score {score}</p>
-                </div>
-                <p className="text-muted-foreground w-12 text-center text-sm">
-                  {formatModifier(modifier)}
-                </p>
-                <Badge variant={proficient ? "default" : "outline"}>
-                  Sauv. {formatModifier(savingThrow)}
-                </Badge>
-              </div>
-            );
-          })}
+  return (
+    <div className="grid gap-7">
+      <div className="grid gap-4">
+        <div className="flex flex-wrap gap-2">
+          <HeaderChip label="Bonus de maîtrise" value={formatModifier(proficiencyBonus)} accent />
+          <HeaderChip label="Perception passive" value={passivePerception} />
+        </div>
+
+        <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3">
+          {ABILITY_NAMES.map((ability) => (
+            <AbilityCard
+              key={ability}
+              ability={ability}
+              baseScore={character.abilityScores[ability]}
+              score={effectiveScores[ability]}
+              proficient={savingThrows.includes(ability)}
+              proficiencyBonus={proficiencyBonus}
+            />
+          ))}
         </div>
       </div>
 
       <div className="grid gap-3">
         <SectionTitle>Compétences</SectionTitle>
-        <div className="grid gap-1 sm:grid-cols-2">
+        <ul className="grid gap-1 sm:grid-cols-2 sm:gap-x-3">
           {SKILL_DEFINITIONS.map((skill) => {
-            const score = effectiveScores[skill.ability];
-            const modifier = abilityModifier(score);
             const proficient = character.skillProficiencies.includes(skill.name);
-            const total = modifier + (proficient ? proficiencyBonus : 0);
             return (
-              <div
+              <li
                 key={skill.name}
-                className="flex items-center gap-2 rounded-lg border px-2 py-1.5"
+                className={`flex items-center gap-2.5 rounded-lg border px-3 py-1.5 ${
+                  proficient ? "border-primary/35 bg-primary/5" : "border-border/70"
+                }`}
               >
-                {proficient && <Badge variant="secondary">✓</Badge>}
+                <ProficiencyDot proficient={proficient} />
                 <span className="flex-1 text-sm">
-                  {skill.name}{" "}
-                  <span className="text-muted-foreground text-xs">
-                    ({ABILITY_SHORT_LABELS[skill.ability]})
+                  {skill.name}
+                  <span className="text-muted-foreground ml-1.5 text-[10px] font-semibold tracking-wider">
+                    {ABILITY_SHORT_LABELS[skill.ability]}
                   </span>
+                  <span className="sr-only">{proficient ? " (maîtrisée)" : ""}</span>
                 </span>
-                <span className="w-10 text-right text-sm font-medium">{formatModifier(total)}</span>
-              </div>
+                <span
+                  className={`w-8 text-right text-sm tabular-nums ${
+                    proficient ? "text-primary font-bold" : "text-muted-foreground font-medium"
+                  }`}
+                >
+                  {formatModifier(skillTotal(skill.name, skill.ability))}
+                </span>
+              </li>
             );
           })}
-        </div>
+        </ul>
       </div>
     </div>
+  );
+}
+
+function HeaderChip({
+  label,
+  value,
+  accent = false,
+}: {
+  label: string;
+  value: string | number;
+  accent?: boolean;
+}) {
+  return (
+    <p className="bg-background/50 flex items-baseline gap-2 rounded-full border px-3 py-1">
+      <span className="text-muted-foreground text-xs">{label}</span>
+      <span
+        className={`font-heading text-lg font-bold tabular-nums ${accent ? "text-primary" : ""}`}
+      >
+        {value}
+      </span>
+    </p>
+  );
+}
+
+function AbilityCard({
+  ability,
+  baseScore,
+  score,
+  proficient,
+  proficiencyBonus,
+}: {
+  ability: AbilityName;
+  baseScore: number;
+  /** Score effectif (base + bonus racial éventuel). */
+  score: number;
+  /** Maîtrise du jet de sauvegarde. */
+  proficient: boolean;
+  proficiencyBonus: number;
+}) {
+  const modifier = abilityModifier(score);
+  const total = modifier + (proficient ? proficiencyBonus : 0);
+  const racialBonus = score - baseScore;
+
+  return (
+    <section
+      aria-label={ABILITY_LABELS[ability]}
+      className="bg-background/50 flex flex-col overflow-hidden rounded-2xl border"
+    >
+      <div className="flex flex-col items-center gap-0.5 px-3 pt-3.5 pb-3">
+        <span className="text-muted-foreground text-[11px] font-semibold tracking-widest uppercase">
+          {ABILITY_LABELS[ability]}
+        </span>
+        <span
+          className={`font-heading text-[40px] leading-tight font-bold tabular-nums sm:text-[44px] ${
+            proficient ? "text-primary" : ""
+          }`}
+        >
+          <span className="sr-only">Jet de sauvegarde </span>
+          {formatModifier(total)}
+        </span>
+        <span
+          className="text-muted-foreground text-xs"
+          title={
+            racialBonus !== 0
+              ? `${baseScore} ${formatModifier(racialBonus)} racial`
+              : "Score de base"
+          }
+        >
+          mod. {formatModifier(modifier)} · score {score}
+        </span>
+      </div>
+      <div
+        className={`flex items-center justify-center gap-2 border-t px-3.5 py-2 text-[13px] ${
+          proficient ? "bg-primary/10" : "text-muted-foreground"
+        }`}
+      >
+        <ProficiencyDot proficient={proficient} />
+        <span aria-hidden>Maîtrise</span>
+        <span className="sr-only">{proficient ? "Maîtrisé" : "Non maîtrisé"}</span>
+      </div>
+    </section>
+  );
+}
+
+/** Pastille de maîtrise : pleine (dorée) si maîtrisé, cercle vide sinon. */
+function ProficiencyDot({ proficient }: { proficient: boolean }) {
+  return (
+    <span
+      aria-hidden
+      className={`size-2.5 shrink-0 rounded-full ${
+        proficient
+          ? "bg-primary shadow-[0_0_8px_color-mix(in_oklab,var(--primary)_55%,transparent)]"
+          : "border-muted-foreground/60 border-[1.5px]"
+      }`}
+    />
   );
 }
