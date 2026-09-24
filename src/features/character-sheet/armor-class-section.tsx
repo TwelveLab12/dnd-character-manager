@@ -1,6 +1,6 @@
 "use client";
 
-import { Plus, X } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { useEffect, useId } from "react";
 import type { ArmorClassEffect, ArmorClassEffectTrigger } from "@/domain/armor-class-effect";
 import { grantedProficiencies } from "@/domain/calculations/class-features";
@@ -13,8 +13,6 @@ import { useSpellStore } from "@/stores/store-provider";
 import { ARMOR_CATEGORY_LABELS, formatArmorClassBreakdown } from "@/features/shared/armor-class";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { SectionTitle } from "@/components/ui/section-title";
 import {
   Select,
   SelectContent,
@@ -22,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
+import { GeneralSection, GroupLabel, ProficiencyChip } from "./general-section";
 import type { CharacterTabProps } from "./types";
 
 const MANUAL = "manual";
@@ -32,13 +30,17 @@ function toNumber(value: string): number {
   return Number.isFinite(parsed) ? parsed : 0;
 }
 
+function capitalize(label: string): string {
+  return label.charAt(0).toUpperCase() + label.slice(1);
+}
+
 /**
  * CA calculée (voir src/domain/calculations/armor-class.ts) : l'armure et le bouclier se règlent
- * dans l'onglet Inventaire ; ici, les maîtrises, le don Maître des armures intermédiaires et les
- * effets de sorts/capacités.
+ * dans l'onglet Inventaire ; ici, les maîtrises et les effets de sorts/capacités. Le don Maître des
+ * armures intermédiaires est rangé avec les autres dons (docs/adr/0035).
  */
 export function ArmorClassSection({ draft, onChange }: CharacterTabProps) {
-  const masterId = useId();
+  const proficienciesId = useId();
   const result = computeArmorClass(draft);
   const proficiencies = draft.armorProficiencies ?? [];
   const effects = draft.armorClassEffects ?? [];
@@ -70,18 +72,16 @@ export function ArmorClassSection({ draft, onChange }: CharacterTabProps) {
   }
 
   return (
-    <section className="grid gap-4">
-      <div className="flex items-baseline justify-between gap-4">
-        <SectionTitle>Classe d&rsquo;armure</SectionTitle>
-        <p className="text-sm">
-          <span className="font-heading text-2xl font-semibold">{result.total}</span>{" "}
-          <span className="text-muted-foreground">= {formatArmorClassBreakdown(result)}</span>
-        </p>
-      </div>
-      <p className="text-muted-foreground text-xs">
-        Calculée : armure et bouclier équipés dans l&rsquo;onglet Inventaire, 10 + Dex sans armure.
-      </p>
-
+    <GeneralSection
+      id="general-defense"
+      title="Défense"
+      description={
+        <>
+          CA {result.total} = {formatArmorClassBreakdown(result)} · armure et bouclier équipés dans
+          l&rsquo;onglet Inventaire
+        </>
+      }
+    >
       {result.warnings.length > 0 && (
         <ul className="text-warning grid gap-1 text-xs">
           {result.warnings.map((warning) => (
@@ -90,13 +90,13 @@ export function ArmorClassSection({ draft, onChange }: CharacterTabProps) {
         </ul>
       )}
 
-      <div className="grid gap-2">
-        <span className="text-muted-foreground text-xs">Maîtrises</span>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <div role="group" aria-labelledby={proficienciesId} className="grid gap-2">
+        <GroupLabel id={proficienciesId}>Maîtrises d&rsquo;armure</GroupLabel>
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
           {ARMOR_CATEGORIES.map((category) => (
-            <ProficiencySwitch
+            <ProficiencyChip
               key={category}
-              label={ARMOR_CATEGORY_LABELS[category]}
+              label={capitalize(ARMOR_CATEGORY_LABELS[category])}
               checked={proficiencies.includes(category)}
               grantedBy={
                 grantedProficiencies(draft).find((grant) => grant.armor.includes(category))?.source
@@ -107,22 +107,12 @@ export function ArmorClassSection({ draft, onChange }: CharacterTabProps) {
         </div>
       </div>
 
-      <div className="flex items-center gap-2">
-        <Switch
-          id={masterId}
-          checked={draft.mediumArmorMaster ?? false}
-          onCheckedChange={(checked) => onChange({ mediumArmorMaster: checked || undefined })}
-        />
-        <Label htmlFor={masterId}>Maître des armures intermédiaires (Dex max +3)</Label>
-      </div>
-
-      <div className="grid gap-3">
+      <div className="grid gap-2">
         <div className="flex items-center justify-between">
-          <span className="text-muted-foreground text-xs">Effets (sorts, capacités)</span>
+          <GroupLabel>Effets temporaires</GroupLabel>
           <Button
             type="button"
             variant="outline"
-            size="sm"
             onClick={() =>
               onChange({
                 armorClassEffects: [
@@ -141,50 +131,25 @@ export function ArmorClassSection({ draft, onChange }: CharacterTabProps) {
             Ajouter un effet
           </Button>
         </div>
-        {effects.map((effect) => (
-          <EffectRow
-            key={effect.id}
-            effect={effect}
-            concentrationSpells={concentrationSpells}
-            onChange={(patch) => updateEffect(effect.id, patch)}
-            onRemove={() =>
-              onChange({ armorClassEffects: effects.filter((item) => item.id !== effect.id) })
-            }
-          />
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function ProficiencySwitch({
-  label,
-  checked,
-  onCheckedChange,
-  grantedBy,
-}: {
-  label: string;
-  checked: boolean;
-  onCheckedChange: (checked: boolean) => void;
-  /** Maîtrise accordée par la classe ou la sous-classe : toujours active, non modifiable ici. */
-  grantedBy?: string;
-}) {
-  const id = useId();
-  return (
-    <div className="flex items-center gap-2">
-      <Switch
-        id={id}
-        checked={checked || grantedBy !== undefined}
-        disabled={grantedBy !== undefined}
-        onCheckedChange={(value) => onCheckedChange(value)}
-      />
-      <Label htmlFor={id} className="capitalize">
-        {label}
-        {grantedBy && (
-          <span className="text-muted-foreground text-xs normal-case">({grantedBy})</span>
+        {effects.length === 0 ? (
+          <p className="text-muted-foreground rounded-xl border border-dashed p-3 text-center text-sm">
+            Aucun effet. Ex : Bouclier de la foi +2, lié à sa concentration.
+          </p>
+        ) : (
+          effects.map((effect) => (
+            <EffectRow
+              key={effect.id}
+              effect={effect}
+              concentrationSpells={concentrationSpells}
+              onChange={(patch) => updateEffect(effect.id, patch)}
+              onRemove={() =>
+                onChange({ armorClassEffects: effects.filter((item) => item.id !== effect.id) })
+              }
+            />
+          ))
         )}
-      </Label>
-    </div>
+      </div>
+    </GeneralSection>
   );
 }
 
@@ -199,9 +164,6 @@ function EffectRow({
   onChange: (patch: Partial<ArmorClassEffect>) => void;
   onRemove: () => void;
 }) {
-  const nameId = useId();
-  const bonusId = useId();
-  const triggerId = useId();
   function selectTrigger(value: string) {
     const trigger: ArmorClassEffectTrigger =
       value === MANUAL
@@ -212,52 +174,49 @@ function EffectRow({
   }
 
   return (
-    <div className="grid gap-2 rounded-lg border p-3 sm:grid-cols-[2fr_1fr_2fr_auto] sm:items-end">
-      <div className="grid gap-1">
-        <Label htmlFor={nameId} className="text-muted-foreground text-xs">
-          Nom
-        </Label>
-        <Input
-          id={nameId}
-          value={effect.name}
-          onChange={(event) => onChange({ name: event.target.value })}
-        />
-      </div>
-      <div className="grid gap-1">
-        <Label htmlFor={bonusId} className="text-muted-foreground text-xs">
-          Bonus CA
-        </Label>
-        <Input
-          id={bonusId}
+    <div className="bg-background/60 grid gap-2 rounded-xl border p-2 sm:grid-cols-[minmax(0,1fr)_6rem_15rem_auto] sm:items-center">
+      <Input
+        aria-label="Nom de l’effet"
+        placeholder="Nom de l’effet"
+        className="font-medium"
+        value={effect.name}
+        onChange={(event) => onChange({ name: event.target.value })}
+      />
+      <label className="bg-primary/10 text-primary flex h-8 items-center gap-1 rounded-lg px-2.5 font-semibold">
+        <span aria-hidden>+</span>
+        <input
+          aria-label="Bonus de CA"
           type="number"
+          className="w-8 min-w-0 bg-transparent outline-none"
           value={effect.bonus}
           onChange={(event) => onChange({ bonus: toNumber(event.target.value) })}
         />
-      </div>
-      <div className="grid gap-1">
-        <Label htmlFor={triggerId} className="text-muted-foreground text-xs">
-          Actif
-        </Label>
-        <Select
-          value={effect.trigger.type === "manual" ? MANUAL : effect.trigger.spellId}
-          onValueChange={selectTrigger}
-        >
-          <SelectTrigger id={triggerId}>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={MANUAL}>Manuellement, en mode jeu</SelectItem>
-            {concentrationSpells.map((spell) => (
-              <SelectItem key={spell.id} value={spell.id}>
-                Concentration : {spell.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      <Button type="button" variant="ghost" size="sm" onClick={onRemove}>
-        <X />
-        Retirer
+        <span className="text-xs">CA</span>
+      </label>
+      <Select
+        value={effect.trigger.type === "manual" ? MANUAL : effect.trigger.spellId}
+        onValueChange={selectTrigger}
+      >
+        <SelectTrigger aria-label="Déclenchement" className="w-full">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value={MANUAL}>Activé à la main en jeu</SelectItem>
+          {concentrationSpells.map((spell) => (
+            <SelectItem key={spell.id} value={spell.id}>
+              Concentration : {spell.name}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon-lg"
+        aria-label={`Retirer ${effect.name || "l’effet"}`}
+        onClick={onRemove}
+      >
+        <Trash2 />
       </Button>
     </div>
   );
