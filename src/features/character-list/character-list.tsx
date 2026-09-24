@@ -1,16 +1,14 @@
 "use client";
 
-import { BookOpen, Download } from "lucide-react";
+import { BookOpen } from "lucide-react";
 import Link from "next/link";
 import { useEffect } from "react";
-import { downloadJson, exportBackupToJson, exportCharactersToJson } from "@/import-export/exporter";
 import { useCharacterStore, useSpellStore } from "@/stores/store-provider";
 import { Button } from "@/components/ui/button";
 import { PageTitle } from "@/components/ui/page-title";
 import { CharacterCard } from "./character-card";
 import { CreateCharacterDialog } from "./create-character-dialog";
-import { ImportBackupDialog } from "./import-backup-dialog";
-import { ImportCharactersDialog } from "./import-characters-dialog";
+import { DataPanel } from "./data-panel";
 
 export function CharacterList() {
   const characters = useCharacterStore((state) => state.characters);
@@ -18,7 +16,6 @@ export function CharacterList() {
   const error = useCharacterStore((state) => state.error);
   const load = useCharacterStore((state) => state.load);
 
-  const spells = useSpellStore((state) => state.spells);
   const loadSpells = useSpellStore((state) => state.load);
 
   useEffect(() => {
@@ -28,42 +25,18 @@ export function CharacterList() {
 
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 px-6 py-12">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <PageTitle>Mes personnages</PageTitle>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Button variant="outline" asChild>
             <Link href="/spells">
               <BookOpen />
               Bibliothèque de sorts
             </Link>
           </Button>
+          <DataPanel />
           <CreateCharacterDialog />
         </div>
-      </div>
-
-      <div className="flex flex-wrap items-center gap-2 rounded-lg border p-3">
-        <span className="text-muted-foreground mr-1 text-sm">Données :</span>
-        <Button
-          variant="ghost"
-          size="sm"
-          disabled={characters.length === 0}
-          onClick={() => downloadJson("personnages.json", exportCharactersToJson(characters))}
-        >
-          <Download />
-          Exporter personnages
-        </Button>
-        <ImportCharactersDialog />
-        <span className="bg-border mx-1 h-4 w-px" aria-hidden="true" />
-        <Button
-          variant="ghost"
-          size="sm"
-          disabled={characters.length === 0 && spells.length === 0}
-          onClick={() => downloadJson("sauvegarde.json", exportBackupToJson(characters, spells))}
-        >
-          <Download />
-          Exporter tout (sauvegarde)
-        </Button>
-        <ImportBackupDialog />
       </div>
 
       {error && (

@@ -30,6 +30,8 @@ export interface ImportDialogProps<T> {
   triggerLabel?: string;
   triggerVariant?: VariantProps<typeof buttonVariants>["variant"];
   triggerSize?: VariantProps<typeof buttonVariants>["size"];
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
   placeholder?: string;
   parseEntries: (text: string) => { ok: true; entries: unknown[] } | { ok: false; error: string };
   preview: (entries: unknown[]) => ImportRow<T>[];
@@ -47,12 +49,24 @@ export function ImportDialog<T>({
   triggerLabel = "Importer",
   triggerVariant,
   triggerSize,
+  open: openProp,
+  onOpenChange,
   placeholder,
   parseEntries,
   preview,
   onImport,
 }: ImportDialogProps<T>) {
-  const [open, setOpen] = useState(false);
+  // Contrôlé depuis l'extérieur (ex. panneau Import / Export) quand `open` est fourni : le
+  // déclencheur intégré n'est alors pas rendu.
+  const isControlled = openProp !== undefined;
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = isControlled ? openProp : internalOpen;
+  function setOpen(nextOpen: boolean) {
+    if (!isControlled) {
+      setInternalOpen(nextOpen);
+    }
+    onOpenChange?.(nextOpen);
+  }
   const [text, setText] = useState("");
   const [rows, setRows] = useState<ImportRow<T>[] | null>(null);
   const [parseError, setParseError] = useState<string | null>(null);
@@ -117,12 +131,14 @@ export function ImportDialog<T>({
         }
       }}
     >
-      <DialogTrigger asChild>
-        <Button variant={triggerVariant} size={triggerSize}>
-          <Upload />
-          {triggerLabel}
-        </Button>
-      </DialogTrigger>
+      {!isControlled && (
+        <DialogTrigger asChild>
+          <Button variant={triggerVariant} size={triggerSize}>
+            <Upload />
+            {triggerLabel}
+          </Button>
+        </DialogTrigger>
+      )}
       <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>

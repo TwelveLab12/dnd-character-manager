@@ -35,6 +35,12 @@ async function pasteIntoJsonField(
   await user.paste(json);
 }
 
+async function openFromDataPanel(user: ReturnType<typeof userEvent.setup>, action: RegExp) {
+  await user.click(screen.getByRole("button", { name: /import \/ export/i }));
+  const panel = await screen.findByRole("dialog", { name: /import \/ export/i });
+  await user.click(within(panel).getByRole("button", { name: action }));
+}
+
 describe("CharacterList", () => {
   beforeEach(() => {
     window.localStorage.clear();
@@ -82,11 +88,35 @@ describe("CharacterList", () => {
     expect(await screen.findByText(/aucun personnage/i)).toBeInTheDocument();
   });
 
+  it("groups imports and exports in a side panel, closing it when an import opens", async () => {
+    const user = userEvent.setup();
+    renderCharacterList();
+    await screen.findByText(/aucun personnage/i);
+
+    expect(
+      screen.queryByRole("button", { name: /importer des personnages/i }),
+    ).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: /import \/ export/i }));
+    const panel = await screen.findByRole("dialog", { name: /import \/ export/i });
+    // Rien à exporter tant qu'il n'y a pas de données.
+    expect(within(panel).getByRole("button", { name: /exporter les personnages/i })).toBeDisabled();
+    expect(within(panel).getByRole("button", { name: /exporter tout/i })).toBeDisabled();
+
+    await user.click(within(panel).getByRole("button", { name: /importer des personnages/i }));
+    expect(
+      await screen.findByRole("dialog", { name: /importer des personnages/i }),
+    ).toBeInTheDocument();
+    await waitFor(() =>
+      expect(screen.queryByRole("dialog", { name: /import \/ export/i })).not.toBeInTheDocument(),
+    );
+  });
+
   it("imports a character from pasted JSON", async () => {
     const user = userEvent.setup();
     renderCharacterList();
 
-    await user.click(screen.getByRole("button", { name: /importer des personnages/i }));
+    await openFromDataPanel(user, /importer des personnages/i);
     const dialog = await screen.findByRole("dialog");
     await pasteIntoJsonField(
       user,
@@ -114,7 +144,7 @@ describe("CharacterList", () => {
       spells: [makeTestSpell({ id: "fireball" })],
     };
 
-    await user.click(screen.getByRole("button", { name: /importer une sauvegarde/i }));
+    await openFromDataPanel(user, /importer une sauvegarde/i);
     const dialog = await screen.findByRole("dialog");
     await pasteIntoJsonField(user, dialog, JSON.stringify(backup));
     await user.click(within(dialog).getByRole("button", { name: /^analyser$/i }));
@@ -138,7 +168,7 @@ describe("CharacterList", () => {
       spells: [{ name: "Sort cassé" }],
     };
 
-    await user.click(screen.getByRole("button", { name: /importer une sauvegarde/i }));
+    await openFromDataPanel(user, /importer une sauvegarde/i);
     const dialog = await screen.findByRole("dialog");
     await pasteIntoJsonField(user, dialog, JSON.stringify(backup));
     await user.click(within(dialog).getByRole("button", { name: /^analyser$/i }));

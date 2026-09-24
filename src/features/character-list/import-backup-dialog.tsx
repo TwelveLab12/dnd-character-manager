@@ -39,13 +39,29 @@ function hasEntity<T>(row: ImportRow<T>): row is ImportRow<T> & { entity: T } {
  * d'un bloc, qui empêchait d'importer les personnages valides si un seul sort était invalide. Voir
  * docs/adr/0004-json-import-export-open5e-schema.md.
  */
-export function ImportBackupDialog() {
+export function ImportBackupDialog({
+  open: openProp,
+  onOpenChange,
+}: {
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+} = {}) {
   const characters = useCharacterStore((state) => state.characters);
   const upsertCharacters = useCharacterStore((state) => state.upsertMany);
   const spells = useSpellStore((state) => state.spells);
   const upsertSpells = useSpellStore((state) => state.upsertMany);
 
-  const [open, setOpen] = useState(false);
+  // Contrôlé depuis l'extérieur (ex. panneau Import / Export) quand `open` est fourni : le
+  // déclencheur intégré n'est alors pas rendu.
+  const isControlled = openProp !== undefined;
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = isControlled ? openProp : internalOpen;
+  function setOpen(nextOpen: boolean) {
+    if (!isControlled) {
+      setInternalOpen(nextOpen);
+    }
+    onOpenChange?.(nextOpen);
+  }
   const [text, setText] = useState("");
   const [characterRows, setCharacterRows] = useState<CharacterImportRow[] | null>(null);
   const [spellRows, setSpellRows] = useState<SpellImportRow[] | null>(null);
@@ -125,12 +141,14 @@ export function ImportBackupDialog() {
         }
       }}
     >
-      <DialogTrigger asChild>
-        <Button variant="ghost" size="sm">
-          <Upload />
-          Importer une sauvegarde
-        </Button>
-      </DialogTrigger>
+      {!isControlled && (
+        <DialogTrigger asChild>
+          <Button variant="ghost" size="sm">
+            <Upload />
+            Importer une sauvegarde
+          </Button>
+        </DialogTrigger>
+      )}
       <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle>Importer une sauvegarde</DialogTitle>
