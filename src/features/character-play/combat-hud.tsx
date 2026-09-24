@@ -22,7 +22,7 @@ import { SpellSlotsCard } from "./spell-slots-card";
 import { StatTile } from "./stat-tile";
 
 /** Un effet de CA temporaire est-il actif (interrupteur manuel, ou sort concentré en cours) ? */
-function hasActiveArmorClassEffect(character: Character): boolean {
+export function hasActiveArmorClassEffect(character: Character): boolean {
   return (character.armorClassEffects ?? []).some((effect) =>
     effect.trigger.type === "manual"
       ? effect.trigger.active
@@ -32,7 +32,7 @@ function hasActiveArmorClassEffect(character: Character): boolean {
 }
 
 /**
- * HUD de combat du mode jeu, toujours visible au-dessus des onglets : CA (prioritaire), PV, valeurs
+ * HUD de combat du mode jeu, contenu de l'onglet « Combat » (docs/adr/0031) : CA (prioritaire), PV, valeurs
  * de combat et d'incantation, attaques, ressources (emplacements de sorts, ressources de classe),
  * concentration et repos. Voir docs/adr/0021 et 0024.
  *

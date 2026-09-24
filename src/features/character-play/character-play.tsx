@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CharacterThemeScope } from "@/features/character-theme/character-theme-scope";
 import { AbilitiesViewTab } from "./abilities-view-tab";
 import { CombatHud } from "./combat-hud";
+import { CombatSummary } from "./combat-summary";
 import { InventoryViewTab } from "./inventory-view-tab";
 import { NotesViewTab } from "./notes-view-tab";
 import { FeaturesViewTab } from "./features-view-tab";
@@ -80,18 +81,19 @@ export function CharacterPlay({ characterId }: { characterId: string }) {
           </Button>
         </div>
 
-        <CombatHud character={character} />
+        <CombatSummary character={character} />
 
-        <Tabs defaultValue="notes">
-          <TabsList>
-            <TabsTrigger value="notes">Notes</TabsTrigger>
+        <Tabs defaultValue="combat">
+          <TabsList className="max-w-full justify-start overflow-x-auto">
+            <TabsTrigger value="combat">Combat</TabsTrigger>
             <TabsTrigger value="abilities">Caractéristiques</TabsTrigger>
             <TabsTrigger value="spells">Sorts</TabsTrigger>
             <TabsTrigger value="inventory">Inventaire</TabsTrigger>
             <TabsTrigger value="features">Capacités</TabsTrigger>
+            <TabsTrigger value="notes">Notes</TabsTrigger>
           </TabsList>
-          <TabsContent value="notes">
-            <NotesViewTab character={character} />
+          <TabsContent value="combat">
+            <CombatHud character={character} />
           </TabsContent>
           <TabsContent value="abilities">
             <AbilitiesViewTab character={character} />
@@ -104,6 +106,9 @@ export function CharacterPlay({ characterId }: { characterId: string }) {
           </TabsContent>
           <TabsContent value="features">
             <FeaturesViewTab character={character} />
+          </TabsContent>
+          <TabsContent value="notes">
+            <NotesViewTab character={character} />
           </TabsContent>
         </Tabs>
       </div>
