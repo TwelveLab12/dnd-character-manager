@@ -194,6 +194,9 @@ describe("SpellsViewTab (via CharacterPlay)", () => {
     await screen.findByRole("heading", { name: character.name });
     await openSpellsTab(user);
     expect(screen.queryByRole("article", { name: "Soins" })).not.toBeInTheDocument();
+    // Le sort toujours préparé a sa propre identité : il ne peut pas être remplacé.
+    const shield = await screen.findByRole("article", { name: "Bouclier de la foi" });
+    expect(within(shield).getByText("Toujours préparé")).toBeInTheDocument();
 
     await user.click(await screen.findByRole("button", { name: /préparer les sorts/i }));
     const panel = await screen.findByRole("dialog");

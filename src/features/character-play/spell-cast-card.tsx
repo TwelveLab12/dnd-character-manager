@@ -1,6 +1,6 @@
 "use client";
 
-import { BookOpen, ChevronDown, Focus } from "lucide-react";
+import { BookOpen, ChevronDown, Focus, Pin } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import type { Character } from "@/domain/character";
@@ -36,6 +36,17 @@ export function RitualTag() {
   );
 }
 
+/** Sort toujours préparé (domaine, sous-classe) : ne compte pas dans la limite et ne peut pas être
+ * remplacé — identité dorée pour le distinguer d'un coup d'œil des sorts préparés du jour. */
+export function AlwaysPreparedTag() {
+  return (
+    <Badge className="bg-primary/15 text-primary gap-1 border-transparent">
+      <Pin aria-hidden className="size-3" />
+      Toujours préparé
+    </Badge>
+  );
+}
+
 function componentsLabel(spell: Spell): string {
   const parts = [
     spell.components.verbal ? "V" : null,
@@ -58,10 +69,12 @@ export function SpellCastCard({
   character,
   spell,
   domain,
+  alwaysPrepared = false,
 }: {
   character: Character;
   spell: Spell;
   domain: string | undefined;
+  alwaysPrepared?: boolean;
 }) {
   const { castSpell, restoreCasting, toggleConcentration } = usePlayActions(character.id);
   const [open, setOpen] = useState(false);
@@ -121,8 +134,15 @@ export function SpellCastCard({
   return (
     <article
       aria-label={spell.name}
-      className={`bg-card flex flex-col gap-3 rounded-xl border p-4 transition-shadow ${
-        concentrating ? "border-info ring-info/60 shadow-info/20 shadow-lg ring-1" : ""
+      data-always-prepared={alwaysPrepared || undefined}
+      className={`flex flex-col gap-3 rounded-xl border p-4 transition-shadow ${
+        alwaysPrepared ? "bg-primary/10" : "bg-card"
+      } ${
+        concentrating
+          ? "border-info ring-info/60 shadow-info/20 shadow-lg ring-1"
+          : alwaysPrepared
+            ? "border-primary/50"
+            : ""
       }`}
     >
       <button
@@ -133,6 +153,7 @@ export function SpellCastCard({
       >
         <span className="flex flex-wrap items-center gap-1.5">
           <span className="font-semibold break-words">{spell.name}</span>
+          {alwaysPrepared && <AlwaysPreparedTag />}
           {spell.concentration && <ConcentrationTag />}
           {spell.ritual && <RitualTag />}
           {domain && <Badge variant="secondary">{domain}</Badge>}

@@ -25,7 +25,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Switch } from "@/components/ui/switch";
-import { ConcentrationTag, RitualTag } from "./spell-cast-card";
+import { AlwaysPreparedTag, ConcentrationTag, RitualTag } from "./spell-cast-card";
 import { usePlayActions } from "./use-play-actions";
 
 /**
@@ -133,9 +133,7 @@ export function PrepareSpellsSheet({
                           {spell.ritual && <RitualTag />}
                         </span>
                         {state === "always" ? (
-                          <Badge className="bg-info/15 text-info border-transparent">
-                            Toujours préparé
-                          </Badge>
+                          <AlwaysPreparedTag />
                         ) : (
                           <Label title={locked ? "Limite de sorts préparés atteinte" : undefined}>
                             <Switch

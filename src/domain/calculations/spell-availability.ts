@@ -67,7 +67,15 @@ export function spellDomainTags(character: Character, library: readonly Spell[] 
   return [...new Set(domains)];
 }
 
-/** Un sort est-il marqué toujours-préparé pour ce personnage ? */
-export function isAlwaysAvailable(character: Character, spellId: string): boolean {
-  return character.spellTags.some((tag) => tag.spellId === spellId && tag.alwaysPrepared);
+/** Un sort est-il toujours préparé pour ce personnage : tag de la fiche, ou sort de sous-classe
+ * calculé (retrouvé dans `library`) ? */
+export function isAlwaysAvailable(
+  character: Character,
+  spellId: string,
+  library: readonly Spell[] = [],
+): boolean {
+  return (
+    character.spellTags.some((tag) => tag.spellId === spellId && tag.alwaysPrepared) ||
+    computedAlwaysPreparedIds(character, library).includes(spellId)
+  );
 }

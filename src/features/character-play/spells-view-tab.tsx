@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { Character } from "@/domain/character";
 import {
+  isAlwaysAvailable,
   playAvailableSpellIds,
   spellDomain,
   spellDomainTags,
@@ -182,6 +183,11 @@ export function SpellsViewTab({ character }: { character: Character }) {
                 character={character}
                 spell={spell}
                 domain={spellDomain(character, spell.id, spells)}
+                alwaysPrepared={
+                  spellcasting?.preparation === "prepared" &&
+                  spell.level > 0 &&
+                  isAlwaysAvailable(character, spell.id, spells)
+                }
               />
             ))}
           </div>
