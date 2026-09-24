@@ -72,11 +72,17 @@ export interface Character {
   /** Don « Maître des armures intermédiaires » : plafond de Dextérité +3 au lieu de +2. */
   mediumArmorMaster?: boolean;
   armorClassEffects?: ArmorClassEffect[];
-  initiativeBonus: number;
-  speed: number;
+  /** Bonus d'initiative en plus du modificateur de Dextérité (ex : don Vigilant +5). L'initiative
+   * elle-même est calculée — voir src/domain/calculations/combat-stats.ts. */
+  initiativeExtraBonus?: number;
+  /** Vitesse de base en mètres, uniquement pour une race hors registre : pour une race connue, la
+   * vitesse est calculée (docs/adr/0026). */
+  baseSpeed?: number;
   /** Scores DE BASE (avant bonus racial) — voir effectiveAbilityScores pour les valeurs utilisées
    * dans les calculs (modificateurs, jets, compétences, DD/bonus de sort). */
   abilityScores: AbilityScores;
+  /** Maîtrises de jets de sauvegarde EN PLUS de celles de la classe (ex : don Résilient) — les
+   * maîtrises de classe sont calculées, voir effectiveSavingThrowProficiencies. */
   savingThrowProficiencies: AbilityName[];
   skillProficiencies: string[];
   concentration: Concentration;

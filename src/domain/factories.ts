@@ -28,8 +28,6 @@ export function createBlankCharacter(input: NewCharacterInput): Character {
     classId: findClassDefinitionByLabel(input.class)?.id,
     level: input.level ?? 1,
     hitPoints: { current: 1, max: 1, temporary: 0 },
-    initiativeBonus: 0,
-    speed: 9,
     abilityScores: { ...DEFAULT_ABILITY_SCORES },
     savingThrowProficiencies: [],
     skillProficiencies: [],

@@ -20,8 +20,6 @@ const BASE: Character = {
   classId: "clerc",
   level: 5,
   hitPoints: { current: 3, max: 30, temporary: 4 },
-  initiativeBonus: 0,
-  speed: 9,
   abilityScores: {
     strength: 10,
     dexterity: 10,

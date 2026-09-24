@@ -157,4 +157,39 @@ describe("normalizeLegacyCharacter", () => {
       normalizeLegacyCharacter({ ...makeTestCharacter(), subclass: "Domaine du Crépuscule" }),
     ).not.toHaveProperty("subclassId");
   });
+
+  it("converts the stored initiative total into an extra bonus beyond Dexterity", () => {
+    const base = legacyCleric();
+    // Dex 10 (+0) : un total de -1 n'est pas explicable par la Dextérité → bonus -1 conservé.
+    expect(normalizeLegacyCharacter({ ...base, initiativeBonus: -1 })).toMatchObject({
+      initiativeExtraBonus: -1,
+    });
+    const plain = normalizeLegacyCharacter({ ...base, initiativeBonus: 0 }) as Record<
+      string,
+      unknown
+    >;
+    expect(plain).not.toHaveProperty("initiativeBonus");
+    expect(plain).not.toHaveProperty("initiativeExtraBonus");
+  });
+
+  it("drops the stored speed for a known race, keeps it as baseSpeed otherwise", () => {
+    const base = legacyCleric();
+    const known = normalizeLegacyCharacter({
+      ...base,
+      speed: 9,
+      raceSelection: { raceId: "humain-variant", abilityBonusChoices: [] },
+    }) as Record<string, unknown>;
+    expect(known).not.toHaveProperty("speed");
+    expect(known).not.toHaveProperty("baseSpeed");
+    expect(normalizeLegacyCharacter({ ...base, speed: 7.5 })).toMatchObject({ baseSpeed: 7.5 });
+  });
+
+  it("keeps only the saving throws not granted by the class", () => {
+    expect(
+      normalizeLegacyCharacter({
+        ...legacyCleric(),
+        savingThrowProficiencies: ["wisdom", "charisma", "constitution"],
+      }),
+    ).toMatchObject({ savingThrowProficiencies: ["constitution"] });
+  });
 });

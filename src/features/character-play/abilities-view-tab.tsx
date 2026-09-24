@@ -1,5 +1,6 @@
 import { ABILITY_NAMES } from "@/domain/ability-scores";
 import type { Character } from "@/domain/character";
+import { effectiveSavingThrowProficiencies } from "@/domain/calculations/combat-stats";
 import { effectiveAbilityScores } from "@/domain/calculations/effective-ability-scores";
 import { abilityModifier } from "@/domain/calculations/modifiers";
 import { clampCharacterLevel, proficiencyBonusForLevel } from "@/domain/calculations/proficiency";
@@ -12,6 +13,7 @@ import { SectionTitle } from "@/components/ui/section-title";
 export function AbilitiesViewTab({ character }: { character: Character }) {
   const proficiencyBonus = proficiencyBonusForLevel(clampCharacterLevel(character.level));
   const effectiveScores = effectiveAbilityScores(character.abilityScores, character.raceSelection);
+  const savingThrows = effectiveSavingThrowProficiencies(character);
 
   return (
     <div className="grid gap-8">
@@ -25,7 +27,7 @@ export function AbilitiesViewTab({ character }: { character: Character }) {
           {ABILITY_NAMES.map((ability) => {
             const score = effectiveScores[ability];
             const modifier = abilityModifier(score);
-            const proficient = character.savingThrowProficiencies.includes(ability);
+            const proficient = savingThrows.includes(ability);
             const savingThrow = modifier + (proficient ? proficiencyBonus : 0);
             return (
               <div key={ability} className="flex items-center gap-3 rounded-lg border p-3">

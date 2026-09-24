@@ -8,6 +8,7 @@ import { weaponAttackWarnings } from "@/domain/calculations/weapon-attack";
 import { effectiveAbilityScores } from "@/domain/calculations/effective-ability-scores";
 import { findRaceDefinition } from "@/domain/race";
 import { findClassDefinition, findSubclassDefinition } from "@/domain/character-class";
+import { computeInitiative, computeSpeed } from "@/domain/calculations/combat-stats";
 import {
   computeAlwaysPreparedSpells,
   computeClassResourceOptions,
@@ -27,10 +28,29 @@ import { SectionTitle } from "@/components/ui/section-title";
 
 /** Règles appliquées automatiquement au personnage, en texte lisible (ex : bonus racial). */
 function appliedRules(character: Character, library: readonly Spell[]): string[] {
-  return [...raceRules(character), ...classRules(character), ...subclassRules(character, library)];
+  return [
+    ...raceRules(character),
+    ...combatRules(character),
+    ...classRules(character),
+    ...subclassRules(character, library),
+  ];
 }
 
 const WEAPON_PROFICIENCY_TEXT = { simple: "armes courantes", martial: "armes de guerre" } as const;
+
+function combatRules(character: Character): string[] {
+  const speed = computeSpeed(character);
+  const initiative = computeInitiative(character);
+  const [base, ...speedAdjustments] = speed.breakdown;
+  return [
+    `Vitesse : ${speed.total} m (${base?.label ?? "Base"} ${base?.value ?? speed.total} m${speedAdjustments
+      .map((part) => `, ${part.label} ${formatModifier(part.value)} m`)
+      .join("")})`,
+    `Initiative : ${formatModifier(initiative.total)} (${initiative.breakdown
+      .map((part) => `${part.label} ${formatModifier(part.value)}`)
+      .join(", ")})`,
+  ];
+}
 
 function joinWithAnd(items: readonly string[]): string {
   return items.length <= 1
@@ -83,6 +103,10 @@ function classRules(character: Character): string[] {
   }
   const level = clampCharacterLevel(character.level);
   const rules: string[] = [];
+  const saves = definition.savingThrows.map((ability) => ABILITY_LABELS[ability]);
+  if (saves.length > 0) {
+    rules.push(`Jets de sauvegarde maîtrisés (${definition.name}) : ${joinWithAnd(saves)}`);
+  }
   const spellcasting = resolveSpellcasting(character);
   if (definition.spellcasting && spellcasting) {
     rules.push(

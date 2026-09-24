@@ -4,6 +4,7 @@ import { Footprints, Sparkles, WandSparkles, Zap } from "lucide-react";
 import type { Character } from "@/domain/character";
 import { computeArmorClass } from "@/domain/calculations/armor-class";
 import { computeClassResources } from "@/domain/calculations/class-resources";
+import { computeInitiative, computeSpeed } from "@/domain/calculations/combat-stats";
 import { computeSpellSlots } from "@/domain/calculations/spell-slot-table";
 import { resolveSpellcasting } from "@/domain/calculations/spellcasting";
 import { computeWeaponAttacks } from "@/domain/calculations/weapon-attack";
@@ -85,14 +86,14 @@ export function CombatHud({ character }: { character: Character }) {
         >
           <StatTile
             icon={Zap}
-            value={formatModifier(character.initiativeBonus)}
+            value={formatModifier(computeInitiative(character).total)}
             label="Initiative"
           />
           <StatTile
             icon={Footprints}
             value={
               <>
-                {character.speed}
+                {computeSpeed(character).total}
                 <span className="text-muted-foreground text-sm font-semibold"> m</span>
               </>
             }

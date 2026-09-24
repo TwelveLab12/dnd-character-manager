@@ -32,6 +32,8 @@ export interface CharacterClassDefinition {
    * données (comparaison insensible à la casse et aux accents). */
   aliases: readonly string[];
   spellcasting?: { progression: CasterProgression; ability: AbilityName };
+  /** Jets de sauvegarde maîtrisés grâce à la classe (niveau 1). */
+  savingThrows: readonly AbilityName[];
   resources: readonly ClassResourceDefinition[];
   /** Maîtrises accordées par la classe (renseignées seulement quand elles s'expriment en
    * catégories d'armures et d'armes ; sinon, celles cochées sur la fiche font foi). */
@@ -69,6 +71,7 @@ export const CHARACTER_CLASSES: readonly CharacterClassDefinition[] = [
     name: "Barde",
     aliases: ["barde", "bard"],
     spellcasting: { progression: "full", ability: "charisma" },
+    savingThrows: ["dexterity", "charisma"],
     resources: [],
   },
   {
@@ -76,6 +79,7 @@ export const CHARACTER_CLASSES: readonly CharacterClassDefinition[] = [
     name: "Clerc",
     aliases: ["clerc", "cleric", "pretre", "pretresse"],
     spellcasting: { progression: "full", ability: "wisdom" },
+    savingThrows: ["wisdom", "charisma"],
     resources: [CHANNEL_DIVINITY],
     proficiencies: { armor: ["light", "medium", "shield"], weapons: ["simple"] },
     resourceOptions: [
@@ -94,6 +98,7 @@ export const CHARACTER_CLASSES: readonly CharacterClassDefinition[] = [
     name: "Druide",
     aliases: ["druide", "druid"],
     spellcasting: { progression: "full", ability: "wisdom" },
+    savingThrows: ["intelligence", "wisdom"],
     resources: [],
   },
   {
@@ -101,6 +106,7 @@ export const CHARACTER_CLASSES: readonly CharacterClassDefinition[] = [
     name: "Ensorceleur",
     aliases: ["ensorceleur", "ensorceleuse", "sorcerer"],
     spellcasting: { progression: "full", ability: "charisma" },
+    savingThrows: ["constitution", "charisma"],
     resources: [],
   },
   {
@@ -108,6 +114,7 @@ export const CHARACTER_CLASSES: readonly CharacterClassDefinition[] = [
     name: "Magicien",
     aliases: ["magicien", "magicienne", "wizard", "mage"],
     spellcasting: { progression: "full", ability: "intelligence" },
+    savingThrows: ["intelligence", "wisdom"],
     resources: [],
   },
 ];
