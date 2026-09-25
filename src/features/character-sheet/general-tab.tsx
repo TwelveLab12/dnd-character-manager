@@ -132,6 +132,8 @@ const FEAT_EFFECTS: Record<string, string> = {
 function RulesSection({ draft, onChange }: CharacterTabProps) {
   const initiativeId = useId();
   const initiativeHintId = useId();
+  const speedId = useId();
+  const speedHintId = useId();
   const featIds = draft.featIds ?? [];
 
   function toggleFeat(featId: string, checked: boolean) {
@@ -190,26 +192,51 @@ function RulesSection({ draft, onChange }: CharacterTabProps) {
         />
       </div>
 
-      <div className="bg-background/60 flex items-center gap-3 rounded-xl border px-3.5 py-2.5">
-        <Label htmlFor={initiativeId} className="grid flex-1 gap-0.5">
-          <span className="text-sm font-medium">Bonus d&rsquo;initiative hors Dextérité</span>
-          <span id={initiativeHintId} className="text-muted-foreground text-xs font-normal">
-            Ex : don Vigilant +5
-          </span>
-        </Label>
-        <Input
-          id={initiativeId}
-          aria-describedby={initiativeHintId}
-          type="number"
-          placeholder="0"
-          className="w-20 text-center font-semibold"
-          value={draft.initiativeExtraBonus ?? ""}
-          onChange={(event) =>
-            onChange({
-              initiativeExtraBonus: event.target.value ? toNumber(event.target.value) : undefined,
-            })
-          }
-        />
+      <div className="grid gap-2 sm:grid-cols-2">
+        <div className="bg-background/60 flex items-center gap-3 rounded-xl border px-3.5 py-2.5">
+          <Label htmlFor={initiativeId} className="grid flex-1 gap-0.5">
+            <span className="text-sm font-medium">Bonus d&rsquo;initiative hors Dextérité</span>
+            <span id={initiativeHintId} className="text-muted-foreground text-xs font-normal">
+              Ex : don Vigilant +5
+            </span>
+          </Label>
+          <Input
+            id={initiativeId}
+            aria-describedby={initiativeHintId}
+            type="number"
+            placeholder="0"
+            className="w-20 text-center font-semibold"
+            value={draft.initiativeExtraBonus ?? ""}
+            onChange={(event) =>
+              onChange({
+                initiativeExtraBonus: event.target.value ? toNumber(event.target.value) : undefined,
+              })
+            }
+          />
+        </div>
+
+        <div className="bg-background/60 flex items-center gap-3 rounded-xl border px-3.5 py-2.5">
+          <Label htmlFor={speedId} className="grid flex-1 gap-0.5">
+            <span className="text-sm font-medium">Bonus de vitesse (m)</span>
+            <span id={speedHintId} className="text-muted-foreground text-xs font-normal">
+              Ex : Déplacement sans armure du Moine +3
+            </span>
+          </Label>
+          <Input
+            id={speedId}
+            aria-describedby={speedHintId}
+            type="number"
+            step={1.5}
+            placeholder="0"
+            className="w-20 text-center font-semibold"
+            value={draft.speedExtraBonus ?? ""}
+            onChange={(event) =>
+              onChange({
+                speedExtraBonus: event.target.value ? toNumber(event.target.value) : undefined,
+              })
+            }
+          />
+        </div>
       </div>
     </GeneralSection>
   );

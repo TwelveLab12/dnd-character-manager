@@ -97,6 +97,9 @@ export interface Character {
   /** Bonus d'initiative en plus du modificateur de Dextérité (ex : don Vigilant +5). L'initiative
    * elle-même est calculée — voir src/domain/calculations/combat-stats.ts. */
   initiativeExtraBonus?: number;
+  /** Bonus de vitesse en mètres, ajouté à la vitesse de la race (ex : Déplacement sans armure du
+   * Moine, +3 m au niveau 2) — voir computeSpeed. */
+  speedExtraBonus?: number;
   /** Vitesse de base en mètres, uniquement pour une race hors registre : pour une race connue, la
    * vitesse est calculée (docs/adr/0026). */
   baseSpeed?: number;

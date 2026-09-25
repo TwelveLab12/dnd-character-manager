@@ -175,6 +175,7 @@ const currentCharacterSchema = z.object({
   // Initiative et vitesse sont calculées (docs/adr/0026) : seuls un bonus d'initiative hors
   // Dextérité et une vitesse de base pour une race hors registre sont stockés.
   initiativeExtraBonus: z.number().optional(),
+  speedExtraBonus: z.number().optional(),
   baseSpeed: z.number().optional(),
   abilityScores: abilityScoresSchema,
   savingThrowProficiencies: z.array(abilityNameSchema).default([]),

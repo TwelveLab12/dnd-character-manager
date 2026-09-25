@@ -65,7 +65,8 @@ export function computeInitiative(character: Character): ComputedStat {
 
 /**
  * Vitesse de marche en mètres : celle de la race connue (sinon la vitesse de base saisie, sinon
- * 9 m), moins 3 m en armure lourde portée sans la Force requise (sauf race qui l'ignore, ex : Nain).
+ * 9 m), plus le bonus saisi (ex : Déplacement sans armure du Moine), moins 3 m en armure lourde
+ * portée sans la Force requise (sauf race qui l'ignore, ex : Nain).
  */
 export function computeSpeed(character: Character): ComputedStat {
   const race = character.raceSelection
@@ -76,6 +77,10 @@ export function computeSpeed(character: Character): ComputedStat {
       ? { label: race.name, value: race.speed }
       : { label: "Base", value: character.baseSpeed ?? DEFAULT_SPEED },
   ];
+
+  if (character.speedExtraBonus) {
+    breakdown.push({ label: "Bonus", value: character.speedExtraBonus });
+  }
 
   const strength = effectiveAbilityScores(
     character.abilityScores,

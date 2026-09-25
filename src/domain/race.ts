@@ -80,6 +80,15 @@ export const RACE_DEFINITIONS: readonly RaceDefinition[] = [
     hitPointsPerLevel: 1,
     ignoresHeavyArmorSpeedPenalty: true,
   },
+  {
+    id: "tieffelin",
+    name: "Tieffelin",
+    speed: 9,
+    abilityBonusRules: [
+      { type: "fixed", ability: "charisma", amount: 2 },
+      { type: "fixed", ability: "intelligence", amount: 1 },
+    ],
+  },
 ];
 
 export function findRaceDefinition(raceId: string): RaceDefinition | undefined {

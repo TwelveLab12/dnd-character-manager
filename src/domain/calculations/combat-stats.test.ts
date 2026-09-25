@@ -86,6 +86,20 @@ describe("computeSpeed", () => {
     expect(computeSpeed(strong).total).toBe(9);
   });
 
+  it("adds the extra speed bonus to the race speed (monk Unarmored Movement)", () => {
+    const monk = makeTestCharacter({
+      raceSelection: { raceId: "tieffelin", abilityBonusChoices: [] },
+      speedExtraBonus: 3,
+    });
+    expect(computeSpeed(monk)).toEqual({
+      total: 12,
+      breakdown: [
+        { label: "Tieffelin", value: 9 },
+        { label: "Bonus", value: 3 },
+      ],
+    });
+  });
+
   it("keeps a hill dwarf at 7.5 m, even in heavy armor without the required Strength", () => {
     const dwarf = makeTestCharacter({
       raceSelection: { raceId: "nain-des-collines", abilityBonusChoices: [] },

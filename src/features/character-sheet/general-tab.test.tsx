@@ -107,6 +107,17 @@ describe("GeneralTab", () => {
     expect(latest.removedWeaponProficiencies).toEqual(["simple"]);
   });
 
+  it("edits the extra speed bonus, cleared when emptied", async () => {
+    const user = userEvent.setup();
+    renderTab();
+
+    const input = screen.getByRole("spinbutton", { name: /bonus de vitesse/i });
+    await user.type(input, "3");
+    expect(latest.speedExtraBonus).toBe(3);
+    await user.clear(input);
+    expect(latest.speedExtraBonus).toBeUndefined();
+  });
+
   it("picks a theme from cards", async () => {
     const user = userEvent.setup();
     renderTab();

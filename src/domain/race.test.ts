@@ -56,3 +56,22 @@ describe("Nain des collines", () => {
     ).toEqual({ ...base, constitution: 16, wisdom: 13 });
   });
 });
+
+describe("Tieffelin", () => {
+  it("adds +2 Charisma and +1 Intelligence, and walks at 9 m", () => {
+    const base = {
+      strength: 10,
+      dexterity: 15,
+      constitution: 13,
+      intelligence: 12,
+      wisdom: 14,
+      charisma: 8,
+    };
+    expect(effectiveAbilityScores(base, { raceId: "tieffelin", abilityBonusChoices: [] })).toEqual({
+      ...base,
+      intelligence: 13,
+      charisma: 10,
+    });
+    expect(findRaceDefinition("tieffelin")?.speed).toBe(9);
+  });
+});
