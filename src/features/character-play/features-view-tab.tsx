@@ -1,12 +1,18 @@
-import { ChevronRight, Pencil } from "lucide-react";
+"use client";
+
+import { Pencil } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { useState } from "react";
 import type { Character } from "@/domain/character";
 import { findClassResourceDefinition } from "@/domain/character-class";
 import type { CharacterFeature } from "@/domain/feature";
 import { Button } from "@/components/ui/button";
+import { DetailsHint } from "@/features/shared/detail-sheet";
 import { hasOwnUses } from "@/features/shared/feature";
 import { FeatureUsageCards } from "./feature-usage-card";
+import type { PlayDetail } from "./play-detail-sheet";
+import { PlayDetailSheet } from "./play-detail-sheet";
 
 /** Capacités sans compteur propre, regroupées par origine (Race, Clerc, Dons…) dans l'ordre de la
  * fiche. */
@@ -21,9 +27,11 @@ function groupBySource(features: readonly CharacterFeature[]): [string, Characte
 
 /**
  * Onglet « Capacités » du mode jeu : les capacités à utilisations en tête (aussi présentes dans le
- * bandeau de combat), puis les autres par origine, descriptions repliées.
+ * bandeau de combat), puis les autres par origine (dons compris) : chaque ligne ouvre le panneau de
+ * détail (docs/adr/0043).
  */
 export function FeaturesViewTab({ character }: { character: Character }) {
+  const [detail, setDetail] = useState<PlayDetail | undefined>();
   const tracked = character.features.filter(hasOwnUses);
   const others = character.features.filter((feature) => !hasOwnUses(feature));
   const count = character.features.length;
@@ -62,31 +70,28 @@ export function FeaturesViewTab({ character }: { character: Character }) {
         <FeatureGroup key={source} title={source}>
           <div className="grid gap-1.5">
             {features.map((feature) => (
-              <details
+              <button
                 key={feature.id}
-                className="group bg-background/35 rounded-xl border [&_summary::-webkit-details-marker]:hidden"
+                type="button"
+                aria-label={`Détails : ${feature.name}`}
+                onClick={() => setDetail({ kind: "feature", featureId: feature.id })}
+                className="bg-background/35 hover:bg-foreground/[0.04] focus-visible:ring-ring/50 flex min-h-11 w-full cursor-pointer items-center gap-2.5 rounded-xl border px-3.5 py-2 text-left transition-colors outline-none focus-visible:ring-3"
               >
-                <summary className="flex min-h-11 cursor-pointer list-none items-center gap-2.5 px-3 py-2">
-                  <ChevronRight
-                    aria-hidden
-                    className="text-muted-foreground size-3.5 shrink-0 transition-transform group-open:rotate-90"
-                  />
-                  <span className="flex-1 text-[15px] font-medium">{feature.name}</span>
-                  {feature.resourceId && (
-                    <span className="border-primary/35 bg-primary/10 text-primary shrink-0 rounded-full border px-2 py-0.5 text-[11px]">
-                      {findClassResourceDefinition(character.classId, feature.resourceId)?.name ??
-                        feature.resourceId}
-                    </span>
-                  )}
-                </summary>
-                <p className="text-foreground/80 px-3.5 pb-3 pl-9 text-[13px] leading-relaxed whitespace-pre-line">
-                  {feature.description || "Pas de description."}
-                </p>
-              </details>
+                <span className="flex-1 text-[15px] font-medium">{feature.name}</span>
+                {feature.resourceId && (
+                  <span className="border-primary/35 bg-primary/10 text-primary shrink-0 rounded-full border px-2 py-0.5 text-[11px]">
+                    {findClassResourceDefinition(character.classId, feature.resourceId)?.name ??
+                      feature.resourceId}
+                  </span>
+                )}
+                <DetailsHint />
+              </button>
             ))}
           </div>
         </FeatureGroup>
       ))}
+
+      <PlayDetailSheet character={character} detail={detail} onClose={() => setDetail(undefined)} />
     </div>
   );
 }

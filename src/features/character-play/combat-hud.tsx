@@ -15,8 +15,8 @@ import { formatModifier } from "@/features/shared/format";
 import { ArmorClassEffectChips, ArmorClassHeading, ArmorClassShield } from "./armor-class-shield";
 import { AttackStrip } from "./attack-strip";
 import { ClassResourceCards } from "./class-resource-card";
-import type { CombatDetail } from "./combat-detail-sheet";
-import { CombatDetailSheet } from "./combat-detail-sheet";
+import type { PlayDetail } from "./play-detail-sheet";
+import { PlayDetailSheet } from "./play-detail-sheet";
 import { FeatureUsageCards } from "./feature-usage-card";
 import { ConcentrationMarker } from "./concentration-marker";
 import { HitPointsControls, HitPointsRing, TemporaryHitPointsChip } from "./hit-points-ring";
@@ -44,7 +44,7 @@ export function hasActiveArmorClassEffect(character: Character): boolean {
  * sur la ligne des visuels, sur mobile elles passent sous le détail de la CA.
  */
 export function CombatHud({ character }: { character: Character }) {
-  const [detail, setDetail] = useState<CombatDetail | undefined>();
+  const [detail, setDetail] = useState<PlayDetail | undefined>();
   const armorClass = computeArmorClass(character);
   const attacks = computeWeaponAttacks(character);
   const spellcasting = resolveSpellcasting(character);
@@ -161,11 +161,7 @@ export function CombatHud({ character }: { character: Character }) {
         </div>
       )}
 
-      <CombatDetailSheet
-        character={character}
-        detail={detail}
-        onClose={() => setDetail(undefined)}
-      />
+      <PlayDetailSheet character={character} detail={detail} onClose={() => setDetail(undefined)} />
     </section>
   );
 }
