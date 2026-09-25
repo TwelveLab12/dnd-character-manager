@@ -29,6 +29,11 @@ export const CHARACTER_THEMES: readonly CharacterTheme[] = [
     label: "Ombreflore (Spores, Druide)",
     swatches: ["#0e1511", "#c792d8", "#7fc4c0"],
   },
+  {
+    id: "ki-infernal",
+    label: "Ki infernal (Main ouverte, Moine)",
+    swatches: ["#150c10", "#5ecfae", "#b9a3e3"],
+  },
 ];
 
 export function isKnownThemeId(themeId: string | undefined): boolean {
