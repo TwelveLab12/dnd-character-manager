@@ -24,6 +24,11 @@ export const CHARACTER_THEMES: readonly CharacterTheme[] = [
     label: "Forge naine (Ours, Barbare)",
     swatches: ["#14100d", "#e8913a", "#9fb0bb"],
   },
+  {
+    id: "ombreflore",
+    label: "Ombreflore (Spores, Druide)",
+    swatches: ["#0e1511", "#c792d8", "#7fc4c0"],
+  },
 ];
 
 export function isKnownThemeId(themeId: string | undefined): boolean {

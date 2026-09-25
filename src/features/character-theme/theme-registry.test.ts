@@ -12,7 +12,8 @@ describe("CHARACTER_THEMES", () => {
     },
   );
 
-  it("reconnaît la forge naine", () => {
+  it("reconnaît les thèmes du registre", () => {
     expect(isKnownThemeId("forge-naine")).toBe(true);
+    expect(isKnownThemeId("ombreflore")).toBe(true);
   });
 });
