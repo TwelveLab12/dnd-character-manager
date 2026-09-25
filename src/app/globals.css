@@ -201,6 +201,38 @@
   --ring: #7fc4c0; /* pluie */
 }
 
+/**
+ * Ki infernal — Mordaï, tieffelin moine de la voie de la main ouverte (« calme en apparence »,
+ * « méfiant et très susceptible »). Encre pourpre et laque en fond (sang infernal), parchemin en
+ * texte, jade en accent héroïque (le ki, le calme du monastère), encens lavande pour le focus/info,
+ * sang pour le danger, bambou pour le succès (plus jaune que le jade, pour ne pas s'y confondre),
+ * ambre pour l'avertissement. Même principe que Séluné : tokens sémantiques recalibrés pour ce
+ * fond sombre (voir docs/adr/0049-ki-infernal-palette.md).
+ */
+[data-theme="ki-infernal"] {
+  --background: #150c10; /* abîme */
+  --foreground: #f2e8e3; /* parchemin */
+  --card: #21131a; /* laque */
+  --card-foreground: #f2e8e3; /* parchemin */
+  --popover: #2c1a23; /* velours */
+  --popover-foreground: #f2e8e3; /* parchemin */
+  --primary: #5ecfae; /* jade */
+  --primary-foreground: #150c10; /* abîme */
+  --secondary: #21131a; /* laque */
+  --secondary-foreground: #b09aa3; /* fumée */
+  --muted: #21131a; /* laque */
+  --muted-foreground: #b09aa3; /* fumée */
+  --accent: #b9a3e3; /* encens */
+  --accent-foreground: #150c10; /* abîme */
+  --destructive: #e04a5f; /* sang */
+  --success: #a6c95b; /* bambou */
+  --warning: #e2b24f; /* ambre */
+  --info: #b9a3e3; /* encens */
+  --border: rgba(176, 154, 163, 0.22); /* fumée */
+  --input: rgba(176, 154, 163, 0.22); /* fumée */
+  --ring: #b9a3e3; /* encens */
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
