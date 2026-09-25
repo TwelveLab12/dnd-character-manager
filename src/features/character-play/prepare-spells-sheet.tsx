@@ -25,7 +25,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Switch } from "@/components/ui/switch";
-import { AlwaysPreparedTag, ConcentrationTag, RitualTag } from "./spell-cast-card";
+import { AlwaysPreparedTag, ConcentrationTag, RitualTag } from "@/features/shared/spell-tags";
 import { usePlayActions } from "./use-play-actions";
 
 /**

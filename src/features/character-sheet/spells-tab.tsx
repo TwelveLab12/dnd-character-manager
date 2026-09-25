@@ -32,6 +32,7 @@ import type { Spell } from "@/domain/spell";
 import { useSpellStore } from "@/stores/store-provider";
 import { ABILITY_LABELS, ABILITY_SHORT_LABELS } from "@/features/shared/ability-labels";
 import { formatModifier } from "@/features/shared/format";
+import { DetailsHint, SpellDetailSheet } from "@/features/shared/spell-detail-sheet";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -421,6 +422,7 @@ function levelLabel(level: number): string {
  */
 function KnownSpellsSection({ draft, onChange, spells }: CharacterTabProps & { spells: Spell[] }) {
   const [pendingSpellId, setPendingSpellId] = useState<string | undefined>();
+  const [detailSpellId, setDetailSpellId] = useState<string | undefined>();
 
   const resolved = resolveSpellcasting(draft);
   const preparesSpells = resolved?.preparation !== "known";
@@ -546,6 +548,7 @@ function KnownSpellsSection({ draft, onChange, spells }: CharacterTabProps & { s
                       onToggleAlways={(checked) =>
                         setPreparation(spell.id, checked ? "always" : "none")
                       }
+                      onShowDetails={() => setDetailSpellId(spell.id)}
                     />
                   ))}
                 </ul>
@@ -554,6 +557,16 @@ function KnownSpellsSection({ draft, onChange, spells }: CharacterTabProps & { s
           })}
         </div>
       )}
+
+      <SpellDetailSheet
+        spell={knownSpells.find((spell) => spell.id === detailSpellId)}
+        onOpenChange={(open) => !open && setDetailSpellId(undefined)}
+        themeId={draft.themeId}
+        isAlwaysPrepared={(spell) =>
+          preparesSpells && spell.level > 0 && spellPreparationState(draft, spell.id) === "always"
+        }
+        showOrigin
+      />
 
       <AlertDialog
         open={pendingSpell !== undefined}
@@ -638,6 +651,7 @@ function KnownSpellRow({
   limitReached,
   onTogglePrepared,
   onToggleAlways,
+  onShowDetails,
 }: CharacterTabProps & {
   spell: Spell;
   grid: string;
@@ -645,6 +659,7 @@ function KnownSpellRow({
   limitReached: boolean;
   onTogglePrepared: (spellId: string, checked: boolean) => void;
   onToggleAlways: (checked: boolean) => void;
+  onShowDetails: () => void;
 }) {
   const state = spellPreparationState(draft, spell.id);
   const domain = draft.spellTags.find((tag) => tag.spellId === spell.id)?.domain ?? "";
@@ -652,10 +667,18 @@ function KnownSpellRow({
 
   return (
     <li
-      className={`grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-2 border-t px-4 py-2 sm:min-h-14 ${grid}`}
+      className={`relative grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-2 border-t px-4 py-2 sm:min-h-14 ${grid}`}
     >
+      {/* Toute la ligne ouvre le détail du sort ; les réglages passent au-dessus (z-10). */}
+      <button
+        type="button"
+        aria-label={`Détails : ${spell.name}`}
+        onClick={onShowDetails}
+        className="hover:bg-foreground/[0.03] focus-visible:ring-ring absolute inset-0 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-inset"
+      />
       <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
         <span className="min-w-0 text-sm font-medium break-words">{spell.name}</span>
+        <DetailsHint className="size-3.5" />
         {spell.concentration && (
           <Badge variant="outline" title="Concentration" className="px-1.5">
             C
@@ -671,7 +694,7 @@ function KnownSpellRow({
         type="button"
         variant="ghost"
         size="icon"
-        className="text-muted-foreground hover:text-destructive sm:order-last"
+        className="text-muted-foreground hover:text-destructive relative z-10 sm:order-last"
         aria-label={`Retirer ${spell.name} des sorts connus`}
         onClick={() => onChange(removeKnownSpell(draft, spell.id))}
       >
@@ -680,20 +703,20 @@ function KnownSpellRow({
       <Input
         aria-label={`Domaine de ${spell.name}`}
         placeholder="Domaine…"
-        className="col-span-2 h-9 sm:col-span-1"
+        className="relative z-10 col-span-2 h-9 sm:col-span-1"
         value={domain}
         onChange={(event) => onChange(setSpellDomain(draft, spell.id, event.target.value))}
       />
       {preparesSpells &&
         (spell.level === 0 ? (
-          <span className="text-muted-foreground col-span-2 flex items-center gap-1.5 text-xs sm:justify-center">
+          <span className="text-muted-foreground relative z-10 col-span-2 flex items-center gap-1.5 text-xs sm:justify-center">
             <MoonStar className="size-3.5" aria-hidden />
             Toujours disponible
           </span>
         ) : (
           <>
             <Label
-              className="text-muted-foreground flex items-center gap-2 text-xs sm:justify-center"
+              className="text-muted-foreground relative z-10 flex items-center gap-2 text-xs sm:justify-center"
               title={preparedLocked ? "Limite de sorts préparés atteinte" : undefined}
             >
               <Switch
@@ -704,7 +727,7 @@ function KnownSpellRow({
               />
               <span className="sm:sr-only">Préparé</span>
             </Label>
-            <Label className="text-muted-foreground flex items-center gap-2 text-xs sm:justify-center">
+            <Label className="text-muted-foreground relative z-10 flex items-center gap-2 text-xs sm:justify-center">
               <Switch
                 checked={state === "always"}
                 aria-label={`Toujours préparé : ${spell.name}`}

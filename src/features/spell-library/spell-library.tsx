@@ -2,7 +2,7 @@
 
 import { ArrowLeft, Download, Trash2 } from "lucide-react";
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { downloadJson, exportSpellsToJson } from "@/import-export/exporter";
 import { useSpellStore } from "@/stores/store-provider";
 import {
@@ -16,6 +16,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { DetailsHint, SpellDetailSheet } from "@/features/shared/spell-detail-sheet";
 import { Button } from "@/components/ui/button";
 import { PageTitle } from "@/components/ui/page-title";
 import { ImportSpellsDialog } from "./import-spells-dialog";
@@ -26,6 +27,7 @@ export function SpellLibrary() {
   const error = useSpellStore((state) => state.error);
   const load = useSpellStore((state) => state.load);
   const remove = useSpellStore((state) => state.remove);
+  const [detailSpellId, setDetailSpellId] = useState<string | undefined>();
 
   useEffect(() => {
     void load();
@@ -103,12 +105,28 @@ export function SpellLibrary() {
           </thead>
           <tbody>
             {sortedSpells.map((spell) => (
-              <tr key={spell.id} className="border-b last:border-0">
-                <td className="py-2 pr-2 font-medium">{spell.name}</td>
+              <tr
+                key={spell.id}
+                className="hover:bg-foreground/[0.03] relative border-b last:border-0"
+              >
+                <td className="py-2 pr-2 font-medium">
+                  {/* Toute la ligne ouvre le détail du sort (docs/adr/0041) ; « Supprimer » passe
+                      au-dessus. */}
+                  <button
+                    type="button"
+                    aria-label={`Détails : ${spell.name}`}
+                    onClick={() => setDetailSpellId(spell.id)}
+                    className="focus-visible:ring-ring absolute inset-0 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-inset"
+                  />
+                  <span className="flex items-center gap-1.5">
+                    {spell.name}
+                    <DetailsHint className="size-3.5" />
+                  </span>
+                </td>
                 <td className="py-2 pr-2">{spell.level === 0 ? "Tour de magie" : spell.level}</td>
                 <td className="py-2 pr-2">{spell.school}</td>
                 <td className="text-muted-foreground py-2 pr-2">{spell.classes.join(", ")}</td>
-                <td className="py-2 text-right">
+                <td className="relative z-10 py-2 text-right">
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
                       <Button
@@ -146,6 +164,12 @@ export function SpellLibrary() {
           </tbody>
         </table>
       )}
+
+      <SpellDetailSheet
+        spell={spells.find((spell) => spell.id === detailSpellId)}
+        onOpenChange={(open) => !open && setDetailSpellId(undefined)}
+        showOrigin
+      />
     </div>
   );
 }

@@ -1,8 +1,10 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it } from "vitest";
+import { LocalStorageSpellRepository } from "@/repositories/local-storage/local-storage-spell-repository";
 import { RepositoryProvider } from "@/repositories/repository-provider";
 import { StoreProvider } from "@/stores/store-provider";
+import { makeTestSpell } from "@/test/fixtures";
 import { SpellLibrary } from "./spell-library";
 
 function renderLibrary() {
@@ -93,5 +95,20 @@ describe("SpellLibrary", () => {
     await user.click(within(dialog).getByRole("button", { name: /^analyser$/i }));
 
     expect(await within(dialog).findByText(/json invalide/i)).toBeInTheDocument();
+  });
+
+  it("opens a read-only spell detail sheet from a library row", async () => {
+    await new LocalStorageSpellRepository().upsertMany([
+      makeTestSpell({ id: "bolt", name: "Test Bolt", description: "A generic test spell." }),
+    ]);
+    const user = userEvent.setup();
+    renderLibrary();
+
+    await user.click(await screen.findByRole("button", { name: "Détails : Test Bolt" }));
+
+    const sheet = await screen.findByRole("dialog", { name: "Test Bolt" });
+    expect(within(sheet).getByText("A generic test spell.")).toBeInTheDocument();
+    expect(within(sheet).getByText("Classes : Cleric")).toBeInTheDocument();
+    expect(within(sheet).queryByRole("button", { name: /lancer/i })).not.toBeInTheDocument();
   });
 });

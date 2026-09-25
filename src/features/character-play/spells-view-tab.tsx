@@ -12,10 +12,11 @@ import { computeSpellSlots } from "@/domain/calculations/spell-slot-table";
 import { resolveSpellcasting } from "@/domain/calculations/spellcasting";
 import type { Spell } from "@/domain/spell";
 import { formatModifier } from "@/features/shared/format";
+import { SpellDetailSheet } from "@/features/shared/spell-detail-sheet";
 import { Button } from "@/components/ui/button";
 import { useSpellStore } from "@/stores/store-provider";
 import { PrepareSpellsSheet } from "./prepare-spells-sheet";
-import { SpellCastCard } from "./spell-cast-card";
+import { SpellCastCard, SpellCastFooter } from "./spell-cast-card";
 import { SpellSlotsCard } from "./spell-slots-card";
 
 type Filter =
@@ -48,6 +49,7 @@ export function SpellsViewTab({ character }: { character: Character }) {
   const spells = useSpellStore((state) => state.spells);
   const loadSpells = useSpellStore((state) => state.load);
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
+  const [detailSpellId, setDetailSpellId] = useState<string | undefined>();
 
   useEffect(() => {
     void loadSpells();
@@ -105,6 +107,15 @@ export function SpellsViewTab({ character }: { character: Character }) {
     level,
     spells: visibleSpells.filter((spell) => spell.level === level),
   }));
+
+  const isAlwaysPrepared = (spell: Spell) =>
+    spellcasting?.preparation === "prepared" &&
+    spell.level > 0 &&
+    isAlwaysAvailable(character, spell.id, spells);
+  const detailSpell = availableSpells.find((spell) => spell.id === detailSpellId);
+  const concentrationSpellName = character.concentration.active
+    ? spells.find((spell) => spell.id === character.concentration.spellId)?.name
+    : undefined;
 
   function slotsHint(level: number): string {
     if (level === 0) {
@@ -183,16 +194,28 @@ export function SpellsViewTab({ character }: { character: Character }) {
                 character={character}
                 spell={spell}
                 domain={spellDomain(character, spell.id, spells)}
-                alwaysPrepared={
-                  spellcasting?.preparation === "prepared" &&
-                  spell.level > 0 &&
-                  isAlwaysAvailable(character, spell.id, spells)
-                }
+                alwaysPrepared={isAlwaysPrepared(spell)}
+                onShowDetails={() => setDetailSpellId(spell.id)}
               />
             ))}
           </div>
         </section>
       ))}
+
+      <SpellDetailSheet
+        spell={detailSpell}
+        onOpenChange={(open) => !open && setDetailSpellId(undefined)}
+        themeId={character.themeId}
+        isAlwaysPrepared={isAlwaysPrepared}
+        footer={(spell) => (
+          <SpellCastFooter
+            character={character}
+            spell={spell}
+            concentrationSpellName={concentrationSpellName}
+            onCast={() => setDetailSpellId(undefined)}
+          />
+        )}
+      />
     </div>
   );
 }

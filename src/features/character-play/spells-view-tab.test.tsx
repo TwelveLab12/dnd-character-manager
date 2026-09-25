@@ -147,6 +147,85 @@ describe("SpellsViewTab (via CharacterPlay)", () => {
     expect(after?.concentration).toEqual({ active: true, spellId: "bless" });
   });
 
+  it("opens the spell detail sheet from the card and casts from it", async () => {
+    const character = makeTestCharacter({
+      classId: "clerc",
+      level: 3,
+      abilityScores: WISDOM_16,
+      knownSpellIds: ["bless", "moonbeam"],
+      preparedSpellIds: ["bless", "moonbeam"],
+      concentration: { active: true, spellId: "moonbeam" },
+    });
+    await new LocalStorageCharacterRepository().create(character);
+    await new LocalStorageSpellRepository().upsertMany([
+      makeTestSpell({
+        id: "bless",
+        name: "Bénédiction",
+        level: 1,
+        concentration: true,
+        description: "Jusqu'à trois créatures ajoutent un d4.",
+        higherLevel: "Une créature de plus par niveau.",
+        components: {
+          verbal: true,
+          somatic: true,
+          material: true,
+          materialDescription: "eau bénite",
+        },
+      }),
+      makeTestSpell({ id: "moonbeam", name: "Rayon lunaire", level: 2, concentration: true }),
+    ]);
+
+    const user = userEvent.setup();
+    renderPlay(character.id);
+    await screen.findByRole("heading", { name: character.name });
+    await openSpellsTab(user);
+
+    // « Lancer » sur la carte lance sans ouvrir le panneau.
+    const bless = await screen.findByRole("article", { name: "Bénédiction" });
+    expect(within(bless).queryByText(/trois créatures/)).not.toBeInTheDocument();
+    await user.click(within(bless).getByRole("button", { name: "Détails : Bénédiction" }));
+
+    const sheet = await screen.findByRole("dialog", { name: "Bénédiction" });
+    expect(within(sheet).getByText("Niveau 1 · Evocation")).toBeInTheDocument();
+    expect(within(sheet).getByText("Jusqu'à trois créatures ajoutent un d4.")).toBeInTheDocument();
+    expect(within(sheet).getByText("Une créature de plus par niveau.")).toBeInTheDocument();
+    expect(within(sheet).getByText("V · S · M")).toBeInTheDocument();
+    expect(within(sheet).getByText("Matériel : eau bénite")).toBeInTheDocument();
+    expect(
+      within(sheet).getByText("Remplacera la concentration sur Rayon lunaire"),
+    ).toBeInTheDocument();
+    expect(within(sheet).getByText("Emplacements niv. 1 · 4/4")).toBeInTheDocument();
+
+    await user.click(within(sheet).getByRole("button", { name: "Lancer · niv. 1" }));
+
+    expect(screen.queryByRole("dialog", { name: "Bénédiction" })).not.toBeInTheDocument();
+    const persisted = await new LocalStorageCharacterRepository().getById(character.id);
+    expect(persisted?.spellSlotsUsed).toEqual({ "1": 1 });
+    expect(persisted?.concentration).toEqual({ active: true, spellId: "bless" });
+  });
+
+  it("closes the spell detail sheet with the close button", async () => {
+    const character = makeTestCharacter({
+      knownSpellIds: ["cure"],
+      preparedSpellIds: ["cure"],
+    });
+    await new LocalStorageCharacterRepository().create(character);
+    await new LocalStorageSpellRepository().upsertMany([
+      makeTestSpell({ id: "cure", name: "Soins", level: 1 }),
+    ]);
+
+    const user = userEvent.setup();
+    renderPlay(character.id);
+    await screen.findByRole("heading", { name: character.name });
+    await openSpellsTab(user);
+
+    await user.click(await screen.findByRole("button", { name: "Détails : Soins" }));
+    const sheet = await screen.findByRole("dialog", { name: "Soins" });
+    await user.click(within(sheet).getByRole("button", { name: "Fermer" }));
+
+    expect(screen.queryByRole("dialog", { name: "Soins" })).not.toBeInTheDocument();
+  });
+
   it("offers the ritual when no slot is left, and disables other spells", async () => {
     const character = makeTestCharacter({
       classId: "clerc",
