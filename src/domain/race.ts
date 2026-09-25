@@ -17,6 +17,10 @@ export interface RaceDefinition {
   abilityBonusRules: AbilityBonusRule[];
   /** Vitesse de marche de base, en mètres (9 m = 30 pieds). */
   speed: number;
+  /** PV max supplémentaires par niveau (ex : Robustesse naine du Nain des collines, +1). */
+  hitPointsPerLevel?: number;
+  /** Vitesse non réduite par une armure lourde portée sans la Force requise (Nain). */
+  ignoresHeavyArmorSpeedPenalty?: boolean;
 }
 
 /**
@@ -64,6 +68,17 @@ export const RACE_DEFINITIONS: readonly RaceDefinition[] = [
       { type: "fixed", ability: "charisma", amount: 2 },
       { type: "choice", amount: 1, count: 2, exclude: ["charisma"] },
     ],
+  },
+  {
+    id: "nain-des-collines",
+    name: "Nain des collines",
+    speed: 7.5,
+    abilityBonusRules: [
+      { type: "fixed", ability: "constitution", amount: 2 },
+      { type: "fixed", ability: "wisdom", amount: 1 },
+    ],
+    hitPointsPerLevel: 1,
+    ignoresHeavyArmorSpeedPenalty: true,
   },
 ];
 

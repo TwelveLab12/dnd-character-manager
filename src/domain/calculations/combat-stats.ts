@@ -65,7 +65,7 @@ export function computeInitiative(character: Character): ComputedStat {
 
 /**
  * Vitesse de marche en mètres : celle de la race connue (sinon la vitesse de base saisie, sinon
- * 9 m), moins 3 m en armure lourde portée sans la Force requise.
+ * 9 m), moins 3 m en armure lourde portée sans la Force requise (sauf race qui l'ignore, ex : Nain).
  */
 export function computeSpeed(character: Character): ComputedStat {
   const race = character.raceSelection
@@ -81,13 +81,15 @@ export function computeSpeed(character: Character): ComputedStat {
     character.abilityScores,
     character.raceSelection,
   ).strength;
-  const tooHeavy = character.inventory.some(
-    (item) =>
-      item.equipped &&
-      item.armor?.category === "heavy" &&
-      item.armor.strengthRequirement !== undefined &&
-      strength < item.armor.strengthRequirement,
-  );
+  const tooHeavy =
+    !race?.ignoresHeavyArmorSpeedPenalty &&
+    character.inventory.some(
+      (item) =>
+        item.equipped &&
+        item.armor?.category === "heavy" &&
+        item.armor.strengthRequirement !== undefined &&
+        strength < item.armor.strengthRequirement,
+    );
   if (tooHeavy) {
     breakdown.push({
       label: "Armure lourde (Force insuffisante)",

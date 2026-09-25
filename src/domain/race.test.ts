@@ -40,3 +40,19 @@ describe("Demi-elfe", () => {
     expect(findRaceDefinition("demi-elfe")?.speed).toBe(9);
   });
 });
+
+describe("Nain des collines", () => {
+  it("adds +2 Constitution and +1 Wisdom", () => {
+    const base = {
+      strength: 15,
+      dexterity: 13,
+      constitution: 14,
+      intelligence: 8,
+      wisdom: 12,
+      charisma: 10,
+    };
+    expect(
+      effectiveAbilityScores(base, { raceId: "nain-des-collines", abilityBonusChoices: [] }),
+    ).toEqual({ ...base, constitution: 16, wisdom: 13 });
+  });
+});
