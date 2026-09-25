@@ -56,6 +56,15 @@ export const RACE_DEFINITIONS: readonly RaceDefinition[] = [
     speed: 9,
     abilityBonusRules: [{ type: "choice", amount: 1, count: 2 }],
   },
+  {
+    id: "demi-elfe",
+    name: "Demi-elfe",
+    speed: 9,
+    abilityBonusRules: [
+      { type: "fixed", ability: "charisma", amount: 2 },
+      { type: "choice", amount: 1, count: 2, exclude: ["charisma"] },
+    ],
+  },
 ];
 
 export function findRaceDefinition(raceId: string): RaceDefinition | undefined {
