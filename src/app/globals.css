@@ -170,6 +170,37 @@
   --ring: #9fb0bb; /* granit */
 }
 
+/**
+ * Ombreflore — Myrelia, demi-elfe druide du cercle des spores (« le cycle avant tout », elle sent
+ * la pluie et les fleurs). Sous-bois et mousse en fond, brume en texte, orchidée en accent
+ * héroïque (fleur d'ombre, spores), pluie bleu-vert pour le focus/info, fougère pour le succès,
+ * baie pour le danger, ambre pour l'avertissement. Même principe que Séluné : tokens sémantiques
+ * recalibrés pour ce fond sombre (voir docs/adr/0046-ombreflore-palette.md).
+ */
+[data-theme="ombreflore"] {
+  --background: #0e1511; /* sous-bois */
+  --foreground: #eaf0e6; /* brume */
+  --card: #16201a; /* mousse */
+  --card-foreground: #eaf0e6; /* brume */
+  --popover: #1f2b23; /* feuillage */
+  --popover-foreground: #eaf0e6; /* brume */
+  --primary: #c792d8; /* orchidée */
+  --primary-foreground: #0e1511; /* sous-bois */
+  --secondary: #16201a; /* mousse */
+  --secondary-foreground: #9bab9f; /* lichen */
+  --muted: #16201a; /* mousse */
+  --muted-foreground: #9bab9f; /* lichen */
+  --accent: #7fc4c0; /* pluie */
+  --accent-foreground: #0e1511; /* sous-bois */
+  --destructive: #cc5b6b; /* baie */
+  --success: #8cc06a; /* fougère */
+  --warning: #d9a650; /* ambre */
+  --info: #7fc4c0; /* pluie */
+  --border: rgba(155, 171, 159, 0.22); /* lichen */
+  --input: rgba(155, 171, 159, 0.22); /* lichen */
+  --ring: #7fc4c0; /* pluie */
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
