@@ -255,12 +255,13 @@ export function computeWeaponAttacks(character: Character): WeaponAttack[] {
   ];
 }
 
-/** Attaques des armes prêtes à dégainer (docs/adr/0054) : non équipées et non rangées, calculées
- * comme en main principale ; corps à corps d'abord, dans l'ordre d'inventaire. */
+/** Attaques des armes prêtes à dégainer (docs/adr/0054) : non équipées, non rangées et pas
+ * épuisées (quantité > 0), calculées comme en main principale ; corps à corps d'abord, dans l'ordre
+ * d'inventaire. */
 export function computeReadyWeaponAttacks(character: Character): WeaponAttack[] {
   const context = attackContext(character);
   const attacks = character.inventory.flatMap((item) =>
-    item.weapon && isReadyWeapon(item)
+    item.weapon && isReadyWeapon(item) && item.quantity > 0
       ? [buildWeaponAttack(character, item, item.weapon, context)]
       : [],
   );
