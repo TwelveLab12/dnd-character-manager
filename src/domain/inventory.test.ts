@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 import type { InventoryItem } from "./inventory";
-import { adjustItemQuantity, sortInventoryByName, totalInventoryWeight } from "./inventory";
+import {
+  adjustItemQuantity,
+  sortInventoryByName,
+  totalInventoryValueInGold,
+  totalInventoryWeight,
+} from "./inventory";
 
 const inventory: InventoryItem[] = [
   { id: "torch", name: "Torches", quantity: 2, weight: 0.5 },
@@ -43,5 +48,18 @@ describe("sortInventoryByName", () => {
     ];
     sortInventoryByName(items);
     expect(items.map((item) => item.id)).toEqual(["b", "a"]);
+  });
+});
+
+describe("totalInventoryValueInGold", () => {
+  it("sums unit value × quantity in gold, whatever the coin", () => {
+    expect(
+      totalInventoryValueInGold([
+        { id: "potion", name: "Potion de soins", quantity: 2, value: { amount: 50, coin: "gold" } },
+        { id: "torch", name: "Torche", quantity: 10, value: { amount: 1, coin: "copper" } },
+        { id: "rope", name: "Corde", quantity: 1, value: { amount: 1, coin: "platinum" } },
+        { id: "stone", name: "Caillou", quantity: 3 },
+      ]),
+    ).toBe(110.1);
   });
 });

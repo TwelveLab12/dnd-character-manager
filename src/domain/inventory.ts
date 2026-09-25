@@ -1,3 +1,5 @@
+import type { Coin } from "./currency";
+import { COIN_VALUE_IN_COPPER } from "./currency";
 import { compareNames } from "./names";
 
 /** Catégories d'armure 5e (règles 2014) — le bouclier est traité comme une catégorie à part. */
@@ -92,6 +94,12 @@ export interface ThrownRange {
 /** Main qui tient une arme équipée. Absente = main principale. */
 export type WeaponHand = "main" | "off";
 
+/** Valeur marchande d'un objet, à l'unité, dans la pièce des prix du Manuel (ex : 50 po, 2 pa). */
+export interface ItemValue {
+  amount: number;
+  coin: Coin;
+}
+
 export interface InventoryItem {
   id: string;
   name: string;
@@ -106,6 +114,8 @@ export interface InventoryItem {
   stowed?: boolean;
   armor?: ArmorProperties;
   weapon?: WeaponProperties;
+  /** Valeur marchande à l'unité (docs/adr/0056). */
+  value?: ItemValue;
   /** Bonus magique à la CA quand l'objet est équipé (armure +1, anneau de protection…). */
   armorClassBonus?: number;
 }
@@ -124,6 +134,18 @@ export function adjustItemQuantity(
 /** Poids total porté, en kg (poids unitaire × quantité ; un objet sans poids compte pour 0). */
 export function totalInventoryWeight(inventory: readonly InventoryItem[]): number {
   return inventory.reduce((sum, item) => sum + (item.weight ?? 0) * item.quantity, 0);
+}
+
+/** Valeur totale de l'inventaire en pièces d'or (valeur unitaire × quantité ; un objet sans valeur
+ * compte pour 0). Peut être fractionnaire : 5 torches à 1 pc = 0,05 po. */
+export function totalInventoryValueInGold(inventory: readonly InventoryItem[]): number {
+  const copper = inventory.reduce(
+    (sum, item) =>
+      sum +
+      (item.value ? item.value.amount * COIN_VALUE_IN_COPPER[item.value.coin] : 0) * item.quantity,
+    0,
+  );
+  return copper / COIN_VALUE_IN_COPPER.gold;
 }
 
 /** Arme prête à dégainer (docs/adr/0054) : pas en main, pas rangée dans le sac. */

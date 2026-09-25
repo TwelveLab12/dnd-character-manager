@@ -124,4 +124,21 @@ describe("InventoryTab", () => {
 
     expect(screen.getByRole("switch", { name: "Équipé" })).not.toBeChecked();
   });
+
+  it("sets an item value with its coin, shown in the summary and the total", async () => {
+    const user = userEvent.setup();
+    renderTab([ROPE]);
+
+    await user.click(screen.getByRole("button", { name: /corde de chanvre/i }));
+    await user.type(screen.getByRole("spinbutton", { name: "Valeur" }), "2");
+    expect(latest.inventory[0]?.value).toEqual({ amount: 2, coin: "gold" });
+
+    await user.click(screen.getByRole("combobox", { name: "Pièce de la valeur" }));
+    await user.click(await screen.findByRole("option", { name: "pa" }));
+    expect(latest.inventory[0]?.value).toEqual({ amount: 2, coin: "silver" });
+    expect(screen.getByText(/0,2 po/)).toBeInTheDocument();
+
+    await user.clear(screen.getByRole("spinbutton", { name: "Valeur" }));
+    expect(latest.inventory[0]?.value).toBeUndefined();
+  });
 });

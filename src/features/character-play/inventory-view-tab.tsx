@@ -14,6 +14,7 @@ import { DetailsHint } from "@/features/shared/detail-sheet";
 import { EquipControl } from "@/features/shared/equip-control";
 import { WeaponPlacementControl } from "@/features/shared/weapon-placement-control";
 import { formatDecimal } from "@/features/shared/format";
+import { formatInventoryValue, formatItemValue } from "@/features/shared/currency";
 import { Purse } from "@/features/shared/purse";
 import { QuantityStepper } from "@/features/shared/quantity-stepper";
 import type { PlayDetail } from "./play-detail-sheet";
@@ -42,6 +43,7 @@ export function InventoryViewTab({ character }: { character: Character }) {
         <p className="text-muted-foreground text-sm">
           {character.inventory.length} objet{character.inventory.length > 1 ? "s" : ""} ·{" "}
           {formatDecimal(totalInventoryWeight(character.inventory))} kg
+          {formatInventoryValue(character.inventory)}
         </p>
         <Button variant="outline" asChild>
           <Link
@@ -138,7 +140,13 @@ function ItemRow({
   children: ReactNode;
 }) {
   // La description se lit dans le panneau de détail, pas tassée sur la ligne.
-  const details = item.weight !== undefined ? `${formatDecimal(item.weight)} kg` : undefined;
+  const details =
+    [
+      item.weight !== undefined ? `${formatDecimal(item.weight)} kg` : undefined,
+      item.value ? formatItemValue(item.value) : undefined,
+    ]
+      .filter(Boolean)
+      .join(" · ") || undefined;
 
   return (
     <div

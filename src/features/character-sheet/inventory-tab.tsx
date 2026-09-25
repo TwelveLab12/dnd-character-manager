@@ -18,6 +18,7 @@ import { WeaponPlacementControl } from "@/features/shared/weapon-placement-contr
 import { formatDecimal } from "@/features/shared/format";
 import { Purse } from "@/features/shared/purse";
 import { DAMAGE_TYPE_LABELS, WEAPON_CATEGORY_LABELS } from "@/features/shared/weapon";
+import { formatItemValue, formatInventoryValue } from "@/features/shared/currency";
 import { InventoryItemEditor } from "./inventory-item-editor";
 import { itemKind, newItem, type ItemKind } from "./inventory-item-kind";
 import type { CharacterTabProps } from "./types";
@@ -120,6 +121,7 @@ export function InventoryTab({ draft, onChange }: CharacterTabProps) {
           <p className="text-muted-foreground text-sm">
             {draft.inventory.length} objet{draft.inventory.length > 1 ? "s" : ""} ·{" "}
             {formatDecimal(totalInventoryWeight(draft.inventory))} kg portés
+            {formatInventoryValue(draft.inventory)}
           </p>
         </div>
         <div className="flex gap-1.5">
@@ -222,6 +224,7 @@ function itemSummary(item: InventoryItem): string {
         : item.description,
     magic ? `+${magic} magique` : undefined,
     item.weight !== undefined ? `${formatDecimal(item.weight)} kg` : undefined,
+    item.value ? formatItemValue(item.value) : undefined,
   ];
   return parts.filter(Boolean).join(" · ");
 }
