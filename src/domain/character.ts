@@ -117,6 +117,9 @@ export interface Character {
   removedClassResourceOptions?: string[];
   skillProficiencies: string[];
   concentration: Concentration;
+  /** En rage (Barbare, docs/adr/0055) : bonus aux dégâts, résistances ; fin manuelle ou au
+   * repos — voir src/domain/calculations/rage.ts. */
+  raging?: boolean;
   /** Maîtrises d'armes par catégorie : le bonus de maîtrise ne s'ajoute au jet d'attaque que pour
    * une arme maîtrisée. Pas de bonus d'attaque stocké : il est calculé par arme équipée — voir
    * src/domain/calculations/weapon-attack.ts. */

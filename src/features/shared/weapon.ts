@@ -42,6 +42,7 @@ export function weaponAttackTags(attack: WeaponAttack): string[] {
     ...(attack.twoHanded ? ["Deux mains"] : []),
     ...(attack.thrown ? [`Lancer ${attack.thrown.normal}/${attack.thrown.long} m`] : []),
     ...(attack.martialArts ? ["Arts martiaux"] : []),
+    ...(attack.rageBonus ? [`Rage +${attack.rageBonus}`] : []),
   ];
 }
 

@@ -8,6 +8,7 @@ import type {
   WeaponProperties,
   WeaponRange,
 } from "../inventory";
+import { rageDamageBonus } from "../character-class";
 import { isReadyWeapon } from "../inventory";
 import { effectiveAbilityScores } from "./effective-ability-scores";
 import { abilityModifier } from "./modifiers";
@@ -37,6 +38,8 @@ export interface WeaponAttack {
   martialArts: boolean;
   /** Arme en main secondaire : attaque en action bonus (combat à deux armes). */
   offHand: boolean;
+  /** Bonus de Rage inclus dans les dégâts (corps à corps avec la Force, en rage). */
+  rageBonus?: number;
 }
 
 /** Dés valides au format « NdM » (ex : 1d8, 2d6), sans modificateur. */
@@ -114,6 +117,8 @@ interface AttackContext {
   twoWeaponFightingStyle: boolean;
   martialArtsActive: boolean;
   martialArtsDie: string;
+  /** Bonus aux dégâts de la Rage, 0 hors rage (docs/adr/0055). */
+  rageBonus: number;
 }
 
 function attackContext(character: Character): AttackContext {
@@ -126,6 +131,7 @@ function attackContext(character: Character): AttackContext {
     twoWeaponFightingStyle: character.twoWeaponFightingStyle === true,
     martialArtsActive: isMartialArtsActive(character),
     martialArtsDie: martialArtsDie(character.level),
+    rageBonus: character.raging ? rageDamageBonus(clampCharacterLevel(character.level)) : 0,
   };
 }
 
@@ -165,7 +171,9 @@ function buildWeaponAttack(
   // Main secondaire (2014) : pas de mod positif aux dégâts, sauf style Combat à deux armes.
   const abilityDamage =
     offHand && !context.twoWeaponFightingStyle ? Math.min(modifier, 0) : modifier;
-  const damageModifier = abilityDamage + magicBonus;
+  // Rage : attaques d'arme de corps à corps utilisant la Force.
+  const rageBonus = weapon.range === "melee" && ability === "strength" ? context.rageBonus : 0;
+  const damageModifier = abilityDamage + magicBonus + rageBonus;
   const damageDice = martialArts
     ? betterDice(weapon.damageDice, context.martialArtsDie)
     : weapon.damageDice;
@@ -186,6 +194,7 @@ function buildWeaponAttack(
     ...(weapon.thrown && weapon.range === "melee" ? { thrown: weapon.thrown } : {}),
     martialArts,
     offHand,
+    ...(rageBonus > 0 ? { rageBonus } : {}),
   };
 }
 

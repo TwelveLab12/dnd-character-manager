@@ -25,6 +25,8 @@ export function applyShortRest(character: Character): Partial<Character> {
   return {
     features: resetFeaturesForRecharge(character.features, ["shortRest"]),
     classResourcesUsed: restoreClassResources(character, "shortRest"),
+    // Une rage dure 1 minute : un repos y met toujours fin.
+    raging: undefined,
   };
 }
 
@@ -40,5 +42,6 @@ export function applyLongRest(character: Character): Partial<Character> {
     spellSlotsUsed: {},
     features: resetFeaturesForRecharge(character.features, ["shortRest", "longRest"]),
     classResourcesUsed: restoreClassResources(character, "longRest"),
+    raging: undefined,
   };
 }

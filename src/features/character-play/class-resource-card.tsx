@@ -1,6 +1,7 @@
 "use client";
 
-import { Hourglass, Moon, Sun } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import { Flame, Hourglass, Moon, PawPrint, Sun, Wind } from "lucide-react";
 import { DetailsHint } from "@/features/shared/detail-sheet";
 import type { Character } from "@/domain/character";
 import type { ClassResourceId } from "@/domain/character-class";
@@ -8,6 +9,7 @@ import { findClassDefinition, normalizeLabel } from "@/domain/character-class";
 import { computeClassResourceOptions } from "@/domain/calculations/class-features";
 import type { ClassResourceState } from "@/domain/calculations/class-resources";
 import { computeClassResources } from "@/domain/calculations/class-resources";
+import { rageEffects, rageUnavailableReason } from "@/domain/calculations/rage";
 import { Button } from "@/components/ui/button";
 import { usePlayActions } from "./use-play-actions";
 
@@ -55,6 +57,14 @@ export function resourceOptions(
     }));
   return [...fromRules, ...fromFeatures];
 }
+
+/** Icône de chaque ressource de classe (médaillons, titre, options). */
+const RESOURCE_ICONS: Record<ClassResourceId, LucideIcon> = {
+  "channel-divinity": Sun,
+  "wild-shape": PawPrint,
+  ki: Wind,
+  rage: Flame,
+};
 
 export const RECHARGE_LABELS = { shortRest: "Repos court", longRest: "Repos long" } as const;
 
@@ -104,6 +114,7 @@ function ClassResourceCard({
   const { adjustClassResource } = usePlayActions(character.id);
   const options = resourceOptions(character, resource.id);
   const RechargeIcon = resource.recharge === "shortRest" ? Hourglass : Moon;
+  const ResourceIcon = RESOURCE_ICONS[resource.id];
   const exhausted = resource.remaining <= 0;
 
   return (
@@ -117,7 +128,7 @@ function ClassResourceCard({
             {classLabel}
           </span>
           <span className="text-primary inline-flex items-center gap-1.5 text-[13px] font-semibold">
-            <Sun aria-hidden className="size-4" />
+            <ResourceIcon aria-hidden className="size-4" />
             {resource.name}
           </span>
         </div>
@@ -143,7 +154,7 @@ function ClassResourceCard({
                     : "border-muted-foreground/40 text-muted-foreground/50 border-dashed"
                 }`}
               >
-                <Sun aria-hidden className="size-7" />
+                <ResourceIcon aria-hidden className="size-7" />
               </button>
             );
           })}
@@ -163,6 +174,8 @@ function ClassResourceCard({
         </div>
       </div>
 
+      {resource.id === "rage" && <RageControls character={character} />}
+
       {options.length > 0 && (
         <div className="grid gap-1.5">
           {options.map((option) => (
@@ -177,7 +190,7 @@ function ClassResourceCard({
                 className="hover:bg-primary/10 focus-visible:ring-ring/50 absolute inset-0 cursor-pointer rounded-xl transition-colors outline-none focus-visible:ring-3"
               />
               <span className="bg-primary/10 text-primary grid size-7.5 shrink-0 place-items-center rounded-lg">
-                <Sun aria-hidden className="size-4" />
+                <ResourceIcon aria-hidden className="size-4" />
               </span>
               <span className="grid min-w-0 flex-1 gap-px">
                 <span className="flex min-w-0 items-center gap-1.5">
@@ -205,5 +218,47 @@ function ClassResourceCard({
         </div>
       )}
     </section>
+  );
+}
+
+/**
+ * Entrer en rage / y mettre fin (docs/adr/0055) : en rage, les effets appliqués ou à appliquer à
+ * la table sont rappelés sous le bouton.
+ */
+function RageControls({ character }: { character: Character }) {
+  const { startRage, endRage } = usePlayActions(character.id);
+  const effects = rageEffects(character);
+
+  if (character.raging) {
+    return (
+      <div className="border-destructive/40 bg-destructive/10 grid gap-2.5 rounded-xl border p-3">
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-destructive inline-flex items-center gap-1.5 text-sm font-semibold">
+            <Flame aria-hidden className="size-4" />
+            En rage
+          </span>
+          <Button type="button" size="sm" variant="outline" onClick={() => void endRage()}>
+            Mettre fin à la rage
+          </Button>
+        </div>
+        <ul className="text-muted-foreground grid gap-1 text-[13px]">
+          <li>+{effects.damageBonus} aux dégâts des attaques au corps à corps avec la Force</li>
+          <li>Résistance : {effects.resistances}</li>
+          <li>Avantage aux tests et jets de sauvegarde de Force</li>
+          <li>Pas de sorts ni de concentration · 1 minute</li>
+        </ul>
+      </div>
+    );
+  }
+
+  const unavailable = rageUnavailableReason(character);
+  return (
+    <div className="grid justify-items-start gap-1">
+      <Button type="button" disabled={unavailable !== undefined} onClick={() => void startRage()}>
+        <Flame aria-hidden />
+        Entrer en rage
+      </Button>
+      {unavailable && <span className="text-muted-foreground text-xs">{unavailable}</span>}
+    </div>
   );
 }

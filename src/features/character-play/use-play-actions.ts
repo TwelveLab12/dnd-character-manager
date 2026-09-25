@@ -22,6 +22,7 @@ import { setSpellPreparation } from "@/domain/calculations/spell-preparation";
 import { adjustSpellSlotsUsed } from "@/domain/calculations/spell-slot-table";
 import type { Spell } from "@/domain/spell";
 import { adjustClassResourceUsed } from "@/domain/calculations/class-resources";
+import { endRage, startRage } from "@/domain/calculations/rage";
 import type { ClassResourceId } from "@/domain/character-class";
 import { useCharacterStoreApi } from "@/stores/store-provider";
 
@@ -107,6 +108,8 @@ export function usePlayActions(characterId: string) {
     restoreCasting: (previous: CastingPatch) => withCurrent(() => previous),
     equipItem: (itemId: string, slot: EquipSlot) =>
       withCurrent((character) => ({ inventory: equipItem(character, itemId, slot) })),
+    startRage: () => withCurrent((character) => startRage(character)),
+    endRage: () => withCurrent(() => endRage()),
     placeWeapon: (itemId: string, placement: WeaponPlacement) =>
       withCurrent((character) => ({ inventory: placeWeapon(character, itemId, placement) })),
     adjustItemQuantity: (itemId: string, delta: number) =>

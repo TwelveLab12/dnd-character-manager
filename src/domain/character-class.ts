@@ -128,6 +128,13 @@ export function rageUses(level: number): number {
   return level >= 1 ? 2 : 0;
 }
 
+/** Bonus aux dégâts de la Rage (règles 2014) : +2, +3 au niveau 9, +4 au niveau 16. */
+export function rageDamageBonus(level: number): number {
+  if (level >= 16) return 4;
+  if (level >= 9) return 3;
+  return 2;
+}
+
 /** Déplacement rapide du Barbare (règles 2014) : +3 m dès le niveau 5. */
 export function barbarianFastMovement(level: number): number {
   return level >= 5 ? 3 : 0;

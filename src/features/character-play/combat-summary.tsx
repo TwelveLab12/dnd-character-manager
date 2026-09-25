@@ -1,6 +1,6 @@
 "use client";
 
-import { Focus, Heart, Shield } from "lucide-react";
+import { Flame, Focus, Heart, Shield } from "lucide-react";
 import { useEffect } from "react";
 import type { Character } from "@/domain/character";
 import { computeArmorClass } from "@/domain/calculations/armor-class";
@@ -9,8 +9,8 @@ import { useSpellStore } from "@/stores/store-provider";
 import { hasActiveArmorClassEffect } from "./combat-hud";
 
 /**
- * Résumé en lecture seule, collé en haut de l'écran au-dessus des onglets du mode jeu : CA, PV et
- * concentration restent sous les yeux depuis n'importe quel onglet ; tout se modifie dans l'onglet
+ * Résumé en lecture seule, collé en haut de l'écran au-dessus des onglets du mode jeu : CA, PV,
+ * rage et concentration restent sous les yeux depuis n'importe quel onglet ; tout se modifie dans l'onglet
  * Combat. Voir docs/adr/0031.
  */
 export function CombatSummary({ character }: { character: Character }) {
@@ -57,6 +57,15 @@ export function CombatSummary({ character }: { character: Character }) {
           </span>
         )}
       </span>
+      {character.raging && (
+        <>
+          <Divider />
+          <span className="text-destructive inline-flex shrink-0 items-center gap-1.5 text-sm font-semibold">
+            <Flame aria-hidden className="size-4" />
+            En rage
+          </span>
+        </>
+      )}
       {concentration.active && (
         <>
           <Divider />
