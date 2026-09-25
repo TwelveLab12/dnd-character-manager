@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { CLASS_RESOURCE_IDS } from "@/domain/character-class";
 import { normalizeLegacyCharacter } from "@/domain/migrations/normalize-legacy-character";
 
 /**
@@ -35,7 +36,7 @@ const hitPointsSchema = z.object({
 const spellSlotsUsedSchema = z.partialRecord(z.string().regex(/^[1-9]$/), z.number().int().min(0));
 
 const classResourcesUsedSchema = z.partialRecord(
-  z.enum(["channel-divinity"]),
+  z.enum(CLASS_RESOURCE_IDS),
   z.number().int().min(0),
 );
 
@@ -135,7 +136,7 @@ const characterFeatureSchema = z.object({
   usesMax: z.number().optional(),
   usesCurrent: z.number().optional(),
   recharge: featureRechargeSchema.optional(),
-  resourceId: z.enum(["channel-divinity"]).optional(),
+  resourceId: z.enum(CLASS_RESOURCE_IDS).optional(),
 });
 
 const coinAmountSchema = z.number().int().min(0).default(0);

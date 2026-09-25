@@ -99,3 +99,55 @@ export const TWILIGHT_DOMAIN: SubclassDefinition = {
     },
   ],
 };
+
+/** Cercle des spores (Chaudron de Tasha). Contact glacial est un tour de magie appris au niveau 2 :
+ * rangé avec les sorts toujours préparés, il reste disponible sans préparation comme eux. */
+export const CIRCLE_OF_SPORES: SubclassDefinition = {
+  id: "spores",
+  name: "Cercle des spores",
+  aliases: ["cercle des spores", "spores", "circle of spores"],
+  alwaysPreparedSpells: [
+    {
+      minLevel: 2,
+      spells: [{ name: "Contact glacial", aliases: ["chill touch", "contact glacial"] }],
+    },
+    {
+      minLevel: 3,
+      spells: [
+        {
+          name: "Cécité/Surdité",
+          aliases: ["blindness/deafness", "cecite / surdite", "cecite/surdite", "aveuglement"],
+        },
+        {
+          name: "Préservation des morts",
+          aliases: ["gentle repose", "preservation des morts", "repos paisible"],
+        },
+      ],
+    },
+    {
+      minLevel: 5,
+      spells: [
+        { name: "Animation des morts", aliases: ["animate dead", "animation des morts"] },
+        { name: "Forme gazeuse", aliases: ["gaseous form", "forme gazeuse"] },
+      ],
+    },
+    {
+      minLevel: 7,
+      spells: [
+        { name: "Flétrissement", aliases: ["blight", "fletrissement"] },
+        { name: "Confusion", aliases: ["confusion"] },
+      ],
+    },
+    {
+      minLevel: 9,
+      spells: [
+        { name: "Brume mortelle", aliases: ["cloudkill", "brume mortelle", "nuage mortel"] },
+        { name: "Contagion", aliases: ["contagion"] },
+      ],
+    },
+  ],
+  proficiencies: { armor: [], weapons: [] },
+  resourceOptions: [
+    { id: "symbiotic-entity", name: "Entité symbiotique", resourceId: "wild-shape", minLevel: 2 },
+  ],
+};

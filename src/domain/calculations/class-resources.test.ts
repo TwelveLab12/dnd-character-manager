@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { channelDivinityUses } from "@/domain/character-class";
+import { channelDivinityUses, wildShapeUses } from "@/domain/character-class";
 import { makeTestCharacter } from "@/test/fixtures";
 import {
   adjustClassResourceUsed,
@@ -21,7 +21,35 @@ describe("channelDivinityUses (Clerc, règles 2014)", () => {
   });
 });
 
+describe("wildShapeUses (Druide, règles 2014)", () => {
+  it.each([
+    [1, 0],
+    [2, 2],
+    [19, 2],
+  ])("level %i → %i use(s)", (level, uses) => {
+    expect(wildShapeUses(level)).toBe(uses);
+  });
+});
+
 describe("computeClassResources", () => {
+  it("computes the Wild Shape pool of a druid", () => {
+    const character = makeTestCharacter({
+      classId: "druide",
+      level: 3,
+      classResourcesUsed: { "wild-shape": 1 },
+    });
+    expect(computeClassResources(character)).toEqual([
+      {
+        id: "wild-shape",
+        name: "Forme sauvage",
+        recharge: "shortRest",
+        max: 2,
+        used: 1,
+        remaining: 1,
+      },
+    ]);
+  });
+
   it("computes the Channel Divinity pool of a cleric from the level", () => {
     const character = makeTestCharacter({
       classId: "clerc",

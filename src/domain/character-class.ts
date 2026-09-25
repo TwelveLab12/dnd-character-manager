@@ -5,7 +5,7 @@ import type {
   ProficiencyGrants,
   SubclassDefinition,
 } from "./subclass";
-import { TWILIGHT_DOMAIN } from "./subclass";
+import { CIRCLE_OF_SPORES, TWILIGHT_DOMAIN } from "./subclass";
 
 /** Progression d'emplacements de sorts. Seuls les lanceurs complets sont modélisés pour l'instant
  * (demi-lanceurs, tiers de lanceurs et magie de pacte viendront avec leurs classes). */
@@ -18,7 +18,9 @@ export type CasterProgression = "full";
  */
 export type SpellPreparation = "prepared" | "known";
 
-export type ClassResourceId = "channel-divinity";
+export const CLASS_RESOURCE_IDS = ["channel-divinity", "wild-shape"] as const;
+
+export type ClassResourceId = (typeof CLASS_RESOURCE_IDS)[number];
 
 /**
  * Ressource de classe partagée par plusieurs capacités (ex : Canalisation divine, consommée par
@@ -74,6 +76,19 @@ const CHANNEL_DIVINITY: ClassResourceDefinition = {
   usesAtLevel: channelDivinityUses,
 };
 
+/** Forme sauvage du Druide (règles 2014) : 2 utilisations dès le niveau 2, récupérées au repos
+ * court ou long. L'usage illimité de l'Archidruide (niveau 20) n'est pas modélisé. */
+export function wildShapeUses(level: number): number {
+  return level >= 2 ? 2 : 0;
+}
+
+const WILD_SHAPE: ClassResourceDefinition = {
+  id: "wild-shape",
+  name: "Forme sauvage",
+  recharge: "shortRest",
+  usesAtLevel: wildShapeUses,
+};
+
 /**
  * Classes connues des règles (mécanique de jeu uniquement, aucun texte du SRD reproduit — même
  * logique que src/domain/race.ts, voir docs/adr/0022). Ajouter une classe = ajouter une entrée.
@@ -115,7 +130,15 @@ export const CHARACTER_CLASSES: readonly CharacterClassDefinition[] = [
     spellcasting: { progression: "full", ability: "wisdom", preparation: "prepared" },
     hitDie: 8,
     savingThrows: ["intelligence", "wisdom"],
-    resources: [],
+    resources: [WILD_SHAPE],
+    // Armes : une liste d'armes précises (gourdin, dague, cimeterre…), pas une catégorie — celles
+    // cochées sur la fiche font foi.
+    proficiencies: { armor: ["light", "medium", "shield"], weapons: [] },
+    resourceOptions: [
+      { id: "beast-shape", name: "Forme de bête", resourceId: "wild-shape", minLevel: 2 },
+    ],
+    subclassLabel: "Cercle druidique",
+    subclasses: [CIRCLE_OF_SPORES],
   },
   {
     id: "ensorceleur",
