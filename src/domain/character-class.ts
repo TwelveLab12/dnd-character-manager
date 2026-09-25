@@ -5,7 +5,7 @@ import type {
   ProficiencyGrants,
   SubclassDefinition,
 } from "./subclass";
-import { CIRCLE_OF_SPORES, OPEN_HAND, TWILIGHT_DOMAIN } from "./subclass";
+import { CIRCLE_OF_SPORES, OPEN_HAND, TOTEM_WARRIOR, TWILIGHT_DOMAIN } from "./subclass";
 
 /** Progression d'emplacements de sorts. Seuls les lanceurs complets sont modélisés pour l'instant
  * (demi-lanceurs, tiers de lanceurs et magie de pacte viendront avec leurs classes). */
@@ -18,7 +18,7 @@ export type CasterProgression = "full";
  */
 export type SpellPreparation = "prepared" | "known";
 
-export const CLASS_RESOURCE_IDS = ["channel-divinity", "wild-shape", "ki"] as const;
+export const CLASS_RESOURCE_IDS = ["channel-divinity", "wild-shape", "ki", "rage"] as const;
 
 export type ClassResourceId = (typeof CLASS_RESOURCE_IDS)[number];
 
@@ -32,6 +32,13 @@ export interface ClassResourceDefinition {
   name: string;
   recharge: Exclude<FeatureRecharge, "other">;
   usesAtLevel: (level: number) => number;
+}
+
+export interface ClassMovementBonus {
+  name: string;
+  metersAtLevel: (level: number) => number;
+  /** Ce qui annule le bonus : toute armure ou bouclier équipé, ou seulement une armure lourde. */
+  lostWith: "armorOrShield" | "heavyArmor";
 }
 
 export interface CharacterClassDefinition {
@@ -64,9 +71,10 @@ export interface CharacterClassDefinition {
   /** Défense sans armure : sans armure (et sans bouclier si `allowsShield` est faux), CA = 10 +
    * Dex + modificateur de cette caractéristique. */
   unarmoredDefense?: { ability: AbilityName; allowsShield: boolean };
-  /** Déplacement sans armure : bonus de vitesse en mètres selon le niveau, sans armure ni
-   * bouclier. */
-  unarmoredMovement?: (level: number) => number;
+  /** Bonus de vitesse de classe, en mètres selon le niveau : Déplacement sans armure du Moine
+   * (perdu avec une armure ou un bouclier), Déplacement rapide du Barbare (perdu en armure
+   * lourde). */
+  movementBonus?: ClassMovementBonus;
 }
 
 /** Canalisation divine du Clerc (règles 2014) : 1 utilisation au niveau 2, 2 au niveau 6, 3 au
@@ -110,6 +118,28 @@ export function monkUnarmoredMovement(level: number): number {
   return 3 + 1.5 * Math.floor((Math.min(level, 18) - 2) / 4);
 }
 
+/** Rages du Barbare (règles 2014) : 2 au niveau 1, 3 au 3, 4 au 6, 5 au 12, 6 au 17 ; récupérées
+ * au repos long. Les rages illimitées du niveau 20 ne sont pas modélisées (6 conservées). */
+export function rageUses(level: number): number {
+  if (level >= 17) return 6;
+  if (level >= 12) return 5;
+  if (level >= 6) return 4;
+  if (level >= 3) return 3;
+  return level >= 1 ? 2 : 0;
+}
+
+/** Déplacement rapide du Barbare (règles 2014) : +3 m dès le niveau 5. */
+export function barbarianFastMovement(level: number): number {
+  return level >= 5 ? 3 : 0;
+}
+
+const RAGE: ClassResourceDefinition = {
+  id: "rage",
+  name: "Rage",
+  recharge: "longRest",
+  usesAtLevel: rageUses,
+};
+
 const WILD_SHAPE: ClassResourceDefinition = {
   id: "wild-shape",
   name: "Forme sauvage",
@@ -122,6 +152,23 @@ const WILD_SHAPE: ClassResourceDefinition = {
  * logique que src/domain/race.ts, voir docs/adr/0022). Ajouter une classe = ajouter une entrée.
  */
 export const CHARACTER_CLASSES: readonly CharacterClassDefinition[] = [
+  {
+    id: "barbare",
+    name: "Barbare",
+    aliases: ["barbare", "barbarian"],
+    hitDie: 12,
+    savingThrows: ["strength", "constitution"],
+    resources: [RAGE],
+    proficiencies: { armor: ["light", "medium", "shield"], weapons: ["simple", "martial"] },
+    unarmoredDefense: { ability: "constitution", allowsShield: true },
+    movementBonus: {
+      name: "Déplacement rapide",
+      metersAtLevel: barbarianFastMovement,
+      lostWith: "heavyArmor",
+    },
+    subclassLabel: "Voie primitive",
+    subclasses: [TOTEM_WARRIOR],
+  },
   {
     id: "barde",
     name: "Barde",
@@ -185,7 +232,11 @@ export const CHARACTER_CLASSES: readonly CharacterClassDefinition[] = [
     ],
     martialArts: true,
     unarmoredDefense: { ability: "wisdom", allowsShield: false },
-    unarmoredMovement: monkUnarmoredMovement,
+    movementBonus: {
+      name: "Déplacement sans armure",
+      metersAtLevel: monkUnarmoredMovement,
+      lostWith: "armorOrShield",
+    },
     subclassLabel: "Tradition monastique",
     subclasses: [OPEN_HAND],
   },
@@ -248,13 +299,14 @@ export function findSubclassDefinition(
 }
 
 /** Retrouve une sous-classe connue de la classe à partir d'un libellé libre (« Domaine du
- * Crépuscule », « Twilight »…). */
+ * Crépuscule », « Twilight », « Voie du guerrier totémique (Ours) »…). */
 export function findSubclassDefinitionByLabel(
   classId: string | undefined,
   label: string,
 ): SubclassDefinition | undefined {
   const normalized = normalizeLabel(label);
+  // Une précision entre parenthèses est tolérée : « Voie du guerrier totémique (Ours) ».
   return findClassDefinition(classId)?.subclasses?.find((definition) =>
-    definition.aliases.includes(normalized),
+    definition.aliases.some((alias) => normalized === alias || normalized.startsWith(`${alias} (`)),
   );
 }

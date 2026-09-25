@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import { useId } from "react";
 import { cn } from "cn";
 import type { AbilityName } from "@/domain/ability-scores";
+import type { Character } from "@/domain/character";
 import { effectiveAbilityScores } from "@/domain/calculations/effective-ability-scores";
 import { DEFAULT_SPEED } from "@/domain/calculations/combat-stats";
 import { changeClass } from "@/domain/calculations/class-change";
@@ -72,9 +73,18 @@ function describeClass(definition: CharacterClassDefinition): string {
     `jets de sauvegarde ${saves}`,
     ...definition.resources.map((resource) => resource.name),
     ...(definition.unarmoredDefense ? ["Défense sans armure"] : []),
-    ...(definition.unarmoredMovement ? ["Déplacement sans armure"] : []),
+    ...(definition.movementBonus ? [definition.movementBonus.name] : []),
     ...(definition.martialArts ? ["Arts martiaux"] : []),
   ].join(", ");
+}
+
+/** PV max qu'aurait le personnage avec cette classe, et l'écart avec les PV saisis s'il y en a un
+ * (ex : un don Robuste coché, ignoré tant que les PV étaient saisis à la main). */
+function describeComputedHitPoints(draft: Character, classId: string): string {
+  const computed = computeMaxHitPoints({ ...draft, classId }).total;
+  return draft.baseMaxHitPoints !== undefined && draft.baseMaxHitPoints !== computed
+    ? `${computed} (${draft.baseMaxHitPoints} saisis)`
+    : String(computed);
 }
 
 function formatSpeed(meters: number): string {
@@ -214,9 +224,8 @@ export function IdentitySection({ draft, onChange }: CharacterTabProps) {
             >
               <strong className="font-semibold">{recognizedClass.name}</strong> est connu des règles
               : {describeClass(recognizedClass)}. PV max calculés :{" "}
-              {computeMaxHitPoints({ ...draft, classId: recognizedClass.id }).total}. Les valeurs
-              saisies à la main qu&rsquo;elles remplacent sont retirées, sans rien compter deux
-              fois.
+              {describeComputedHitPoints(draft, recognizedClass.id)}. Les valeurs saisies à la main
+              qu&rsquo;elles remplacent sont retirées, sans rien compter deux fois.
             </RulesCallout>
           )}
         </Field>

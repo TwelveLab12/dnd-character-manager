@@ -160,6 +160,9 @@ describe("GeneralTab", () => {
     expect(screen.getByText(/est connu des règles/)).toHaveTextContent(
       "Moine est connu des règles : dé de vie d8, jets de sauvegarde For et Dex, Ki",
     );
+    expect(screen.getByText(/est connu des règles/)).toHaveTextContent(
+      "PV max calculés : 18 (21 saisis).",
+    );
     await user.click(screen.getByRole("button", { name: "Appliquer les règles de la classe" }));
 
     expect(latest.classId).toBe("moine");
@@ -169,6 +172,13 @@ describe("GeneralTab", () => {
     expect(latest.speedExtraBonus).toBeUndefined();
     expect(latest.armorClassEffects).toBeUndefined();
     expect(screen.queryByText(/est connu des règles/)).not.toBeInTheDocument();
+  });
+
+  it("shows the gap between the computed and the typed hit points before switching", () => {
+    renderTab({ class: "Barbare", classId: undefined, level: 3, baseMaxHitPoints: 30 });
+    expect(screen.getByText(/est connu des règles/)).toHaveTextContent(
+      /PV max calculés : \d+ \(30 saisis\)/,
+    );
   });
 
   it("stores only the removal of the Martial Arts granted by the Monk class", async () => {

@@ -121,7 +121,6 @@ describe("changeClass", () => {
       classId: "moine",
       class: "Moine",
       subclassId: "main-ouverte",
-      subclass: "Voie de la main ouverte",
       savingThrowProficiencies: [],
       baseMaxHitPoints: undefined,
       martialArts: undefined,
