@@ -111,7 +111,7 @@ export function HitPointsSection({ draft, onChange }: CharacterTabProps) {
               )}
               <span className="text-muted-foreground text-center text-xs tabular-nums">
                 {formatModifier(entry.constitution)} Con
-                {entry.bonus !== 0 && ` ${formatModifier(entry.bonus)} dons`} = {entry.total}
+                {entry.bonus !== 0 && ` ${formatModifier(entry.bonus)} bonus`} = {entry.total}
               </span>
             </li>
           );

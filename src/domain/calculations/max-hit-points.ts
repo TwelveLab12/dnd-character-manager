@@ -1,6 +1,7 @@
 import type { Character } from "../character";
 import { findClassDefinition } from "../character-class";
 import { characterFeats } from "../feat";
+import { findRaceDefinition } from "../race";
 import { effectiveAbilityScores } from "./effective-ability-scores";
 import { abilityModifier } from "./modifiers";
 import { clampCharacterLevel } from "./proficiency";
@@ -10,7 +11,7 @@ export interface LevelHitPoints {
   /** Valeur du dé retenue : maximum au niveau 1, fixe ou lancée ensuite. */
   die: number;
   constitution: number;
-  /** Bonus par niveau hors classe (dons…), ajouté après le plancher de 1. */
+  /** Bonus par niveau hors classe (race, dons…), ajouté après le plancher de 1. */
   bonus: number;
   /** Gain du niveau : max(1, dé + Con) + bonus. */
   total: number;
@@ -37,7 +38,8 @@ export function fixedHitDieValue(hitDie: number): number {
 /**
  * PV max (règles 2014) : au niveau 1, maximum du dé de vie + mod. de Constitution ; à chaque
  * niveau suivant, valeur fixe (moitié du dé + 1) ou résultat du dé saisi, + mod. de Constitution,
- * au moins 1 par niveau, plus les bonus par niveau des dons (ex : Robuste +2). La Constitution effective s'applique à tous les niveaux : une hausse de
+ * au moins 1 par niveau, plus les bonus par niveau de la race et des dons (ex : Nain des collines
+ * +1, Robuste +2). La Constitution effective s'applique à tous les niveaux : une hausse de
  * Constitution augmente donc les PV max rétroactivement, comme le veut la règle.
  */
 export function computeMaxHitPoints(character: Character): MaxHitPointsResult {
@@ -59,9 +61,15 @@ export function computeMaxHitPoints(character: Character): MaxHitPointsResult {
   const method = character.hitPointMethod ?? "fixed";
   const rolls = character.hitPointRolls ?? [];
   const warnings: string[] = [];
-  const bonusSources = characterFeats(character.featIds).flatMap((feat) =>
-    feat.hitPointsPerLevel ? [{ name: feat.name, perLevel: feat.hitPointsPerLevel }] : [],
-  );
+  const race = character.raceSelection
+    ? findRaceDefinition(character.raceSelection.raceId)
+    : undefined;
+  const bonusSources = [
+    ...(race?.hitPointsPerLevel ? [{ name: race.name, perLevel: race.hitPointsPerLevel }] : []),
+    ...characterFeats(character.featIds).flatMap((feat) =>
+      feat.hitPointsPerLevel ? [{ name: feat.name, perLevel: feat.hitPointsPerLevel }] : [],
+    ),
+  ];
   const bonus = bonusSources.reduce((sum, source) => sum + source.perLevel, 0);
 
   const levels: LevelHitPoints[] = Array.from({ length: level }, (_, index) => {

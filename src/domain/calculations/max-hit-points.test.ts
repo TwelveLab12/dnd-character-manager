@@ -77,6 +77,21 @@ describe("computeMaxHitPoints", () => {
     expect(result.bonusSources).toEqual([{ name: "Robuste", perLevel: 2 }]);
   });
 
+  it("adds Dwarven Toughness (+1 per level) for a hill dwarf, before feats", () => {
+    // Con 14 + 2 (nain des collines) = 16 → +3 : niv. 1 : 8 + 3 + 1 ; niv. 2 et 3 : 5 + 3 + 1.
+    const result = computeMaxHitPoints(
+      yomi({
+        raceSelection: { raceId: "nain-des-collines", abilityBonusChoices: [] },
+        featIds: ["robuste"],
+      }),
+    );
+    expect(result.bonusSources).toEqual([
+      { name: "Nain des collines", perLevel: 1 },
+      { name: "Robuste", perLevel: 2 },
+    ]);
+    expect(result.levels.map((entry) => entry.total)).toEqual([14, 11, 11]);
+  });
+
   it("ignores feats without hit point effect and unknown feat ids", () => {
     expect(
       computeMaxHitPoints(yomi({ featIds: ["lanceur-de-sorts-de-bataille", "inconnu"] })).total,

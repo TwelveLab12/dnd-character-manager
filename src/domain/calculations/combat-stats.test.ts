@@ -85,4 +85,23 @@ describe("computeSpeed", () => {
     });
     expect(computeSpeed(strong).total).toBe(9);
   });
+
+  it("keeps a hill dwarf at 7.5 m, even in heavy armor without the required Strength", () => {
+    const dwarf = makeTestCharacter({
+      raceSelection: { raceId: "nain-des-collines", abilityBonusChoices: [] },
+      inventory: [
+        {
+          id: "plate",
+          name: "Harnois",
+          quantity: 1,
+          equipped: true,
+          armor: { category: "heavy", baseArmorClass: 18, strengthRequirement: 15 },
+        },
+      ],
+    });
+    expect(computeSpeed(dwarf)).toEqual({
+      total: 7.5,
+      breakdown: [{ label: "Nain des collines", value: 7.5 }],
+    });
+  });
 });
