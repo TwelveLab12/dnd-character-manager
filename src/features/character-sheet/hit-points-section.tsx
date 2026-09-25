@@ -7,7 +7,7 @@ import { formatModifier } from "@/features/shared/format";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { GeneralSection } from "./general-section";
-import { SegmentedControl } from "./segmented-control";
+import { SegmentedControl } from "@/features/shared/segmented-control";
 import type { CharacterTabProps } from "./types";
 
 function toNumber(value: string): number {

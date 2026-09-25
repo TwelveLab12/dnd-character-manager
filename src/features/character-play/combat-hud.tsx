@@ -1,6 +1,7 @@
 "use client";
 
 import { Footprints, Sparkles, WandSparkles, Zap } from "lucide-react";
+import type { ReactNode } from "react";
 import { useState } from "react";
 import type { Character } from "@/domain/character";
 import { computeArmorClass } from "@/domain/calculations/armor-class";
@@ -8,7 +9,10 @@ import { computeClassResources } from "@/domain/calculations/class-resources";
 import { computeInitiative, computeSpeed } from "@/domain/calculations/combat-stats";
 import { computeSpellSlots } from "@/domain/calculations/spell-slot-table";
 import { resolveSpellcasting } from "@/domain/calculations/spellcasting";
-import { computeWeaponAttacks } from "@/domain/calculations/weapon-attack";
+import {
+  computeReadyWeaponAttacks,
+  computeWeaponAttacks,
+} from "@/domain/calculations/weapon-attack";
 import { formatArmorClassBreakdown } from "@/features/shared/armor-class";
 import { hasOwnUses } from "@/features/shared/feature";
 import { formatModifier } from "@/features/shared/format";
@@ -47,6 +51,8 @@ export function CombatHud({ character }: { character: Character }) {
   const [detail, setDetail] = useState<PlayDetail | undefined>();
   const armorClass = computeArmorClass(character);
   const attacks = computeWeaponAttacks(character);
+  const readyAttacks = computeReadyWeaponAttacks(character);
+  const showAttack = (itemId: string) => setDetail({ kind: "attack", itemId });
   const spellcasting = resolveSpellcasting(character);
   const hasSpellSlots = computeSpellSlots(character).length > 0;
   const classResourceCount = computeClassResources(character).length;
@@ -132,13 +138,28 @@ export function CombatHud({ character }: { character: Character }) {
         <RestActions characterId={character.id} />
       </div>
 
-      {attacks.length > 0 && (
-        <div className="border-t pt-4 sm:pt-5">
-          <AttackStrip
-            attacks={attacks}
-            onShowDetails={(itemId) => setDetail({ kind: "attack", itemId })}
-          />
+      {readyAttacks.length > 0 ? (
+        <div className="grid gap-4 border-t pt-4 sm:pt-5">
+          {attacks.length > 0 && (
+            <AttackGroup title="En main">
+              <AttackStrip attacks={attacks} label="En main" onShowDetails={showAttack} />
+            </AttackGroup>
+          )}
+          <AttackGroup title="Prêtes · à dégainer" hint="1 gratuite par tour">
+            <AttackStrip
+              attacks={readyAttacks}
+              ready
+              label="Prêtes à dégainer"
+              onShowDetails={showAttack}
+            />
+          </AttackGroup>
         </div>
+      ) : (
+        attacks.length > 0 && (
+          <div className="border-t pt-4 sm:pt-5">
+            <AttackStrip attacks={attacks} onShowDetails={showAttack} />
+          </div>
+        )
       )}
 
       {resourceCardCount > 0 && (
@@ -163,5 +184,29 @@ export function CombatHud({ character }: { character: Character }) {
 
       <PlayDetailSheet character={character} detail={detail} onClose={() => setDetail(undefined)} />
     </section>
+  );
+}
+
+/** Groupe d'attaques titré (« En main », « Prêtes · à dégainer »), affiché seulement quand des
+ * armes prêtes existent (docs/adr/0054). */
+function AttackGroup({
+  title,
+  hint,
+  children,
+}: {
+  title: string;
+  hint?: string;
+  children: ReactNode;
+}) {
+  return (
+    <div className="grid gap-2">
+      <div className="flex items-baseline justify-between gap-2">
+        <h3 className="text-muted-foreground text-[11px] font-semibold tracking-widest uppercase">
+          {title}
+        </h3>
+        {hint && <span className="text-muted-foreground text-xs">{hint}</span>}
+      </div>
+      {children}
+    </div>
   );
 }

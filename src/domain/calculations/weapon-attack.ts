@@ -8,6 +8,7 @@ import type {
   WeaponProperties,
   WeaponRange,
 } from "../inventory";
+import { isReadyWeapon } from "../inventory";
 import { effectiveAbilityScores } from "./effective-ability-scores";
 import { abilityModifier } from "./modifiers";
 import { clampCharacterLevel, proficiencyBonusForLevel } from "./proficiency";
@@ -239,6 +240,21 @@ export function computeWeaponAttacks(character: Character): WeaponAttack[] {
   if (context.martialArtsActive) {
     attacks.push(unarmedStrike(context));
   }
+  return [
+    ...attacks.filter((attack) => attack.range === "melee"),
+    ...attacks.filter((attack) => attack.range === "ranged"),
+  ];
+}
+
+/** Attaques des armes prêtes à dégainer (docs/adr/0054) : non équipées et non rangées, calculées
+ * comme en main principale ; corps à corps d'abord, dans l'ordre d'inventaire. */
+export function computeReadyWeaponAttacks(character: Character): WeaponAttack[] {
+  const context = attackContext(character);
+  const attacks = character.inventory.flatMap((item) =>
+    item.weapon && isReadyWeapon(item)
+      ? [buildWeaponAttack(character, item, item.weapon, context)]
+      : [],
+  );
   return [
     ...attacks.filter((attack) => attack.range === "melee"),
     ...attacks.filter((attack) => attack.range === "ranged"),

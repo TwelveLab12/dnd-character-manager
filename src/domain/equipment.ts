@@ -72,7 +72,8 @@ export function equipItem(
 
   return character.inventory.map((item) => {
     if (item.id === itemId) {
-      const equipped: InventoryItem = { ...item, equipped: true };
+      const { stowed: _stowed, ...rest } = item;
+      const equipped: InventoryItem = { ...rest, equipped: true };
       return hand === "off" ? { ...equipped, hand } : withoutHand(equipped);
     }
     if (item.equipped !== true) {
@@ -97,4 +98,36 @@ export function currentSlot(item: InventoryItem): EquipSlot {
     return item.hand ?? "main";
   }
   return "equipped";
+}
+
+/**
+ * Emplacement d'une arme (docs/adr/0054) : rangée dans le sac, prête à dégainer (à la ceinture…),
+ * ou en main. Les mains restent exclusives (voir equipItem) ; les armes prêtes, non.
+ */
+export type WeaponPlacement = "bag" | "ready" | WeaponHand;
+
+export function weaponPlacement(item: InventoryItem): WeaponPlacement {
+  if (item.equipped === true) {
+    return item.hand ?? "main";
+  }
+  return item.stowed === true ? "bag" : "ready";
+}
+
+/** Place une arme : en main via equipItem (ce qu'elle déloge devient prêt), sinon prête ou
+ * rangée. */
+export function placeWeapon(
+  character: Pick<Character, "inventory" | "dualWielder">,
+  itemId: string,
+  placement: WeaponPlacement,
+): InventoryItem[] {
+  if (placement === "main" || placement === "off") {
+    return equipItem(character, itemId, placement);
+  }
+  return equipItem(character, itemId, null).map((item) => {
+    if (item.id !== itemId) {
+      return item;
+    }
+    const { stowed: _stowed, ...rest } = item;
+    return placement === "bag" ? { ...rest, stowed: true } : rest;
+  });
 }

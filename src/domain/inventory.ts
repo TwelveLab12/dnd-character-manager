@@ -101,6 +101,9 @@ export interface InventoryItem {
   equipped?: boolean;
   /** Main d'une arme équipée — voir src/domain/equipment.ts. */
   hand?: WeaponHand;
+  /** Arme rangée dans le sac : ni en main, ni prête à dégainer (docs/adr/0054). Absent = une arme
+   * non équipée est prête. */
+  stowed?: boolean;
   armor?: ArmorProperties;
   weapon?: WeaponProperties;
   /** Bonus magique à la CA quand l'objet est équipé (armure +1, anneau de protection…). */
@@ -121,6 +124,11 @@ export function adjustItemQuantity(
 /** Poids total porté, en kg (poids unitaire × quantité ; un objet sans poids compte pour 0). */
 export function totalInventoryWeight(inventory: readonly InventoryItem[]): number {
   return inventory.reduce((sum, item) => sum + (item.weight ?? 0) * item.quantity, 0);
+}
+
+/** Arme prête à dégainer (docs/adr/0054) : pas en main, pas rangée dans le sac. */
+export function isReadyWeapon(item: InventoryItem): boolean {
+  return item.weapon !== undefined && item.equipped !== true && item.stowed !== true;
 }
 
 /** Arme, armure ou bouclier : rangé dans « Armes & armures » plutôt que dans le sac. */

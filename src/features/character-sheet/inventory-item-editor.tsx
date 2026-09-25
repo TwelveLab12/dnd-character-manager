@@ -37,7 +37,7 @@ import {
   formatWeaponDamage,
 } from "@/features/shared/weapon";
 import { ITEM_KIND_OPTIONS, itemKind, kindPatch, withArmorCategory } from "./inventory-item-kind";
-import { SegmentedControl } from "./segmented-control";
+import { SegmentedControl } from "@/features/shared/segmented-control";
 
 function toNumber(value: string): number {
   const parsed = Number.parseFloat(value);

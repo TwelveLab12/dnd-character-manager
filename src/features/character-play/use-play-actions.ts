@@ -10,8 +10,8 @@ import {
   setTemporaryHitPoints,
 } from "@/domain/calculations/hit-points";
 import { applyLongRest, applyShortRest } from "@/domain/calculations/rest";
-import type { EquipSlot } from "@/domain/equipment";
-import { equipItem } from "@/domain/equipment";
+import type { EquipSlot, WeaponPlacement } from "@/domain/equipment";
+import { equipItem, placeWeapon } from "@/domain/equipment";
 import type { Coin } from "@/domain/currency";
 import { characterCurrency, setCoinAmount } from "@/domain/currency";
 import { adjustItemQuantity } from "@/domain/inventory";
@@ -107,6 +107,8 @@ export function usePlayActions(characterId: string) {
     restoreCasting: (previous: CastingPatch) => withCurrent(() => previous),
     equipItem: (itemId: string, slot: EquipSlot) =>
       withCurrent((character) => ({ inventory: equipItem(character, itemId, slot) })),
+    placeWeapon: (itemId: string, placement: WeaponPlacement) =>
+      withCurrent((character) => ({ inventory: placeWeapon(character, itemId, placement) })),
     adjustItemQuantity: (itemId: string, delta: number) =>
       withCurrent((character) => ({
         inventory: adjustItemQuantity(character.inventory, itemId, delta),
