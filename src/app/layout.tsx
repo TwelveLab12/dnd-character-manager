@@ -4,6 +4,7 @@ import { RepositoryProvider } from "@/repositories/repository-provider";
 import { StoreProvider } from "@/stores/store-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
+import { ServiceWorkerRegistrar } from "@/features/pwa/service-worker-registrar";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -46,6 +47,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <RepositoryProvider>
           <StoreProvider>
             <TooltipProvider>{children}</TooltipProvider>
+            <ServiceWorkerRegistrar />
           </StoreProvider>
         </RepositoryProvider>
         <Toaster />
