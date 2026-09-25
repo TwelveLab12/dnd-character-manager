@@ -1,16 +1,17 @@
 "use client";
 
-import { Minus, Plus } from "lucide-react";
+import { Minus, Plus, Sparkles } from "lucide-react";
 import type { ReactNode } from "react";
 import { useId } from "react";
 import { cn } from "cn";
 import type { AbilityName } from "@/domain/ability-scores";
 import { effectiveAbilityScores } from "@/domain/calculations/effective-ability-scores";
 import { DEFAULT_SPEED } from "@/domain/calculations/combat-stats";
+import { changeRace } from "@/domain/calculations/race-change";
 import { CHARACTER_CLASSES, findClassDefinition } from "@/domain/character-class";
 import type { RaceDefinition } from "@/domain/race";
-import { RACE_DEFINITIONS, findRaceDefinition } from "@/domain/race";
-import { ABILITY_LABELS } from "@/features/shared/ability-labels";
+import { RACE_DEFINITIONS, findRaceDefinition, findRaceDefinitionByLabel } from "@/domain/race";
+import { ABILITY_LABELS, ABILITY_SHORT_LABELS } from "@/features/shared/ability-labels";
 import { formatModifier } from "@/features/shared/format";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -43,6 +44,27 @@ function toNumber(value: string): number {
   return Number.isFinite(parsed) ? parsed : 0;
 }
 
+/** Bonus d'une race en clair : « +2 Cha, +1 Int », « +2 Cha, +1 à 2 caractéristiques au choix ». */
+function describeRaceBonuses(race: RaceDefinition): string {
+  return race.abilityBonusRules
+    .map((rule) =>
+      rule.type === "fixed"
+        ? `+${rule.amount} ${ABILITY_SHORT_LABELS[rule.ability]}`
+        : `+${rule.amount} à ${rule.count} caractéristiques au choix`,
+    )
+    .join(", ");
+}
+
+function formatSpeed(meters: number): string {
+  return `${String(meters).replace(".", ",")} m`;
+}
+
+/** Vitesse en mètres : accepte les décimales (7,5 m). */
+function toMeters(value: string): number {
+  const parsed = Number.parseFloat(value);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
 function clampLevel(level: number): number {
   return Math.min(MAX_LEVEL, Math.max(MIN_LEVEL, level));
 }
@@ -60,11 +82,14 @@ export function IdentitySection({ draft, onChange }: CharacterTabProps) {
   const subclassId = useId();
   const raceId = useId();
   const backgroundId = useId();
+  const raceNameId = useId();
   const baseSpeedId = useId();
 
   const classDefinition = findClassDefinition(draft.classId);
   const subclasses = classDefinition?.subclasses ?? [];
   const race = draft.raceSelection ? findRaceDefinition(draft.raceSelection.raceId) : undefined;
+  // Race saisie en texte libre mais connue des règles (ex : personnage importé) : proposée.
+  const recognizedRace = race ? undefined : findRaceDefinitionByLabel(draft.race);
   const subclassKnown = subclasses.some((definition) => definition.id === draft.subclassId);
 
   function selectClass(value: string) {
@@ -91,15 +116,7 @@ export function IdentitySection({ draft, onChange }: CharacterTabProps) {
   }
 
   function selectRace(value: string) {
-    const definition = findRaceDefinition(value);
-    onChange(
-      definition
-        ? {
-            raceSelection: { raceId: definition.id, abilityBonusChoices: [] },
-            race: definition.name,
-          }
-        : { raceSelection: undefined },
-    );
+    onChange(changeRace(draft, value === OTHER ? undefined : value));
   }
 
   return (
@@ -229,26 +246,57 @@ export function IdentitySection({ draft, onChange }: CharacterTabProps) {
           </Select>
           {!race && (
             <div className="grid grid-cols-[minmax(0,1fr)_7rem] gap-2">
-              <Input
-                aria-label="Nom de la race"
-                placeholder="Ex : Demi-elfe"
-                className="border-dashed"
-                value={draft.race ?? ""}
-                onChange={(event) => onChange({ race: event.target.value || undefined })}
-              />
-              <Input
-                id={baseSpeedId}
-                aria-label="Vitesse de base (m)"
-                type="number"
-                placeholder={`${DEFAULT_SPEED} m`}
-                className="border-dashed"
-                value={draft.baseSpeed ?? ""}
-                onChange={(event) =>
-                  onChange({
-                    baseSpeed: event.target.value ? toNumber(event.target.value) : undefined,
-                  })
-                }
-              />
+              <div className="grid gap-1">
+                <Label htmlFor={raceNameId} className="text-muted-foreground text-xs font-normal">
+                  Nom de la race
+                </Label>
+                <Input
+                  id={raceNameId}
+                  placeholder="Ex : Elfe des bois"
+                  className="border-dashed"
+                  value={draft.race ?? ""}
+                  onChange={(event) => onChange({ race: event.target.value || undefined })}
+                />
+              </div>
+              <div className="grid gap-1">
+                <Label htmlFor={baseSpeedId} className="text-muted-foreground text-xs font-normal">
+                  Vitesse (m)
+                </Label>
+                <Input
+                  id={baseSpeedId}
+                  type="number"
+                  step={1.5}
+                  placeholder={String(DEFAULT_SPEED)}
+                  className="border-dashed"
+                  value={draft.baseSpeed ?? ""}
+                  onChange={(event) =>
+                    onChange({
+                      baseSpeed: event.target.value ? toMeters(event.target.value) : undefined,
+                    })
+                  }
+                />
+              </div>
+            </div>
+          )}
+          {recognizedRace && (
+            <div className="border-primary/40 bg-primary/10 grid gap-2 rounded-xl border p-3">
+              <p className="flex gap-2 text-sm">
+                <Sparkles aria-hidden className="text-primary mt-0.5 size-4 shrink-0" />
+                <span>
+                  <strong className="font-semibold">{recognizedRace.name}</strong> est connu des
+                  règles : {describeRaceBonuses(recognizedRace)}, vitesse{" "}
+                  {formatSpeed(recognizedRace.speed)}. Les scores actuels du personnage ne changent
+                  pas.
+                </span>
+              </p>
+              <Button
+                type="button"
+                size="sm"
+                className="justify-self-start"
+                onClick={() => onChange(changeRace(draft, recognizedRace.id))}
+              >
+                Appliquer les règles de la race
+              </Button>
             </div>
           )}
         </Field>
@@ -342,10 +390,7 @@ function RaceBonusPanel({ draft, onChange, race }: CharacterTabProps & { race: R
     <div className="bg-background/60 grid gap-2.5 rounded-xl border p-3.5">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <span id={titleId} className="text-sm font-medium">
-          {race.name} ·{" "}
-          {choice
-            ? `+${choice.amount} à ${choice.count} caractéristiques au choix`
-            : "bonus de caractéristiques"}
+          {race.name} · {describeRaceBonuses(race)} · vitesse {formatSpeed(race.speed)}
         </span>
         {choice && (
           <span className="text-muted-foreground text-xs">

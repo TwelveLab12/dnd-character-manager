@@ -30,6 +30,12 @@ function toNumber(value: string): number {
   return Number.isFinite(parsed) ? parsed : 0;
 }
 
+/** Vitesse en mètres : accepte les décimales (1,5 m). */
+function toMeters(value: string): number {
+  const parsed = Number.parseFloat(value);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
 /**
  * Onglet Général de la configuration (docs/adr/0035) : identité, résumé des valeurs calculées,
  * puis une section par réglage (PV max, défense, attaques, dons et bonus, thème et notes).
@@ -232,7 +238,7 @@ function RulesSection({ draft, onChange }: CharacterTabProps) {
             value={draft.speedExtraBonus ?? ""}
             onChange={(event) =>
               onChange({
-                speedExtraBonus: event.target.value ? toNumber(event.target.value) : undefined,
+                speedExtraBonus: event.target.value ? toMeters(event.target.value) : undefined,
               })
             }
           />
