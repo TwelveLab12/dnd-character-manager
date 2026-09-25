@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DetailsHint } from "@/features/shared/detail-sheet";
 import { EquipControl } from "@/features/shared/equip-control";
+import { WeaponPlacementControl } from "@/features/shared/weapon-placement-control";
 import { formatDecimal } from "@/features/shared/format";
 import { Purse } from "@/features/shared/purse";
 import { QuantityStepper } from "@/features/shared/quantity-stepper";
@@ -21,12 +22,15 @@ import { usePlayActions } from "./use-play-actions";
 
 /**
  * Onglet « Inventaire » du mode jeu : bourse et quantités modifiables directement (persistées
- * immédiatement, comme les autres actions du mode jeu), armes et armures équipables ; le reste se
+ * immédiatement, comme les autres actions du mode jeu), armes à placer (sac, prête, en main —
+ * docs/adr/0054) et armures équipables ; le reste se
  * configure dans l'onglet Inventaire de la configuration, ouvert par le bouton crayon. Chaque ligne
  * ouvre le panneau de détail de l'objet (docs/adr/0043).
  */
 export function InventoryViewTab({ character }: { character: Character }) {
-  const { equipItem, adjustItemQuantity, setCoinAmount } = usePlayActions(character.id);
+  const { equipItem, placeWeapon, adjustItemQuantity, setCoinAmount } = usePlayActions(
+    character.id,
+  );
   const [detail, setDetail] = useState<PlayDetail | undefined>();
   const showItem = (itemId: string) => setDetail({ kind: "item", itemId });
   const gear = sortInventoryByName(character.inventory.filter(isGear));
@@ -64,13 +68,23 @@ export function InventoryViewTab({ character }: { character: Character }) {
               highlighted={item.equipped === true}
               onShowDetails={() => showItem(item.id)}
             >
-              <div className="relative z-10 w-full sm:w-48">
-                <EquipControl
-                  item={item}
-                  character={character}
-                  onEquip={(slot) => void equipItem(item.id, slot)}
-                />
-              </div>
+              {item.weapon ? (
+                <div className="relative z-10 w-full sm:w-80">
+                  <WeaponPlacementControl
+                    item={item}
+                    character={character}
+                    onPlace={(placement) => void placeWeapon(item.id, placement)}
+                  />
+                </div>
+              ) : (
+                <div className="relative z-10 w-full sm:w-48">
+                  <EquipControl
+                    item={item}
+                    character={character}
+                    onEquip={(slot) => void equipItem(item.id, slot)}
+                  />
+                </div>
+              )}
             </ItemRow>
           ))}
         </ItemSection>

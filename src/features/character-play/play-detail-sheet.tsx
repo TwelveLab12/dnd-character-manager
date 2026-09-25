@@ -6,7 +6,11 @@ import type { ReactNode } from "react";
 import type { Character } from "@/domain/character";
 import type { ClassResourceId } from "@/domain/character-class";
 import { computeClassResources } from "@/domain/calculations/class-resources";
-import { computeWeaponAttacks } from "@/domain/calculations/weapon-attack";
+import {
+  computeReadyWeaponAttacks,
+  computeWeaponAttacks,
+} from "@/domain/calculations/weapon-attack";
+import { isReadyWeapon } from "@/domain/inventory";
 import type { InventoryItem } from "@/domain/inventory";
 import { ARMOR_CATEGORY_LABELS } from "@/features/shared/armor-class";
 import { ABILITY_LABELS } from "@/features/shared/ability-labels";
@@ -193,16 +197,18 @@ export function PlayDetailSheet({
         };
       }
       case "attack": {
-        const attack = computeWeaponAttacks(character).find(
-          (candidate) => candidate.itemId === detail.itemId,
-        );
+        const attack = [
+          ...computeWeaponAttacks(character),
+          ...computeReadyWeaponAttacks(character),
+        ].find((candidate) => candidate.itemId === detail.itemId);
         if (!attack) {
           return undefined;
         }
         const item = character.inventory.find((candidate) => candidate.id === detail.itemId);
         const tags = weaponAttackTags(attack);
+        const readySuffix = item && isReadyWeapon(item) ? " · Prête" : "";
         return {
-          eyebrow: attack.range === "ranged" ? "Arme · Distance" : "Arme · Corps à corps",
+          eyebrow: `${attack.range === "ranged" ? "Arme · Distance" : "Arme · Corps à corps"}${readySuffix}`,
           title: attack.name || "Arme",
           tags: (!attack.proficient || tags.length > 0) && (
             <>
@@ -248,13 +254,18 @@ export function PlayDetailSheet({
         if (!item) {
           return undefined;
         }
-        const attack = computeWeaponAttacks(character).find(
-          (candidate) => candidate.itemId === item.id,
-        );
+        const attack = [
+          ...computeWeaponAttacks(character),
+          ...computeReadyWeaponAttacks(character),
+        ].find((candidate) => candidate.itemId === item.id);
         return {
           eyebrow: itemKindLabel(item),
           title: item.name || "Objet",
-          tags: item.equipped && <Badge variant="secondary">Équipé</Badge>,
+          tags: item.equipped ? (
+            <Badge variant="secondary">{item.weapon ? "En main" : "Équipé"}</Badge>
+          ) : (
+            isReadyWeapon(item) && <Badge variant="secondary">Prête</Badge>
+          ),
           body: (
             <>
               <DetailStats stats={itemStats(item)} />

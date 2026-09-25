@@ -20,7 +20,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { FEATURE_RECHARGE_LABELS, hasOwnUses } from "@/features/shared/feature";
-import { SegmentedControl } from "./segmented-control";
+import { SegmentedControl } from "@/features/shared/segmented-control";
 import type { CharacterTabProps } from "./types";
 
 const NO_SOURCE = "Sans source";
