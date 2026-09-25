@@ -25,7 +25,7 @@ function withoutEmpty<T>(items: T[]): T[] | undefined {
  * Change la classe d'un personnage (docs/adr/0052). Passer d'une classe en texte libre à une
  * classe connue retire ce que les règles calculent désormais, pour ne rien compter deux fois :
  * jets de sauvegarde de la classe cochés à la main, PV max saisis, Arts martiaux cochés, effet de
- * CA « Défense sans armure », bonus de vitesse couvrant le Déplacement sans armure, compteur propre
+ * CA « Défense sans armure », bonus de vitesse couvrant le bonus de vitesse de la classe, compteur propre
  * d'une capacité qui porte le nom d'une ressource de classe (ex : « Ki »). L'inverse reporte ces
  * valeurs calculées en saisie manuelle. Entre deux classes connues, seules la classe et la
  * sous-classe changent.
@@ -40,7 +40,7 @@ export function changeClass(character: Character, classId: string | undefined): 
     }
     const level = clampCharacterLevel(character.level);
     const scores = effectiveAbilityScores(character.abilityScores, character.raceSelection);
-    const movement = current.unarmoredMovement?.(level) ?? 0;
+    const movement = current.movementBonus?.metersAtLevel(level) ?? 0;
     return {
       classId: undefined,
       subclassId: undefined,
@@ -75,15 +75,15 @@ export function changeClass(character: Character, classId: string | undefined): 
   const subclass = character.subclass
     ? findSubclassDefinitionByLabel(target.id, character.subclass)
     : undefined;
-  const movement = target.unarmoredMovement?.(level) ?? 0;
+  const movement = target.movementBonus?.metersAtLevel(level) ?? 0;
   const remainingSpeedBonus = (character.speedExtraBonus ?? 0) - movement;
   const resourceNames = target.resources.map((resource) => normalizeLabel(resource.name));
 
   return {
     classId: target.id,
     class: target.name,
+    // Le libellé saisi est gardé : il peut préciser la sous-classe (« … (Ours) »).
     subclassId: subclass?.id,
-    ...(subclass ? { subclass: subclass.name } : {}),
     savingThrowProficiencies: character.savingThrowProficiencies.filter(
       (ability) => !target.savingThrows.includes(ability),
     ),

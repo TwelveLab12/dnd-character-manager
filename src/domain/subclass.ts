@@ -168,3 +168,20 @@ export const OPEN_HAND: SubclassDefinition = {
   proficiencies: { armor: [], weapons: [] },
   resourceOptions: [],
 };
+
+/** Voie du guerrier totémique (Manuel des joueurs) : l'esprit totem choisi (ours, aigle, loup…) n'a
+ * pas d'effet calculé, il reste décrit sur la fiche. */
+export const TOTEM_WARRIOR: SubclassDefinition = {
+  id: "guerrier-totemique",
+  name: "Voie du guerrier totémique",
+  aliases: [
+    "voie du guerrier totemique",
+    "guerrier totemique",
+    "voie du totem",
+    "path of the totem warrior",
+    "totem warrior",
+  ],
+  alwaysPreparedSpells: [],
+  proficiencies: { armor: [], weapons: [] },
+  resourceOptions: [],
+};

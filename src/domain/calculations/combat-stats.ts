@@ -79,14 +79,16 @@ export function computeSpeed(character: Character): ComputedStat {
       : { label: "Base", value: character.baseSpeed ?? DEFAULT_SPEED },
   ];
 
-  const unarmoredMovement = findClassDefinition(character.classId)?.unarmoredMovement?.(
-    clampCharacterLevel(character.level),
+  const movementBonus = findClassDefinition(character.classId)?.movementBonus;
+  const classMeters = movementBonus?.metersAtLevel(clampCharacterLevel(character.level)) ?? 0;
+  const lost = character.inventory.some(
+    (item) =>
+      item.equipped === true &&
+      item.armor !== undefined &&
+      (movementBonus?.lostWith === "armorOrShield" || item.armor.category === "heavy"),
   );
-  const wearsArmorOrShield = character.inventory.some(
-    (item) => item.equipped === true && item.armor !== undefined,
-  );
-  if (unarmoredMovement && !wearsArmorOrShield) {
-    breakdown.push({ label: "Déplacement sans armure", value: unarmoredMovement });
+  if (movementBonus && classMeters > 0 && !lost) {
+    breakdown.push({ label: movementBonus.name, value: classMeters });
   }
   if (character.speedExtraBonus) {
     breakdown.push({ label: "Bonus", value: character.speedExtraBonus });
