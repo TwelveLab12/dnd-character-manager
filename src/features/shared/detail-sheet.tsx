@@ -1,8 +1,8 @@
 "use client";
 
 import { Info, XIcon } from "lucide-react";
-import type { ReactNode } from "react";
-import { useState } from "react";
+import type { PointerEvent as ReactPointerEvent, ReactNode } from "react";
+import { useRef, useState } from "react";
 import { isKnownThemeId } from "@/features/character-theme/theme-registry";
 import { Button } from "@/components/ui/button";
 import {
@@ -31,11 +31,87 @@ export function useLastDefined<T>(value: T | undefined): T | undefined {
   return value ?? last;
 }
 
+/** Glissement au-delà duquel le panneau se ferme au lâcher, en px. */
+const CLOSE_DISTANCE = 120;
+/** Geste rapide (px/ms) qui ferme même sous `CLOSE_DISTANCE`, à partir de `FLICK_MIN_DISTANCE`. */
+const CLOSE_VELOCITY = 0.5;
+const FLICK_MIN_DISTANCE = 30;
+
+/**
+ * Fermeture par glissement vers le bas (docs/adr/0044) : la zone de préhension suit le doigt, puis
+ * au lâcher le panneau se ferme au-delà d'une distance ou d'une vitesse, sinon revient en place.
+ * Le décalage est posé en style inline sans rendu React. L'animation de sortie (tw-animate `exit`
+ * n'a qu'une image `to`) part de cette position : le panneau glisse hors de l'écran sans saut.
+ */
+function useSwipeToClose(onClose: () => void) {
+  const drag = useRef<{
+    sheet: HTMLElement;
+    pointerId: number;
+    startY: number;
+    startTime: number;
+    offset: number;
+  }>(undefined);
+
+  function setOffset(sheet: HTMLElement, offset: number, animate: boolean) {
+    sheet.style.transition = animate ? "transform 200ms ease-out" : "none";
+    sheet.style.transform = offset > 0 ? `translateY(${offset}px)` : "";
+  }
+
+  function end(event: ReactPointerEvent<HTMLElement>, cancelled: boolean) {
+    const current = drag.current;
+    if (!current || current.pointerId !== event.pointerId) {
+      return;
+    }
+    drag.current = undefined;
+    const elapsed = Date.now() - current.startTime;
+    const velocity = elapsed > 0 ? current.offset / elapsed : 0;
+    const shouldClose =
+      !cancelled &&
+      (current.offset >= CLOSE_DISTANCE ||
+        (current.offset >= FLICK_MIN_DISTANCE && velocity >= CLOSE_VELOCITY));
+    if (shouldClose) {
+      current.sheet.style.transition = "none";
+      onClose();
+    } else {
+      setOffset(current.sheet, 0, true);
+    }
+  }
+
+  return {
+    onPointerDown(event: ReactPointerEvent<HTMLElement>) {
+      // Le bouton ✕ (et tout lien) garde son clic.
+      const sheet = event.currentTarget.closest<HTMLElement>('[data-slot="sheet-content"]');
+      if (!sheet || event.button !== 0 || (event.target as HTMLElement).closest("button, a")) {
+        return;
+      }
+      drag.current = {
+        sheet,
+        pointerId: event.pointerId,
+        startY: event.clientY,
+        startTime: Date.now(),
+        offset: 0,
+      };
+      event.currentTarget.setPointerCapture?.(event.pointerId);
+    },
+    onPointerMove(event: ReactPointerEvent<HTMLElement>) {
+      const current = drag.current;
+      if (!current || current.pointerId !== event.pointerId) {
+        return;
+      }
+      current.offset = Math.max(0, event.clientY - current.startY);
+      setOffset(current.sheet, current.offset, false);
+    },
+    onPointerUp: (event: ReactPointerEvent<HTMLElement>) => end(event, false),
+    onPointerCancel: (event: ReactPointerEvent<HTMLElement>) => end(event, true),
+  };
+}
+
 /**
  * Coque des panneaux de détail (docs/adr/0041) : monte du bas, se ferme au clic en dehors, par ✕
  * ou Échap (Radix Dialog), centrée et limitée en largeur sur grand écran. Rendue dans un portail,
  * hors de `CharacterThemeScope` : le thème du personnage est reposé sur le contenu lui-même.
- * `footer` accueille l'action propre au bloc ; sans lui, lecture seule.
+ * `footer` accueille l'action propre au bloc ; sans lui, lecture seule. La barre de préhension et
+ * l'en-tête se glissent vers le bas pour fermer (docs/adr/0044).
  */
 export function DetailSheet({
   open,
@@ -56,6 +132,8 @@ export function DetailSheet({
   footer?: ReactNode;
   children: ReactNode;
 }) {
+  const swipeHandlers = useSwipeToClose(() => onOpenChange(false));
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
@@ -64,31 +142,38 @@ export function DetailSheet({
         data-theme={isKnownThemeId(themeId) ? themeId : undefined}
         className="bg-card text-card-foreground border-primary/35 mx-auto max-h-[88dvh] w-full max-w-2xl gap-0 rounded-t-3xl border-x border-t ring-0 sm:max-h-[80dvh]"
       >
-        <div aria-hidden className="flex justify-center pt-2.5">
-          <span className="bg-muted-foreground/45 h-1 w-10 rounded-full" />
-        </div>
-
-        <div className="flex items-start gap-2 pt-3 pr-3 pb-4 pl-5 sm:pl-7">
-          <div className="grid min-w-0 flex-1 gap-1.5">
-            <SheetDescription className="text-primary text-[11px] font-semibold tracking-widest uppercase">
-              {eyebrow}
-            </SheetDescription>
-            <SheetTitle className="font-heading text-[28px] leading-8 font-semibold break-words">
-              {title}
-            </SheetTitle>
-            {tags && <div className="flex flex-wrap gap-1.5">{tags}</div>}
+        {/* Zone de préhension : barre + en-tête. `touch-none` empêche le navigateur de faire défiler
+            la page (ou de la recharger) pendant le geste. */}
+        <div
+          className="cursor-grab touch-none select-none active:cursor-grabbing"
+          {...swipeHandlers}
+        >
+          <div aria-hidden className="flex justify-center pt-2.5 pb-1">
+            <span className="bg-muted-foreground/45 h-1 w-10 rounded-full" />
           </div>
-          <SheetClose asChild>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="bg-muted-foreground/12 size-11 shrink-0 rounded-full"
-            >
-              <XIcon />
-              <span className="sr-only">Fermer</span>
-            </Button>
-          </SheetClose>
+
+          <div className="flex items-start gap-2 pt-2 pr-3 pb-4 pl-5 sm:pl-7">
+            <div className="grid min-w-0 flex-1 gap-1.5">
+              <SheetDescription className="text-primary text-[11px] font-semibold tracking-widest uppercase">
+                {eyebrow}
+              </SheetDescription>
+              <SheetTitle className="font-heading text-[28px] leading-8 font-semibold break-words">
+                {title}
+              </SheetTitle>
+              {tags && <div className="flex flex-wrap gap-1.5">{tags}</div>}
+            </div>
+            <SheetClose asChild>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="bg-muted-foreground/12 size-11 shrink-0 rounded-full"
+              >
+                <XIcon />
+                <span className="sr-only">Fermer</span>
+              </Button>
+            </SheetClose>
+          </div>
         </div>
 
         <div className="grid min-h-0 flex-1 content-start gap-4 overflow-y-auto px-5 pb-6 sm:px-7">
