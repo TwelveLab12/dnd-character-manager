@@ -147,9 +147,7 @@ export function InventoryItemEditor({
         />
       )}
       {item.armor && <ArmorFields item={item} armor={item.armor} onChange={onChange} />}
-      {kind === "item" && (
-        <PlainItemFields item={item} character={character} onChange={onChange} onEquip={onEquip} />
-      )}
+      {kind === "item" && <PlainItemFields item={item} onChange={onChange} onEquip={onEquip} />}
 
       <Field label="Description" htmlFor={descriptionId}>
         <Textarea
@@ -489,12 +487,10 @@ function ArmorFields({
 
 function PlainItemFields({
   item,
-  character,
   onChange,
   onEquip,
 }: {
   item: InventoryItem;
-  character: Character;
   onChange: (patch: Partial<InventoryItem>) => void;
   onEquip: (slot: EquipSlot) => void;
 }) {
@@ -512,7 +508,7 @@ function PlainItemFields({
             onChange={(event) => onChange({ armorClassBonus: optionalNumber(event.target.value) })}
           />
         </Field>
-        <EquipControl item={item} character={character} onEquip={onEquip} />
+        <EquipControl item={item} onEquip={onEquip} />
       </div>
       <p className="text-muted-foreground text-sm">
         Pour un objet porté qui protège (anneau, cape…) : le bonus compte quand il est équipé.

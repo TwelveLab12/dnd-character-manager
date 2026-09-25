@@ -78,11 +78,7 @@ export function InventoryViewTab({ character }: { character: Character }) {
                 </div>
               ) : (
                 <div className="relative z-10 w-full sm:w-48">
-                  <EquipControl
-                    item={item}
-                    character={character}
-                    onEquip={(slot) => void equipItem(item.id, slot)}
-                  />
+                  <EquipControl item={item} onEquip={(slot) => void equipItem(item.id, slot)} />
                 </div>
               )}
             </ItemRow>
