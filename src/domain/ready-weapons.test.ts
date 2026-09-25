@@ -88,4 +88,10 @@ describe("computeReadyWeaponAttacks", () => {
       [],
     );
   });
+
+  it("leaves out a ready weapon whose quantity is 0 (all thrown or not counted yet)", () => {
+    expect(computeReadyWeaponAttacks(murrik([greatsword, { ...handaxe, quantity: 0 }]))).toEqual(
+      [],
+    );
+  });
 });
