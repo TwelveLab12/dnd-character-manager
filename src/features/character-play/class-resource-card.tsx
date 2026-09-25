@@ -1,29 +1,44 @@
 "use client";
 
 import { Hourglass, Moon, Sun } from "lucide-react";
+import { DetailsHint } from "@/features/shared/detail-sheet";
 import type { Character } from "@/domain/character";
 import type { ClassResourceId } from "@/domain/character-class";
 import { findClassDefinition, normalizeLabel } from "@/domain/character-class";
 import { computeClassResourceOptions } from "@/domain/calculations/class-features";
 import type { ClassResourceState } from "@/domain/calculations/class-resources";
 import { computeClassResources } from "@/domain/calculations/class-resources";
+import { Button } from "@/components/ui/button";
 import { usePlayActions } from "./use-play-actions";
 
-interface ResourceOptionView {
+export interface ResourceOptionView {
   key: string;
   name: string;
   source: string;
+  /** Texte saisi sur la fiche : celui de la capacité liée, ou pour une option des règles (qui n'en
+   * reproduisent aucun, docs/adr/0028) celui d'une capacité de même nom. */
+  description: string;
+  /** Option accordée par les règles (pas une capacité de la fiche). */
+  fromRules: boolean;
 }
 
 /**
  * Options de la réserve : celles accordées par les règles au niveau actuel (classe, sous-classe),
  * puis les capacités de la fiche liées à la ressource qui n'en sont pas un doublon (même nom).
  */
-function resourceOptions(character: Character, resourceId: ClassResourceId): ResourceOptionView[] {
+export function resourceOptions(
+  character: Character,
+  resourceId: ClassResourceId,
+): ResourceOptionView[] {
   const fromRules = computeClassResourceOptions(character, resourceId).map((option) => ({
     key: option.id,
     name: option.name,
     source: option.source,
+    description:
+      character.features.find(
+        (feature) => normalizeLabel(feature.name) === normalizeLabel(option.name),
+      )?.description ?? "",
+    fromRules: true,
   }));
   const ruleNames = new Set(fromRules.map((option) => normalizeLabel(option.name)));
   const fromFeatures = character.features
@@ -31,14 +46,27 @@ function resourceOptions(character: Character, resourceId: ClassResourceId): Res
       (feature) =>
         feature.resourceId === resourceId && !ruleNames.has(normalizeLabel(feature.name)),
     )
-    .map((feature) => ({ key: feature.id, name: feature.name, source: feature.source }));
+    .map((feature) => ({
+      key: feature.id,
+      name: feature.name,
+      source: feature.source,
+      description: feature.description,
+      fromRules: false,
+    }));
   return [...fromRules, ...fromFeatures];
 }
 
-const RECHARGE_LABELS = { shortRest: "Repos court", longRest: "Repos long" } as const;
+export const RECHARGE_LABELS = { shortRest: "Repos court", longRest: "Repos long" } as const;
 
 /** Une carte par ressource de classe (ex : Canalisation divine du Clerc) — voir docs/adr/0022. */
-export function ClassResourceCards({ character }: { character: Character }) {
+export function ClassResourceCards({
+  character,
+  onShowOption,
+}: {
+  character: Character;
+  /** Ouvre le panneau de détail d'une option (docs/adr/0042). */
+  onShowOption: (resourceId: ClassResourceId, optionKey: string) => void;
+}) {
   const resources = computeClassResources(character);
   const classLabel = findClassDefinition(character.classId)?.name;
   if (resources.length === 0 || !classLabel) {
@@ -51,6 +79,7 @@ export function ClassResourceCards({ character }: { character: Character }) {
       character={character}
       classLabel={classLabel}
       resource={resource}
+      onShowOption={(optionKey) => onShowOption(resource.id, optionKey)}
     />
   ));
 }
@@ -58,16 +87,19 @@ export function ClassResourceCards({ character }: { character: Character }) {
 /**
  * Réserve d'une ressource de classe : un médaillon par utilisation (allumé si disponible, éteint
  * si dépensée — toucher un médaillon dépense ou récupère une utilisation), puis ses options (règles
- * et capacités liées), chacune avec son bouton « Utiliser ».
+ * et capacités liées) : la ligne ouvre le détail de l'option, son bouton « Utiliser » dépense la
+ * réserve (docs/adr/0042).
  */
 function ClassResourceCard({
   character,
   classLabel,
   resource,
+  onShowOption,
 }: {
   character: Character;
   classLabel: string;
   resource: ClassResourceState;
+  onShowOption: (optionKey: string) => void;
 }) {
   const { adjustClassResource } = usePlayActions(character.id);
   const options = resourceOptions(character, resource.id);
@@ -133,30 +165,42 @@ function ClassResourceCard({
 
       {options.length > 0 && (
         <div className="grid gap-1.5">
-          {options.map((feature) => (
-            <button
-              key={feature.key}
-              type="button"
-              disabled={exhausted}
-              onClick={() => void adjustClassResource(resource.id, 1)}
-              aria-label={`Utiliser ${feature.name}`}
-              className="border-primary/30 bg-card hover:bg-primary/10 focus-visible:ring-ring/50 disabled:hover:bg-card flex min-h-11 items-center gap-2.5 rounded-xl border px-3 py-2 text-left transition-colors outline-none focus-visible:ring-3 disabled:cursor-not-allowed disabled:opacity-45"
+          {options.map((option) => (
+            <div
+              key={option.key}
+              className="border-primary/30 bg-card relative flex min-h-11 items-center gap-2.5 rounded-xl border py-1.5 pr-1.5 pl-3"
             >
+              <button
+                type="button"
+                aria-label={`Détails : ${option.name}`}
+                onClick={() => onShowOption(option.key)}
+                className="hover:bg-primary/10 focus-visible:ring-ring/50 absolute inset-0 cursor-pointer rounded-xl transition-colors outline-none focus-visible:ring-3"
+              />
               <span className="bg-primary/10 text-primary grid size-7.5 shrink-0 place-items-center rounded-lg">
                 <Sun aria-hidden className="size-4" />
               </span>
               <span className="grid min-w-0 flex-1 gap-px">
-                <span className="truncate text-[13px] font-medium">{feature.name}</span>
-                {feature.source && (
+                <span className="flex min-w-0 items-center gap-1.5">
+                  <span className="truncate text-[13px] font-medium">{option.name}</span>
+                  <DetailsHint className="size-3.5" />
+                </span>
+                {option.source && (
                   <span className="text-muted-foreground truncate text-[11px]">
-                    {feature.source}
+                    {option.source}
                   </span>
                 )}
               </span>
-              <span className="text-primary text-[11px] font-semibold tracking-[0.06em] uppercase">
+              <Button
+                type="button"
+                variant="ghost"
+                disabled={exhausted}
+                onClick={() => void adjustClassResource(resource.id, 1)}
+                aria-label={`Utiliser ${option.name}`}
+                className="text-primary hover:text-primary hover:bg-primary/15 relative z-10 h-9 text-[11px] font-semibold tracking-[0.06em] uppercase"
+              >
                 Utiliser
-              </span>
-            </button>
+              </Button>
+            </div>
           ))}
         </div>
       )}
