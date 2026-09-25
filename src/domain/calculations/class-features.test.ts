@@ -156,3 +156,36 @@ describe("computeClassResourceOptions", () => {
     expect(computeClassResourceOptions(twilightCleric(1), "channel-divinity")).toEqual([]);
   });
 });
+
+describe("Cercle des spores (Druide)", () => {
+  const sporesLibrary = [
+    makeTestSpell({ id: "chill", name: "Contact glacial (Chill Touch)", level: 0 }),
+    makeTestSpell({ id: "blind", name: "Cécité / Surdité (Blindness/Deafness)", level: 2 }),
+    makeTestSpell({ id: "repose", name: "Préservation des morts (Gentle Repose)", level: 2 }),
+  ];
+
+  function sporesDruid(level: number) {
+    return makeTestCharacter({ classId: "druide", subclassId: "spores", level });
+  }
+
+  it("grants Chill Touch at level 2, then the level-3 circle spells", () => {
+    expect(
+      computeAlwaysPreparedSpells(sporesDruid(2), sporesLibrary).map(({ spell }) => spell?.id),
+    ).toEqual(["chill"]);
+    expect(
+      computeAlwaysPreparedSpells(sporesDruid(3), sporesLibrary).map(({ spell }) => spell?.id),
+    ).toEqual(["chill", "blind", "repose"]);
+  });
+
+  it("lists Beast Shape and Symbiotic Entity as Wild Shape options from level 2", () => {
+    expect(computeClassResourceOptions(sporesDruid(2), "wild-shape")).toEqual([
+      { id: "beast-shape", name: "Forme de bête", source: "Druide" },
+      { id: "symbiotic-entity", name: "Entité symbiotique", source: "Cercle des spores" },
+    ]);
+    expect(computeClassResourceOptions(sporesDruid(1), "wild-shape")).toEqual([]);
+  });
+
+  it("grants the druid's armor proficiencies", () => {
+    expect(effectiveArmorProficiencies(sporesDruid(3))).toEqual(["light", "medium", "shield"]);
+  });
+});
