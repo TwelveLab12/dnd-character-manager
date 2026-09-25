@@ -5,7 +5,7 @@ import type {
   ProficiencyGrants,
   SubclassDefinition,
 } from "./subclass";
-import { CIRCLE_OF_SPORES, TWILIGHT_DOMAIN } from "./subclass";
+import { CIRCLE_OF_SPORES, OPEN_HAND, TWILIGHT_DOMAIN } from "./subclass";
 
 /** Progression d'emplacements de sorts. Seuls les lanceurs complets sont modélisés pour l'instant
  * (demi-lanceurs, tiers de lanceurs et magie de pacte viendront avec leurs classes). */
@@ -18,7 +18,7 @@ export type CasterProgression = "full";
  */
 export type SpellPreparation = "prepared" | "known";
 
-export const CLASS_RESOURCE_IDS = ["channel-divinity", "wild-shape"] as const;
+export const CLASS_RESOURCE_IDS = ["channel-divinity", "wild-shape", "ki"] as const;
 
 export type ClassResourceId = (typeof CLASS_RESOURCE_IDS)[number];
 
@@ -58,6 +58,15 @@ export interface CharacterClassDefinition {
   /** Nom générique des sous-classes (ex : « Domaine divin ») et sous-classes connues. */
   subclassLabel?: string;
   subclasses?: readonly SubclassDefinition[];
+  /** Arts martiaux accordés par la classe (Moine) : désactivables par personnage
+   * (`Character.martialArts === false`). */
+  martialArts?: boolean;
+  /** Défense sans armure : sans armure (et sans bouclier si `allowsShield` est faux), CA = 10 +
+   * Dex + modificateur de cette caractéristique. */
+  unarmoredDefense?: { ability: AbilityName; allowsShield: boolean };
+  /** Déplacement sans armure : bonus de vitesse en mètres selon le niveau, sans armure ni
+   * bouclier. */
+  unarmoredMovement?: (level: number) => number;
 }
 
 /** Canalisation divine du Clerc (règles 2014) : 1 utilisation au niveau 2, 2 au niveau 6, 3 au
@@ -80,6 +89,25 @@ const CHANNEL_DIVINITY: ClassResourceDefinition = {
  * court ou long. L'usage illimité de l'Archidruide (niveau 20) n'est pas modélisé. */
 export function wildShapeUses(level: number): number {
   return level >= 2 ? 2 : 0;
+}
+
+/** Ki du Moine (règles 2014) : autant de points que le niveau de moine, dès le niveau 2. */
+export function kiPoints(level: number): number {
+  return level >= 2 ? level : 0;
+}
+
+const KI: ClassResourceDefinition = {
+  id: "ki",
+  name: "Ki",
+  recharge: "shortRest",
+  usesAtLevel: kiPoints,
+};
+
+/** Déplacement sans armure du Moine (règles 2014) : +3 m au niveau 2, puis +1,5 m aux niveaux 6,
+ * 10, 14 et 18. */
+export function monkUnarmoredMovement(level: number): number {
+  if (level < 2) return 0;
+  return 3 + 1.5 * Math.floor((Math.min(level, 18) - 2) / 4);
 }
 
 const WILD_SHAPE: ClassResourceDefinition = {
@@ -139,6 +167,27 @@ export const CHARACTER_CLASSES: readonly CharacterClassDefinition[] = [
     ],
     subclassLabel: "Cercle druidique",
     subclasses: [CIRCLE_OF_SPORES],
+  },
+  {
+    id: "moine",
+    name: "Moine",
+    aliases: ["moine", "moniale", "monk"],
+    hitDie: 8,
+    savingThrows: ["strength", "dexterity"],
+    resources: [KI],
+    // Plus l'épée courte, arme de moine explicite (`monkWeapon`) maîtrisée via les Arts martiaux.
+    proficiencies: { armor: [], weapons: ["simple"] },
+    resourceOptions: [
+      { id: "flurry-of-blows", name: "Déluge de coups", resourceId: "ki", minLevel: 2 },
+      { id: "patient-defense", name: "Patience défensive", resourceId: "ki", minLevel: 2 },
+      { id: "step-of-the-wind", name: "Déplacement du vent", resourceId: "ki", minLevel: 2 },
+      { id: "stunning-strike", name: "Frappe étourdissante", resourceId: "ki", minLevel: 5 },
+    ],
+    martialArts: true,
+    unarmoredDefense: { ability: "wisdom", allowsShield: false },
+    unarmoredMovement: monkUnarmoredMovement,
+    subclassLabel: "Tradition monastique",
+    subclasses: [OPEN_HAND],
   },
   {
     id: "ensorceleur",

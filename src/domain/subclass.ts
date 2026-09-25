@@ -151,3 +151,20 @@ export const CIRCLE_OF_SPORES: SubclassDefinition = {
     { id: "symbiotic-entity", name: "Entité symbiotique", resourceId: "wild-shape", minLevel: 2 },
   ],
 };
+
+/** Voie de la main ouverte (Manuel des joueurs) : ses capacités (Technique de la paume…) n'ont pas
+ * d'effet calculé, elles restent décrites sur la fiche. */
+export const OPEN_HAND: SubclassDefinition = {
+  id: "main-ouverte",
+  name: "Voie de la main ouverte",
+  aliases: [
+    "voie de la main ouverte",
+    "main ouverte",
+    "voie de la paume",
+    "way of the open hand",
+    "open hand",
+  ],
+  alwaysPreparedSpells: [],
+  proficiencies: { armor: [], weapons: [] },
+  resourceOptions: [],
+};

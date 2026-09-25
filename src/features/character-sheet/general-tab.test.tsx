@@ -137,6 +137,53 @@ describe("GeneralTab", () => {
     expect(screen.getByText(/Tieffelin · \+2 Cha, \+1 Int · vitesse 9 m/)).toBeInTheDocument();
   });
 
+  it("offers the rules of a known class typed as free text, without double counting", async () => {
+    const user = userEvent.setup();
+    renderTab({
+      class: "Moine",
+      classId: undefined,
+      level: 3,
+      baseMaxHitPoints: 21,
+      savingThrowProficiencies: ["strength", "dexterity"],
+      martialArts: true,
+      speedExtraBonus: 3,
+      armorClassEffects: [
+        {
+          id: "defense-sans-armure",
+          name: "Défense sans armure (Sag)",
+          bonus: 2,
+          trigger: { type: "manual", active: true },
+        },
+      ],
+    });
+
+    expect(screen.getByText(/est connu des règles/)).toHaveTextContent(
+      "Moine est connu des règles : dé de vie d8, jets de sauvegarde For et Dex, Ki",
+    );
+    await user.click(screen.getByRole("button", { name: "Appliquer les règles de la classe" }));
+
+    expect(latest.classId).toBe("moine");
+    expect(latest.baseMaxHitPoints).toBeUndefined();
+    expect(latest.savingThrowProficiencies).toEqual([]);
+    expect(latest.martialArts).toBeUndefined();
+    expect(latest.speedExtraBonus).toBeUndefined();
+    expect(latest.armorClassEffects).toBeUndefined();
+    expect(screen.queryByText(/est connu des règles/)).not.toBeInTheDocument();
+  });
+
+  it("stores only the removal of the Martial Arts granted by the Monk class", async () => {
+    const user = userEvent.setup();
+    renderTab({ class: "Moine", classId: "moine", level: 3 });
+
+    const toggle = screen.getByRole("switch", { name: /arts martiaux/i });
+    expect(toggle).toBeChecked();
+    await user.click(toggle);
+    expect(latest.martialArts).toBe(false);
+    expect(screen.getByText(/Retirés · Moine/)).toBeInTheDocument();
+    await user.click(toggle);
+    expect(latest.martialArts).toBeUndefined();
+  });
+
   it("edits the extra speed bonus, cleared when emptied", async () => {
     const user = userEvent.setup();
     renderTab();

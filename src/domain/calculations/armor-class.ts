@@ -1,4 +1,6 @@
+import type { AbilityName } from "../ability-scores";
 import type { Character } from "../character";
+import { findClassDefinition } from "../character-class";
 import type { ArmorCategory, InventoryItem } from "../inventory";
 import { effectiveAbilityScores } from "./effective-ability-scores";
 import { abilityModifier } from "./modifiers";
@@ -19,6 +21,15 @@ export interface ArmorClassResult {
   breakdown: ArmorClassPart[];
   warnings: string[];
 }
+
+const ABILITY_ABBREVIATIONS: Record<AbilityName, string> = {
+  strength: "For",
+  dexterity: "Dex",
+  constitution: "Con",
+  intelligence: "Int",
+  wisdom: "Sag",
+  charisma: "Cha",
+};
 
 const CATEGORY_LABELS: Record<ArmorCategory, string> = {
   light: "armure légère",
@@ -51,7 +62,8 @@ function isEquippedArmor(item: InventoryItem): boolean {
 }
 
 /**
- * CA calculée à partir de l'armure et du bouclier équipés, de la Dextérité effective (bonus racial
+ * CA calculée à partir de l'armure et du bouclier équipés (ou de la Défense sans armure de la
+ * classe), de la Dextérité effective (bonus racial
  * inclus), des bonus magiques des objets équipés et des effets actifs (voir
  * src/domain/armor-class-effect.ts). La maîtrise d'armure ne change pas la CA en 5e 2014 : son
  * absence ne produit qu'un avertissement (désavantage For/Dex, pas de sorts).
@@ -100,6 +112,15 @@ export function computeArmorClass(character: Character): ArmorClassResult {
   );
   if (armor?.armor?.category !== "heavy") {
     breakdown.push({ label: "Dex", value: dexterity });
+  }
+
+  // Défense sans armure (Moine : Sag, sans bouclier ; Barbare : Con, bouclier permis).
+  const unarmoredDefense = findClassDefinition(character.classId)?.unarmoredDefense;
+  if (!armor && unarmoredDefense && (unarmoredDefense.allowsShield || !shield)) {
+    breakdown.push({
+      label: `${ABILITY_ABBREVIATIONS[unarmoredDefense.ability]} (Défense sans armure)`,
+      value: abilityModifier(scores[unarmoredDefense.ability]),
+    });
   }
 
   if (shield?.armor) {

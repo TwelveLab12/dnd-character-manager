@@ -4,6 +4,7 @@ import { findClassDefinition } from "../character-class";
 import { findRaceDefinition } from "../race";
 import { effectiveAbilityScores } from "./effective-ability-scores";
 import { abilityModifier } from "./modifiers";
+import { clampCharacterLevel } from "./proficiency";
 
 /*
  * Valeurs de combat déduites de la classe, de la race, des caractéristiques et de l'équipement :
@@ -78,6 +79,15 @@ export function computeSpeed(character: Character): ComputedStat {
       : { label: "Base", value: character.baseSpeed ?? DEFAULT_SPEED },
   ];
 
+  const unarmoredMovement = findClassDefinition(character.classId)?.unarmoredMovement?.(
+    clampCharacterLevel(character.level),
+  );
+  const wearsArmorOrShield = character.inventory.some(
+    (item) => item.equipped === true && item.armor !== undefined,
+  );
+  if (unarmoredMovement && !wearsArmorOrShield) {
+    breakdown.push({ label: "Déplacement sans armure", value: unarmoredMovement });
+  }
   if (character.speedExtraBonus) {
     breakdown.push({ label: "Bonus", value: character.speedExtraBonus });
   }

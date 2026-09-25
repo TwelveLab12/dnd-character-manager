@@ -4,9 +4,11 @@ import { useId } from "react";
 import { cn } from "cn";
 import type { StatPart } from "@/domain/calculations/combat-stats";
 import { computeArmorClass } from "@/domain/calculations/armor-class";
+import { hasMartialArts } from "@/domain/calculations/class-features";
 import { computeInitiative, computeSpeed } from "@/domain/calculations/combat-stats";
 import { computeMaxHitPoints } from "@/domain/calculations/max-hit-points";
 import { martialArtsDie } from "@/domain/calculations/weapon-attack";
+import { findClassDefinition } from "@/domain/character-class";
 import { FEATS } from "@/domain/feat";
 import { findRaceDefinition } from "@/domain/race";
 import {
@@ -141,6 +143,7 @@ function RulesSection({ draft, onChange }: CharacterTabProps) {
   const speedId = useId();
   const speedHintId = useId();
   const featIds = draft.featIds ?? [];
+  const martialArtsGranted = findClassDefinition(draft.classId)?.martialArts === true;
 
   function toggleFeat(featId: string, checked: boolean) {
     const next = checked ? [...featIds, featId] : featIds.filter((id) => id !== featId);
@@ -192,9 +195,20 @@ function RulesSection({ draft, onChange }: CharacterTabProps) {
         />
         <RuleSwitchRow
           name="Arts martiaux (Moine)"
-          effect={`Dé ${martialArtsDie(draft.level).slice(1)}, armes de moine et mains nues`}
-          checked={draft.martialArts ?? false}
-          onCheckedChange={(checked) => onChange({ martialArts: checked || undefined })}
+          effect={`Dé ${martialArtsDie(draft.level).slice(1)}, armes de moine et mains nues${
+            martialArtsGranted && !hasMartialArts(draft) ? " · Retirés · Moine" : ""
+          }`}
+          checked={hasMartialArts(draft)}
+          onCheckedChange={(checked) =>
+            onChange({
+              // Accordés par la classe : seul le retrait est stocké (docs/adr/0035).
+              martialArts: martialArtsGranted
+                ? checked
+                  ? undefined
+                  : false
+                : checked || undefined,
+            })
+          }
         />
       </div>
 
