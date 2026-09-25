@@ -163,3 +163,9 @@ export function toggleProficiency<T extends string>(
     removed: removed.length > 0 ? removed : undefined,
   };
 }
+
+/** Arts martiaux : accordés par la classe (Moine) sauf si le joueur les a désactivés pour ce
+ * personnage (`martialArts: false`), ou cochés à la main pour une autre classe. */
+export function hasMartialArts(character: Character): boolean {
+  return character.martialArts ?? findClassDefinition(character.classId)?.martialArts === true;
+}

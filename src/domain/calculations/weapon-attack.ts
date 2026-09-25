@@ -11,7 +11,7 @@ import type {
 import { effectiveAbilityScores } from "./effective-ability-scores";
 import { abilityModifier } from "./modifiers";
 import { clampCharacterLevel, proficiencyBonusForLevel } from "./proficiency";
-import { effectiveWeaponProficiencies } from "./class-features";
+import { effectiveWeaponProficiencies, hasMartialArts } from "./class-features";
 
 const DICE_PATTERN = /^(\d+)d(\d+)$/;
 
@@ -97,7 +97,7 @@ function hasOffHandWeapon(character: Character): boolean {
 
 /** Arts martiaux actifs : interrupteur activé et ni armure ni bouclier équipés. */
 export function isMartialArtsActive(character: Character): boolean {
-  if (!character.martialArts) {
+  if (!hasMartialArts(character)) {
     return false;
   }
   const { armor, shield } = equippedArmorItems(character);
@@ -158,7 +158,7 @@ function buildWeaponAttack(
   // maîtrisée dès que les Arts martiaux sont cochés, même s'ils sont inactifs (armure portée).
   const proficient =
     effectiveWeaponProficiencies(character).includes(weapon.category) ||
-    (character.martialArts === true && monkWeapon);
+    (hasMartialArts(character) && monkWeapon);
   const magicBonus = weapon.magicBonus ?? 0;
   const offHand = item.hand === "off";
   // Main secondaire (2014) : pas de mod positif aux dégâts, sauf style Combat à deux armes.
@@ -271,7 +271,7 @@ export function weaponAttackWarnings(character: Character): string[] {
       );
     }
   }
-  if (character.martialArts && (armor || shield)) {
+  if (hasMartialArts(character) && (armor || shield)) {
     warnings.push("Arts martiaux inactifs : une armure ou un bouclier est équipé.");
   }
   return warnings;

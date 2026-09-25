@@ -7,8 +7,15 @@ import { cn } from "cn";
 import type { AbilityName } from "@/domain/ability-scores";
 import { effectiveAbilityScores } from "@/domain/calculations/effective-ability-scores";
 import { DEFAULT_SPEED } from "@/domain/calculations/combat-stats";
+import { changeClass } from "@/domain/calculations/class-change";
+import { computeMaxHitPoints } from "@/domain/calculations/max-hit-points";
 import { changeRace } from "@/domain/calculations/race-change";
-import { CHARACTER_CLASSES, findClassDefinition } from "@/domain/character-class";
+import type { CharacterClassDefinition } from "@/domain/character-class";
+import {
+  CHARACTER_CLASSES,
+  findClassDefinition,
+  findClassDefinitionByLabel,
+} from "@/domain/character-class";
 import type { RaceDefinition } from "@/domain/race";
 import { RACE_DEFINITIONS, findRaceDefinition, findRaceDefinitionByLabel } from "@/domain/race";
 import { ABILITY_LABELS, ABILITY_SHORT_LABELS } from "@/features/shared/ability-labels";
@@ -55,6 +62,21 @@ function describeRaceBonuses(race: RaceDefinition): string {
     .join(", ");
 }
 
+/** Règles d'une classe en clair : « d8, JS For et Dex, Ki ». */
+function describeClass(definition: CharacterClassDefinition): string {
+  const saves = definition.savingThrows
+    .map((ability) => ABILITY_SHORT_LABELS[ability])
+    .join(" et ");
+  return [
+    `dé de vie d${definition.hitDie}`,
+    `jets de sauvegarde ${saves}`,
+    ...definition.resources.map((resource) => resource.name),
+    ...(definition.unarmoredDefense ? ["Défense sans armure"] : []),
+    ...(definition.unarmoredMovement ? ["Déplacement sans armure"] : []),
+    ...(definition.martialArts ? ["Arts martiaux"] : []),
+  ].join(", ");
+}
+
 function formatSpeed(meters: number): string {
   return `${String(meters).replace(".", ",")} m`;
 }
@@ -86,6 +108,8 @@ export function IdentitySection({ draft, onChange }: CharacterTabProps) {
   const baseSpeedId = useId();
 
   const classDefinition = findClassDefinition(draft.classId);
+  // Classe saisie en texte libre mais connue des règles (ex : personnage importé) : proposée.
+  const recognizedClass = classDefinition ? undefined : findClassDefinitionByLabel(draft.class);
   const subclasses = classDefinition?.subclasses ?? [];
   const race = draft.raceSelection ? findRaceDefinition(draft.raceSelection.raceId) : undefined;
   // Race saisie en texte libre mais connue des règles (ex : personnage importé) : proposée.
@@ -93,17 +117,7 @@ export function IdentitySection({ draft, onChange }: CharacterTabProps) {
   const subclassKnown = subclasses.some((definition) => definition.id === draft.subclassId);
 
   function selectClass(value: string) {
-    const definition = findClassDefinition(value === OTHER ? undefined : value);
-    if (!definition) {
-      onChange({ classId: undefined, subclassId: undefined });
-      return;
-    }
-    onChange({
-      classId: definition.id,
-      class: definition.name,
-      subclassId: undefined,
-      subclass: undefined,
-    });
+    onChange(changeClass(draft, value === OTHER ? undefined : value));
   }
 
   function selectSubclass(value: string) {
@@ -193,6 +207,18 @@ export function IdentitySection({ draft, onChange }: CharacterTabProps) {
               onChange={(event) => onChange({ class: event.target.value })}
             />
           )}
+          {recognizedClass && (
+            <RulesCallout
+              buttonLabel="Appliquer les règles de la classe"
+              onApply={() => onChange(changeClass(draft, recognizedClass.id))}
+            >
+              <strong className="font-semibold">{recognizedClass.name}</strong> est connu des règles
+              : {describeClass(recognizedClass)}. PV max calculés :{" "}
+              {computeMaxHitPoints({ ...draft, classId: recognizedClass.id }).total}. Les valeurs
+              saisies à la main qu&rsquo;elles remplacent sont retirées, sans rien compter deux
+              fois.
+            </RulesCallout>
+          )}
         </Field>
 
         <Field
@@ -279,25 +305,14 @@ export function IdentitySection({ draft, onChange }: CharacterTabProps) {
             </div>
           )}
           {recognizedRace && (
-            <div className="border-primary/40 bg-primary/10 grid gap-2 rounded-xl border p-3">
-              <p className="flex gap-2 text-sm">
-                <Sparkles aria-hidden className="text-primary mt-0.5 size-4 shrink-0" />
-                <span>
-                  <strong className="font-semibold">{recognizedRace.name}</strong> est connu des
-                  règles : {describeRaceBonuses(recognizedRace)}, vitesse{" "}
-                  {formatSpeed(recognizedRace.speed)}. Les scores actuels du personnage ne changent
-                  pas.
-                </span>
-              </p>
-              <Button
-                type="button"
-                size="sm"
-                className="justify-self-start"
-                onClick={() => onChange(changeRace(draft, recognizedRace.id))}
-              >
-                Appliquer les règles de la race
-              </Button>
-            </div>
+            <RulesCallout
+              buttonLabel="Appliquer les règles de la race"
+              onApply={() => onChange(changeRace(draft, recognizedRace.id))}
+            >
+              <strong className="font-semibold">{recognizedRace.name}</strong> est connu des règles
+              : {describeRaceBonuses(recognizedRace)}, vitesse {formatSpeed(recognizedRace.speed)}.
+              Les scores actuels du personnage ne changent pas.
+            </RulesCallout>
           )}
         </Field>
 
@@ -313,6 +328,29 @@ export function IdentitySection({ draft, onChange }: CharacterTabProps) {
 
       {race && <RaceBonusPanel draft={draft} onChange={onChange} race={race} />}
     </section>
+  );
+}
+
+/** Encart « connu des règles » sous un champ en texte libre (docs/adr/0051, 0052). */
+function RulesCallout({
+  buttonLabel,
+  onApply,
+  children,
+}: {
+  buttonLabel: string;
+  onApply: () => void;
+  children: ReactNode;
+}) {
+  return (
+    <div className="border-primary/40 bg-primary/10 grid gap-2 rounded-xl border p-3">
+      <p className="flex gap-2 text-sm">
+        <Sparkles aria-hidden className="text-primary mt-0.5 size-4 shrink-0" />
+        <span>{children}</span>
+      </p>
+      <Button type="button" size="sm" className="justify-self-start" onClick={onApply}>
+        {buttonLabel}
+      </Button>
+    </div>
   );
 }
 
