@@ -7,6 +7,8 @@ import type { Character } from "@/domain/character";
 import type { ClassResourceId } from "@/domain/character-class";
 import { computeClassResources } from "@/domain/calculations/class-resources";
 import { computeWeaponAttacks } from "@/domain/calculations/weapon-attack";
+import type { InventoryItem } from "@/domain/inventory";
+import { ARMOR_CATEGORY_LABELS } from "@/features/shared/armor-class";
 import { ABILITY_LABELS } from "@/features/shared/ability-labels";
 import {
   DetailSheet,
@@ -15,19 +17,26 @@ import {
   UsePips,
   useLastDefined,
 } from "@/features/shared/detail-sheet";
-import { FEATURE_RECHARGE_LABELS } from "@/features/shared/feature";
-import { formatModifier } from "@/features/shared/format";
-import { DAMAGE_TYPE_LABELS, weaponAttackTags } from "@/features/shared/weapon";
+import { FEATURE_RECHARGE_LABELS, hasOwnUses } from "@/features/shared/feature";
+import { formatDecimal, formatModifier } from "@/features/shared/format";
+import {
+  DAMAGE_TYPE_LABELS,
+  formatWeaponAttack,
+  WEAPON_CATEGORY_LABELS,
+  WEAPON_RANGE_LABELS,
+  weaponAttackTags,
+} from "@/features/shared/weapon";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { RECHARGE_LABELS, resourceOptions } from "./class-resource-card";
 import { usePlayActions } from "./use-play-actions";
 
-/** Bloc de l'onglet Combat dont le détail est affiché. */
-export type CombatDetail =
+/** Bloc du mode jeu dont le détail est affiché. */
+export type PlayDetail =
   | { kind: "feature"; featureId: string }
   | { kind: "option"; resourceId: ClassResourceId; optionKey: string }
-  | { kind: "attack"; itemId: string };
+  | { kind: "attack"; itemId: string }
+  | { kind: "item"; itemId: string };
 
 interface DetailView {
   eyebrow: string;
@@ -38,18 +47,18 @@ interface DetailView {
 }
 
 /**
- * Panneau de détail de l'onglet Combat (docs/adr/0042), sur la coque commune `DetailSheet` :
- * capacité à utilisations, option d'une ressource de classe (Canalisation divine) ou attaque
- * d'arme. Relu depuis le personnage courant à chaque rendu, pour que les compteurs du pied suivent
- * les utilisations.
+ * Panneau de détail du mode jeu (docs/adr/0042, 0043), sur la coque commune `DetailSheet` :
+ * capacité (don compris), option d'une ressource de classe (Canalisation divine), attaque d'arme
+ * ou objet d'inventaire. Relu depuis le personnage courant à chaque rendu, pour que les compteurs
+ * du pied suivent les utilisations.
  */
-export function CombatDetailSheet({
+export function PlayDetailSheet({
   character,
   detail,
   onClose,
 }: {
   character: Character;
-  detail: CombatDetail | undefined;
+  detail: PlayDetail | undefined;
   onClose: () => void;
 }) {
   const { adjustFeatureUse, adjustClassResource } = usePlayActions(character.id);
@@ -73,38 +82,72 @@ export function CombatDetailSheet({
     </DetailSheet>
   );
 
-  function resolveView(character: Character, detail: CombatDetail): DetailView | undefined {
+  function resolveView(character: Character, detail: PlayDetail): DetailView | undefined {
     switch (detail.kind) {
       case "feature": {
         const feature = character.features.find((candidate) => candidate.id === detail.featureId);
         if (!feature) {
           return undefined;
         }
-        const max = feature.usesMax ?? 0;
-        const remaining = feature.usesCurrent ?? max;
         const recharge =
           feature.recharge && feature.recharge !== "other" ? feature.recharge : undefined;
-        return {
+        const resource = feature.resourceId
+          ? computeClassResources(character).find(
+              (candidate) => candidate.id === feature.resourceId,
+            )
+          : undefined;
+        const view = {
           eyebrow: feature.source || "Capacité",
           title: feature.name,
-          tags: recharge && <RechargeTag recharge={recharge} />,
-          body: <Description text={feature.description} characterId={character.id} />,
-          footer: (
-            <UseFooter
-              label={`Utilisations · ${remaining}/${max}`}
-              remaining={remaining}
-              total={max}
-              rechargeHint={
-                recharge && `Revient au prochain ${FEATURE_RECHARGE_LABELS[recharge].toLowerCase()}`
-              }
-              useLabel={`Utiliser ${feature.name}`}
-              onUse={() => {
-                void adjustFeatureUse(feature.id, -1);
-                onClose();
-              }}
-            />
+          body: (
+            <Description text={feature.description} characterId={character.id} tab="features" />
           ),
         };
+        if (hasOwnUses(feature)) {
+          const max = feature.usesMax ?? 0;
+          const remaining = feature.usesCurrent ?? max;
+          return {
+            ...view,
+            tags: recharge && <RechargeTag recharge={recharge} />,
+            footer: (
+              <UseFooter
+                label={`Utilisations · ${remaining}/${max}`}
+                remaining={remaining}
+                total={max}
+                rechargeHint={
+                  recharge &&
+                  `Revient au prochain ${FEATURE_RECHARGE_LABELS[recharge].toLowerCase()}`
+                }
+                useLabel={`Utiliser ${feature.name}`}
+                onUse={() => {
+                  void adjustFeatureUse(feature.id, -1);
+                  onClose();
+                }}
+              />
+            ),
+          };
+        }
+        if (resource) {
+          // Capacité liée à une ressource de classe : elle puise dans la réserve commune.
+          return {
+            ...view,
+            tags: <RechargeTag recharge={resource.recharge} />,
+            footer: (
+              <UseFooter
+                label={`${resource.name} · ${resource.remaining}/${resource.max}`}
+                remaining={resource.remaining}
+                total={resource.max}
+                rechargeHint={`Revient au prochain ${RECHARGE_LABELS[resource.recharge].toLowerCase()}`}
+                useLabel={`Utiliser ${feature.name}`}
+                onUse={() => {
+                  void adjustClassResource(resource.id, 1);
+                  onClose();
+                }}
+              />
+            ),
+          };
+        }
+        return view;
       }
       case "option": {
         const resource = computeClassResources(character).find(
@@ -124,6 +167,7 @@ export function CombatDetailSheet({
             <Description
               text={option.description}
               characterId={character.id}
+              tab="features"
               // Les règles ne reproduisent aucun texte (docs/adr/0028) : la description d'une
               // option des règles vient d'une capacité de même nom sur la fiche.
               missingHint={
@@ -199,8 +243,80 @@ export function CombatDetailSheet({
           ),
         };
       }
+      case "item": {
+        const item = character.inventory.find((candidate) => candidate.id === detail.itemId);
+        if (!item) {
+          return undefined;
+        }
+        const attack = computeWeaponAttacks(character).find(
+          (candidate) => candidate.itemId === item.id,
+        );
+        return {
+          eyebrow: itemKindLabel(item),
+          title: item.name || "Objet",
+          tags: item.equipped && <Badge variant="secondary">Équipé</Badge>,
+          body: (
+            <>
+              <DetailStats stats={itemStats(item)} />
+              {attack && (
+                <p className="text-sm">
+                  <span className="text-muted-foreground">Attaque : </span>
+                  <span className="font-medium">{formatWeaponAttack(attack)}</span>
+                </p>
+              )}
+              <Description
+                text={item.description ?? ""}
+                characterId={character.id}
+                tab="inventory"
+              />
+            </>
+          ),
+        };
+      }
     }
   }
+}
+
+function itemKindLabel(item: InventoryItem): string {
+  if (item.armor) {
+    return item.armor.category === "shield"
+      ? "Bouclier"
+      : `Armure ${ARMOR_CATEGORY_LABELS[item.armor.category]}`;
+  }
+  if (item.weapon) {
+    return `Arme ${WEAPON_CATEGORY_LABELS[item.weapon.category]} · ${WEAPON_RANGE_LABELS[item.weapon.range]}`;
+  }
+  return "Objet";
+}
+
+function itemStats(item: InventoryItem): { label: string; value: string }[] {
+  const common = [
+    { label: "Quantité", value: String(item.quantity) },
+    { label: "Poids", value: item.weight !== undefined ? `${formatDecimal(item.weight)} kg` : "" },
+  ];
+  if (item.weapon) {
+    const magic = item.weapon.magicBonus ? ` (${formatModifier(item.weapon.magicBonus)})` : "";
+    return [
+      { label: "Dégâts", value: `${item.weapon.damageDice}${magic}` },
+      { label: "Type", value: DAMAGE_TYPE_LABELS[item.weapon.damageType] },
+      ...common,
+    ];
+  }
+  if (item.armor) {
+    const bonus = item.armorClassBonus ? ` ${formatModifier(item.armorClassBonus)}` : "";
+    return [
+      {
+        label: item.armor.category === "shield" ? "Bonus CA" : "CA",
+        value: `${item.armor.category === "shield" ? "+" : ""}${item.armor.baseArmorClass}${bonus}`,
+      },
+      {
+        label: "Force min.",
+        value: item.armor.strengthRequirement ? String(item.armor.strengthRequirement) : "",
+      },
+      ...common,
+    ];
+  }
+  return common;
 }
 
 function RechargeTag({ recharge }: { recharge: "shortRest" | "longRest" }) {
@@ -216,10 +332,13 @@ function RechargeTag({ recharge }: { recharge: "shortRest" | "longRest" }) {
 function Description({
   text,
   characterId,
+  tab,
   missingHint,
 }: {
   text: string;
   characterId: string;
+  /** Onglet de la configuration où la description se saisit. */
+  tab: "features" | "inventory";
   missingHint?: string;
 }) {
   if (text.trim()) {
@@ -229,7 +348,7 @@ function Description({
     <div className="text-muted-foreground grid gap-1.5 rounded-2xl border border-dashed px-4 py-3.5 text-sm">
       <p>Pas de description.{missingHint && ` ${missingHint}`}</p>
       <Link
-        href={`/characters/${characterId}/edit?tab=features`}
+        href={`/characters/${characterId}/edit?tab=${tab}`}
         className="text-primary w-fit underline underline-offset-4"
       >
         Ajouter une description

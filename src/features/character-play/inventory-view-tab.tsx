@@ -3,25 +3,32 @@
 import { Pencil } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { useState } from "react";
 import type { Character } from "@/domain/character";
 import { characterCurrency } from "@/domain/currency";
 import type { InventoryItem } from "@/domain/inventory";
 import { isGear, sortInventoryByName, totalInventoryWeight } from "@/domain/inventory";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { DetailsHint } from "@/features/shared/detail-sheet";
 import { EquipControl } from "@/features/shared/equip-control";
 import { formatDecimal } from "@/features/shared/format";
 import { Purse } from "@/features/shared/purse";
 import { QuantityStepper } from "@/features/shared/quantity-stepper";
+import type { PlayDetail } from "./play-detail-sheet";
+import { PlayDetailSheet } from "./play-detail-sheet";
 import { usePlayActions } from "./use-play-actions";
 
 /**
  * Onglet « Inventaire » du mode jeu : bourse et quantités modifiables directement (persistées
  * immédiatement, comme les autres actions du mode jeu), armes et armures équipables ; le reste se
- * configure dans l'onglet Inventaire de la configuration, ouvert par le bouton crayon.
+ * configure dans l'onglet Inventaire de la configuration, ouvert par le bouton crayon. Chaque ligne
+ * ouvre le panneau de détail de l'objet (docs/adr/0043).
  */
 export function InventoryViewTab({ character }: { character: Character }) {
   const { equipItem, adjustItemQuantity, setCoinAmount } = usePlayActions(character.id);
+  const [detail, setDetail] = useState<PlayDetail | undefined>();
+  const showItem = (itemId: string) => setDetail({ kind: "item", itemId });
   const gear = sortInventoryByName(character.inventory.filter(isGear));
   const bag = sortInventoryByName(character.inventory.filter((item) => !isGear(item)));
 
@@ -51,8 +58,13 @@ export function InventoryViewTab({ character }: { character: Character }) {
       {gear.length > 0 && (
         <ItemSection title="Armes & armures">
           {gear.map((item) => (
-            <ItemRow key={item.id} item={item} highlighted={item.equipped === true}>
-              <div className="w-full sm:w-48">
+            <ItemRow
+              key={item.id}
+              item={item}
+              highlighted={item.equipped === true}
+              onShowDetails={() => showItem(item.id)}
+            >
+              <div className="relative z-10 w-full sm:w-48">
                 <EquipControl
                   item={item}
                   character={character}
@@ -69,16 +81,25 @@ export function InventoryViewTab({ character }: { character: Character }) {
           <p className="text-muted-foreground text-sm">Aucun objet pour l&rsquo;instant.</p>
         ) : (
           bag.map((item) => (
-            <ItemRow key={item.id} item={item} highlighted={false}>
-              <QuantityStepper
-                label={item.name}
-                quantity={item.quantity}
-                onAdjust={(delta) => void adjustItemQuantity(item.id, delta)}
-              />
+            <ItemRow
+              key={item.id}
+              item={item}
+              highlighted={false}
+              onShowDetails={() => showItem(item.id)}
+            >
+              <div className="relative z-10">
+                <QuantityStepper
+                  label={item.name}
+                  quantity={item.quantity}
+                  onAdjust={(delta) => void adjustItemQuantity(item.id, delta)}
+                />
+              </div>
             </ItemRow>
           ))
         )}
       </ItemSection>
+
+      <PlayDetailSheet character={character} detail={detail} onClose={() => setDetail(undefined)} />
     </div>
   );
 }
@@ -94,36 +115,42 @@ function ItemSection({ title, children }: { title: string; children: ReactNode }
   );
 }
 
+/** Ligne d'objet : toute la ligne ouvre le détail, les contrôles (`children`) passent au-dessus. */
 function ItemRow({
   item,
   highlighted,
+  onShowDetails,
   children,
 }: {
   item: InventoryItem;
   highlighted: boolean;
+  onShowDetails: () => void;
   children: ReactNode;
 }) {
-  const details = [
-    item.weight !== undefined ? `${formatDecimal(item.weight)} kg` : undefined,
-    item.description,
-  ].filter(Boolean);
+  // La description se lit dans le panneau de détail, pas tassée sur la ligne.
+  const details = item.weight !== undefined ? `${formatDecimal(item.weight)} kg` : undefined;
 
   return (
     <div
-      className={`flex flex-wrap items-center gap-3 rounded-xl border py-2.5 pr-2.5 pl-3.5 ${
+      className={`relative flex flex-wrap items-center gap-3 rounded-xl border py-2.5 pr-2.5 pl-3.5 ${
         highlighted ? "border-primary/30 bg-primary/5" : "bg-background/35"
       } ${item.quantity === 0 ? "opacity-60" : ""}`}
     >
+      <button
+        type="button"
+        aria-label={`Détails : ${item.name}`}
+        onClick={onShowDetails}
+        className="hover:bg-foreground/[0.03] focus-visible:ring-ring/50 absolute inset-0 cursor-pointer rounded-xl outline-none focus-visible:ring-3"
+      />
       <div className="grid min-w-0 flex-1 basis-48 gap-0.5">
         <span className="flex flex-wrap items-center gap-2 text-[15px] font-medium">
           {item.name}
+          <DetailsHint className="size-3.5" />
           {!item.weapon && !item.armor && item.equipped && (
             <Badge variant="secondary">Équipé</Badge>
           )}
         </span>
-        {details.length > 0 && (
-          <span className="text-muted-foreground text-xs">{details.join(" · ")}</span>
-        )}
+        {details && <span className="text-muted-foreground text-xs">{details}</span>}
       </div>
       {children}
     </div>
