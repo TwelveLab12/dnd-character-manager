@@ -1,4 +1,5 @@
 import type { AbilityName } from "./ability-scores";
+import { normalizeLabel } from "./character-class";
 
 /**
  * Règle de bonus racial (règles 2014) : soit un bonus fixe sur une caractéristique donnée (ex :
@@ -80,8 +81,27 @@ export const RACE_DEFINITIONS: readonly RaceDefinition[] = [
     hitPointsPerLevel: 1,
     ignoresHeavyArmorSpeedPenalty: true,
   },
+  {
+    id: "tieffelin",
+    name: "Tieffelin",
+    speed: 9,
+    abilityBonusRules: [
+      { type: "fixed", ability: "charisma", amount: 2 },
+      { type: "fixed", ability: "intelligence", amount: 1 },
+    ],
+  },
 ];
 
 export function findRaceDefinition(raceId: string): RaceDefinition | undefined {
   return RACE_DEFINITIONS.find((race) => race.id === raceId);
+}
+
+/** Race connue dont le nom correspond à un libellé libre (« tieffelin », « Demi-Elfe »…),
+ * comparaison insensible à la casse et aux accents. */
+export function findRaceDefinitionByLabel(label: string | undefined): RaceDefinition | undefined {
+  if (!label) {
+    return undefined;
+  }
+  const normalized = normalizeLabel(label);
+  return RACE_DEFINITIONS.find((race) => normalizeLabel(race.name) === normalized);
 }

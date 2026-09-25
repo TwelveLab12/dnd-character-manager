@@ -107,6 +107,47 @@ describe("GeneralTab", () => {
     expect(latest.removedWeaponProficiencies).toEqual(["simple"]);
   });
 
+  it("offers the rules of a known race typed as free text, keeping the actual scores", async () => {
+    const user = userEvent.setup();
+    renderTab({
+      race: "Tieffelin",
+      raceSelection: undefined,
+      baseSpeed: 12,
+      abilityScores: {
+        strength: 10,
+        dexterity: 15,
+        constitution: 13,
+        intelligence: 13,
+        wisdom: 14,
+        charisma: 10,
+      },
+    });
+
+    expect(screen.getByRole("spinbutton", { name: "Vitesse (m)" })).toHaveValue(12);
+    expect(screen.getByText(/est connu des règles/)).toHaveTextContent(
+      "Tieffelin est connu des règles : +2 Cha, +1 Int, vitesse 9 m.",
+    );
+    await user.click(screen.getByRole("button", { name: "Appliquer les règles de la race" }));
+
+    expect(latest.raceSelection).toEqual({ raceId: "tieffelin", abilityBonusChoices: [] });
+    expect(latest.abilityScores).toMatchObject({ intelligence: 12, charisma: 8 });
+    expect(latest.baseSpeed).toBeUndefined();
+    expect(latest.speedExtraBonus).toBe(3);
+    expect(screen.queryByText(/est connu des règles/)).not.toBeInTheDocument();
+    expect(screen.getByText(/Tieffelin · \+2 Cha, \+1 Int · vitesse 9 m/)).toBeInTheDocument();
+  });
+
+  it("edits the extra speed bonus, cleared when emptied", async () => {
+    const user = userEvent.setup();
+    renderTab();
+
+    const input = screen.getByRole("spinbutton", { name: /bonus de vitesse/i });
+    await user.type(input, "3");
+    expect(latest.speedExtraBonus).toBe(3);
+    await user.clear(input);
+    expect(latest.speedExtraBonus).toBeUndefined();
+  });
+
   it("picks a theme from cards", async () => {
     const user = userEvent.setup();
     renderTab();
