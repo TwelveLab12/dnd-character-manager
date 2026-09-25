@@ -16,7 +16,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { DetailsHint, SpellDetailSheet } from "@/features/shared/spell-detail-sheet";
+import { DetailsHint } from "@/features/shared/detail-sheet";
+import { SpellDetailSheet } from "@/features/shared/spell-detail-sheet";
 import { Button } from "@/components/ui/button";
 import { PageTitle } from "@/components/ui/page-title";
 import { ImportSpellsDialog } from "./import-spells-dialog";

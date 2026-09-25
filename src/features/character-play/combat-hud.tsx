@@ -1,6 +1,7 @@
 "use client";
 
 import { Footprints, Sparkles, WandSparkles, Zap } from "lucide-react";
+import { useState } from "react";
 import type { Character } from "@/domain/character";
 import { computeArmorClass } from "@/domain/calculations/armor-class";
 import { computeClassResources } from "@/domain/calculations/class-resources";
@@ -14,6 +15,8 @@ import { formatModifier } from "@/features/shared/format";
 import { ArmorClassEffectChips, ArmorClassHeading, ArmorClassShield } from "./armor-class-shield";
 import { AttackStrip } from "./attack-strip";
 import { ClassResourceCards } from "./class-resource-card";
+import type { CombatDetail } from "./combat-detail-sheet";
+import { CombatDetailSheet } from "./combat-detail-sheet";
 import { FeatureUsageCards } from "./feature-usage-card";
 import { ConcentrationMarker } from "./concentration-marker";
 import { HitPointsControls, HitPointsRing, TemporaryHitPointsChip } from "./hit-points-ring";
@@ -41,6 +44,7 @@ export function hasActiveArmorClassEffect(character: Character): boolean {
  * sur la ligne des visuels, sur mobile elles passent sous le détail de la CA.
  */
 export function CombatHud({ character }: { character: Character }) {
+  const [detail, setDetail] = useState<CombatDetail | undefined>();
   const armorClass = computeArmorClass(character);
   const attacks = computeWeaponAttacks(character);
   const spellcasting = resolveSpellcasting(character);
@@ -130,7 +134,10 @@ export function CombatHud({ character }: { character: Character }) {
 
       {attacks.length > 0 && (
         <div className="border-t pt-4 sm:pt-5">
-          <AttackStrip attacks={attacks} />
+          <AttackStrip
+            attacks={attacks}
+            onShowDetails={(itemId) => setDetail({ kind: "attack", itemId })}
+          />
         </div>
       )}
 
@@ -141,10 +148,24 @@ export function CombatHud({ character }: { character: Character }) {
           }`}
         >
           <SpellSlotsCard character={character} />
-          <ClassResourceCards character={character} />
-          <FeatureUsageCards character={character} />
+          <ClassResourceCards
+            character={character}
+            onShowOption={(resourceId, optionKey) =>
+              setDetail({ kind: "option", resourceId, optionKey })
+            }
+          />
+          <FeatureUsageCards
+            character={character}
+            onShowDetails={(featureId) => setDetail({ kind: "feature", featureId })}
+          />
         </div>
       )}
+
+      <CombatDetailSheet
+        character={character}
+        detail={detail}
+        onClose={() => setDetail(undefined)}
+      />
     </section>
   );
 }

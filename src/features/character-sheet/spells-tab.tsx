@@ -32,7 +32,8 @@ import type { Spell } from "@/domain/spell";
 import { useSpellStore } from "@/stores/store-provider";
 import { ABILITY_LABELS, ABILITY_SHORT_LABELS } from "@/features/shared/ability-labels";
 import { formatModifier } from "@/features/shared/format";
-import { DetailsHint, SpellDetailSheet } from "@/features/shared/spell-detail-sheet";
+import { DetailsHint } from "@/features/shared/detail-sheet";
+import { SpellDetailSheet } from "@/features/shared/spell-detail-sheet";
 import {
   AlertDialog,
   AlertDialogAction,

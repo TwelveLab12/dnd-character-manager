@@ -6,7 +6,7 @@ import type { Character } from "@/domain/character";
 import type { CastMode } from "@/domain/calculations/spell-casting";
 import { castOptions } from "@/domain/calculations/spell-casting";
 import type { Spell } from "@/domain/spell";
-import { DetailsHint } from "@/features/shared/spell-detail-sheet";
+import { DetailsHint, UsePips } from "@/features/shared/detail-sheet";
 import { AlwaysPreparedTag, ConcentrationTag, RitualTag } from "@/features/shared/spell-tags";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -284,20 +284,7 @@ export function SpellCastFooter({
                 ? `Emplacements niv. ${slot.level} · ${slot.available}/${slot.total}`
                 : "Aucun emplacement disponible"}
           </span>
-          {slot && (
-            <span aria-hidden className="flex gap-1.5">
-              {Array.from({ length: slot.total }, (_, index) => (
-                <span
-                  key={index}
-                  className={`size-2.5 rounded-full ${
-                    index < slot.available
-                      ? "bg-primary"
-                      : "border-muted-foreground/50 border-[1.5px]"
-                  }`}
-                />
-              ))}
-            </span>
-          )}
+          {slot && <UsePips remaining={slot.available} total={slot.total} />}
         </div>
         {concentrating && (
           <Button

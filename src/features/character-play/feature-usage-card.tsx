@@ -4,6 +4,7 @@ import { Hourglass, Minus, Moon, Plus, Sparkles } from "lucide-react";
 import type { Character } from "@/domain/character";
 import type { CharacterFeature } from "@/domain/feature";
 import { Button } from "@/components/ui/button";
+import { DetailsHint } from "@/features/shared/detail-sheet";
 import { FEATURE_RECHARGE_LABELS, hasOwnUses } from "@/features/shared/feature";
 import { usePlayActions } from "./use-play-actions";
 
@@ -14,9 +15,12 @@ const MAX_MEDALLIONS = 5;
 export function FeatureUsageCards({
   character,
   showDescription = false,
+  onShowDetails,
 }: {
   character: Character;
   showDescription?: boolean;
+  /** Toute la carte ouvre le panneau de détail (onglet Combat, docs/adr/0042). */
+  onShowDetails?: (featureId: string) => void;
 }) {
   return character.features
     .filter(hasOwnUses)
@@ -26,6 +30,7 @@ export function FeatureUsageCards({
         characterId={character.id}
         feature={feature}
         showDescription={showDescription}
+        onShowDetails={onShowDetails && (() => onShowDetails(feature.id))}
       />
     ));
 }
@@ -39,10 +44,12 @@ function FeatureUsageCard({
   characterId,
   feature,
   showDescription,
+  onShowDetails,
 }: {
   characterId: string;
   feature: CharacterFeature;
   showDescription: boolean;
+  onShowDetails?: () => void;
 }) {
   const { adjustFeatureUse } = usePlayActions(characterId);
   const max = feature.usesMax ?? 0;
@@ -57,10 +64,19 @@ function FeatureUsageCard({
   return (
     <section
       aria-label={feature.name}
-      className={`flex flex-col gap-3 rounded-2xl border px-3.5 py-4 sm:px-4.5 ${
+      className={`relative flex flex-col gap-3 rounded-2xl border px-3.5 py-4 sm:px-4.5 ${
         exhausted ? "bg-background/40" : "border-primary/30 bg-primary/5"
       }`}
     >
+      {/* Médaillons, compteur et « Utiliser » passent au-dessus (z-10) et gardent leur action. */}
+      {onShowDetails && (
+        <button
+          type="button"
+          aria-label={`Détails : ${feature.name}`}
+          onClick={onShowDetails}
+          className="hover:bg-foreground/[0.03] focus-visible:ring-ring/50 absolute inset-0 cursor-pointer rounded-2xl outline-none focus-visible:ring-3"
+        />
+      )}
       <div className="flex items-start justify-between gap-2">
         <div className="grid min-w-0 gap-0.5">
           {feature.source && (
@@ -71,6 +87,7 @@ function FeatureUsageCard({
           <span className="font-heading text-primary inline-flex items-center gap-1.5 text-lg leading-tight font-bold">
             <Sparkles aria-hidden className="size-4 shrink-0" />
             {feature.name}
+            {onShowDetails && <DetailsHint />}
           </span>
         </div>
         {rechargeLabel && (
@@ -83,7 +100,7 @@ function FeatureUsageCard({
 
       <div className="flex items-center gap-3.5">
         {max <= MAX_MEDALLIONS ? (
-          <div className="flex flex-wrap gap-2">
+          <div className="relative z-10 flex flex-wrap gap-2">
             {Array.from({ length: max }, (_, index) => {
               const lit = index < remaining;
               return (
@@ -104,7 +121,7 @@ function FeatureUsageCard({
             })}
           </div>
         ) : (
-          <div className="bg-card flex items-center overflow-hidden rounded-lg border">
+          <div className="bg-card relative z-10 flex items-center overflow-hidden rounded-lg border">
             <Button
               type="button"
               variant="ghost"
@@ -152,7 +169,7 @@ function FeatureUsageCard({
 
       <Button
         type="button"
-        className="h-11 rounded-xl text-[13px] font-semibold tracking-[0.06em] uppercase"
+        className="relative z-10 h-11 rounded-xl text-[13px] font-semibold tracking-[0.06em] uppercase"
         disabled={exhausted}
         onClick={() => void adjustFeatureUse(feature.id, -1)}
         aria-label={`Utiliser ${feature.name}`}
