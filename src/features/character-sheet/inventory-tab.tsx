@@ -5,7 +5,7 @@ import type { ReactNode } from "react";
 import { useId, useState } from "react";
 import { cn } from "cn";
 import type { EquipSlot } from "@/domain/equipment";
-import { equipItem } from "@/domain/equipment";
+import { equipItem, placeWeapon } from "@/domain/equipment";
 import { characterCurrency, setCoinAmount } from "@/domain/currency";
 import { generateId } from "@/domain/id";
 import type { InventoryItem } from "@/domain/inventory";
@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ARMOR_CATEGORY_LABELS } from "@/features/shared/armor-class";
 import { EquipControl } from "@/features/shared/equip-control";
+import { WeaponPlacementControl } from "@/features/shared/weapon-placement-control";
 import { formatDecimal } from "@/features/shared/format";
 import { Purse } from "@/features/shared/purse";
 import { DAMAGE_TYPE_LABELS, WEAPON_CATEGORY_LABELS } from "@/features/shared/weapon";
@@ -23,7 +24,8 @@ import type { CharacterTabProps } from "./types";
 
 /**
  * Onglet Inventaire de la configuration (docs/adr/0036) : la bourse, puis les objets en deux
- * groupes triés par nom (« Armes & armures », « Sac »). Chaque objet tient sur une ligne résumée ;
+ * groupes triés par nom (« Armes & armures », « Sac »). Chaque objet tient sur une ligne résumée,
+ * avec l'emplacement d'une arme (sac, prête, en main — docs/adr/0054) ;
  * un seul se déplie à la fois pour être modifié, avec les champs propres à son type.
  */
 export function InventoryTab({ draft, onChange }: CharacterTabProps) {
@@ -64,11 +66,20 @@ export function InventoryTab({ draft, onChange }: CharacterTabProps) {
         open={openId === item.id}
         onToggle={() => setOpenId(openId === item.id ? null : item.id)}
         trailing={
-          isGear(item) ? (
+          item.weapon ? (
+            <div className="w-full sm:w-72">
+              <WeaponPlacementControl
+                item={item}
+                character={draft}
+                onPlace={(placement) =>
+                  onChange({ inventory: placeWeapon(draft, item.id, placement) })
+                }
+              />
+            </div>
+          ) : isGear(item) ? (
             <div className="w-full sm:w-44">
               <EquipControl
                 item={item}
-                character={draft}
                 onEquip={(slot: EquipSlot) =>
                   onChange({ inventory: equipItem(draft, item.id, slot) })
                 }

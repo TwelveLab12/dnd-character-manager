@@ -108,4 +108,20 @@ describe("InventoryTab", () => {
     await user.click(screen.getByRole("button", { name: /supprimer l’objet/i }));
     expect(latest.inventory).toEqual([]);
   });
+
+  it("places a weapon with Sac · Prête · En main, the armor keeping its switch", async () => {
+    const user = userEvent.setup();
+    renderTab([MACE, CHAIN]);
+
+    const placement = screen.getByRole("radiogroup", { name: "Emplacement : Masse d’armes" });
+    expect(within(placement).getByRole("radio", { name: "Prête" })).toBeChecked();
+
+    await user.click(within(placement).getByRole("radio", { name: "En main" }));
+    expect(latest.inventory[0]).toMatchObject({ equipped: true });
+
+    await user.click(within(placement).getByRole("radio", { name: "Sac" }));
+    expect(latest.inventory[0]).toMatchObject({ equipped: false, stowed: true });
+
+    expect(screen.getByRole("switch", { name: "Équipé" })).not.toBeChecked();
+  });
 });
