@@ -12,6 +12,7 @@ import type {
   ArmorProperties,
   DamageType,
   InventoryItem,
+  ItemValue,
   WeaponCategory,
   WeaponProperties,
   WeaponRange,
@@ -28,6 +29,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { COINS } from "@/domain/currency";
+import type { Coin } from "@/domain/currency";
+import { COIN_LABELS } from "@/features/shared/currency";
 import { EquipControl } from "@/features/shared/equip-control";
 import { formatModifier } from "@/features/shared/format";
 import { QuantityStepper } from "@/features/shared/quantity-stepper";
@@ -94,7 +98,7 @@ export function InventoryItemEditor({
 
   return (
     <div className="grid gap-4">
-      <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto_7rem] sm:items-end">
+      <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto_6rem_10rem] sm:items-end">
         <Field label="Nom" htmlFor={nameId}>
           <Input
             id={nameId}
@@ -124,6 +128,7 @@ export function InventoryItemEditor({
             onChange={(event) => onChange({ weight: optionalNumber(event.target.value) })}
           />
         </Field>
+        <ValueField value={item.value} onChange={(value) => onChange({ value })} />
       </div>
 
       <div className="grid gap-1.5">
@@ -514,5 +519,52 @@ function PlainItemFields({
         Pour un objet porté qui protège (anneau, cape…) : le bonus compte quand il est équipé.
       </p>
     </TypeBlock>
+  );
+}
+
+/** Valeur marchande à l'unité (docs/adr/0056) : montant + pièce, po par défaut. Vider le montant
+ * retire la valeur. */
+function ValueField({
+  value,
+  onChange,
+}: {
+  value: ItemValue | undefined;
+  onChange: (value: ItemValue | undefined) => void;
+}) {
+  const amountId = useId();
+  const coin = value?.coin ?? "gold";
+  return (
+    <Field label="Valeur" htmlFor={amountId}>
+      <div className="flex gap-1.5">
+        <Input
+          id={amountId}
+          type="number"
+          min={0}
+          step="any"
+          placeholder="—"
+          className="min-w-0 flex-1"
+          value={value?.amount ?? ""}
+          onChange={(event) => {
+            const amount = optionalNumber(event.target.value);
+            onChange(amount === undefined ? undefined : { amount: Math.max(0, amount), coin });
+          }}
+        />
+        <Select
+          value={coin}
+          onValueChange={(next) => onChange({ amount: value?.amount ?? 0, coin: next as Coin })}
+        >
+          <SelectTrigger aria-label="Pièce de la valeur" className="w-[4.5rem]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {COINS.map((option) => (
+              <SelectItem key={option} value={option}>
+                {COIN_LABELS[option].abbreviation}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+    </Field>
   );
 }

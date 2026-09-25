@@ -1,5 +1,6 @@
 "use client";
 
+import { formatItemValue } from "@/features/shared/currency";
 import { Hourglass, Moon } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
@@ -304,6 +305,7 @@ function itemStats(item: InventoryItem): { label: string; value: string }[] {
   const common = [
     { label: "Quantité", value: String(item.quantity) },
     { label: "Poids", value: item.weight !== undefined ? `${formatDecimal(item.weight)} kg` : "" },
+    { label: "Valeur", value: item.value ? formatItemValue(item.value) : "" },
   ];
   if (item.weapon) {
     const magic = item.weapon.magicBonus ? ` (${formatModifier(item.weapon.magicBonus)})` : "";

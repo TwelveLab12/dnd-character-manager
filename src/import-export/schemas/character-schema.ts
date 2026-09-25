@@ -108,6 +108,12 @@ const inventoryItemSchema = z.object({
   weapon: weaponPropertiesSchema.optional(),
   hand: z.enum(["main", "off"]).optional(),
   stowed: z.boolean().optional(),
+  value: z
+    .object({
+      amount: z.number().min(0),
+      coin: z.enum(["platinum", "gold", "electrum", "silver", "copper"]),
+    })
+    .optional(),
   armorClassBonus: z.number().optional(),
 });
 
