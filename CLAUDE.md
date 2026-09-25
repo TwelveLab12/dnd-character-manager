@@ -28,6 +28,7 @@ pnpm test            # vitest run
 pnpm test:watch       # vitest en mode watch
 pnpm test:coverage    # vitest run --coverage
 pnpm convert:open5e <entree.json> <sortie.json>  # utilitaire manuel, pas lancé en CI
+pnpm generate:icons  # régénère les icônes PWA/favicon (d20) — utilitaire manuel, fichiers versionnés
 ```
 
 Avant tout commit : `pnpm typecheck`, `pnpm lint:ci`, `pnpm test` et `pnpm build` doivent être au

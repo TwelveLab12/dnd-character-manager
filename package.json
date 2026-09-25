@@ -16,7 +16,8 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "convert:open5e": "tsx scripts/convert-open5e-spells.ts",
-    "prepare": "husky"
+    "prepare": "husky",
+    "generate:icons": "tsx scripts/generate-icons.ts"
   },
   "dependencies": {
     "class-variance-authority": "^0.7.1",
@@ -50,6 +51,7 @@
     "lint-staged": "^17.5.1",
     "prettier": "^3.9.8",
     "prettier-plugin-tailwindcss": "^0.8.1",
+    "sharp": "0.35.4",
     "tailwindcss": "^4",
     "tsx": "^4.23.15",
     "typescript": "^5",
