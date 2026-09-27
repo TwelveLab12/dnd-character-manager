@@ -79,9 +79,18 @@ export function InstallPrompt({ delayMs = DEFAULT_DELAY_MS }: { delayMs?: number
       return;
     }
     let timer: ReturnType<typeof setTimeout> | undefined;
+    // Le choix du joueur est relu à chaque fois : le navigateur peut renvoyer
+    // `beforeinstallprompt` bien après la réponse (navigation, nouvelle estimation), et
+    // l'écouteur, monté une fois dans le layout, est toujours là.
     const show = (installEvent?: BeforeInstallPromptEvent) => {
       clearTimeout(timer);
+      if (isSilenced()) {
+        return;
+      }
       timer = setTimeout(() => {
+        if (isInstalled() || isSilenced()) {
+          return;
+        }
         toast.custom((id) => <InstallToast toastId={id} installEvent={installEvent} />, {
           id: TOAST_ID,
           duration: Infinity,
@@ -90,7 +99,8 @@ export function InstallPrompt({ delayMs = DEFAULT_DELAY_MS }: { delayMs?: number
     };
 
     function onBeforeInstallPrompt(event: Event) {
-      // Empêche la mini-barre du navigateur : l'invitation passe par notre toast.
+      // Empêche la mini-barre du navigateur : l'invitation passe par notre toast, et plus rien
+      // n'est proposé une fois que le joueur a dit non.
       event.preventDefault();
       show(event as BeforeInstallPromptEvent);
     }
