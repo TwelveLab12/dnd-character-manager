@@ -24,6 +24,7 @@ import { PlayDetailSheet } from "./play-detail-sheet";
 import { FeatureUsageCards } from "./feature-usage-card";
 import { ConcentrationMarker } from "./concentration-marker";
 import { HitPointsControls, HitPointsRing, TemporaryHitPointsChip } from "./hit-points-ring";
+import { HitDiceChip } from "./hit-dice-chip";
 import { RestActions } from "./rest-actions";
 import { SpellSlotsCard } from "./spell-slots-card";
 import { StatTile } from "./stat-tile";
@@ -86,8 +87,9 @@ export function CombatHud({ character }: { character: Character }) {
         <div className="col-start-1 row-start-3 max-w-full">
           <ArmorClassEffectChips character={character} />
         </div>
-        <div className="col-start-2 row-start-3">
+        <div className="col-start-2 row-start-3 flex flex-wrap items-center justify-center gap-1.5">
           <TemporaryHitPointsChip character={character} />
+          <HitDiceChip character={character} />
         </div>
 
         <p className="text-muted-foreground col-span-2 col-start-1 row-start-4 text-center text-xs sm:col-span-1">
@@ -135,7 +137,7 @@ export function CombatHud({ character }: { character: Character }) {
 
       <div className="flex flex-wrap items-center justify-between gap-3 border-t pt-4">
         <ConcentrationMarker character={character} />
-        <RestActions characterId={character.id} />
+        <RestActions character={character} />
       </div>
 
       {readyAttacks.length > 0 ? (

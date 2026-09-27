@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it } from "vitest";
 import { LocalStorageCharacterRepository } from "@/repositories/local-storage/local-storage-character-repository";
@@ -91,13 +91,81 @@ describe("RestActions (via CharacterPlay)", () => {
     await screen.findByRole("heading", { name: character.name });
 
     await user.click(screen.getByRole("button", { name: /^repos court$/i }));
-    await screen.findByRole("alertdialog");
-    await user.click(screen.getByRole("button", { name: /^confirmer$/i }));
+    await screen.findByRole("dialog");
+    await user.click(screen.getByRole("button", { name: /^terminer le repos$/i }));
 
     const persisted = await new LocalStorageCharacterRepository().getById(character.id);
     expect(persisted?.features[0]?.usesCurrent).toBe(1);
     expect(persisted?.classResourcesUsed).toEqual({});
     // Le repos court ne touche pas aux emplacements de sorts.
     expect(persisted?.spellSlotsUsed).toEqual({ "1": 3 });
+  });
+
+  it("spends hit dice during a short rest, from the hit dice chip", async () => {
+    // Clerc niv. 3 (d8), Con 14 (+2) : PV max = 10 + 2 × 7 = 24.
+    const character = makeTestCharacter({
+      classId: "clerc",
+      level: 3,
+      hitPoints: { current: 5, temporary: 0 },
+      hitDiceUsed: 1,
+      abilityScores: {
+        strength: 10,
+        dexterity: 10,
+        constitution: 14,
+        intelligence: 10,
+        wisdom: 10,
+        charisma: 10,
+      },
+    });
+    await new LocalStorageCharacterRepository().create(character);
+
+    const user = userEvent.setup();
+    renderPlay(character.id);
+    await screen.findByRole("heading", { name: character.name });
+
+    await user.click(screen.getByRole("button", { name: /Dés de vie : 2 sur 3 \(d8\)/ }));
+    const dialog = await screen.findByRole("dialog");
+
+    await user.type(within(dialog).getByLabelText("ou résultat"), "6");
+    await user.click(within(dialog).getByRole("button", { name: "Ajouter" }));
+    expect(within(dialog).getByText("+8 PV")).toBeInTheDocument();
+    expect(within(dialog).getByLabelText("Points de vie après le repos")).toHaveTextContent(
+      "PV 5 → 13/24",
+    );
+
+    // Deuxième dé ajouté puis retiré : il n'est pas dépensé.
+    await user.click(within(dialog).getByRole("button", { name: "Lancer 1d8" }));
+    await user.click(within(dialog).getByRole("button", { name: "Retirer le dé 2" }));
+    expect(within(dialog).getByRole("button", { name: "Lancer 1d8" })).toBeEnabled();
+
+    await user.click(within(dialog).getByRole("button", { name: /^terminer le repos$/i }));
+    const persisted = await new LocalStorageCharacterRepository().getById(character.id);
+    expect(persisted?.hitPoints.current).toBe(13);
+    expect(persisted?.hitDiceUsed).toBe(2);
+    expect(
+      await screen.findByRole("button", { name: /Dés de vie : 1 sur 3 \(d8\)/ }),
+    ).toBeInTheDocument();
+  });
+
+  it("spends nothing when the short rest is cancelled", async () => {
+    const character = makeTestCharacter({
+      classId: "clerc",
+      level: 2,
+      hitPoints: { current: 5, temporary: 0 },
+    });
+    await new LocalStorageCharacterRepository().create(character);
+
+    const user = userEvent.setup();
+    renderPlay(character.id);
+    await screen.findByRole("heading", { name: character.name });
+
+    await user.click(screen.getByRole("button", { name: /^repos court$/i }));
+    const dialog = await screen.findByRole("dialog");
+    await user.click(within(dialog).getByRole("button", { name: "Lancer 1d8" }));
+    await user.click(within(dialog).getByRole("button", { name: /^annuler$/i }));
+
+    const persisted = await new LocalStorageCharacterRepository().getById(character.id);
+    expect(persisted?.hitPoints.current).toBe(5);
+    expect(persisted?.hitDiceUsed).toBeUndefined();
   });
 });

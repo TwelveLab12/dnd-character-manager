@@ -17,6 +17,18 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: "2026-09-27-hit-dice",
+    date: "2026-09-27",
+    title: "Dés de vie",
+    changes: [
+      "Onglet Combat : une pastille « Dés de vie » sous les PV indique les dés restants et leur type (ex : 3/5 d10).",
+      "Repos court : dépensez vos dés un par un, lancés par l’application ou avec le résultat de votre propre dé. Chacun rend son résultat + votre modificateur de Constitution, sans dépasser les PV max. Rien n’est dépensé si vous annulez.",
+      "Repos long : en plus des PV, vous récupérez des dés de vie à hauteur de la moitié de votre niveau (au moins 1).",
+    ],
+    action:
+      "Tous vos dés de vie sont disponibles au départ : si votre personnage en a déjà dépensé, faites un repos court en les rejouant ou attendez votre prochain repos long.",
+  },
+  {
     id: "2026-09-27-changelog",
     date: "2026-09-27",
     title: "Page « Nouveautés »",

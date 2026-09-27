@@ -191,6 +191,7 @@ const currentCharacterSchema = z.object({
   skillProficiencies: z.array(z.string()).default([]),
   concentration: concentrationSchema,
   raging: z.boolean().optional(),
+  hitDiceUsed: z.number().int().min(0).optional(),
   // Pas de `meleeAttackBonus`/`rangedAttackBonus` : calculés par arme équipée. Un ancien JSON
   // qui les contient reste importable (clés inconnues ignorées par z.object).
   weaponProficiencies: z.array(weaponCategorySchema).optional(),

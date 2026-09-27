@@ -86,7 +86,9 @@ export function usePlayActions(characterId: string) {
             : effect,
         ),
       })),
-    takeShortRest: () => withCurrent((character) => applyShortRest(character)),
+    /** Repos court, avec les jets des dés de vie dépensés (un par dé). */
+    takeShortRest: (hitDieRolls: readonly number[] = []) =>
+      withCurrent((character) => applyShortRest(character, hitDieRolls)),
     takeLongRest: () => withCurrent((character) => applyLongRest(character)),
     setSpellPreparation: (spellId: string, state: SpellPreparationState) =>
       withCurrent((character) => setSpellPreparation(character, spellId, state)),
