@@ -13,6 +13,7 @@ import {
   dyingStatus,
   rollDeathSave as resolveDeathSave,
 } from "@/domain/calculations/death-saves";
+import { exhaustionLevel, MAX_EXHAUSTION } from "@/domain/calculations/exhaustion";
 import type { DyingStatus } from "@/domain/calculations/death-saves";
 import { rollDie } from "@/domain/calculations/hit-dice";
 import { Button } from "@/components/ui/button";
@@ -57,6 +58,8 @@ export function DeathSavesPanel({ character }: { character: Character }) {
     return null;
   }
   const { title, icon: Icon, tone, caption } = STATUS[status];
+  // Épuisement 6 : mort sans jets contre la mort (docs/adr/0066).
+  const exhausted = exhaustionLevel(character) >= MAX_EXHAUSTION;
 
   return (
     <section
@@ -66,13 +69,38 @@ export function DeathSavesPanel({ character }: { character: Character }) {
       <header className="flex flex-wrap items-center gap-x-3 gap-y-1">
         <Icon aria-hidden className="size-5" />
         <h2 className="font-heading text-lg font-semibold">{title}</h2>
-        <span className="text-muted-foreground text-xs">Jets de sauvegarde contre la mort</span>
+        <span className="text-muted-foreground text-xs">
+          {exhausted ? "Épuisement 6" : "Jets de sauvegarde contre la mort"}
+        </span>
       </header>
+      {exhausted ? (
+        <p className="text-muted-foreground text-xs">
+          Le sixième niveau d’épuisement est mortel. Une erreur ? Retirez un niveau avec le compteur
+          « Épuisement ».
+        </p>
+      ) : (
+        <DeathSavesDetails character={character} status={status} caption={caption} />
+      )}
+    </section>
+  );
+}
+
+function DeathSavesDetails({
+  character,
+  status,
+  caption,
+}: {
+  character: Character;
+  status: DyingStatus;
+  caption: string;
+}) {
+  return (
+    <>
       <DeathSaveTracks character={character} status={status} />
       {status === "dying" && <DeathSaveActions character={character} />}
       {status === "stable" && <RegainConsciousness character={character} />}
       <p className="text-muted-foreground text-xs">{caption}</p>
-    </section>
+    </>
   );
 }
 

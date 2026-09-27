@@ -103,6 +103,7 @@ export function describeChanges(
       ? ((character.concentration.spellId && spellName(character.concentration.spellId)) ?? "oui")
       : "non";
   track("concentration", "Concentration", concentration(before), concentration(after), "status");
+  track("exhaustion", "Épuisement", before.exhaustion ?? 0, after.exhaustion ?? 0, "status");
   track("rage", "Rage", before.raging ? "oui" : "non", after.raging ? "oui" : "non", "status");
   for (const effect of after.armorClassEffects ?? []) {
     const previous = before.armorClassEffects?.find((candidate) => candidate.id === effect.id);

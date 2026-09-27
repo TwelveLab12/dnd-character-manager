@@ -85,6 +85,8 @@ export interface Character {
   /** Résultats du dé de vie aux niveaux 2, 3… (index 0 = niveau 2), en mode « dés lancés ». La
    * Constitution s'y ajoute automatiquement. */
   hitPointRolls?: number[];
+  /** Niveau d'épuisement de 0 à 6 (docs/adr/0066) ; absent = 0. */
+  exhaustion?: number;
   /** Jets contre la mort à 0 PV ; absent = aucun. Remis à zéro dès que les PV remontent. */
   deathSaves?: DeathSaves;
   /** Stabilisé à 0 PV : plus de jets contre la mort (docs/adr/0060). */

@@ -3,6 +3,7 @@ import type { Character } from "../character";
 import { findClassDefinition } from "../character-class";
 import { findRaceDefinition } from "../race";
 import { effectiveAbilityScores } from "./effective-ability-scores";
+import { exhaustionLevel } from "./exhaustion";
 import { abilityModifier } from "./modifiers";
 import { clampCharacterLevel } from "./proficiency";
 
@@ -113,5 +114,25 @@ export function computeSpeed(character: Character): ComputedStat {
       value: -HEAVY_ARMOR_SPEED_PENALTY,
     });
   }
-  return { total: breakdown.reduce((sum, part) => sum + part.value, 0), breakdown };
+  // Épuisement (docs/adr/0066) : vitesse divisée par 2 au niveau 2, nulle au niveau 5.
+  const exhaustion = exhaustionLevel(character);
+  const beforeExhaustion = Math.max(
+    0,
+    breakdown.reduce((sum, part) => sum + part.value, 0),
+  );
+  if (exhaustion >= 5) {
+    breakdown.push({ label: `Épuisement ${exhaustion} (vitesse à 0)`, value: -beforeExhaustion });
+  } else if (exhaustion >= 2) {
+    breakdown.push({
+      label: `Épuisement ${exhaustion} (vitesse / 2)`,
+      value: -beforeExhaustion / 2,
+    });
+  }
+  return {
+    total: Math.max(
+      0,
+      breakdown.reduce((sum, part) => sum + part.value, 0),
+    ),
+    breakdown,
+  };
 }

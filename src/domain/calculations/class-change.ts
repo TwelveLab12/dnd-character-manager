@@ -46,7 +46,7 @@ export function changeClass(character: Character, classId: string | undefined): 
       subclassId: undefined,
       savingThrowProficiencies: effectiveSavingThrowProficiencies(character),
       removedSavingThrowProficiencies: undefined,
-      baseMaxHitPoints: computeMaxHitPoints(character).total,
+      baseMaxHitPoints: computeMaxHitPoints(character).baseTotal,
       ...(current.martialArts ? { martialArts: hasMartialArts(character) || undefined } : {}),
       ...(current.unarmoredDefense
         ? {

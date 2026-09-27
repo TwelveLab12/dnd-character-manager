@@ -3,6 +3,7 @@ import { findClassDefinition } from "../character-class";
 import { characterFeats } from "../feat";
 import { findRaceDefinition } from "../race";
 import { effectiveAbilityScores } from "./effective-ability-scores";
+import { exhaustionLevel } from "./exhaustion";
 import { abilityModifier } from "./modifiers";
 import { clampCharacterLevel } from "./proficiency";
 
@@ -20,7 +21,12 @@ export interface LevelHitPoints {
 }
 
 export interface MaxHitPointsResult {
+  /** PV max effectifs : divisés par 2 à partir de l'épuisement 4 (docs/adr/0066). */
   total: number;
+  /** PV max hors épuisement : somme des niveaux, ou valeur saisie. */
+  baseTotal: number;
+  /** Épuisement 4+ : `total` vaut la moitié de `baseTotal`. */
+  exhaustionHalved?: boolean;
   /** Sources des bonus par niveau (ex : « Robuste +2 »). */
   bonusSources: { name: string; perLevel: number }[];
   /** Dé de vie de la classe, absent pour une classe hors registre (PV max saisis). */
@@ -43,10 +49,20 @@ export function fixedHitDieValue(hitDie: number): number {
  * Constitution augmente donc les PV max rétroactivement, comme le veut la règle.
  */
 export function computeMaxHitPoints(character: Character): MaxHitPointsResult {
+  const base = computeBaseMaxHitPoints(character);
+  if (exhaustionLevel(character) < 4) {
+    return base;
+  }
+  return { ...base, total: Math.max(1, Math.floor(base.baseTotal / 2)), exhaustionHalved: true };
+}
+
+function computeBaseMaxHitPoints(character: Character): MaxHitPointsResult {
   const hitDie = findClassDefinition(character.classId)?.hitDie;
   if (hitDie === undefined) {
+    const total = Math.max(1, character.baseMaxHitPoints ?? 1);
     return {
-      total: Math.max(1, character.baseMaxHitPoints ?? 1),
+      total,
+      baseTotal: total,
       bonusSources: [],
       method: "manual",
       levels: [],
@@ -106,8 +122,10 @@ export function computeMaxHitPoints(character: Character): MaxHitPointsResult {
     };
   });
 
+  const total = levels.reduce((sum, entry) => sum + entry.total, 0);
   return {
-    total: levels.reduce((sum, entry) => sum + entry.total, 0),
+    total,
+    baseTotal: total,
     bonusSources,
     hitDie,
     method,
