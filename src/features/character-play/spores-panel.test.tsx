@@ -77,8 +77,11 @@ describe("Entité symbiotique (Cercle des spores)", () => {
     await user.type(attack.getByLabelText("ou total des dés"), "5");
     await user.click(attack.getByRole("button", { name: "Valider" }));
 
-    expect(attack.getByText(/Total : 11 dégâts/)).toHaveTextContent(
-      "Total : 11 dégâts (6 contondant + 5 nécrotique)",
-    );
+    // Le total de tous les dégâts est le chiffre mis en avant, avec sa répartition.
+    expect(attack.getAllByText("11")[0]).toHaveClass("text-4xl");
+    expect(attack.getByText("dégâts au total")).toBeInTheDocument();
+    expect(attack.getByText("6 contondant + 5 nécrotique")).toBeInTheDocument();
+    const [, damageBreakdown] = attack.getAllByLabelText("Détail du calcul");
+    expect(damageBreakdown).toHaveTextContent("1d6 4+2 Force+5 1d6 nécrotique=11");
   });
 });

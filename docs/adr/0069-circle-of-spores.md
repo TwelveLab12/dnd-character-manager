@@ -31,7 +31,10 @@ L'Entité ne modifie aucune caractéristique.
   nues, mais pas à distance. Affichage « 1d6+2 contondant + 1d6 nécrotique ». Dans l'attaque
   guidée ([0062](0062-guided-attack.md)), « Lancer » lance tous les dés. En saisie, les dés de
   l'arme sont demandés d'abord, puis chaque dé supplémentaire. Les dés sont doublés sur un
-  critique. Le total par type est affiché et inscrit dans l'historique.
+  critique. Le **total de tous les dégâts** est le chiffre mis en avant (c'est lui que le joueur
+  annonce), avec la répartition par type en dessous (« 4 contondant + 5 nécrotique ») et les dés
+  supplémentaires dans le détail du calcul. Avant le dernier dé, les dégâts de l'arme ne sont
+  qu'un sous-total discret. Le tout est inscrit dans l'historique.
 - **Fin** :
   - bouton « Mettre fin » ;
   - PV temporaires à 0 (`reconcileSymbioticEntity`, appliqué à chaque action du mode jeu) ;

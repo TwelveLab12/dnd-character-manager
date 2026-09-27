@@ -258,13 +258,58 @@ export function AttackAction({
         </div>
       )}
 
-      {damageRoll && (
+      {damageRoll && pendingExtra && (
+        <div className="grid gap-2 border-t pt-3">
+          {/* Sous-total discret : seul le total final est mis en avant. */}
+          <p className="text-muted-foreground text-sm">
+            {capitalize(damageType)} :{" "}
+            <strong className="text-foreground tabular-nums">{damageRoll.total}</strong> (
+            {damageRoll.dice} {damageRoll.diceTotal} {formatTerms(damageRoll.terms)})
+            {extraRolls.map((extra) => (
+              <span key={extra.label}>
+                {" "}
+                · {capitalize(DAMAGE_TYPE_LABELS[extra.damageType])} :{" "}
+                <strong className="text-foreground tabular-nums">{extra.total}</strong>
+              </span>
+            ))}
+          </p>
+          <p className="text-sm font-semibold">
+            + {pendingExtra.label} : {dicePool(pendingExtra.dice)}{" "}
+            {DAMAGE_TYPE_LABELS[pendingExtra.damageType]}
+          </p>
+          <DieEntry
+            rollLabel={`Lancer ${dicePool(pendingExtra.dice)}`}
+            inputLabel="ou total des dés"
+            min={diceRange(dicePool(pendingExtra.dice))?.min ?? 1}
+            max={diceRange(dicePool(pendingExtra.dice))?.max ?? 1}
+            onRoll={() => rollExtra(sumDice(rollDice(dicePool(pendingExtra.dice))))}
+            onEnter={rollExtra}
+          />
+        </div>
+      )}
+
+      {damageRoll && damageComplete && (
         <div className="border-t pt-3">
+          {/* Le total de tous les dégâts est le chiffre mis en avant : c'est lui qu'on annonce. */}
           <RollResult
-            label={damageType}
-            total={damageRoll.total}
+            label={extraRolls.length > 0 ? "dégâts au total" : damageType}
+            caption={
+              extraRolls.length > 0
+                ? [
+                    `${damageRoll.total} ${damageType}`,
+                    ...extraRolls.map(
+                      (extra) => `${extra.total} ${DAMAGE_TYPE_LABELS[extra.damageType]}`,
+                    ),
+                  ].join(" + ")
+                : undefined
+            }
+            total={damageRoll.total + sumTotals(extraRolls)}
             die={{ label: damageRoll.dice, value: damageRoll.diceTotal }}
             terms={damageRoll.terms}
+            extraDice={extraRolls.map((extra) => ({
+              label: `${extra.dice} ${DAMAGE_TYPE_LABELS[extra.damageType]}`,
+              value: extra.total,
+            }))}
             reasons={[
               attackRoll?.critical
                 ? `Coup critique : les dés sont doublés (${damageRoll.dice}), pas les bonus.`
@@ -274,47 +319,6 @@ export function AttackAction({
               ...extras.map((extra) => extra.reason),
             ]}
           />
-          {pendingExtra && (
-            <div className="mt-3 grid gap-2">
-              <p className="text-sm font-semibold">
-                + {pendingExtra.label} : {dicePool(pendingExtra.dice)}{" "}
-                {DAMAGE_TYPE_LABELS[pendingExtra.damageType]}
-              </p>
-              <DieEntry
-                rollLabel={`Lancer ${dicePool(pendingExtra.dice)}`}
-                inputLabel="ou total des dés"
-                min={diceRange(dicePool(pendingExtra.dice))?.min ?? 1}
-                max={diceRange(dicePool(pendingExtra.dice))?.max ?? 1}
-                onRoll={() => rollExtra(sumDice(rollDice(dicePool(pendingExtra.dice))))}
-                onEnter={rollExtra}
-              />
-            </div>
-          )}
-          {extraRolls.length > 0 && (
-            <ul aria-label="Dégâts supplémentaires" className="mt-3 grid gap-1 text-sm">
-              {extraRolls.map((extra) => (
-                <li key={extra.label}>
-                  <strong className="tabular-nums">+{extra.total}</strong>{" "}
-                  {DAMAGE_TYPE_LABELS[extra.damageType]}{" "}
-                  <span className="text-muted-foreground">
-                    ({extra.dice} · {extra.label})
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
-          {damageComplete && extraRolls.length > 0 && (
-            <p className="mt-2 text-sm font-semibold">
-              Total : {damageRoll.total + sumTotals(extraRolls)} dégâts (
-              {[
-                `${damageRoll.total} ${damageType}`,
-                ...extraRolls.map(
-                  (extra) => `${extra.total} ${DAMAGE_TYPE_LABELS[extra.damageType]}`,
-                ),
-              ].join(" + ")}
-              )
-            </p>
-          )}
         </div>
       )}
     </section>
@@ -379,17 +383,23 @@ function DieEntry({
 
 function RollResult({
   label,
+  caption,
   total,
   verdict,
   die,
   terms,
+  extraDice = [],
   reasons,
 }: {
   label: string;
+  /** Répartition sous le total, ex : « 4 contondant + 5 nécrotique ». */
+  caption?: string;
   total: number;
   verdict?: { text: string; tone: string };
   die: { label: string; value: number; discarded?: number };
   terms: RollTerm[];
+  /** Dés supplémentaires d'un autre type, ajoutés après les bonus (docs/adr/0069). */
+  extraDice?: { label: string; value: number }[];
   reasons: (string | undefined)[];
 }) {
   const [open, setOpen] = useState(false);
@@ -405,6 +415,7 @@ function RollResult({
             {verdict.text}
           </span>
         )}
+        {caption && <span className="text-muted-foreground w-full text-sm">{caption}</span>}
       </div>
       <p aria-label="Détail du calcul" className="flex flex-wrap items-center gap-1.5 text-sm">
         <Chip>
@@ -419,6 +430,11 @@ function RollResult({
         {terms.map((term) => (
           <Chip key={term.label}>
             <strong className="tabular-nums">{formatModifier(term.value)}</strong> {term.label}
+          </Chip>
+        ))}
+        {extraDice.map((extra) => (
+          <Chip key={extra.label}>
+            <strong className="tabular-nums">+{extra.value}</strong> {extra.label}
           </Chip>
         ))}
         <span className="text-muted-foreground">=</span>
@@ -457,6 +473,10 @@ function Chip({ children }: { children: ReactNode }) {
       {children}
     </span>
   );
+}
+
+function capitalize(text: string): string {
+  return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
 function sumDice(values: readonly number[]): number {
