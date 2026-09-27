@@ -87,6 +87,9 @@ vert — c'est le baseline du projet, pas optionnel, et c'est ce que la CI véri
 
 Un ticket GitHub par tâche (label `enhancement`/`bug`/`chore`/`documentation`) ; une branche + une
 PR par sujet ; rebase sur `main` plutôt que merge ; squash-merge ; suppression des branches après
-merge ; un ADR par décision structurante plutôt que rétro-édition d'un ADR existant. Voir aussi le
+merge ; un ADR par décision structurante plutôt que rétro-édition d'un ADR existant. Toute PR
+fonctionnelle (ce qu'un joueur voit ou peut faire) ajoute son entrée dans
+`src/features/changelog/changelog-entries.ts` — page « Nouveautés », voir
+[docs/adr/0058](docs/adr/0058-changelog-page.md). Voir aussi le
 CLAUDE.md de [BrunoSchvartzDev](https://github.com/TwelveLab12/BrunoSchvartzDev/blob/main/CLAUDE.md)
 pour le détail du cycle Project board / labels, repris tel quel ici.

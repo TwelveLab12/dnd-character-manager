@@ -5,6 +5,7 @@ import { LocalStorageCharacterRepository } from "@/repositories/local-storage/lo
 import { RepositoryProvider } from "@/repositories/repository-provider";
 import { StoreProvider } from "@/stores/store-provider";
 import { makeTestCharacter, makeTestSpell } from "@/test/fixtures";
+import { LATEST_CHANGELOG_ID } from "@/features/changelog/changelog-entries";
 import { CharacterList } from "./character-list";
 
 function renderCharacterList() {
@@ -197,5 +198,19 @@ describe("CharacterList", () => {
 
     await user.click(within(dialog).getByRole("button", { name: /^fermer$/i }));
     expect(await screen.findByText("Elara Duskwood")).toBeInTheDocument();
+  });
+
+  it("flags unseen changelog entries on the Nouveautés link", async () => {
+    renderCharacterList();
+    const link = await screen.findByRole("link", { name: /Nouveautés/ });
+    expect(link).toHaveAttribute("href", "/changelog");
+    expect(link).toHaveTextContent("Nouveautés (non lues)");
+  });
+
+  it("drops the flag once the latest entry has been seen", async () => {
+    window.localStorage.setItem("dnd-character-manager:changelog-seen", LATEST_CHANGELOG_ID!);
+    renderCharacterList();
+    const link = await screen.findByRole("link", { name: /Nouveautés/ });
+    expect(link).not.toHaveTextContent("non lues");
   });
 });
