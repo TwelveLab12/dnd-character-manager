@@ -1,10 +1,16 @@
 "use client";
 
-import type { Character } from "@/domain/character";
+import type { Character, DeathSaves } from "@/domain/character";
 import { adjustFeatureUses } from "@/domain/calculations/feature-uses";
 import { computeMaxHitPoints } from "@/domain/calculations/max-hit-points";
 import {
-  applyDamage,
+  damageCharacter,
+  reconcileDeathSaves,
+  rollDeathSave,
+  setDeathSaves,
+  stabilize,
+} from "@/domain/calculations/death-saves";
+import {
   applyHealing,
   setCurrentHitPoints,
   setTemporaryHitPoints,
@@ -43,12 +49,13 @@ export function usePlayActions(characterId: string) {
     if (!current) {
       return;
     }
-    return characterStore.getState().update(characterId, { ...current, ...mutate(current) });
+    // Toute remontée (ou chute) des PV remet les jets contre la mort à zéro (docs/adr/0060).
+    const patch = reconcileDeathSaves(current, mutate(current));
+    return characterStore.getState().update(characterId, { ...current, ...patch });
   }
 
   return {
-    applyDamage: (amount: number) =>
-      withCurrent((character) => ({ hitPoints: applyDamage(character.hitPoints, amount) })),
+    applyDamage: (amount: number) => withCurrent((character) => damageCharacter(character, amount)),
     applyHealing: (amount: number) =>
       withCurrent((character) => ({
         hitPoints: applyHealing(character.hitPoints, amount, computeMaxHitPoints(character).total),
@@ -90,6 +97,9 @@ export function usePlayActions(characterId: string) {
     takeShortRest: (hitDieRolls: readonly number[] = []) =>
       withCurrent((character) => applyShortRest(character, hitDieRolls)),
     takeLongRest: () => withCurrent((character) => applyLongRest(character)),
+    rollDeathSave: (roll: number) => withCurrent((character) => rollDeathSave(character, roll)),
+    setDeathSaves: (deathSaves: DeathSaves) => withCurrent(() => setDeathSaves(deathSaves)),
+    stabilize: () => withCurrent((character) => stabilize(character)),
     setSpellPreparation: (spellId: string, state: SpellPreparationState) =>
       withCurrent((character) => setSpellPreparation(character, spellId, state)),
     /** Lance un sort et renvoie l'état d'avant (emplacements + concentration), pour « Annuler ». */
