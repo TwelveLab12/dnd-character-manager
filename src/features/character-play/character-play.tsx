@@ -1,13 +1,21 @@
 "use client";
 
-import { ArrowLeft, Pencil } from "lucide-react";
+import { Pencil } from "lucide-react";
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useCharacterStore } from "@/stores/store-provider";
 import { Button } from "@/components/ui/button";
 import { PageTitle } from "@/components/ui/page-title";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CharacterThemeScope } from "@/features/character-theme/character-theme-scope";
+import { BackLink } from "@/features/shared/back-link";
+import type { PlayTab } from "@/features/shared/character-tabs";
+import {
+  characterEditHref,
+  configTabFor,
+  rememberTabInUrl,
+  toPlayTab,
+} from "@/features/shared/character-tabs";
 import { FullscreenToggle } from "@/features/shared/fullscreen-toggle";
 import { AbilitiesViewTab } from "./abilities-view-tab";
 import { ActivityLogButton } from "./activity-log-sheet";
@@ -18,7 +26,15 @@ import { NotesViewTab } from "./notes-view-tab";
 import { FeaturesViewTab } from "./features-view-tab";
 import { SpellsViewTab } from "./spells-view-tab";
 
-export function CharacterPlay({ characterId }: { characterId: string }) {
+export function CharacterPlay({
+  characterId,
+  initialTab,
+}: {
+  characterId: string;
+  /** Onglet ouvert à l'arrivée (`?tab=`), ex : depuis « Voir la fiche » (docs/adr/0067). */
+  initialTab?: string;
+}) {
+  const [tab, setTab] = useState<PlayTab>(() => toPlayTab(initialTab));
   const characters = useCharacterStore((state) => state.characters);
   const isLoading = useCharacterStore((state) => state.isLoading);
   const load = useCharacterStore((state) => state.load);
@@ -37,9 +53,7 @@ export function CharacterPlay({ characterId }: { characterId: string }) {
     return (
       <div className="mx-auto flex w-full max-w-2xl flex-col gap-4 px-6 py-12">
         <p className="text-sm">Personnage introuvable.</p>
-        <Link href="/" className="text-primary text-sm underline underline-offset-4">
-          Retour à la liste
-        </Link>
+        <BackLink />
       </div>
     );
   }
@@ -49,13 +63,7 @@ export function CharacterPlay({ characterId }: { characterId: string }) {
       <div className="bg-card text-card-foreground ring-foreground/10 mx-auto my-8 flex w-full max-w-3xl flex-col gap-6 rounded-2xl px-4 py-8 shadow-2xl ring-1 shadow-black/70 sm:my-12 sm:px-6 sm:py-10">
         <div className="flex items-start justify-between gap-3">
           <div className="grid min-w-0 gap-1.5">
-            <Link
-              href="/"
-              className="text-muted-foreground inline-flex items-center gap-1 text-sm underline underline-offset-4"
-            >
-              <ArrowLeft className="size-3.5" aria-hidden />
-              Mes personnages
-            </Link>
+            <BackLink className="mb-2" />
             <div className="flex flex-wrap items-baseline gap-x-2.5">
               <PageTitle className="text-3xl">{character.name}</PageTitle>
               <span aria-hidden className="text-muted-foreground/60 text-xl">
@@ -79,7 +87,7 @@ export function CharacterPlay({ characterId }: { characterId: string }) {
             <ActivityLogButton character={character} />
             <FullscreenToggle />
             <Button type="button" variant="ghost" asChild>
-              <Link href={`/characters/${characterId}/edit`} aria-label="Modifier">
+              <Link href={characterEditHref(characterId, configTabFor(tab))} aria-label="Modifier">
                 <Pencil />
                 <span className="max-sm:sr-only">Modifier</span>
               </Link>
@@ -89,7 +97,14 @@ export function CharacterPlay({ characterId }: { characterId: string }) {
 
         <CombatSummary character={character} />
 
-        <Tabs defaultValue="combat">
+        <Tabs
+          value={tab}
+          onValueChange={(value) => {
+            const next = toPlayTab(value);
+            setTab(next);
+            rememberTabInUrl(next, "combat");
+          }}
+        >
           <TabsList className="max-w-full [scrollbar-width:none] justify-start overflow-x-auto overflow-y-hidden [&::-webkit-scrollbar]:hidden">
             <TabsTrigger value="combat">Combat</TabsTrigger>
             <TabsTrigger value="abilities">Caractéristiques</TabsTrigger>

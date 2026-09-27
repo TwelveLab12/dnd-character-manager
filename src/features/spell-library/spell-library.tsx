@@ -1,7 +1,6 @@
 "use client";
 
-import { ArrowLeft, Download, Trash2 } from "lucide-react";
-import Link from "next/link";
+import { Download, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { downloadJson, exportSpellsToJson } from "@/import-export/exporter";
 import { useSpellStore } from "@/stores/store-provider";
@@ -20,6 +19,7 @@ import { DetailsHint } from "@/features/shared/detail-sheet";
 import { SpellDetailSheet } from "@/features/shared/spell-detail-sheet";
 import { Button } from "@/components/ui/button";
 import { PageTitle } from "@/components/ui/page-title";
+import { BackLink } from "@/features/shared/back-link";
 import { FullscreenToggle } from "@/features/shared/fullscreen-toggle";
 import { ImportSpellsDialog } from "./import-spells-dialog";
 
@@ -43,13 +43,7 @@ export function SpellLibrary() {
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 px-6 py-12">
       <div className="flex items-center justify-between">
         <div>
-          <Link
-            href="/"
-            className="text-muted-foreground inline-flex items-center gap-1 text-sm underline underline-offset-4"
-          >
-            <ArrowLeft className="size-3.5" aria-hidden />
-            Mes personnages
-          </Link>
+          <BackLink className="mb-2" />
           <PageTitle>Bibliothèque de sorts</PageTitle>
         </div>
         <div className="flex items-center gap-2">

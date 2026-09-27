@@ -17,6 +17,16 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: "2026-09-27-back-link-and-tabs",
+    date: "2026-09-27",
+    title: "Navigation plus fluide",
+    changes: [
+      "Le retour « Mes personnages » est un vrai bouton avec icône, bien séparé du titre, sur toutes les pages.",
+      "« Modifier » depuis la fiche ouvre l’onglet équivalent de la configuration, et « Voir la fiche » ramène à l’onglet équivalent du mode jeu. Par exemple, Sorts ouvre Sorts ; Combat et Notes correspondent à Général.",
+      "L’onglet ouvert est conservé si vous rechargez la page ou revenez en arrière.",
+    ],
+  },
+  {
     id: "2026-09-27-exhaustion",
     date: "2026-09-27",
     title: "Épuisement",

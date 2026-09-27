@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, Eye, Save } from "lucide-react";
+import { Eye, Save } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type MouseEvent, useEffect, useState } from "react";
@@ -21,13 +21,19 @@ import { PageTitle } from "@/components/ui/page-title";
 import { FullscreenToggle } from "@/features/shared/fullscreen-toggle";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CharacterThemeScope } from "@/features/character-theme/character-theme-scope";
+import { BackLink } from "@/features/shared/back-link";
+import type { ConfigTab } from "@/features/shared/character-tabs";
+import {
+  characterPlayHref,
+  playTabFor,
+  rememberTabInUrl,
+  toConfigTab,
+} from "@/features/shared/character-tabs";
 import { AbilitiesTab } from "./abilities-tab";
 import { FeaturesTab } from "./features-tab";
 import { GeneralTab } from "./general-tab";
 import { InventoryTab } from "./inventory-tab";
 import { SpellsTab } from "./spells-tab";
-
-const TAB_VALUES = ["general", "abilities", "spells", "inventory", "features"] as const;
 
 export function CharacterSheet({
   characterId,
@@ -49,6 +55,7 @@ export function CharacterSheet({
   // devient disponible après le chargement async) — pas dans un useEffect, pour éviter le
   // double rendu que provoquerait un setState synchrone dans un effet. Voir
   // https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes
+  const [tab, setTab] = useState<ConfigTab>(() => toConfigTab(initialTab));
   const [draftForId, setDraftForId] = useState<string | null>(null);
   const [draft, setDraft] = useState<Character | null>(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -115,28 +122,20 @@ export function CharacterSheet({
     return (
       <div className="mx-auto flex w-full max-w-2xl flex-col gap-4 px-6 py-12">
         <p className="text-sm">Personnage introuvable.</p>
-        <Link href="/" className="text-primary text-sm underline underline-offset-4">
-          Retour à la liste
-        </Link>
+        <BackLink />
       </div>
     );
   }
 
-  const sheetHref = `/characters/${characterId}`;
+  // « Voir la fiche » ouvre l'onglet miroir de celui affiché (docs/adr/0067).
+  const sheetHref = characterPlayHref(characterId, playTabFor(tab));
 
   return (
     <CharacterThemeScope themeId={draft.themeId}>
       <div className="bg-card text-card-foreground ring-foreground/10 mx-auto my-8 flex w-full max-w-3xl flex-col gap-6 rounded-2xl px-6 py-10 shadow-2xl ring-1 shadow-black/70 sm:my-12">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <Link
-              href="/"
-              onClick={guardNavigation("/")}
-              className="text-muted-foreground inline-flex items-center gap-1 text-sm underline underline-offset-4"
-            >
-              <ArrowLeft className="size-3.5" aria-hidden />
-              Mes personnages
-            </Link>
+            <BackLink onClick={guardNavigation("/")} className="mb-2" />
             <PageTitle>{draft.name}</PageTitle>
           </div>
           <div className="flex items-center gap-3">
@@ -190,7 +189,14 @@ export function CharacterSheet({
           </AlertDialogContent>
         </AlertDialog>
 
-        <Tabs defaultValue={TAB_VALUES.find((value) => value === initialTab) ?? "general"}>
+        <Tabs
+          value={tab}
+          onValueChange={(value) => {
+            const next = toConfigTab(value);
+            setTab(next);
+            rememberTabInUrl(next, "general");
+          }}
+        >
           <TabsList>
             <TabsTrigger value="general">Général</TabsTrigger>
             <TabsTrigger value="abilities">Caractéristiques</TabsTrigger>
