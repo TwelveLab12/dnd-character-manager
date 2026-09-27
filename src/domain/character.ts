@@ -4,6 +4,7 @@ import type { ClassResourceId } from "./character-class";
 import type { CharacterFeature } from "./feature";
 import type { Currency } from "./currency";
 import type { ArmorCategory, InventoryItem, WeaponCategory } from "./inventory";
+import type { JournalSession } from "./journal";
 import type { RaceSelection } from "./race";
 import type { CharacterSpellTag } from "./spell-tag";
 import type { ActiveWildShape, BeastForm } from "./wild-shape";
@@ -175,6 +176,8 @@ export interface Character {
   /** Palette visuelle du personnage — voir src/features/character-theme/theme-registry.ts. */
   themeId?: string;
   notes?: string;
+  /** Journal de l'aventurier : notes de partie par session — voir src/domain/journal.ts. */
+  journal?: JournalSession[];
   createdAt: string;
   updatedAt: string;
 }
