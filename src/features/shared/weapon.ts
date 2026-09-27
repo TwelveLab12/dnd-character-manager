@@ -28,10 +28,14 @@ export const DAMAGE_TYPE_LABELS: Record<DamageType, string> = {
   thunder: "tonnerre",
 };
 
-/** Dégâts d'une attaque, ex : « 1d8+3 tranchant · 1d10+3 à deux mains ». */
+/** Dégâts d'une attaque, ex : « 1d8+3 tranchant · 1d10+3 à deux mains », « 1d8+3 contondant
+ * + 1d6 nécrotique ». */
 export function formatWeaponDamage(attack: WeaponAttack): string {
   const versatile = attack.versatileDamage ? ` · ${attack.versatileDamage} à deux mains` : "";
-  return `${attack.damage} ${DAMAGE_TYPE_LABELS[attack.damageType]}${versatile}`;
+  const extras = (attack.extraDamage ?? [])
+    .map((extra) => ` + ${extra.dice} ${DAMAGE_TYPE_LABELS[extra.damageType]}`)
+    .join("");
+  return `${attack.damage} ${DAMAGE_TYPE_LABELS[attack.damageType]}${extras}${versatile}`;
 }
 
 /** Propriétés utiles en partie, ex : [« Main secondaire (action bonus) », « Deux mains »,

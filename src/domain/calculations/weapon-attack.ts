@@ -15,6 +15,7 @@ import { abilityModifier } from "./modifiers";
 import { clampCharacterLevel, proficiencyBonusForLevel } from "./proficiency";
 import { effectiveWeaponProficiencies, hasMartialArts } from "./class-features";
 import { SHILLELAGH_DAMAGE_DICE, shillelaghAbility, shillelaghItemId } from "./shillelagh";
+import { isSymbioticEntityActive, SYMBIOTIC_ENTITY_DAMAGE_DICE } from "./circle-of-spores";
 
 const DICE_PATTERN = /^(\d+)d(\d+)$/;
 
@@ -24,6 +25,15 @@ export const UNARMED_STRIKE_ID = "unarmed-strike";
 export interface RollTerm {
   label: string;
   value: number;
+  reason: string;
+}
+
+/** Dégâts supplémentaires d'un autre type, lancés en plus de ceux de l'arme (ex : +1d6
+ * nécrotiques de l'Entité symbiotique, docs/adr/0069). Doublés sur un coup critique. */
+export interface ExtraDamage {
+  label: string;
+  dice: string;
+  damageType: DamageType;
   reason: string;
 }
 
@@ -62,6 +72,8 @@ export interface WeaponAttack {
   attackNotes: string[];
   /** Règles appliquées aux dégâts sans terme chiffré (dé à deux mains, main secondaire…). */
   damageNotes: string[];
+  /** Dés de dégâts d'un autre type en plus de ceux de l'arme ; absent = aucun. */
+  extraDamage?: ExtraDamage[];
 }
 
 /** Dés valides au format « NdM » (ex : 1d8, 2d6), sans modificateur. */
@@ -141,6 +153,8 @@ interface AttackContext {
   martialArtsDie: string;
   /** Bonus aux dégâts de la Rage, 0 hors rage (docs/adr/0055). */
   rageBonus: number;
+  /** Dégâts en plus des attaques d'arme au corps à corps (Entité symbiotique…). */
+  extraMeleeDamage: ExtraDamage[];
   /** Arme sous Gourdin magique et caractéristique d'incantation qui remplace la Force. */
   shillelagh?: { itemId: string; ability: AbilityName; modifier: number };
 }
@@ -156,6 +170,17 @@ function attackContext(character: Character): AttackContext {
     martialArtsActive: isMartialArtsActive(character),
     martialArtsDie: martialArtsDie(character.level),
     rageBonus: character.raging ? rageDamageBonus(clampCharacterLevel(character.level)) : 0,
+    extraMeleeDamage: isSymbioticEntityActive(character)
+      ? [
+          {
+            label: "Entité symbiotique",
+            dice: SYMBIOTIC_ENTITY_DAMAGE_DICE,
+            damageType: "necrotic",
+            reason:
+              "Entité symbiotique : +1d6 dégâts nécrotiques aux attaques d'arme au corps à corps (pas en lançant l'arme).",
+          },
+        ]
+      : [],
     ...shillelaghContext(character, scores),
   };
 }
@@ -367,6 +392,9 @@ function buildWeaponAttack(
     damageTerms,
     attackNotes,
     damageNotes,
+    ...(weapon.range === "melee" && context.extraMeleeDamage.length > 0
+      ? { extraDamage: context.extraMeleeDamage }
+      : {}),
   };
 }
 
@@ -438,6 +466,7 @@ function unarmedStrike(context: AttackContext): WeaponAttack {
       proficiencyDamageNote(context.proficiencyBonus),
       `Arts martiaux : dé de dégâts ${context.martialArtsDie}.`,
     ],
+    ...(context.extraMeleeDamage.length > 0 ? { extraDamage: context.extraMeleeDamage } : {}),
   };
 }
 

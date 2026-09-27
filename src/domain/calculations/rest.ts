@@ -41,9 +41,11 @@ export function applyShortRest(
     ...(keepConcentration ? {} : { concentration: { active: false } }),
     features: resetFeaturesForRecharge(character.features, ["shortRest"]),
     classResourcesUsed: restoreClassResources(character, "shortRest"),
-    // Une rage, comme Gourdin magique, dure 1 minute : un repos y met toujours fin.
+    // Une rage, comme Gourdin magique, dure 1 minute ; l'Entité symbiotique, 10 minutes : un
+    // repos (une heure) y met toujours fin.
     raging: undefined,
     shillelagh: undefined,
+    symbioticEntity: undefined,
   };
 }
 
@@ -85,5 +87,6 @@ export function applyLongRest(
     classResourcesUsed: restoreClassResources(character, "longRest"),
     raging: undefined,
     shillelagh: undefined,
+    symbioticEntity: undefined,
   };
 }

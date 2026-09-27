@@ -110,6 +110,13 @@ export function describeChanges(
       ? (character.inventory.find((item) => item.id === character.shillelagh?.itemId)?.name ??
         "oui")
       : "non";
+  track(
+    "symbiotic-entity",
+    "Entité symbiotique",
+    before.symbioticEntity ? "oui" : "non",
+    after.symbioticEntity ? "oui" : "non",
+    "status",
+  );
   track("shillelagh", "Gourdin magique", shillelagh(before), shillelagh(after), "status");
   for (const effect of after.armorClassEffects ?? []) {
     const previous = before.armorClassEffects?.find((candidate) => candidate.id === effect.id);
