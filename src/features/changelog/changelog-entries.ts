@@ -17,6 +17,22 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: "2026-09-27-wild-shape",
+    date: "2026-09-27",
+    title: "Forme sauvage",
+    changes: [
+      "Configuration, onglet Capacités : enregistrez les bêtes de votre druide (FP, For/Dex/Con, CA, PV, vitesses, attaques, notes). Les formes que votre niveau n’autorise pas encore sont signalées.",
+      "Vous pouvez aussi importer vos formes depuis un fichier JSON (bouton « Importer » de la section). Une forme déjà présente est mise à jour, pas dupliquée.",
+      "Onglet Combat, carte Forme sauvage : vos formes favorites (étoile) sont à portée de main. « Toutes les formes » ouvre un panneau avec recherche, filtre par FP et le détail de chaque bête.",
+      "« Devenir » vous transforme. La CA, la vitesse, l’initiative, les caractéristiques physiques et les attaques deviennent celles de la bête.",
+      "Les PV affichés sont ceux de la bête. À 0, vous reprenez votre forme et le surplus de dégâts passe sur vos propres PV.",
+      "En Forme sauvage, les sorts ne peuvent pas être lancés, mais la concentration continue. Se transformer met fin à l’Entité symbiotique et à Gourdin magique.",
+      "« Reprendre ma forme » vous ramène à votre forme normale, comme un repos long.",
+    ],
+    action:
+      "Druides : ajoutez vos formes habituelles dans la configuration, onglet Capacités, avant la prochaine partie.",
+  },
+  {
     id: "2026-09-27-symbiotic-entity",
     date: "2026-09-27",
     title: "Cercle des spores : Entité symbiotique et Halo de spores",

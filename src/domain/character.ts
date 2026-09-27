@@ -6,6 +6,7 @@ import type { Currency } from "./currency";
 import type { ArmorCategory, InventoryItem, WeaponCategory } from "./inventory";
 import type { RaceSelection } from "./race";
 import type { CharacterSpellTag } from "./spell-tag";
+import type { ActiveWildShape, BeastForm } from "./wild-shape";
 
 /** PV consommés en partie. Le maximum n'est pas stocké : il est calculé (docs/adr/0027). */
 export interface HitPoints {
@@ -141,6 +142,10 @@ export interface Character {
   /** Entité symbiotique active (Cercle des spores, docs/adr/0069) : prend fin avec ses PV
    * temporaires — voir src/domain/calculations/circle-of-spores.ts. */
   symbioticEntity?: boolean;
+  /** Bêtes enregistrées pour la Forme sauvage (docs/adr/0070). */
+  wildShapeForms?: BeastForm[];
+  /** Forme sauvage en cours et PV de la bête ; absent = forme normale. */
+  wildShape?: ActiveWildShape;
   /** Maîtrises d'armes par catégorie : le bonus de maîtrise ne s'ajoute au jet d'attaque que pour
    * une arme maîtrisée. Pas de bonus d'attaque stocké : il est calculé par arme équipée — voir
    * src/domain/calculations/weapon-attack.ts. */

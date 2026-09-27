@@ -4,6 +4,7 @@ import { restoreClassResources } from "./class-resources";
 import { exhaustionLevel } from "./exhaustion";
 import { hitDiceUsedAfterLongRest, spendHitDice } from "./hit-dice";
 import { computeMaxHitPoints } from "./max-hit-points";
+import { wildShapeDurationHours } from "./wild-shape-form";
 
 function resetFeaturesForRecharge(
   features: CharacterFeature[],
@@ -46,6 +47,10 @@ export function applyShortRest(
     raging: undefined,
     shillelagh: undefined,
     symbioticEntity: undefined,
+    // Une Forme sauvage d'une heure (niveaux 2-3) ne survit pas au repos court (docs/adr/0070).
+    ...(character.wildShape && wildShapeDurationHours(character.level) <= 1
+      ? { wildShape: undefined }
+      : {}),
   };
 }
 
@@ -88,5 +93,6 @@ export function applyLongRest(
     raging: undefined,
     shillelagh: undefined,
     symbioticEntity: undefined,
+    wildShape: undefined,
   };
 }

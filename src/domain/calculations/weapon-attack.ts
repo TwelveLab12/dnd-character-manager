@@ -16,6 +16,8 @@ import { clampCharacterLevel, proficiencyBonusForLevel } from "./proficiency";
 import { effectiveWeaponProficiencies, hasMartialArts } from "./class-features";
 import { SHILLELAGH_DAMAGE_DICE, shillelaghAbility, shillelaghItemId } from "./shillelagh";
 import { isSymbioticEntityActive, SYMBIOTIC_ENTITY_DAMAGE_DICE } from "./circle-of-spores";
+import { activeWildShapeForm } from "./wild-shape-form";
+import type { BeastForm } from "../wild-shape";
 
 const DICE_PATTERN = /^(\d+)d(\d+)$/;
 
@@ -475,6 +477,11 @@ function unarmedStrike(context: AttackContext): WeaponAttack {
  * plus l'attaque à mains nues quand les Arts martiaux sont actifs.
  */
 export function computeWeaponAttacks(character: Character): WeaponAttack[] {
+  // Forme sauvage (docs/adr/0070) : les attaques de la bête remplacent celles des armes.
+  const form = activeWildShapeForm(character);
+  if (form) {
+    return beastAttacks(form);
+  }
   const context = attackContext(character);
   const attacks = character.inventory.flatMap((item) =>
     item.equipped === true && item.weapon
@@ -494,6 +501,9 @@ export function computeWeaponAttacks(character: Character): WeaponAttack[] {
  * épuisées (quantité > 0), calculées comme en main principale ; corps à corps d'abord, dans l'ordre
  * d'inventaire. */
 export function computeReadyWeaponAttacks(character: Character): WeaponAttack[] {
+  if (activeWildShapeForm(character)) {
+    return [];
+  }
   const context = attackContext(character);
   const attacks = character.inventory.flatMap((item) =>
     item.weapon && isReadyWeapon(item) && item.quantity > 0
@@ -536,4 +546,47 @@ export function weaponAttackWarnings(character: Character): string[] {
     warnings.push("Arts martiaux inactifs : une armure ou un bouclier est équipé.");
   }
   return warnings;
+}
+
+/** Préfixe des identifiants d'attaques de bête (`beast:<id>`), distincts des objets. */
+export const BEAST_ATTACK_PREFIX = "beast:";
+
+/** Attaques du profil de la bête : bonus et dégâts tels qu'écrits, expliqués comme tels. */
+export function beastAttacks(form: BeastForm): WeaponAttack[] {
+  return form.attacks.map((attack) => {
+    const damageTerms: RollTerm[] =
+      attack.damageBonus !== 0
+        ? [
+            {
+              label: form.name,
+              value: attack.damageBonus,
+              reason: `Modificateur de dégâts du profil de la bête (${form.name}).`,
+            },
+          ]
+        : [];
+    return {
+      itemId: `${BEAST_ATTACK_PREFIX}${attack.id}`,
+      name: attack.name,
+      range: "melee",
+      ability: "strength",
+      proficient: true,
+      attackBonus: attack.attackBonus,
+      damage: formatDamage(attack.damageDice, attack.damageBonus),
+      damageType: attack.damageType,
+      twoHanded: false,
+      martialArts: false,
+      offHand: false,
+      damageDice: attack.damageDice,
+      attackTerms: [
+        {
+          label: form.name,
+          value: attack.attackBonus,
+          reason: `Forme sauvage : bonus d'attaque du profil de la bête (${form.name}), qui inclut déjà sa caractéristique et sa maîtrise.`,
+        },
+      ],
+      damageTerms,
+      attackNotes: [],
+      damageNotes: attack.notes ? [attack.notes] : [],
+    };
+  });
 }

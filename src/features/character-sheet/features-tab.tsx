@@ -22,6 +22,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { FEATURE_RECHARGE_LABELS, hasOwnUses } from "@/features/shared/feature";
 import { SegmentedControl } from "@/features/shared/segmented-control";
 import type { CharacterTabProps } from "./types";
+import { WildShapeFormsSection } from "./wild-shape-forms-section";
 
 const NO_SOURCE = "Sans source";
 const NO_COUNTER = "none";
@@ -102,6 +103,10 @@ export function FeaturesTab({ draft, onChange }: CharacterTabProps) {
           onChange={onChange}
         />
       ))}
+
+      {resources.some((resource) => resource.id === "wild-shape") && (
+        <WildShapeFormsSection character={draft} onChange={onChange} />
+      )}
 
       {draft.features.length === 0 ? (
         <p className="text-muted-foreground rounded-xl border border-dashed p-3 text-center text-sm">

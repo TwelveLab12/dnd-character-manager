@@ -1,10 +1,10 @@
 "use client";
 
-import { Flame, Focus, Heart, Shield, Sprout } from "lucide-react";
+import { Flame, Focus, Heart, PawPrint, Shield, Sprout } from "lucide-react";
 import { useEffect } from "react";
 import type { Character } from "@/domain/character";
 import { computeArmorClass } from "@/domain/calculations/armor-class";
-import { computeMaxHitPoints } from "@/domain/calculations/max-hit-points";
+import { displayedHitPoints } from "@/domain/calculations/wild-shape";
 import { isSymbioticEntityActive } from "@/domain/calculations/circle-of-spores";
 import { useSpellStore } from "@/stores/store-provider";
 import { hasActiveArmorClassEffect } from "./combat-hud";
@@ -22,8 +22,7 @@ export function CombatSummary({ character }: { character: Character }) {
   }, [loadSpells]);
   const armorClass = computeArmorClass(character).total;
   const boosted = hasActiveArmorClassEffect(character);
-  const { current, temporary } = character.hitPoints;
-  const max = computeMaxHitPoints(character).total;
+  const { current, temporary, max, formName } = displayedHitPoints(character);
   const { concentration } = character;
   const concentrationSpell = concentration.spellId
     ? spells.find((spell) => spell.id === concentration.spellId)?.name
@@ -47,6 +46,12 @@ export function CombatSummary({ character }: { character: Character }) {
       <span className="inline-flex shrink-0 items-center gap-1.5 sm:gap-2">
         <Heart aria-hidden className="text-success size-4 sm:size-[18px]" />
         <span className="text-muted-foreground text-xs">PV</span>
+        {formName && (
+          <span className="text-primary inline-flex items-center gap-1 text-xs font-semibold">
+            <PawPrint aria-hidden className="size-3.5" />
+            <span className="max-w-20 truncate max-sm:sr-only">{formName}</span>
+          </span>
+        )}
         <span className="font-heading text-xl font-bold tabular-nums sm:text-[22px]">
           {current}
           <span className="text-muted-foreground text-sm font-medium"> / {max}</span>

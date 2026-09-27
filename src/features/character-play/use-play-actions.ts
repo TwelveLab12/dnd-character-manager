@@ -2,21 +2,15 @@
 
 import type { Character, DeathSaves } from "@/domain/character";
 import { adjustFeatureUses } from "@/domain/calculations/feature-uses";
-import { computeMaxHitPoints } from "@/domain/calculations/max-hit-points";
 import {
   DEATH_SAVE_OUTCOME_LABELS,
   deathSaveOutcome,
-  damageCharacter,
   reconcileDeathSaves,
   rollDeathSave,
   setDeathSaves,
   stabilize,
 } from "@/domain/calculations/death-saves";
-import {
-  applyHealing,
-  setCurrentHitPoints,
-  setTemporaryHitPoints,
-} from "@/domain/calculations/hit-points";
+import { setTemporaryHitPoints } from "@/domain/calculations/hit-points";
 import { applyLongRest, applyShortRest } from "@/domain/calculations/rest";
 import { setExhaustion } from "@/domain/calculations/exhaustion-change";
 import type { EquipSlot, WeaponPlacement } from "@/domain/equipment";
@@ -32,6 +26,13 @@ import { adjustSpellSlotsUsed } from "@/domain/calculations/spell-slot-table";
 import type { Spell } from "@/domain/spell";
 import { adjustClassResourceUsed } from "@/domain/calculations/class-resources";
 import { endRage, startRage } from "@/domain/calculations/rage";
+import {
+  endWildShape,
+  healInPlay,
+  setHitPointsInPlay,
+  startWildShape,
+  takeDamage,
+} from "@/domain/calculations/wild-shape";
 import {
   endSymbioticEntity,
   reconcileSymbioticEntity,
@@ -112,19 +113,24 @@ export function usePlayActions(characterId: string) {
       });
       return entry ? activityLogStore.getState().record(characterId, entry) : Promise.resolve();
     },
-    applyDamage: (amount: number) => withCurrent((character) => damageCharacter(character, amount)),
-    applyHealing: (amount: number) =>
-      withCurrent((character) => ({
-        hitPoints: applyHealing(character.hitPoints, amount, computeMaxHitPoints(character).total),
-      })),
+    // En Forme sauvage, dégâts et soins vont aux PV de la bête (docs/adr/0070).
+    applyDamage: (amount: number) => withCurrent((character) => takeDamage(character, amount)),
+    applyHealing: (amount: number) => withCurrent((character) => healInPlay(character, amount)),
     setCurrentHitPoints: (value: number) =>
+      withCurrent((character) => setHitPointsInPlay(character, value)),
+    startWildShape: (formId: string) =>
+      withCurrent((character) => startWildShape(character, formId), {
+        title: "Forme sauvage",
+        category: "status",
+      }),
+    toggleWildShapeFavorite: (formId: string) =>
       withCurrent((character) => ({
-        hitPoints: setCurrentHitPoints(
-          character.hitPoints,
-          value,
-          computeMaxHitPoints(character).total,
+        wildShapeForms: character.wildShapeForms?.map((form) =>
+          form.id === formId ? { ...form, favorite: form.favorite ? undefined : true } : form,
         ),
       })),
+    endWildShape: () =>
+      withCurrent(() => endWildShape(), { title: "Retour à la forme normale", category: "status" }),
     setTemporaryHitPoints: (amount: number) =>
       withCurrent((character) => ({
         hitPoints: setTemporaryHitPoints(character.hitPoints, amount),
