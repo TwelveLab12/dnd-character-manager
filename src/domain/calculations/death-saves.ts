@@ -55,6 +55,13 @@ export function setDeathSaves(deathSaves: DeathSaves): Partial<Character> {
 
 export type DeathSaveOutcome = "success" | "failure" | "critical-failure" | "critical-success";
 
+export const DEATH_SAVE_OUTCOME_LABELS: Record<DeathSaveOutcome, string> = {
+  "critical-success": "20 naturel : 1 PV, reprend conscience !",
+  success: "réussite",
+  failure: "échec",
+  "critical-failure": "1 naturel : deux échecs",
+};
+
 export function deathSaveOutcome(roll: number): DeathSaveOutcome {
   if (roll >= 20) {
     return "critical-success";

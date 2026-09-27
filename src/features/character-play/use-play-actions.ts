@@ -4,6 +4,8 @@ import type { Character, DeathSaves } from "@/domain/character";
 import { adjustFeatureUses } from "@/domain/calculations/feature-uses";
 import { computeMaxHitPoints } from "@/domain/calculations/max-hit-points";
 import {
+  DEATH_SAVE_OUTCOME_LABELS,
+  deathSaveOutcome,
   damageCharacter,
   reconcileDeathSaves,
   rollDeathSave,
@@ -30,7 +32,15 @@ import type { Spell } from "@/domain/spell";
 import { adjustClassResourceUsed } from "@/domain/calculations/class-resources";
 import { endRage, startRage } from "@/domain/calculations/rage";
 import type { ClassResourceId } from "@/domain/character-class";
-import { useCharacterStoreApi } from "@/stores/store-provider";
+import type { ActivityIntent } from "@/domain/activity-log";
+import { buildActivityEntry } from "@/domain/activity-log";
+import { describeChanges } from "@/domain/calculations/activity-changes";
+import { generateId } from "@/domain/id";
+import {
+  useActivityLogStoreApi,
+  useCharacterStoreApi,
+  useSpellStoreApi,
+} from "@/stores/store-provider";
 
 /**
  * Actions du mode jeu : persistent immédiatement (pas de brouillon + bouton Enregistrer, à
@@ -41,8 +51,18 @@ import { useCharacterStoreApi } from "@/stores/store-provider";
  */
 export function usePlayActions(characterId: string) {
   const characterStore = useCharacterStoreApi();
+  const activityLogStore = useActivityLogStoreApi();
+  const spellStore = useSpellStoreApi();
 
-  function withCurrent(mutate: (character: Character) => Partial<Character>) {
+  /**
+   * Applique une action et l'inscrit dans l'historique (docs/adr/0061) : ce qui a changé sur la
+   * fiche, et le contexte de l'action (`intent`) quand elle en a un. Une action sans effet ni
+   * contexte n'est pas inscrite. L'historique n'est jamais attendu : il ne ralentit pas le jeu.
+   */
+  function withCurrent(
+    mutate: (character: Character) => Partial<Character>,
+    intent?: ActivityIntent,
+  ) {
     const current = characterStore
       .getState()
       .characters.find((character) => character.id === characterId);
@@ -51,7 +71,19 @@ export function usePlayActions(characterId: string) {
     }
     // Toute remontée (ou chute) des PV remet les jets contre la mort à zéro (docs/adr/0060).
     const patch = reconcileDeathSaves(current, mutate(current));
-    return characterStore.getState().update(characterId, { ...current, ...patch });
+    const next = { ...current, ...patch };
+    const changes = describeChanges(current, next, {
+      spellName: (spellId) =>
+        spellStore.getState().spells.find((spell) => spell.id === spellId)?.name,
+    });
+    const entry = buildActivityEntry(changes, intent, {
+      id: generateId(),
+      at: new Date().toISOString(),
+    });
+    if (entry) {
+      void activityLogStore.getState().record(characterId, entry);
+    }
+    return characterStore.getState().update(characterId, next);
   }
 
   return {
@@ -95,11 +127,27 @@ export function usePlayActions(characterId: string) {
       })),
     /** Repos court, avec les jets des dés de vie dépensés (un par dé). */
     takeShortRest: (hitDieRolls: readonly number[] = []) =>
-      withCurrent((character) => applyShortRest(character, hitDieRolls)),
-    takeLongRest: () => withCurrent((character) => applyLongRest(character)),
-    rollDeathSave: (roll: number) => withCurrent((character) => rollDeathSave(character, roll)),
+      withCurrent((character) => applyShortRest(character, hitDieRolls), {
+        title: "Repos court",
+        category: "rest",
+        ...(hitDieRolls.length > 0
+          ? { details: [`Dés de vie lancés : ${hitDieRolls.join(", ")}`] }
+          : {}),
+      }),
+    takeLongRest: () =>
+      withCurrent((character) => applyLongRest(character), {
+        title: "Repos long",
+        category: "rest",
+      }),
+    rollDeathSave: (roll: number) =>
+      withCurrent((character) => rollDeathSave(character, roll), {
+        title: `Jet contre la mort : ${roll}`,
+        category: "status",
+        details: [DEATH_SAVE_OUTCOME_LABELS[deathSaveOutcome(roll)]],
+      }),
     setDeathSaves: (deathSaves: DeathSaves) => withCurrent(() => setDeathSaves(deathSaves)),
-    stabilize: () => withCurrent((character) => stabilize(character)),
+    stabilize: () =>
+      withCurrent((character) => stabilize(character), { title: "Stabilisé", category: "status" }),
     setSpellPreparation: (spellId: string, state: SpellPreparationState) =>
       withCurrent((character) => setSpellPreparation(character, spellId, state)),
     /** Lance un sort et renvoie l'état d'avant (emplacements + concentration), pour « Annuler ». */
@@ -114,14 +162,28 @@ export function usePlayActions(characterId: string) {
         spellSlotsUsed: current.spellSlotsUsed,
         concentration: current.concentration,
       };
-      void withCurrent((character) => castSpell(character, spell, mode));
+      const how =
+        mode.type === "ritual"
+          ? " (rituel)"
+          : mode.type === "slot" && mode.level > spell.level
+            ? ` (niv. ${mode.level})`
+            : "";
+      void withCurrent((character) => castSpell(character, spell, mode), {
+        title: `${spell.name}${how} lancé`,
+        category: "spells",
+      });
       return previous;
     },
-    restoreCasting: (previous: CastingPatch) => withCurrent(() => previous),
+    restoreCasting: (previous: CastingPatch) =>
+      withCurrent(() => previous, { title: "Lancement annulé", category: "spells" }),
     equipItem: (itemId: string, slot: EquipSlot) =>
       withCurrent((character) => ({ inventory: equipItem(character, itemId, slot) })),
-    startRage: () => withCurrent((character) => startRage(character)),
-    endRage: () => withCurrent(() => endRage()),
+    startRage: () =>
+      withCurrent((character) => startRage(character), {
+        title: "Entrée en rage",
+        category: "status",
+      }),
+    endRage: () => withCurrent(() => endRage(), { title: "Fin de la rage", category: "status" }),
     placeWeapon: (itemId: string, placement: WeaponPlacement) =>
       withCurrent((character) => ({ inventory: placeWeapon(character, itemId, placement) })),
     adjustItemQuantity: (itemId: string, delta: number) =>

@@ -9,6 +9,7 @@ import { PageTitle } from "@/components/ui/page-title";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CharacterThemeScope } from "@/features/character-theme/character-theme-scope";
 import { AbilitiesViewTab } from "./abilities-view-tab";
+import { ActivityLogButton } from "./activity-log-sheet";
 import { CombatHud } from "./combat-hud";
 import { CombatSummary } from "./combat-summary";
 import { FullscreenToggle } from "./fullscreen-toggle";
@@ -75,6 +76,7 @@ export function CharacterPlay({ characterId }: { characterId: string }) {
             </p>
           </div>
           <div className="flex shrink-0 items-center gap-1">
+            <ActivityLogButton character={character} />
             <FullscreenToggle />
             <Button type="button" variant="ghost" asChild>
               <Link href={`/characters/${characterId}/edit`} aria-label="Modifier">

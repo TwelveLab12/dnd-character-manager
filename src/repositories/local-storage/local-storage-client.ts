@@ -64,6 +64,13 @@ export class LocalStorageClient<T> {
     }
   }
 
+  /** Supprime la ressource (la prochaine lecture rend `fallback`). */
+  remove(): void {
+    if (isBrowser()) {
+      window.localStorage.removeItem(this.key);
+    }
+  }
+
   write(data: T): void {
     if (!isBrowser()) {
       return;

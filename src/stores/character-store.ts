@@ -28,7 +28,15 @@ function toErrorMessage(error: unknown): string {
  * isolation avec un repository en mémoire factice, sans monter de composant React ni de Context.
  * Voir docs/adr/0003-zustand-stores-over-repositories.md.
  */
-export function createCharacterStore(repository: CharacterRepository): CharacterStoreHook {
+export function createCharacterStore(
+  repository: CharacterRepository,
+  {
+    onRemove,
+  }: {
+    /** Données liées au personnage à supprimer avec lui (ex : son historique, docs/adr/0061). */
+    onRemove?: (id: string) => Promise<void>;
+  } = {},
+): CharacterStoreHook {
   return create<CharacterStoreState>((set, get) => ({
     characters: [],
     isLoading: false,
@@ -70,6 +78,7 @@ export function createCharacterStore(repository: CharacterRepository): Character
     remove: async (id) => {
       await repository.delete(id);
       set({ characters: get().characters.filter((existing) => existing.id !== id) });
+      await onRemove?.(id);
     },
   }));
 }
