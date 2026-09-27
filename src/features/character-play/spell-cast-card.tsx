@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import type { Character } from "@/domain/character";
 import type { CastMode } from "@/domain/calculations/spell-casting";
 import { castOptions } from "@/domain/calculations/spell-casting";
+import { activeWildShapeForm } from "@/domain/calculations/wild-shape-form";
 import {
   isShillelaghSpell,
   SHILLELAGH_DAMAGE_DICE,
@@ -97,9 +98,13 @@ function SpellCastButton({
   size?: "default" | "lg";
   onCast?: () => void;
 }) {
-  const { options, defaultMode, cast } = useSpellCasting(character, spell);
-  const castLabel =
-    defaultMode === undefined
+  const { options, defaultMode: castableMode, cast } = useSpellCasting(character, spell);
+  // Pas de sorts en Forme sauvage (docs/adr/0070) ; la concentration en cours continue.
+  const wildShaped = activeWildShapeForm(character) !== undefined;
+  const defaultMode = wildShaped ? undefined : castableMode;
+  const castLabel = wildShaped
+    ? "En Forme sauvage"
+    : defaultMode === undefined
       ? "Plus d’emplacement"
       : defaultMode.type === "slot"
         ? `Lancer · niv. ${defaultMode.level}`
@@ -109,7 +114,7 @@ function SpellCastButton({
   // Le chevron n'apparaît que s'il offre une autre option réellement utilisable.
   const selectableOptions =
     options.slots.filter((slot) => slot.available > 0).length + (options.canRitual ? 1 : 0);
-  const hasMenu = selectableOptions > 1;
+  const hasMenu = !wildShaped && selectableOptions > 1;
 
   function run(mode: CastMode) {
     if (cast(mode)) {

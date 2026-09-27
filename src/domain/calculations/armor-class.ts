@@ -3,6 +3,7 @@ import type { Character } from "../character";
 import { findClassDefinition } from "../character-class";
 import type { ArmorCategory, InventoryItem } from "../inventory";
 import { effectiveAbilityScores } from "./effective-ability-scores";
+import { activeWildShapeForm } from "./wild-shape-form";
 import { abilityModifier } from "./modifiers";
 import { effectiveArmorProficiencies } from "./class-features";
 
@@ -57,6 +58,20 @@ export function dexterityContribution(
   }
 }
 
+/** Effets de CA actifs : manuels activés, ou liés au sort sur lequel le personnage se concentre. */
+function activeEffectParts(character: Character): ArmorClassPart[] {
+  return (character.armorClassEffects ?? []).flatMap((effect) => {
+    const active =
+      effect.trigger.type === "manual"
+        ? effect.trigger.active
+        : character.concentration.active &&
+          character.concentration.spellId === effect.trigger.spellId;
+    return active && effect.bonus !== 0
+      ? [{ label: effect.name || "Effet", value: effect.bonus }]
+      : [];
+  });
+}
+
 function isEquippedArmor(item: InventoryItem): boolean {
   return item.equipped === true && item.armor !== undefined;
 }
@@ -69,6 +84,20 @@ function isEquippedArmor(item: InventoryItem): boolean {
  * absence ne produit qu'un avertissement (désavantage For/Dex, pas de sorts).
  */
 export function computeArmorClass(character: Character): ArmorClassResult {
+  // Forme sauvage (docs/adr/0070) : la CA de la bête, l'équipement se fond dans la forme ; les
+  // effets actifs (sorts) s'appliquent toujours.
+  const form = activeWildShapeForm(character);
+  if (form) {
+    const breakdown: ArmorClassPart[] = [
+      { label: `Forme sauvage (${form.name})`, value: form.armorClass },
+      ...activeEffectParts(character),
+    ];
+    return {
+      total: breakdown.reduce((sum, part) => sum + part.value, 0),
+      breakdown,
+      warnings: [],
+    };
+  }
   const scores = effectiveAbilityScores(character.abilityScores, character.raceSelection);
   const dexterityModifier = abilityModifier(scores.dexterity);
   const mediumArmorMaster = character.mediumArmorMaster ?? false;
@@ -144,16 +173,7 @@ export function computeArmorClass(character: Character): ArmorClassResult {
     });
   }
 
-  for (const effect of character.armorClassEffects ?? []) {
-    const active =
-      effect.trigger.type === "manual"
-        ? effect.trigger.active
-        : character.concentration.active &&
-          character.concentration.spellId === effect.trigger.spellId;
-    if (active && effect.bonus !== 0) {
-      breakdown.push({ label: effect.name || "Effet", value: effect.bonus });
-    }
-  }
+  breakdown.push(...activeEffectParts(character));
 
   for (const item of [armor, shield]) {
     const category = item?.armor?.category;

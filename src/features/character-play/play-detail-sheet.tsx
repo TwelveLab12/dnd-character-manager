@@ -8,6 +8,7 @@ import type { Character } from "@/domain/character";
 import type { ClassResourceId } from "@/domain/character-class";
 import { computeClassResources } from "@/domain/calculations/class-resources";
 import {
+  BEAST_ATTACK_PREFIX,
   computeReadyWeaponAttacks,
   computeWeaponAttacks,
 } from "@/domain/calculations/weapon-attack";
@@ -214,7 +215,9 @@ export function PlayDetailSheet({
         const tags = weaponAttackTags(attack);
         const readySuffix = item && isReadyWeapon(item) ? " · Prête" : "";
         return {
-          eyebrow: `${attack.range === "ranged" ? "Arme · Distance" : "Arme · Corps à corps"}${readySuffix}`,
+          eyebrow: attack.itemId.startsWith(BEAST_ATTACK_PREFIX)
+            ? "Forme sauvage · Attaque"
+            : `${attack.range === "ranged" ? "Arme · Distance" : "Arme · Corps à corps"}${readySuffix}`,
           title: attack.name || "Arme",
           tags: (!attack.proficient || tags.length > 0) && (
             <>
@@ -250,7 +253,9 @@ export function PlayDetailSheet({
                     ].join(" + "),
                   },
                   { label: "Type", value: DAMAGE_TYPE_LABELS[attack.damageType] },
-                  { label: "Caractéristique", value: ABILITY_LABELS[attack.ability] },
+                  attack.itemId.startsWith(BEAST_ATTACK_PREFIX)
+                    ? { label: "Source", value: "Profil de la bête" }
+                    : { label: "Caractéristique", value: ABILITY_LABELS[attack.ability] },
                 ]}
               />
               {attack.versatileDamage && (

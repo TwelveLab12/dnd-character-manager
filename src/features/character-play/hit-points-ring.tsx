@@ -2,7 +2,7 @@
 
 import { ChevronLeft, ChevronRight, Heart, ShieldPlus } from "lucide-react";
 import type { Character } from "@/domain/character";
-import { computeMaxHitPoints } from "@/domain/calculations/max-hit-points";
+import { displayedHitPoints } from "@/domain/calculations/wild-shape";
 import { Button } from "@/components/ui/button";
 import { usePlayActions } from "./use-play-actions";
 
@@ -51,7 +51,7 @@ export function HitPointsControls({ character }: { character: Character }) {
         <span>
           max{" "}
           <strong className="text-foreground font-semibold tabular-nums">
-            {computeMaxHitPoints(character).total}
+            {displayedHitPoints(character).max}
           </strong>
         </span>
       </span>
@@ -71,8 +71,8 @@ export function HitPointsControls({ character }: { character: Character }) {
 
 export function HitPointsRing({ character }: { character: Character }) {
   const { setCurrentHitPoints } = usePlayActions(character.id);
-  const { current, temporary } = character.hitPoints;
-  const max = computeMaxHitPoints(character).total;
+  // En Forme sauvage, l'anneau suit les PV de la bête (docs/adr/0070).
+  const { current, temporary, max, formName } = displayedHitPoints(character);
   const ratio = max > 0 ? clampRatio(current / max) : 0;
   const temporaryRatio = max > 0 ? clampRatio(temporary / max) : 0;
   const arcClassName =
@@ -83,7 +83,7 @@ export function HitPointsRing({ character }: { character: Character }) {
       <svg
         viewBox="0 0 200 200"
         role="img"
-        aria-label={`Points de vie ${current} sur ${max}${temporary > 0 ? `, ${temporary} temporaires` : ""}`}
+        aria-label={`Points de vie${formName ? ` (${formName})` : ""} ${current} sur ${max}${temporary > 0 ? `, ${temporary} temporaires` : ""}`}
         className="absolute inset-0 size-full -rotate-90"
       >
         <circle
@@ -119,9 +119,11 @@ export function HitPointsRing({ character }: { character: Character }) {
       <div className="absolute inset-0 flex flex-col items-center justify-center gap-0.5">
         <span
           aria-hidden
-          className="text-muted-foreground text-[10px] font-semibold tracking-[0.14em]"
+          className={`max-w-24 truncate text-[10px] font-semibold tracking-[0.14em] uppercase ${
+            formName ? "text-primary" : "text-muted-foreground"
+          }`}
         >
-          PV
+          {formName ? `PV · ${formName}` : "PV"}
         </span>
         <input
           type="number"
@@ -130,7 +132,7 @@ export function HitPointsRing({ character }: { character: Character }) {
           max={max}
           value={current}
           onChange={(event) => void setCurrentHitPoints(toNumber(event.target.value))}
-          aria-label="PV actuels"
+          aria-label={formName ? `PV actuels (${formName})` : "PV actuels"}
           className={`${NUMBER_INPUT_CLASSES} font-heading focus-visible:border-ring w-20 border-b-2 border-transparent text-[44px] leading-none font-bold sm:w-24 sm:text-[56px]`}
         />
       </div>

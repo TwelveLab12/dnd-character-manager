@@ -16,6 +16,7 @@ import {
   SYMBIOTIC_ENTITY_OPTION_ID,
 } from "@/domain/calculations/circle-of-spores";
 import { SporesPanel } from "./spores-panel";
+import { WildShapePanel } from "./wild-shape-panel";
 import { Button } from "@/components/ui/button";
 import { usePlayActions } from "./use-play-actions";
 
@@ -181,6 +182,7 @@ function ClassResourceCard({
       </div>
 
       {resource.id === "rage" && <RageControls character={character} />}
+      {resource.id === "wild-shape" && <WildShapePanel character={character} />}
       {resource.id === "wild-shape" && hasCircleOfSporesFeatures(character) && (
         <SporesPanel character={character} />
       )}

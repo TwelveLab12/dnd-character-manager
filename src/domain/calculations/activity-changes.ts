@@ -1,5 +1,6 @@
 import type { ActivityCategory, ActivityChange, ActivityValue } from "../activity-log";
 import type { Character } from "../character";
+import { activeWildShapeForm } from "./wild-shape-form";
 import type { Coin } from "../currency";
 import { COINS, characterCurrency } from "../currency";
 import { weaponPlacement } from "../equipment";
@@ -117,6 +118,18 @@ export function describeChanges(
     after.symbioticEntity ? "oui" : "non",
     "status",
   );
+  const wildShape = (character: Character) =>
+    activeWildShapeForm(character)?.name ?? "forme normale";
+  track("wild-shape", "Forme sauvage", wildShape(before), wildShape(after), "status");
+  if (before.wildShape && after.wildShape && before.wildShape.formId === after.wildShape.formId) {
+    track(
+      "wild-shape-hp",
+      `PV (${wildShape(after)})`,
+      before.wildShape.hitPoints,
+      after.wildShape.hitPoints,
+      "hit-points",
+    );
+  }
   track("shillelagh", "Gourdin magique", shillelagh(before), shillelagh(after), "status");
   for (const effect of after.armorClassEffects ?? []) {
     const previous = before.armorClassEffects?.find((candidate) => candidate.id === effect.id);

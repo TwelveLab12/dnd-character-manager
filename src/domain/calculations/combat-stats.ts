@@ -3,6 +3,7 @@ import type { Character } from "../character";
 import { findClassDefinition } from "../character-class";
 import { findRaceDefinition } from "../race";
 import { effectiveAbilityScores } from "./effective-ability-scores";
+import { activeWildShapeForm, playAbilityScores } from "./wild-shape-form";
 import { exhaustionLevel } from "./exhaustion";
 import { abilityModifier } from "./modifiers";
 import { clampCharacterLevel } from "./proficiency";
@@ -54,10 +55,8 @@ export function savingThrowGrantedBy(
 
 /** Initiative = modificateur de Dextérité + bonus hors règles éventuel. */
 export function computeInitiative(character: Character): ComputedStat {
-  const dexterity = effectiveAbilityScores(
-    character.abilityScores,
-    character.raceSelection,
-  ).dexterity;
+  // En Forme sauvage, la Dextérité de la bête (docs/adr/0070).
+  const dexterity = playAbilityScores(character).dexterity;
   const breakdown: StatPart[] = [{ label: "Dex", value: abilityModifier(dexterity) }];
   if (character.initiativeExtraBonus) {
     breakdown.push({ label: "Bonus", value: character.initiativeExtraBonus });
@@ -74,11 +73,18 @@ export function computeSpeed(character: Character): ComputedStat {
   const race = character.raceSelection
     ? findRaceDefinition(character.raceSelection.raceId)
     : undefined;
+  const form = activeWildShapeForm(character);
   const breakdown: StatPart[] = [
     race
       ? { label: race.name, value: race.speed }
       : { label: "Base", value: character.baseSpeed ?? DEFAULT_SPEED },
   ];
+  if (form) {
+    // Forme sauvage (docs/adr/0070) : la vitesse de la bête remplace tout le reste.
+    return withExhaustion(character, [
+      { label: `Forme sauvage (${form.name})`, value: form.speed },
+    ]);
+  }
 
   const movementBonus = findClassDefinition(character.classId)?.movementBonus;
   const classMeters = movementBonus?.metersAtLevel(clampCharacterLevel(character.level)) ?? 0;
@@ -114,7 +120,11 @@ export function computeSpeed(character: Character): ComputedStat {
       value: -HEAVY_ARMOR_SPEED_PENALTY,
     });
   }
-  // Épuisement (docs/adr/0066) : vitesse divisée par 2 au niveau 2, nulle au niveau 5.
+  return withExhaustion(character, breakdown);
+}
+
+/** Épuisement (docs/adr/0066) : vitesse divisée par 2 au niveau 2, nulle au niveau 5. */
+function withExhaustion(character: Character, breakdown: StatPart[]): ComputedStat {
   const exhaustion = exhaustionLevel(character);
   const beforeExhaustion = Math.max(
     0,

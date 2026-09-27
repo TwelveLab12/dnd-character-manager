@@ -3,7 +3,7 @@ import { exhaustionLevel } from "@/domain/calculations/exhaustion";
 import { ABILITY_NAMES } from "@/domain/ability-scores";
 import type { Character } from "@/domain/character";
 import { effectiveSavingThrowProficiencies } from "@/domain/calculations/combat-stats";
-import { effectiveAbilityScores } from "@/domain/calculations/effective-ability-scores";
+import { activeWildShapeForm, playAbilityScores } from "@/domain/calculations/wild-shape-form";
 import { abilityModifier } from "@/domain/calculations/modifiers";
 import { clampCharacterLevel, proficiencyBonusForLevel } from "@/domain/calculations/proficiency";
 import { ABILITY_LABELS, ABILITY_SHORT_LABELS } from "@/features/shared/ability-labels";
@@ -11,6 +11,8 @@ import { formatModifier } from "@/features/shared/format";
 import { ProficiencyDot } from "@/features/shared/proficiency-dot";
 import { SKILL_DEFINITIONS } from "@/features/shared/skills";
 import { SectionTitle } from "@/components/ui/section-title";
+
+const PHYSICAL_ABILITIES: readonly AbilityName[] = ["strength", "dexterity", "constitution"];
 
 /**
  * Onglet « Caractéristiques » du mode jeu (lecture seule). Chaque carte met en avant le total du jet
@@ -20,7 +22,9 @@ import { SectionTitle } from "@/components/ui/section-title";
  */
 export function AbilitiesViewTab({ character }: { character: Character }) {
   const proficiencyBonus = proficiencyBonusForLevel(clampCharacterLevel(character.level));
-  const effectiveScores = effectiveAbilityScores(character.abilityScores, character.raceSelection);
+  // En Forme sauvage, For/Dex/Con de la bête, avec les maîtrises du druide (docs/adr/0070).
+  const effectiveScores = playAbilityScores(character);
+  const form = activeWildShapeForm(character);
   const savingThrows = effectiveSavingThrowProficiencies(character);
 
   const skillTotal = (skillName: string, ability: AbilityName) =>
@@ -40,6 +44,16 @@ export function AbilitiesViewTab({ character }: { character: Character }) {
           {exhaustion >= 3 ? ", et aux jets de sauvegarde" : ""}.
         </p>
       )}
+      {form && (
+        <p
+          role="note"
+          className="border-primary/40 bg-primary/10 rounded-xl border px-3 py-2 text-sm"
+        >
+          Forme sauvage ({form.name}) : Force, Dextérité et Constitution sont celles de la bête,
+          avec vos maîtrises. Si la bête a un meilleur bonus dans une compétence ou une sauvegarde,
+          utilisez le sien.
+        </p>
+      )}
       <div className="grid gap-4">
         <div className="flex flex-wrap gap-2">
           <HeaderChip label="Bonus de maîtrise" value={formatModifier(proficiencyBonus)} accent />
@@ -51,7 +65,12 @@ export function AbilitiesViewTab({ character }: { character: Character }) {
             <AbilityCard
               key={ability}
               ability={ability}
-              baseScore={character.abilityScores[ability]}
+              // La bête n'a pas de bonus racial : son score s'affiche tel quel.
+              baseScore={
+                form && PHYSICAL_ABILITIES.includes(ability)
+                  ? effectiveScores[ability]
+                  : character.abilityScores[ability]
+              }
               score={effectiveScores[ability]}
               proficient={savingThrows.includes(ability)}
               proficiencyBonus={proficiencyBonus}

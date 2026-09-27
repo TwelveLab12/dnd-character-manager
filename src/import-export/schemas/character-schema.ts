@@ -67,6 +67,22 @@ const armorPropertiesSchema = z.object({
 
 const weaponCategorySchema = z.enum(["simple", "martial"]);
 
+const damageTypeSchema = z.enum([
+  "bludgeoning",
+  "piercing",
+  "slashing",
+  "acid",
+  "cold",
+  "fire",
+  "force",
+  "lightning",
+  "necrotic",
+  "poison",
+  "psychic",
+  "radiant",
+  "thunder",
+]);
+
 const weaponPropertiesSchema = z.object({
   category: weaponCategorySchema,
   range: z.enum(["melee", "ranged"]),
@@ -74,21 +90,7 @@ const weaponPropertiesSchema = z.object({
   // non importable depuis une sauvegarde — l'UI signale le format invalide à la saisie.
   damageDice: z.string(),
   versatileDamageDice: z.string().min(1).optional(),
-  damageType: z.enum([
-    "bludgeoning",
-    "piercing",
-    "slashing",
-    "acid",
-    "cold",
-    "fire",
-    "force",
-    "lightning",
-    "necrotic",
-    "poison",
-    "psychic",
-    "radiant",
-    "thunder",
-  ]),
+  damageType: damageTypeSchema,
   finesse: z.boolean().optional(),
   magicBonus: z.number().optional(),
   twoHanded: z.boolean().optional(),
@@ -125,6 +127,36 @@ const armorClassEffectSchema = z.object({
     z.object({ type: z.literal("concentration"), spellId: z.string().min(1) }),
     z.object({ type: z.literal("manual"), active: z.boolean() }),
   ]),
+});
+
+// Forme sauvage (docs/adr/0070) : bêtes enregistrées par le joueur.
+const beastFormSchema = z.object({
+  id: z.string().min(1),
+  name: z.string(),
+  challengeRating: z.string(),
+  strength: z.number().int().min(1),
+  dexterity: z.number().int().min(1),
+  constitution: z.number().int().min(1),
+  armorClass: z.number().int().min(0),
+  maxHitPoints: z.number().int().min(1),
+  speed: z.number().min(0),
+  swimSpeed: z.number().min(0).optional(),
+  flySpeed: z.number().min(0).optional(),
+  climbSpeed: z.number().min(0).optional(),
+  attacks: z
+    .array(
+      z.object({
+        id: z.string().min(1),
+        name: z.string(),
+        attackBonus: z.number().int(),
+        damageDice: z.string(),
+        damageBonus: z.number().int(),
+        damageType: damageTypeSchema,
+        notes: z.string().optional(),
+      }),
+    )
+    .default([]),
+  notes: z.string().optional(),
 });
 
 const featureRechargeSchema = z.enum(["shortRest", "longRest", "other"]);
@@ -193,6 +225,8 @@ const currentCharacterSchema = z.object({
   raging: z.boolean().optional(),
   shillelagh: z.object({ itemId: z.string().min(1) }).optional(),
   symbioticEntity: z.boolean().optional(),
+  wildShapeForms: z.array(beastFormSchema).optional(),
+  wildShape: z.object({ formId: z.string().min(1), hitPoints: z.number().int().min(0) }).optional(),
   hitDiceUsed: z.number().int().min(0).optional(),
   deathSaves: z
     .object({
