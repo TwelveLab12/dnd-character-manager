@@ -134,8 +134,8 @@ export function usePlayActions(characterId: string) {
         ),
       })),
     /** Repos court, avec les jets des dés de vie dépensés (un par dé). */
-    takeShortRest: (hitDieRolls: readonly number[] = []) =>
-      withCurrent((character) => applyShortRest(character, hitDieRolls), {
+    takeShortRest: (hitDieRolls: readonly number[] = [], keepConcentration = false) =>
+      withCurrent((character) => applyShortRest(character, hitDieRolls, { keepConcentration }), {
         title: "Repos court",
         category: "rest",
         ...(hitDieRolls.length > 0

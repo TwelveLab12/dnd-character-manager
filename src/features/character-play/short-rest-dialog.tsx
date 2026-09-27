@@ -23,7 +23,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useSpellStore } from "@/stores/store-provider";
 import { formatModifier } from "@/features/shared/format";
 import { usePlayActions } from "./use-play-actions";
 
@@ -43,11 +46,13 @@ export function ShortRestDialog({
   const { takeShortRest } = usePlayActions(character.id);
   const [open, setOpen] = useState(false);
   const [rolls, setRolls] = useState<number[]>([]);
+  const [keepConcentration, setKeepConcentration] = useState(false);
 
   function handleOpenChange(next: boolean) {
     setOpen(next);
     if (!next) {
       setRolls([]);
+      setKeepConcentration(false);
     }
   }
 
@@ -57,7 +62,7 @@ export function ShortRestDialog({
       ? rolls.reduce((sum, roll) => sum + hitDieHealing(roll, hitDice.constitution), 0)
       : 0;
     const before = character.hitPoints.current;
-    await takeShortRest(rolls);
+    await takeShortRest(rolls, keepConcentration);
     const max = computeMaxHitPoints(character).total;
     const gained = Math.min(max, before + healing) - before;
     toast.success(
@@ -85,6 +90,13 @@ export function ShortRestDialog({
           onAdd={(roll) => setRolls((current) => [...current, roll])}
           onRemove={(index) => setRolls((current) => current.filter((_, i) => i !== index))}
         />
+        {character.concentration.active && (
+          <KeepConcentration
+            character={character}
+            checked={keepConcentration}
+            onCheckedChange={setKeepConcentration}
+          />
+        )}
         <DialogFooter>
           <DialogClose asChild>
             <Button type="button" variant="outline">
@@ -97,6 +109,45 @@ export function ShortRestDialog({
         </DialogFooter>
       </DialogContent>
     </Dialog>
+  );
+}
+
+/**
+ * Un repos court dure une heure : la concentration prend fin, sauf pour un sort plus long, que le
+ * joueur garde en cochant la case (docs/adr/0065).
+ */
+function KeepConcentration({
+  character,
+  checked,
+  onCheckedChange,
+}: {
+  character: Character;
+  checked: boolean;
+  onCheckedChange: (checked: boolean) => void;
+}) {
+  const checkboxId = useId();
+  const spellName = useSpellStore(
+    (state) => state.spells.find((spell) => spell.id === character.concentration.spellId)?.name,
+  );
+
+  return (
+    <section aria-label="Concentration" className="grid gap-1.5 rounded-xl border p-3">
+      <div className="flex items-center gap-2">
+        <Checkbox
+          id={checkboxId}
+          checked={checked}
+          onCheckedChange={(value) => onCheckedChange(value === true)}
+        />
+        <Label htmlFor={checkboxId} className="text-sm font-semibold">
+          Garder la concentration{spellName ? ` (${spellName})` : ""}
+        </Label>
+      </div>
+      <p className="text-muted-foreground text-xs">
+        {checked
+          ? "Le sort dure plus d’une heure : la concentration continue après le repos."
+          : "Un repos court dure 1 heure : la concentration prendra fin. Cochez seulement pour un sort plus long (Maléfice ou Marque du chasseur à haut niveau…)."}
+      </p>
+    </section>
   );
 }
 

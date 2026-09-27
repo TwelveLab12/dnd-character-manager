@@ -17,6 +17,18 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: "2026-09-27-rest-resets",
+    date: "2026-09-27",
+    title: "Repos plus fidèles aux règles",
+    changes: [
+      "Repos long : le sommeil met fin à la concentration, les PV temporaires disparaissent et les effets de CA activés à la main (Armure du mage…) prennent fin.",
+      "Repos court : il dure une heure, donc la concentration prend fin. Cochez « Garder la concentration » pour un sort plus long (Maléfice à haut niveau…).",
+      "Avant de confirmer un repos long, la liste de ce qui va prendre fin s’affiche.",
+    ],
+    action:
+      "Après un repos long, réactivez les effets que vous relancez au réveil (Armure du mage…).",
+  },
+  {
     id: "2026-09-27-install-prompt",
     date: "2026-09-27",
     title: "Invitation à installer l’application",
