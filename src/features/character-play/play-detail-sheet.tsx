@@ -11,6 +11,7 @@ import {
   computeReadyWeaponAttacks,
   computeWeaponAttacks,
 } from "@/domain/calculations/weapon-attack";
+import { exhaustionLevel } from "@/domain/calculations/exhaustion";
 import { isReadyWeapon } from "@/domain/inventory";
 import type { InventoryItem } from "@/domain/inventory";
 import { ARMOR_CATEGORY_LABELS } from "@/features/shared/armor-class";
@@ -228,7 +229,12 @@ export function PlayDetailSheet({
           ),
           body: (
             <>
-              <AttackAction key={attack.itemId} characterId={character.id} attack={attack} />
+              <AttackAction
+                key={attack.itemId}
+                characterId={character.id}
+                attack={attack}
+                exhaustion={exhaustionLevel(character)}
+              />
               <DetailStats
                 stats={[
                   { label: "Au toucher", value: formatModifier(attack.attackBonus) },

@@ -17,6 +17,18 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: "2026-09-27-exhaustion",
+    date: "2026-09-27",
+    title: "Épuisement",
+    changes: [
+      "Onglet Combat : un compteur « Épuisement » (0 à 6) sur la ligne de la concentration et des repos.",
+      "Dès le niveau 1, un encadré sous les PV liste les effets actifs, qui se cumulent.",
+      "Les effets sont appliqués : vitesse divisée par 2 (niveau 2) puis à 0 (niveau 5), PV max divisés par 2 (niveau 4, PV actuels ramenés au maximum), mort au niveau 6.",
+      "Attaque guidée en désavantage dès le niveau 3. L’onglet Caractéristiques rappelle le désavantage aux tests (niveau 1) et aux sauvegardes (niveau 3).",
+      "Un repos long retire un niveau si le personnage a mangé et bu (case cochée par défaut).",
+    ],
+  },
+  {
     id: "2026-09-27-rest-resets",
     date: "2026-09-27",
     title: "Repos plus fidèles aux règles",

@@ -1,4 +1,5 @@
 import type { AbilityName } from "@/domain/ability-scores";
+import { exhaustionLevel } from "@/domain/calculations/exhaustion";
 import { ABILITY_NAMES } from "@/domain/ability-scores";
 import type { Character } from "@/domain/character";
 import { effectiveSavingThrowProficiencies } from "@/domain/calculations/combat-stats";
@@ -27,8 +28,18 @@ export function AbilitiesViewTab({ character }: { character: Character }) {
     (character.skillProficiencies.includes(skillName) ? proficiencyBonus : 0);
   const passivePerception = 10 + skillTotal("Perception", "wisdom");
 
+  const exhaustion = exhaustionLevel(character);
   return (
     <div className="grid gap-7">
+      {exhaustion > 0 && (
+        <p
+          role="note"
+          className="border-warning/50 bg-warning/10 text-warning rounded-xl border px-3 py-2 text-sm"
+        >
+          Épuisement {exhaustion} : désavantage aux tests de caractéristique et de compétence
+          {exhaustion >= 3 ? ", et aux jets de sauvegarde" : ""}.
+        </p>
+      )}
       <div className="grid gap-4">
         <div className="flex flex-wrap gap-2">
           <HeaderChip label="Bonus de maîtrise" value={formatModifier(proficiencyBonus)} accent />

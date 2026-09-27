@@ -18,6 +18,7 @@ import {
   setTemporaryHitPoints,
 } from "@/domain/calculations/hit-points";
 import { applyLongRest, applyShortRest } from "@/domain/calculations/rest";
+import { setExhaustion } from "@/domain/calculations/exhaustion-change";
 import type { EquipSlot, WeaponPlacement } from "@/domain/equipment";
 import { equipItem, placeWeapon } from "@/domain/equipment";
 import type { Coin } from "@/domain/currency";
@@ -142,11 +143,12 @@ export function usePlayActions(characterId: string) {
           ? { details: [`Dés de vie lancés : ${hitDieRolls.join(", ")}`] }
           : {}),
       }),
-    takeLongRest: () =>
-      withCurrent((character) => applyLongRest(character), {
+    takeLongRest: (ateAndDrank = true) =>
+      withCurrent((character) => applyLongRest(character, { ateAndDrank }), {
         title: "Repos long",
         category: "rest",
       }),
+    setExhaustion: (level: number) => withCurrent((character) => setExhaustion(character, level)),
     rollDeathSave: (roll: number) =>
       withCurrent((character) => rollDeathSave(character, roll), {
         title: `Jet contre la mort : ${roll}`,

@@ -1,4 +1,5 @@
 import type { Character, DeathSaves } from "../character";
+import { exhaustionLevel, MAX_EXHAUSTION } from "./exhaustion";
 import { applyDamage } from "./hit-points";
 import { computeMaxHitPoints } from "./max-hit-points";
 
@@ -26,6 +27,10 @@ function clampCount(value: number | undefined): number {
 }
 
 export function dyingStatus(character: Character): DyingStatus {
+  // Épuisement 6 : mort, quels que soient les PV (docs/adr/0066).
+  if (exhaustionLevel(character) >= MAX_EXHAUSTION) {
+    return "dead";
+  }
   if (character.hitPoints.current > 0) {
     return "alive";
   }

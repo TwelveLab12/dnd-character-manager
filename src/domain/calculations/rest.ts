@@ -1,6 +1,7 @@
 import type { Character } from "../character";
 import type { CharacterFeature, FeatureRecharge } from "../feature";
 import { restoreClassResources } from "./class-resources";
+import { exhaustionLevel } from "./exhaustion";
 import { hitDiceUsedAfterLongRest, spendHitDice } from "./hit-dice";
 import { computeMaxHitPoints } from "./max-hit-points";
 
@@ -52,9 +53,18 @@ export function applyShortRest(
  * sommeil met fin à la concentration, et les effets de CA manuels (Armure du mage…) prennent fin
  * (docs/adr/0065).
  */
-export function applyLongRest(character: Character): Partial<Character> {
+export function applyLongRest(
+  character: Character,
+  { ateAndDrank = true }: { ateAndDrank?: boolean } = {},
+): Partial<Character> {
+  // Épuisement : un niveau de moins en fin de repos, s'il a mangé et bu (docs/adr/0066). Les PV
+  // sont restaurés au maximum de ce nouveau niveau.
+  const exhaustion = exhaustionLevel(character);
+  const nextExhaustion = ateAndDrank ? Math.max(0, exhaustion - 1) : exhaustion;
+  const rested = { ...character, exhaustion: nextExhaustion };
   return {
-    hitPoints: { current: computeMaxHitPoints(character).total, temporary: 0 },
+    ...(exhaustion > 0 ? { exhaustion: nextExhaustion === 0 ? undefined : nextExhaustion } : {}),
+    hitPoints: { current: computeMaxHitPoints(rested).total, temporary: 0 },
     concentration: { active: false },
     ...(character.armorClassEffects
       ? {

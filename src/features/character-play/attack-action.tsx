@@ -39,12 +39,16 @@ const MODE_REASONS: Record<RollMode, string | undefined> = {
 export function AttackAction({
   characterId,
   attack,
+  exhaustion = 0,
 }: {
   characterId: string;
   attack: WeaponAttack;
+  /** Niveau d'épuisement : désavantage proposé d'office à partir de 3 (docs/adr/0066). */
+  exhaustion?: number;
 }) {
   const { logActivity } = usePlayActions(characterId);
-  const [mode, setMode] = useState<RollMode>("normal");
+  const exhaustionDisadvantage = exhaustion >= 3;
+  const [mode, setMode] = useState<RollMode>(exhaustionDisadvantage ? "disadvantage" : "normal");
   const [targetArmorClass, setTargetArmorClass] = useState("");
   const [attackRoll, setAttackRoll] = useState<AttackRollResult>();
   const [answered, setAnswered] = useState<boolean>();
@@ -150,6 +154,11 @@ export function AttackAction({
             Bonus au toucher {formatModifier(attack.attackBonus)} : saisissez seulement le résultat
             du d20, l’application ajoute les bonus.
           </p>
+          {exhaustionDisadvantage && (
+            <p className="text-warning text-xs">
+              Épuisement {exhaustion} : désavantage aux jets d’attaque, déjà sélectionné.
+            </p>
+          )}
         </>
       )}
 
@@ -166,6 +175,9 @@ export function AttackAction({
           terms={attackRoll.terms}
           reasons={[
             ...(attackRoll.dice.length > 1 ? [MODE_REASONS[mode]] : []),
+            exhaustionDisadvantage
+              ? `Épuisement ${exhaustion} : désavantage aux jets d’attaque.`
+              : undefined,
             ...attackRoll.terms.map((term) => term.reason),
             ...attack.attackNotes,
             attackRoll.critical
