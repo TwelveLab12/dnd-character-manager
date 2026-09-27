@@ -11,7 +11,8 @@ function subscribe(onChange: () => void) {
 
 /**
  * Bascule plein écran de la page (API Fullscreen) : sur tablette, la barre du navigateur prend
- * beaucoup de place. Rien n'est affiché si le navigateur ne permet pas le plein écran (ex :
+ * beaucoup de place. Le plein écran persiste d'une page à l'autre : le bouton figure donc dans
+ * l'en-tête de chaque page (docs/adr/0063). Rien n'est affiché si le navigateur ne permet pas le plein écran (ex :
  * Safari sur iPhone), ni au rendu serveur.
  */
 export function FullscreenToggle() {

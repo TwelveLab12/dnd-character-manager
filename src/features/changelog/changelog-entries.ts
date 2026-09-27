@@ -17,6 +17,15 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: "2026-09-27-fullscreen-everywhere",
+    date: "2026-09-27",
+    title: "Plein écran sur toutes les pages",
+    changes: [
+      "Le bouton plein écran est désormais en haut à droite de chaque page : accueil, bibliothèque de sorts, Nouveautés, configuration et fiche d’un personnage.",
+      "Vous pouvez entrer dans le plein écran ou en sortir où que vous soyez, sans revenir sur une fiche.",
+    ],
+  },
+  {
     id: "2026-09-27-attack-action",
     date: "2026-09-27",
     title: "Attaquer avec une arme",
