@@ -1,11 +1,12 @@
 "use client";
 
-import { BookOpen } from "lucide-react";
+import { BookOpen, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useEffect } from "react";
 import { useCharacterStore, useSpellStore } from "@/stores/store-provider";
 import { Button } from "@/components/ui/button";
 import { PageTitle } from "@/components/ui/page-title";
+import { useHasUnseenChangelog } from "@/features/changelog/use-changelog-seen";
 import { CharacterCard } from "./character-card";
 import { CreateCharacterDialog } from "./create-character-dialog";
 import { DataPanel } from "./data-panel";
@@ -17,6 +18,7 @@ export function CharacterList() {
   const load = useCharacterStore((state) => state.load);
 
   const loadSpells = useSpellStore((state) => state.load);
+  const hasUnseenChangelog = useHasUnseenChangelog();
 
   useEffect(() => {
     void load();
@@ -32,6 +34,21 @@ export function CharacterList() {
             <Link href="/spells">
               <BookOpen />
               Bibliothèque de sorts
+            </Link>
+          </Button>
+          <Button variant="outline" asChild>
+            <Link href="/changelog" className="relative">
+              <Sparkles />
+              Nouveautés
+              {hasUnseenChangelog && (
+                <>
+                  <span className="sr-only"> (non lues)</span>
+                  <span
+                    aria-hidden
+                    className="bg-primary ring-background absolute -top-1 -right-1 size-2.5 rounded-full ring-2"
+                  />
+                </>
+              )}
             </Link>
           </Button>
           <DataPanel />

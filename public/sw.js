@@ -23,7 +23,7 @@ const VERSION = new URL(self.location.href).searchParams.get("v") || "dev";
 const STATIC_CACHE = `static-${VERSION}`;
 const PAGES_CACHE = `pages-${VERSION}`;
 const OFFLINE_URL = "/offline";
-const PRECACHED_PAGES = ["/", "/spells", OFFLINE_URL];
+const PRECACHED_PAGES = ["/", "/spells", "/changelog", OFFLINE_URL];
 const PRECACHED_ASSETS = [
   "/manifest.webmanifest",
   "/icons/icon-192.png",
