@@ -24,6 +24,12 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
+import {
+  mergeBeastForms,
+  parseBeastFormImportEntries,
+  previewBeastFormImport,
+} from "@/import-export/beast-form-importer";
+import { ImportDialog } from "@/features/shared/import-dialog";
 
 /**
  * Formes de la Forme sauvage (docs/adr/0070) : les bêtes habituelles du druide, saisies depuis
@@ -74,10 +80,25 @@ export function WildShapeFormsSection({
             {limits.noSwim ? ", ni nage ni vol" : limits.noFly ? ", pas de vol" : ""}.
           </p>
         </div>
-        <Button type="button" variant="outline" onClick={addForm}>
-          <Plus />
-          Ajouter une forme
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <ImportDialog<BeastForm>
+            title="Importer des formes"
+            description="Collez le JSON de vos bêtes, ou choisissez un fichier. Une forme de même identifiant (ou de même nom, sans identifiant) est mise à jour."
+            triggerVariant="outline"
+            placeholder='[{ "name": "Loup", "challengeRating": "1/4", "strength": 12, ... }]'
+            parseEntries={parseBeastFormImportEntries}
+            preview={(entries) => previewBeastFormImport(entries, forms)}
+            onImport={(imported) => {
+              const { forms: merged, added, updated } = mergeBeastForms(forms, imported);
+              setForms(merged);
+              return Promise.resolve({ added, updated, skipped: 0 });
+            }}
+          />
+          <Button type="button" variant="outline" onClick={addForm}>
+            <Plus />
+            Ajouter une forme
+          </Button>
+        </div>
       </div>
 
       {forms.length === 0 ? (

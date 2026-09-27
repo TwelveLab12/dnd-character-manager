@@ -27,6 +27,10 @@ Aucun profil de bête n'est fourni, pour les droits (comme les sorts,
   nom, FP, For/Dex/Con, CA, PV max, vitesses (marche, nage, vol, escalade), attaques et notes.
   - Une attaque porte un bonus au toucher, des dés, un modificateur de dégâts, un type et un effet.
   - Éditeur dans l'onglet Capacités de la configuration, sous la réserve de Forme sauvage.
+  - Import JSON (bouton « Importer » de la section) : un tableau de formes ou
+    `{ wildShapeForms: [...] }`, validé ligne par ligne comme les autres imports. Les identifiants
+    absents sont dérivés du nom, pour qu'un réimport mette à jour au lieu de dupliquer. Aucun
+    fichier de bêtes n'est livré dans le dépôt : il est préparé à part pour le joueur.
   - Les limites du niveau (FP, vol, nage) sont des **avertissements**, jamais un blocage : le MJ
     peut en décider autrement.
 - **Forme active** : `Character.wildShape = { formId, hitPoints }`, les PV de la bête. Les PV du

@@ -130,7 +130,7 @@ const armorClassEffectSchema = z.object({
 });
 
 // Forme sauvage (docs/adr/0070) : bêtes enregistrées par le joueur.
-const beastFormSchema = z.object({
+export const beastFormSchema = z.object({
   id: z.string().min(1),
   name: z.string(),
   challengeRating: z.string(),
