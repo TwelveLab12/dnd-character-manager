@@ -49,7 +49,13 @@ Aucun profil de bête n'est fourni, pour les droits (comme les sorts,
   - dégâts : PV temporaires du druide d'abord, puis PV de la bête. À 0, retour à la forme normale
     et surplus sur le druide, jets contre la mort compris ;
   - soins : vers la bête, plafonnés à son maximum.
-- **Transformation** : bouton « Devenir » par forme, sur la carte Forme sauvage. Elle dépense une
+- **Choix de la forme** : une liste complète sur la carte devenait illisible dès une vingtaine de
+  bêtes. La carte ne montre que les formes **favorites** (`BeastForm.favorite`, au plus 3), en
+  pastilles « Devenir » en un geste. Le bouton « Toutes les formes (N) » ouvre le panneau de détail
+  du mode jeu : recherche par nom, filtre par FP, et une carte par bête (CA, PV, vitesses, attaques
+  avec bonus et dégâts, traits, avertissements). Une étoile y met la forme en accès rapide ; le même
+  réglage existe dans la configuration.
+- **Transformation** : bouton « Devenir » d'une forme. Elle dépense une
   utilisation, met fin à l'Entité symbiotique ([0069](0069-circle-of-spores.md)) et à Gourdin
   magique ([0068](0068-shillelagh.md)), l'arme se fondant dans la forme.
 - **Retour** : « Reprendre ma forme ». Automatique :

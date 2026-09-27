@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown, PawPrint, Plus, Trash2, TriangleAlert } from "lucide-react";
+import { ChevronDown, PawPrint, Plus, Star, Trash2, TriangleAlert } from "lucide-react";
 import type { ReactNode } from "react";
 import { useId, useState } from "react";
 import type { Character } from "@/domain/character";
@@ -169,6 +169,9 @@ function FormCard({
           <span className="text-[15px] font-medium">{form.name || "Nouvelle forme"}</span>
           <span className="text-muted-foreground truncate text-xs">{formSummary(form)}</span>
         </span>
+        {form.favorite && (
+          <Star aria-label="Accès rapide" className="fill-warning text-warning size-4 shrink-0" />
+        )}
         {warnings.length > 0 && (
           <TriangleAlert aria-label="Hors limites" className="text-warning size-4 shrink-0" />
         )}
@@ -361,7 +364,20 @@ function FormEditor({
         />
       </div>
 
-      <div className="flex justify-end">
+      <div className="flex items-center justify-between gap-2">
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          aria-pressed={form.favorite === true}
+          onClick={() => onChange({ favorite: form.favorite ? undefined : true })}
+        >
+          <Star
+            aria-hidden
+            className={form.favorite ? "fill-warning text-warning" : "text-muted-foreground"}
+          />
+          Accès rapide
+        </Button>
         <Button
           type="button"
           variant="ghost"

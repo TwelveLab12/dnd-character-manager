@@ -157,6 +157,7 @@ export const beastFormSchema = z.object({
     )
     .default([]),
   notes: z.string().optional(),
+  favorite: z.boolean().optional(),
 });
 
 const featureRechargeSchema = z.enum(["shortRest", "longRest", "other"]);

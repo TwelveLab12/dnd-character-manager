@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it } from "vitest";
 import { LocalStorageCharacterRepository } from "@/repositories/local-storage/local-storage-character-repository";
@@ -53,7 +53,19 @@ describe("Forme sauvage (mode jeu)", () => {
     );
     await screen.findByRole("heading", { name: character.name });
 
-    await user.click(screen.getByRole("button", { name: "Se transformer : Loup" }));
+    // Pas encore de favori : tout passe par le panneau, où l'étoile met la forme en accès rapide.
+    expect(screen.queryByRole("button", { name: "Se transformer : Loup" })).toBeNull();
+    await user.click(screen.getByRole("button", { name: "Toutes les formes (1)" }));
+    const sheet = await screen.findByRole("dialog", { name: "Se transformer" });
+    expect(within(sheet).getByRole("article", { name: "Loup" })).toHaveTextContent(
+      "Morsure +4 · 2d4+2 perforant",
+    );
+    await user.type(within(sheet).getByLabelText("Rechercher une forme"), "ours");
+    expect(within(sheet).getByText("Aucune forme ne correspond.")).toBeInTheDocument();
+    await user.clear(within(sheet).getByLabelText("Rechercher une forme"));
+    await user.click(within(sheet).getByRole("button", { name: "Accès rapide : Loup" }));
+    expect((await repository.getById(character.id))?.wildShapeForms?.[0]?.favorite).toBe(true);
+    await user.click(within(sheet).getByRole("button", { name: "Devenir : Loup" }));
 
     const saved = await repository.getById(character.id);
     expect(saved?.wildShape).toEqual({ formId: "wolf", hitPoints: 11 });
@@ -69,5 +81,8 @@ describe("Forme sauvage (mode jeu)", () => {
     await user.click(screen.getByRole("button", { name: "Reprendre ma forme" }));
     expect((await repository.getById(character.id))?.wildShape).toBeUndefined();
     expect(screen.getByLabelText("PV actuels")).toHaveValue(20);
+    // Favori : la forme est proposée directement sur la carte.
+    await user.click(screen.getByRole("button", { name: "Se transformer : Loup" }));
+    expect((await repository.getById(character.id))?.wildShape?.formId).toBe("wolf");
   });
 });

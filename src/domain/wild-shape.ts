@@ -37,6 +37,8 @@ export interface BeastForm {
   attacks: BeastAttack[];
   /** Sens, traits (Odorat aiguisé, Tactique de groupe…), compétences de la bête. */
   notes?: string;
+  /** Forme en accès rapide sur la carte Forme sauvage. */
+  favorite?: boolean;
 }
 
 /** Forme sauvage en cours : la forme choisie et ses PV actuels (les PV du druide sont à part). */

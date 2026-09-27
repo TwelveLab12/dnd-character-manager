@@ -123,6 +123,12 @@ export function usePlayActions(characterId: string) {
         title: "Forme sauvage",
         category: "status",
       }),
+    toggleWildShapeFavorite: (formId: string) =>
+      withCurrent((character) => ({
+        wildShapeForms: character.wildShapeForms?.map((form) =>
+          form.id === formId ? { ...form, favorite: form.favorite ? undefined : true } : form,
+        ),
+      })),
     endWildShape: () =>
       withCurrent(() => endWildShape(), { title: "Retour à la forme normale", category: "status" }),
     setTemporaryHitPoints: (amount: number) =>
