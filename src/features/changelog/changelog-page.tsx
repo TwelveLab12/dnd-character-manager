@@ -1,10 +1,9 @@
 "use client";
 
-import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
 import { useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { PageTitle } from "@/components/ui/page-title";
+import { BackLink } from "@/features/shared/back-link";
 import { FullscreenToggle } from "@/features/shared/fullscreen-toggle";
 import { CHANGELOG } from "./changelog-entries";
 import { useChangelogVisit } from "./use-changelog-seen";
@@ -41,13 +40,7 @@ export function ChangelogPage() {
     <div className="mx-auto flex w-full max-w-2xl flex-col gap-6 px-6 py-12">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <Link
-            href="/"
-            className="text-muted-foreground inline-flex items-center gap-1 text-sm underline underline-offset-4"
-          >
-            <ArrowLeft className="size-3.5" aria-hidden />
-            Mes personnages
-          </Link>
+          <BackLink className="mb-2" />
           <PageTitle>Nouveautés</PageTitle>
         </div>
         <FullscreenToggle />

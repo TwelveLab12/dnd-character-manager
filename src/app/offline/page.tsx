@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { BackLink } from "@/features/shared/back-link";
 import { FullscreenToggle } from "@/features/shared/fullscreen-toggle";
 
 export const metadata: Metadata = { title: "Hors ligne — Gestionnaire de personnage D&D" };
@@ -20,9 +20,7 @@ export default function OfflinePage() {
         ligne dès la prochaine visite en ligne. Tes personnages restent enregistrés sur cet
         appareil.
       </p>
-      <Link href="/" className="text-primary underline underline-offset-4">
-        Retour aux personnages
-      </Link>
+      <BackLink />
     </main>
   );
 }
