@@ -126,7 +126,8 @@ describe("Weapon attacks in play mode", () => {
     await screen.findByRole("heading", { name: character.name });
 
     expect(screen.getByText("+3")).toBeInTheDocument();
-    expect(screen.getByText(/1d8\+3 tranchant · 1d10\+3 à deux mains/)).toBeInTheDocument();
+    expect(screen.getByText(/1d8\+3 tranchant/)).toBeInTheDocument();
+    expect(screen.queryByText(/à deux mains/)).not.toBeInTheDocument();
     expect(screen.getByText(/non maîtrisée/i)).toBeInTheDocument();
   });
 

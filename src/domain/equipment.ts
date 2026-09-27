@@ -2,8 +2,9 @@ import type { Character } from "./character";
 import type { InventoryItem, WeaponHand, WeaponProperties } from "./inventory";
 
 /**
- * Emplacement d'équipement choisi pour un objet : `null` = non équipé ; pour une arme, la main
- * (une arme à deux mains est toujours en main principale et occupe aussi la secondaire).
+ * Emplacement d'équipement choisi pour un objet : `null` = non équipé ; pour une arme, la prise
+ * (une arme à deux mains est toujours en main principale et occupe aussi la secondaire ; une arme
+ * polyvalente peut être tenue à deux mains, docs/adr/0057).
  */
 export type EquipSlot = null | "equipped" | WeaponHand;
 
@@ -22,6 +23,33 @@ export function canWieldOffHand(
   );
 }
 
+/** Arme polyvalente : dé de dégâts à deux mains renseigné, et pas déjà une arme à deux mains. */
+export function canWieldTwoHanded(weapon: WeaponProperties): boolean {
+  return weapon.versatileDamageDice !== undefined && !weapon.twoHanded;
+}
+
+/**
+ * Prise effective d'une arme (docs/adr/0057) : une arme à deux mains est toujours « both » ; une
+ * prise enregistrée que l'arme ne permet plus (polyvalence ou main secondaire retirées dans
+ * l'éditeur) retombe en main principale.
+ */
+export function weaponGrip(
+  character: Pick<Character, "dualWielder">,
+  weapon: WeaponProperties,
+  hand: WeaponHand | undefined,
+): WeaponHand {
+  if (weapon.twoHanded) {
+    return "both";
+  }
+  if (hand === "both" && canWieldTwoHanded(weapon)) {
+    return "both";
+  }
+  if (hand === "off" && canWieldOffHand(character, weapon)) {
+    return "off";
+  }
+  return "main";
+}
+
 type Occupation = "body" | "main" | "off";
 
 /** Emplacements occupés par un objet une fois équipé. Un objet sans armure ni arme (anneau,
@@ -31,10 +59,11 @@ function occupiedSlots(item: InventoryItem, hand: WeaponHand | undefined): Occup
     return item.armor.category === "shield" ? ["off"] : ["body"];
   }
   if (item.weapon) {
-    if (item.weapon.twoHanded) {
+    if (item.weapon.twoHanded || (hand === "both" && canWieldTwoHanded(item.weapon))) {
       return ["main", "off"];
     }
-    return [hand ?? "main"];
+    // Une main secondaire non permise (données importées) occupe quand même cette main.
+    return [hand === "off" ? "off" : "main"];
   }
   return [];
 }
@@ -42,8 +71,8 @@ function occupiedSlots(item: InventoryItem, hand: WeaponHand | undefined): Occup
 /**
  * Équipe (ou déséquipe) un objet en libérant automatiquement ce qui occupe déjà ses emplacements :
  * une seule armure, une arme en main principale, une arme ou un bouclier en main secondaire, et
- * une arme à deux mains prend les deux mains. Une main secondaire demandée pour une arme qui ne
- * le permet pas (voir canWieldOffHand) retombe en main principale.
+ * une arme à deux mains (ou polyvalente tenue à deux mains) prend les deux mains. Une prise que
+ * l'arme ne permet pas (voir weaponGrip) retombe en main principale.
  */
 export function equipItem(
   character: Pick<Character, "inventory" | "dualWielder">,
@@ -63,10 +92,9 @@ export function equipItem(
 
   let hand: WeaponHand | undefined;
   if (target.weapon) {
-    hand =
-      slot === "off" && canWieldOffHand(character, target.weapon) && !target.weapon.twoHanded
-        ? "off"
-        : "main";
+    const requested = slot === "equipped" ? "main" : slot;
+    // Une arme à deux mains s'enregistre en main principale : sa prise découle de l'arme.
+    hand = target.weapon.twoHanded ? "main" : weaponGrip(character, target.weapon, requested);
   }
   const taken = occupiedSlots(target, hand);
 
@@ -74,7 +102,7 @@ export function equipItem(
     if (item.id === itemId) {
       const { stowed: _stowed, ...rest } = item;
       const equipped: InventoryItem = { ...rest, equipped: true };
-      return hand === "off" ? { ...equipped, hand } : withoutHand(equipped);
+      return hand === "off" || hand === "both" ? { ...equipped, hand } : withoutHand(equipped);
     }
     if (item.equipped !== true) {
       return item;
@@ -120,7 +148,7 @@ export function placeWeapon(
   itemId: string,
   placement: WeaponPlacement,
 ): InventoryItem[] {
-  if (placement === "main" || placement === "off") {
+  if (placement !== "bag" && placement !== "ready") {
     return equipItem(character, itemId, placement);
   }
   return equipItem(character, itemId, null).map((item) => {

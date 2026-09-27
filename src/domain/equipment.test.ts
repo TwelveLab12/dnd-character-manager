@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { InventoryItem } from "./inventory";
-import { canWieldOffHand, currentSlot, equipItem } from "./equipment";
+import { canWieldOffHand, currentSlot, equipItem, weaponGrip } from "./equipment";
 
 const leather: InventoryItem = {
   id: "leather",
@@ -62,6 +62,18 @@ const greatsword: InventoryItem = {
     twoHanded: true,
   },
 };
+const quarterstaff: InventoryItem = {
+  id: "quarterstaff",
+  name: "Bâton",
+  quantity: 1,
+  weapon: {
+    category: "simple",
+    range: "melee",
+    damageDice: "1d6",
+    versatileDamageDice: "1d8",
+    damageType: "bludgeoning",
+  },
+};
 const ring: InventoryItem = { id: "ring", name: "Anneau", quantity: 1, armorClassBonus: 1 };
 
 function equippedIds(inventory: InventoryItem[]) {
@@ -70,7 +82,7 @@ function equippedIds(inventory: InventoryItem[]) {
     .map((item) => (item.hand ? `${item.id}:${item.hand}` : item.id));
 }
 
-function equipped(item: InventoryItem, hand?: "off"): InventoryItem {
+function equipped(item: InventoryItem, hand?: "off" | "both"): InventoryItem {
   return { ...item, equipped: true, ...(hand ? { hand } : {}) };
 }
 
@@ -138,6 +150,38 @@ describe("equipItem", () => {
     expect(equippedIds(withShield)).toEqual(["shield"]);
   });
 
+  it("a versatile weapon held with both hands frees both hands, and is freed by a shield", () => {
+    const twoHands = equipItem(
+      { inventory: [equipped(shortsword), equipped(shield), quarterstaff] },
+      "quarterstaff",
+      "both",
+    );
+    expect(equippedIds(twoHands)).toEqual(["quarterstaff:both"]);
+
+    const withShield = equipItem(
+      { inventory: [equipped(quarterstaff, "both"), shield] },
+      "shield",
+      "equipped",
+    );
+    expect(equippedIds(withShield)).toEqual(["shield"]);
+
+    const oneHand = equipItem(
+      { inventory: [equipped(quarterstaff), equipped(shield)] },
+      "shield",
+      "equipped",
+    );
+    expect(equippedIds(oneHand)).toEqual(["quarterstaff", "shield"]);
+  });
+
+  it("falls back to the main hand for a two-handed grip on a non-versatile weapon", () => {
+    expect(equippedIds(equipItem({ inventory: [longsword, shield] }, "longsword", "both"))).toEqual(
+      ["longsword"],
+    );
+    expect(equippedIds(equipItem({ inventory: [greatsword] }, "greatsword", "both"))).toEqual([
+      "greatsword",
+    ]);
+  });
+
   it("never touches items that occupy no slot", () => {
     const inventory = equipItem({ inventory: [equipped(ring), leather] }, "leather", "equipped");
     expect(equippedIds(inventory)).toEqual(["ring", "leather"]);
@@ -155,5 +199,17 @@ describe("currentSlot", () => {
     expect(currentSlot(equipped(dagger))).toBe("main");
     expect(currentSlot(equipped(dagger, "off"))).toBe("off");
     expect(currentSlot(equipped(shield))).toBe("equipped");
+  });
+});
+
+describe("weaponGrip", () => {
+  it("resolves the effective grip of a weapon", () => {
+    const none = { dualWielder: false };
+    expect(weaponGrip(none, greatsword.weapon!, undefined)).toBe("both");
+    expect(weaponGrip(none, quarterstaff.weapon!, "both")).toBe("both");
+    expect(weaponGrip(none, longsword.weapon!, "both")).toBe("main");
+    expect(weaponGrip(none, dagger.weapon!, "off")).toBe("off");
+    expect(weaponGrip(none, longsword.weapon!, "off")).toBe("main");
+    expect(weaponGrip(none, longsword.weapon!, undefined)).toBe("main");
   });
 });
