@@ -1,4 +1,4 @@
-import { act, render, screen } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Toaster } from "sonner";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -66,6 +66,39 @@ describe("InstallPrompt", () => {
     await userEvent.click(screen.getByRole("checkbox", { name: "Ne plus me demander" }));
     await userEvent.click(screen.getByRole("button", { name: "Plus tard" }));
     expect(window.localStorage.getItem(INSTALL_PROMPT_NEVER_KEY)).toBe("1");
+  });
+
+  it("does not come back when the browser fires its install event again", async () => {
+    renderPrompt();
+    await fire(installEvent().event);
+    await screen.findByRole("dialog", { name: "Installer l'application" });
+    await userEvent.click(screen.getByRole("checkbox", { name: "Ne plus me demander" }));
+    await userEvent.click(screen.getByRole("button", { name: "Plus tard" }));
+    await waitFor(() =>
+      expect(screen.queryByRole("dialog", { name: "Installer l'application" })).toBeNull(),
+    );
+
+    // Chrome renvoie `beforeinstallprompt` (navigation, nouvelle estimation d'installabilité).
+    const again = installEvent().event;
+    await fire(again);
+    await act(() => new Promise((resolve) => setTimeout(resolve, 50)));
+    expect(screen.queryByRole("dialog", { name: "Installer l'application" })).toBeNull();
+    // La mini-barre du navigateur reste masquée : on ne demande plus, nulle part.
+    expect(again.defaultPrevented).toBe(true);
+  });
+
+  it("« Plus tard » also holds for the rest of the session", async () => {
+    renderPrompt();
+    await fire(installEvent().event);
+    await screen.findByRole("dialog", { name: "Installer l'application" });
+    await userEvent.click(screen.getByRole("button", { name: "Plus tard" }));
+    await waitFor(() =>
+      expect(screen.queryByRole("dialog", { name: "Installer l'application" })).toBeNull(),
+    );
+
+    await fire(installEvent().event);
+    await act(() => new Promise((resolve) => setTimeout(resolve, 50)));
+    expect(screen.queryByRole("dialog", { name: "Installer l'application" })).toBeNull();
   });
 
   it("« Plus tard » without the box only waits for the next session", async () => {

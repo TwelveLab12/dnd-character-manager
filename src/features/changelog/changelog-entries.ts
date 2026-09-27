@@ -17,6 +17,15 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: "2026-09-27-install-prompt-fix",
+    date: "2026-09-27",
+    title: "Invitation à installer : « Ne plus me demander » respecté",
+    changes: [
+      "L’invitation à installer l’application ne réapparaît plus quelques instants après avoir coché « Ne plus me demander ».",
+      "« Plus tard » tient désormais jusqu’à votre prochaine visite, même quand vous changez de page.",
+    ],
+  },
+  {
     id: "2026-09-27-wild-shape",
     date: "2026-09-27",
     title: "Forme sauvage",
