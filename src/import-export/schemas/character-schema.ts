@@ -190,6 +190,17 @@ const currencySchema = z.object({
   copper: coinAmountSchema,
 });
 
+// Journal de l'aventurier (docs/adr/0071).
+const journalSessionSchema = z.object({
+  id: z.string().min(1),
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  title: z.string().min(1).optional(),
+  notes: z
+    .array(z.object({ id: z.string().min(1), text: z.string().min(1), createdAt: z.string() }))
+    .default([]),
+  createdAt: z.string(),
+});
+
 const currentCharacterSchema = z.object({
   id: z.string().min(1),
   name: z.string().min(1),
@@ -256,6 +267,7 @@ const currentCharacterSchema = z.object({
   features: z.array(characterFeatureSchema).default([]),
   themeId: z.string().min(1).optional(),
   notes: z.string().min(1).optional(),
+  journal: z.array(journalSessionSchema).optional(),
   createdAt: z
     .string()
     .min(1)

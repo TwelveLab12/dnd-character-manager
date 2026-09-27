@@ -49,6 +49,16 @@ import type { ActivityIntent } from "@/domain/activity-log";
 import { buildActivityEntry } from "@/domain/activity-log";
 import { describeChanges } from "@/domain/calculations/activity-changes";
 import { generateId } from "@/domain/id";
+import type { JournalSession } from "@/domain/journal";
+import {
+  addNote,
+  createSession,
+  deleteNote,
+  deleteSession,
+  localDateKey,
+  updateNote,
+  updateSession,
+} from "@/domain/journal";
 import {
   useActivityLogStoreApi,
   useCharacterStoreApi,
@@ -265,5 +275,37 @@ export function usePlayActions(characterId: string) {
       withCurrent((character) => ({
         classResourcesUsed: adjustClassResourceUsed(character, resourceId, delta),
       })),
+    // Journal de l'aventurier (docs/adr/0071) : hors historique, ce ne sont pas des actions de jeu.
+    /** Sans `sessionId`, la note va dans la session du jour, créée à la volée. */
+    addJournalNote: (text: string, sessionId?: string) =>
+      withJournal((journal) =>
+        addNote(
+          journal,
+          text,
+          sessionId
+            ? { sessionId }
+            : { today: localDateKey(new Date()), newSessionId: generateId() },
+          { id: generateId(), now: new Date().toISOString() },
+        ),
+      ),
+    /** Crée une session et renvoie son identifiant. */
+    createJournalSession: (values: { date: string; title?: string }) => {
+      const id = generateId();
+      void withJournal((journal) =>
+        createSession(journal, values, { id, now: new Date().toISOString() }),
+      );
+      return id;
+    },
+    updateJournalSession: (sessionId: string, values: { date: string; title?: string }) =>
+      withJournal((journal) => updateSession(journal, sessionId, values)),
+    deleteJournalSession: (sessionId: string) =>
+      withJournal((journal) => deleteSession(journal, sessionId)),
+    updateJournalNote: (noteId: string, text: string) =>
+      withJournal((journal) => updateNote(journal, noteId, text)),
+    deleteJournalNote: (noteId: string) => withJournal((journal) => deleteNote(journal, noteId)),
   };
+
+  function withJournal(mutate: (journal: JournalSession[]) => JournalSession[]) {
+    return withCurrent((character) => ({ journal: mutate(character.journal ?? []) }));
+  }
 }

@@ -13,7 +13,7 @@ import {
   Zap,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type {
   ActivityCategory,
   ActivityChange,
@@ -45,6 +45,7 @@ import {
 import { isKnownThemeId } from "@/features/character-theme/theme-registry";
 import { useSwipeToClose } from "@/features/shared/detail-sheet";
 import { SegmentedControl } from "@/features/shared/segmented-control";
+import { useWideScreen } from "@/features/shared/use-wide-screen";
 import { useActivityLogStore } from "@/stores/store-provider";
 
 const EMPTY: ActivityEntry[] = [];
@@ -77,28 +78,6 @@ const DAY_FORMAT = new Intl.DateTimeFormat("fr-FR", {
   day: "numeric",
   month: "long",
 });
-
-const WIDE_QUERY = "(min-width: 640px)";
-
-// `matchMedia` peut manquer (environnement de test) : on retombe alors sur le panneau à droite.
-function wideQuery(): MediaQueryList | undefined {
-  return typeof window.matchMedia === "function" ? window.matchMedia(WIDE_QUERY) : undefined;
-}
-
-function subscribeWide(onChange: () => void) {
-  const query = wideQuery();
-  query?.addEventListener("change", onChange);
-  return () => query?.removeEventListener("change", onChange);
-}
-
-/** Écran d'au moins 640 px : panneau à droite ; sinon, panneau par le bas (glisser pour fermer). */
-function useWideScreen(): boolean {
-  return useSyncExternalStore(
-    subscribeWide,
-    () => wideQuery()?.matches ?? true,
-    () => true,
-  );
-}
 
 /**
  * Historique des actions du mode jeu (docs/adr/0061) : bouton de l'en-tête, présent sur tous les

@@ -17,6 +17,18 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: "2026-09-27-adventurer-journal",
+    date: "2026-09-27",
+    title: "Journal de l’aventurier",
+    changes: [
+      "Mode jeu : un nouveau bouton livre, dans l’en-tête, ouvre votre journal depuis n’importe quel onglet, pour noter ce que le MJ vous révèle (noms, lieux, indices, rendez-vous).",
+      "Pas besoin de démarrer quoi que ce soit : votre première note du jour crée la session du jour. Un point doré sur le bouton indique qu’elle est en cours.",
+      "Sessions et notes s’affichent de la plus récente à la plus ancienne. Les sessions passées sont repliées ; dépliez-en une pour la compléter.",
+      "Touchez une note pour la corriger ou la supprimer. Le crayon d’une session change sa date et son titre, ou la supprime.",
+      "Vous prenez vos notes sur papier ? « + Session » crée une session à la date de la partie : elle se range et se numérote à sa place.",
+    ],
+  },
+  {
     id: "2026-09-27-install-prompt-fix",
     date: "2026-09-27",
     title: "Invitation à installer : « Ne plus me demander » respecté",

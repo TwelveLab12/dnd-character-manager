@@ -19,6 +19,7 @@ import {
 import { FullscreenToggle } from "@/features/shared/fullscreen-toggle";
 import { AbilitiesViewTab } from "./abilities-view-tab";
 import { ActivityLogButton } from "./activity-log-sheet";
+import { JournalButton } from "./journal-sheet";
 import { CombatHud } from "./combat-hud";
 import { CombatSummary } from "./combat-summary";
 import { InventoryViewTab } from "./inventory-view-tab";
@@ -84,6 +85,7 @@ export function CharacterPlay({
             </p>
           </div>
           <div className="flex shrink-0 items-center gap-1">
+            <JournalButton character={character} />
             <ActivityLogButton character={character} />
             <FullscreenToggle />
             <Button type="button" variant="ghost" asChild>
