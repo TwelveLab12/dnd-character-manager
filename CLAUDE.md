@@ -51,7 +51,8 @@ vert — c'est le baseline du projet, pas optionnel, et c'est ce que la CI véri
   bloque pas les autres), adapter open5e/SRD, dédup par égalité structurelle
   (`deep-equal.ts`). Voir [docs/adr/0004](docs/adr/0004-json-import-export-open5e-schema.md).
 - **`src/features/`** — écrans, organisés par feature (`character-list/`, `character-sheet/`,
-  `spell-library/`), colocation des composants/tests d'un même écran.
+  `spell-library/`), colocation des composants/tests d'un même écran. Toute page place `FullscreenToggle` dans
+  son en-tête ([docs/adr/0063](docs/adr/0063-fullscreen-on-every-page.md)).
 - **`src/components/ui/`** — primitives générées par le CLI shadcn sur **Radix UI**
   (`components.json` : `"base": "radix"`, package `radix-ui`) — ne pas laisser le CLI basculer sur
   Base UI (son défaut actuel), toujours relancer avec `-b radix` en cas de doute.

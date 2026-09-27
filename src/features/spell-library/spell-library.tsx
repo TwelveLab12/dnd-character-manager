@@ -20,6 +20,7 @@ import { DetailsHint } from "@/features/shared/detail-sheet";
 import { SpellDetailSheet } from "@/features/shared/spell-detail-sheet";
 import { Button } from "@/components/ui/button";
 import { PageTitle } from "@/components/ui/page-title";
+import { FullscreenToggle } from "@/features/shared/fullscreen-toggle";
 import { ImportSpellsDialog } from "./import-spells-dialog";
 
 export function SpellLibrary() {
@@ -52,6 +53,7 @@ export function SpellLibrary() {
           <PageTitle>Bibliothèque de sorts</PageTitle>
         </div>
         <div className="flex items-center gap-2">
+          <FullscreenToggle />
           <Button
             variant="outline"
             disabled={spells.length === 0}

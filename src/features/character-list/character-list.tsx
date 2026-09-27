@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import { useCharacterStore, useSpellStore } from "@/stores/store-provider";
 import { Button } from "@/components/ui/button";
 import { PageTitle } from "@/components/ui/page-title";
+import { FullscreenToggle } from "@/features/shared/fullscreen-toggle";
 import { useHasUnseenChangelog } from "@/features/changelog/use-changelog-seen";
 import { CharacterCard } from "./character-card";
 import { CreateCharacterDialog } from "./create-character-dialog";
@@ -30,6 +31,7 @@ export function CharacterList() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <PageTitle>Mes personnages</PageTitle>
         <div className="flex flex-wrap items-center gap-2">
+          <FullscreenToggle />
           <Button variant="outline" asChild>
             <Link href="/spells">
               <BookOpen />

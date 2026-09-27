@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { PageTitle } from "@/components/ui/page-title";
+import { FullscreenToggle } from "@/features/shared/fullscreen-toggle";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CharacterThemeScope } from "@/features/character-theme/character-theme-scope";
 import { AbilitiesTab } from "./abilities-tab";
@@ -140,6 +141,7 @@ export function CharacterSheet({
           </div>
           <div className="flex items-center gap-3">
             {justSaved && <span className="text-muted-foreground text-xs">Enregistré</span>}
+            <FullscreenToggle />
             <Button type="button" variant="ghost" asChild>
               <Link href={sheetHref} onClick={guardNavigation(sheetHref)}>
                 <Eye />
