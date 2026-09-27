@@ -17,6 +17,15 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: "2026-09-27-install-prompt",
+    date: "2026-09-27",
+    title: "Invitation à installer l’application",
+    changes: [
+      "Si l’application n’est pas installée, un message propose de l’installer : bouton « Installer » sur Chrome, Edge et Android, explication du menu Partager sur iPhone et iPad.",
+      "Cochez « Ne plus me demander » pour ne plus le voir sur cet appareil. « Plus tard » le repousse à votre prochaine visite.",
+    ],
+  },
+  {
     id: "2026-09-27-fullscreen-everywhere",
     date: "2026-09-27",
     title: "Plein écran sur toutes les pages",
