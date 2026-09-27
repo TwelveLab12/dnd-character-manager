@@ -168,4 +168,61 @@ describe("RestActions (via CharacterPlay)", () => {
     expect(persisted?.hitPoints.current).toBe(5);
     expect(persisted?.hitDiceUsed).toBeUndefined();
   });
+
+  it("ends concentration on a short rest unless the player keeps it", async () => {
+    const character = makeTestCharacter({ concentration: { active: true } });
+    await new LocalStorageCharacterRepository().create(character);
+    const user = userEvent.setup();
+    renderPlay(character.id);
+    await screen.findByRole("heading", { name: character.name });
+
+    await user.click(screen.getByRole("button", { name: /^repos court$/i }));
+    let dialog = await screen.findByRole("dialog");
+    await user.click(within(dialog).getByRole("checkbox", { name: "Garder la concentration" }));
+    await user.click(within(dialog).getByRole("button", { name: /^terminer le repos$/i }));
+    let persisted = await new LocalStorageCharacterRepository().getById(character.id);
+    expect(persisted?.concentration.active).toBe(true);
+
+    await user.click(screen.getByRole("button", { name: /^repos court$/i }));
+    dialog = await screen.findByRole("dialog");
+    expect(
+      within(dialog).getByRole("checkbox", { name: "Garder la concentration" }),
+    ).not.toBeChecked();
+    await user.click(within(dialog).getByRole("button", { name: /^terminer le repos$/i }));
+    persisted = await new LocalStorageCharacterRepository().getById(character.id);
+    expect(persisted?.concentration.active).toBe(false);
+  });
+
+  it("lists what a long rest ends, then ends it", async () => {
+    const character = makeTestCharacter({
+      hitPoints: { current: 4, temporary: 5 },
+      concentration: { active: true },
+      armorClassEffects: [
+        {
+          id: "mage-armor",
+          name: "Armure du mage",
+          bonus: 3,
+          trigger: { type: "manual", active: true },
+        },
+      ],
+    });
+    await new LocalStorageCharacterRepository().create(character);
+    const user = userEvent.setup();
+    renderPlay(character.id);
+    await screen.findByRole("heading", { name: character.name });
+
+    await user.click(screen.getByRole("button", { name: /^repos long$/i }));
+    const ends = within(await screen.findByRole("alertdialog")).getByRole("list", {
+      name: "Prend fin avec le repos",
+    });
+    expect(ends).toHaveTextContent("Le sommeil met fin à la concentration.");
+    expect(ends).toHaveTextContent("Les PV temporaires (5) disparaissent.");
+    expect(ends).toHaveTextContent("Prennent fin : Armure du mage.");
+
+    await user.click(screen.getByRole("button", { name: /^confirmer$/i }));
+    const persisted = await new LocalStorageCharacterRepository().getById(character.id);
+    expect(persisted?.hitPoints.temporary).toBe(0);
+    expect(persisted?.concentration.active).toBe(false);
+    expect(persisted?.armorClassEffects?.[0]?.trigger).toEqual({ type: "manual", active: false });
+  });
 });

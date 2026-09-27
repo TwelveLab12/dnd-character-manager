@@ -44,10 +44,37 @@ const BASE: Character = {
 };
 
 describe("applyLongRest", () => {
-  it("restores current hit points to the computed max without touching temporary ones", () => {
+  it("restores current hit points to the computed max and drops temporary ones", () => {
     // Clerc niv. 5, Con 10 : 8 + 4 × 5 = 28.
     const result = applyLongRest(BASE);
-    expect(result.hitPoints).toEqual({ current: 28, temporary: 4 });
+    expect(result.hitPoints).toEqual({ current: 28, temporary: 0 });
+  });
+
+  it("ends concentration and manual armor class effects, keeps the others", () => {
+    const character: Character = {
+      ...BASE,
+      concentration: { active: true, spellId: "bless" },
+      armorClassEffects: [
+        {
+          id: "mage-armor",
+          name: "Armure du mage",
+          bonus: 3,
+          trigger: { type: "manual", active: true },
+        },
+        {
+          id: "shield-of-faith",
+          name: "Bouclier de la foi",
+          bonus: 2,
+          trigger: { type: "concentration", spellId: "sof" },
+        },
+      ],
+    };
+    const result = applyLongRest(character);
+    expect(result.concentration).toEqual({ active: false });
+    expect(result.armorClassEffects?.map((effect) => effect.trigger)).toEqual([
+      { type: "manual", active: false },
+      { type: "concentration", spellId: "sof" },
+    ]);
   });
 
   it("resets all spell slots usage to zero", () => {
@@ -103,5 +130,22 @@ describe("applyShortRest", () => {
     expect(result.classResourcesUsed).toEqual({});
     expect(result.hitPoints).toBeUndefined();
     expect(result.spellSlotsUsed).toBeUndefined();
+  });
+});
+
+describe("applyShortRest and concentration", () => {
+  const concentrating: Character = { ...BASE, concentration: { active: true, spellId: "hex" } };
+
+  it("ends concentration after an hour, unless kept for a longer spell", () => {
+    expect(applyShortRest(concentrating).concentration).toEqual({ active: false });
+    expect(
+      applyShortRest(concentrating, [], { keepConcentration: true }).concentration,
+    ).toBeUndefined();
+  });
+
+  it("keeps temporary hit points and armor class effects", () => {
+    const result = applyShortRest(BASE);
+    expect(result.hitPoints).toBeUndefined();
+    expect(result.armorClassEffects).toBeUndefined();
   });
 });
