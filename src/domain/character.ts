@@ -79,6 +79,9 @@ export interface Character {
   /** Résultats du dé de vie aux niveaux 2, 3… (index 0 = niveau 2), en mode « dés lancés ». La
    * Constitution s'y ajoute automatiquement. */
   hitPointRolls?: number[];
+  /** Dés de vie dépensés (docs/adr/0059) ; absent = aucun. La réserve (un dé par niveau) est
+   * calculée — voir src/domain/calculations/hit-dice.ts. */
+  hitDiceUsed?: number;
   /** PV max saisis, uniquement pour une classe hors registre (sans dé de vie connu). */
   baseMaxHitPoints?: number;
   /** Dons connus des règles (src/domain/feat.ts), dont les effets modélisés sont appliqués
