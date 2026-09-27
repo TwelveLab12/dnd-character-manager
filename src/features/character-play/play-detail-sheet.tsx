@@ -36,6 +36,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { AttackAction } from "./attack-action";
 import { RECHARGE_LABELS, resourceOptions } from "./class-resource-card";
+import { ShillelaghControl } from "./shillelagh-control";
 import { usePlayActions } from "./use-play-actions";
 
 /** Bloc du mode jeu dont le détail est affiché. */
@@ -229,6 +230,7 @@ export function PlayDetailSheet({
           ),
           body: (
             <>
+              <ShillelaghControl character={character} item={item} />
               <AttackAction
                 key={attack.itemId}
                 characterId={character.id}

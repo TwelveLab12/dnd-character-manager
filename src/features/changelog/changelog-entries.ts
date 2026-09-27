@@ -17,6 +17,19 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: "2026-09-27-shillelagh",
+    date: "2026-09-27",
+    title: "Gourdin magique",
+    changes: [
+      "Lancer Gourdin magique depuis l’onglet Sorts enchante le gourdin ou le bâton que vous tenez en main.",
+      "Vous pouvez aussi le lancer depuis le panneau de l’arme (onglet Combat), si votre personnage connaît le sort.",
+      "Tant que le sort dure, l’attaque et les dégâts utilisent votre Sagesse au lieu de la Force, et le dé passe à d8 : fiche, attaque guidée et « Pourquoi ? » en tiennent compte.",
+      "Le sort prend fin avec « Mettre fin », quand l’arme quitte votre main ou après un repos.",
+    ],
+    action:
+      "Votre arme doit s’appeler « Gourdin » ou « Bâton » (ou club, quarterstaff) pour être reconnue.",
+  },
+  {
     id: "2026-09-27-back-link-and-tabs",
     date: "2026-09-27",
     title: "Navigation plus fluide",

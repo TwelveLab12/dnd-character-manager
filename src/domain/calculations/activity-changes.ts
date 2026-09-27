@@ -105,6 +105,12 @@ export function describeChanges(
   track("concentration", "Concentration", concentration(before), concentration(after), "status");
   track("exhaustion", "Épuisement", before.exhaustion ?? 0, after.exhaustion ?? 0, "status");
   track("rage", "Rage", before.raging ? "oui" : "non", after.raging ? "oui" : "non", "status");
+  const shillelagh = (character: Character) =>
+    character.shillelagh
+      ? (character.inventory.find((item) => item.id === character.shillelagh?.itemId)?.name ??
+        "oui")
+      : "non";
+  track("shillelagh", "Gourdin magique", shillelagh(before), shillelagh(after), "status");
   for (const effect of after.armorClassEffects ?? []) {
     const previous = before.armorClassEffects?.find((candidate) => candidate.id === effect.id);
     if (previous?.trigger.type === "manual" && effect.trigger.type === "manual") {

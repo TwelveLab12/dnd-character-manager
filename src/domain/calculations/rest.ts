@@ -41,8 +41,9 @@ export function applyShortRest(
     ...(keepConcentration ? {} : { concentration: { active: false } }),
     features: resetFeaturesForRecharge(character.features, ["shortRest"]),
     classResourcesUsed: restoreClassResources(character, "shortRest"),
-    // Une rage dure 1 minute : un repos y met toujours fin.
+    // Une rage, comme Gourdin magique, dure 1 minute : un repos y met toujours fin.
     raging: undefined,
+    shillelagh: undefined,
   };
 }
 
@@ -83,5 +84,6 @@ export function applyLongRest(
     features: resetFeaturesForRecharge(character.features, ["shortRest", "longRest"]),
     classResourcesUsed: restoreClassResources(character, "longRest"),
     raging: undefined,
+    shillelagh: undefined,
   };
 }

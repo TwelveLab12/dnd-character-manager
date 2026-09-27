@@ -14,6 +14,7 @@ import { effectiveAbilityScores } from "./effective-ability-scores";
 import { abilityModifier } from "./modifiers";
 import { clampCharacterLevel, proficiencyBonusForLevel } from "./proficiency";
 import { effectiveWeaponProficiencies, hasMartialArts } from "./class-features";
+import { SHILLELAGH_DAMAGE_DICE, shillelaghAbility, shillelaghItemId } from "./shillelagh";
 
 const DICE_PATTERN = /^(\d+)d(\d+)$/;
 
@@ -49,6 +50,8 @@ export interface WeaponAttack {
   offHand: boolean;
   /** Bonus de Rage inclus dans les dégâts (corps à corps avec la Force, en rage). */
   rageBonus?: number;
+  /** Gourdin magique actif sur cette arme (docs/adr/0068). */
+  shillelagh?: boolean;
   /** Dés de dégâts réellement lancés (ex : « 1d10 » à deux mains, dé d'Arts martiaux). */
   damageDice: string;
   /** Décomposition du bonus au toucher (docs/adr/0062) : leur somme vaut `attackBonus`. */
@@ -138,6 +141,8 @@ interface AttackContext {
   martialArtsDie: string;
   /** Bonus aux dégâts de la Rage, 0 hors rage (docs/adr/0055). */
   rageBonus: number;
+  /** Arme sous Gourdin magique et caractéristique d'incantation qui remplace la Force. */
+  shillelagh?: { itemId: string; ability: AbilityName; modifier: number };
 }
 
 function attackContext(character: Character): AttackContext {
@@ -151,7 +156,20 @@ function attackContext(character: Character): AttackContext {
     martialArtsActive: isMartialArtsActive(character),
     martialArtsDie: martialArtsDie(character.level),
     rageBonus: character.raging ? rageDamageBonus(clampCharacterLevel(character.level)) : 0,
+    ...shillelaghContext(character, scores),
   };
+}
+
+function shillelaghContext(
+  character: Character,
+  scores: ReturnType<typeof effectiveAbilityScores>,
+): Pick<AttackContext, "shillelagh"> {
+  const itemId = shillelaghItemId(character);
+  if (itemId === undefined) {
+    return {};
+  }
+  const ability = shillelaghAbility(character);
+  return { shillelagh: { itemId, ability, modifier: abilityModifier(scores[ability]) } };
 }
 
 function bestOf(context: AttackContext): AbilityName {
@@ -165,9 +183,13 @@ function betterDice(weaponDice: string, martialDie: string): string {
   return weaponAverage !== undefined && weaponAverage >= martialAverage ? weaponDice : martialDie;
 }
 
-const ABILITY_NAMES: Record<"strength" | "dexterity", string> = {
+const ABILITY_NAMES: Record<AbilityName, string> = {
   strength: "Force",
   dexterity: "Dextérité",
+  constitution: "Constitution",
+  intelligence: "Intelligence",
+  wisdom: "Sagesse",
+  charisma: "Charisme",
 };
 
 const CATEGORY_NAMES: Record<WeaponProperties["category"], string> = {
@@ -191,7 +213,7 @@ function abilityReason(
   }
   return weapon.thrown
     ? "Arme de corps à corps, même lancée : Force."
-    : `Arme de corps à corps : ${ABILITY_NAMES[ability as "strength"]}.`;
+    : `Arme de corps à corps : ${ABILITY_NAMES[ability]}.`;
 }
 
 function buildWeaponAttack(
@@ -203,11 +225,20 @@ function buildWeaponAttack(
   const monkWeapon = isMonkWeapon(weapon);
   const martialArts = context.martialArtsActive && monkWeapon;
 
+  // Gourdin magique : la caractéristique d'incantation remplace la Force (docs/adr/0068).
+  const shillelagh = context.shillelagh?.itemId === item.id ? context.shillelagh : undefined;
   let ability: AbilityName = weapon.range === "ranged" ? "dexterity" : "strength";
   if (weapon.finesse || martialArts) {
     ability = bestOf(context);
   }
-  const modifier = ability === "dexterity" ? context.dexterity : context.strength;
+  if (shillelagh) {
+    ability = shillelagh.ability;
+  }
+  const modifier = shillelagh
+    ? shillelagh.modifier
+    : ability === "dexterity"
+      ? context.dexterity
+      : context.strength;
 
   // Le Moine maîtrise les armes courantes et le coutelas : toute arme de moine compte comme
   // maîtrisée dès que les Arts martiaux sont cochés, même s'ils sont inactifs (armure portée).
@@ -227,12 +258,17 @@ function buildWeaponAttack(
   // Rage : attaques d'arme de corps à corps utilisant la Force.
   const rageBonus = weapon.range === "melee" && ability === "strength" ? context.rageBonus : 0;
   const damageModifier = abilityDamage + magicBonus + rageBonus;
-  const baseDice =
-    versatileGrip && weapon.versatileDamageDice ? weapon.versatileDamageDice : weapon.damageDice;
+  const baseDice = shillelagh
+    ? SHILLELAGH_DAMAGE_DICE
+    : versatileGrip && weapon.versatileDamageDice
+      ? weapon.versatileDamageDice
+      : weapon.damageDice;
   const damageDice = martialArts ? betterDice(baseDice, context.martialArtsDie) : baseDice;
 
-  const abilityName = ABILITY_NAMES[ability as "strength" | "dexterity"];
-  const reason = abilityReason(weapon, ability, martialArts);
+  const abilityName = ABILITY_NAMES[ability];
+  const reason = shillelagh
+    ? `Gourdin magique : ${abilityName} (caractéristique d'incantation) au lieu de la Force.`
+    : abilityReason(weapon, ability, martialArts);
   const magicTerm: RollTerm[] =
     magicBonus !== 0
       ? [
@@ -295,7 +331,12 @@ function buildWeaponAttack(
           "Main secondaire : le modificateur de caractéristique ne s'ajoute pas aux dégâts (sauf style Combat à deux armes).",
         ]
       : []),
-    ...(versatileGrip
+    ...(shillelagh
+      ? [
+          `Gourdin magique : ${SHILLELAGH_DAMAGE_DICE} au lieu de ${weapon.damageDice}, quelle que soit la prise. L'arme est magique : elle passe les résistances aux dégâts non magiques.`,
+        ]
+      : []),
+    ...(versatileGrip && !shillelagh
       ? [`Tenue à deux mains (polyvalente) : ${baseDice} au lieu de ${weapon.damageDice}.`]
       : []),
     ...(martialArts && damageDice !== baseDice
@@ -320,6 +361,7 @@ function buildWeaponAttack(
     martialArts,
     offHand,
     ...(rageBonus > 0 ? { rageBonus } : {}),
+    ...(shillelagh ? { shillelagh: true } : {}),
     damageDice,
     attackTerms,
     damageTerms,
@@ -374,7 +416,7 @@ function unarmedStrike(context: AttackContext): WeaponAttack {
     damageDice: context.martialArtsDie,
     attackTerms: [
       {
-        label: ABILITY_NAMES[ability as "strength" | "dexterity"],
+        label: ABILITY_NAMES[ability],
         value: modifier,
         reason: "Arts martiaux : la meilleure de Force et Dextérité.",
       },
@@ -386,7 +428,7 @@ function unarmedStrike(context: AttackContext): WeaponAttack {
     ],
     damageTerms: [
       {
-        label: ABILITY_NAMES[ability as "strength" | "dexterity"],
+        label: ABILITY_NAMES[ability],
         value: modifier,
         reason: "Modificateur de la caractéristique utilisée au toucher.",
       },

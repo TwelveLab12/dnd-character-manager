@@ -5,6 +5,13 @@ import { toast } from "sonner";
 import type { Character } from "@/domain/character";
 import type { CastMode } from "@/domain/calculations/spell-casting";
 import { castOptions } from "@/domain/calculations/spell-casting";
+import {
+  isShillelaghSpell,
+  SHILLELAGH_DAMAGE_DICE,
+  shillelaghAbility,
+  shillelaghTargets,
+} from "@/domain/calculations/shillelagh";
+import { ABILITY_LABELS } from "@/features/shared/ability-labels";
 import type { Spell } from "@/domain/spell";
 import { DetailsHint, UsePips } from "@/features/shared/detail-sheet";
 import { AlwaysPreparedTag, ConcentrationTag, RitualTag } from "@/features/shared/spell-tags";
@@ -44,6 +51,7 @@ function useSpellCasting(character: Character, spell: Spell) {
       spell.concentration &&
       character.concentration.active &&
       character.concentration.spellId !== spell.id;
+    const shillelaghTarget = isShillelaghSpell(spell) ? shillelaghTargets(character)[0] : null;
     const previous = castSpell(spell, mode);
     if (!previous) {
       return false;
@@ -59,6 +67,12 @@ function useSpellCasting(character: Character, spell: Spell) {
           ? "concentration : remplace le sort précédent"
           : "concentration activée"
         : null,
+      // Gourdin magique (docs/adr/0068) : l'arme enchantée, ou comment s'en servir sans arme.
+      shillelaghTarget === null
+        ? null
+        : shillelaghTarget
+          ? `${shillelaghTarget.name} : ${ABILITY_LABELS[shillelaghAbility(character)]} et ${SHILLELAGH_DAMAGE_DICE} pendant 1 minute`
+          : "aucun gourdin ni bâton en main : prenez-en un, puis lancez le sort depuis l’arme",
     ].filter(Boolean);
     const upcast = mode.type === "slot" && mode.level > spell.level ? ` (niv. ${mode.level})` : "";
     toast.success(`${spell.name}${upcast} lancé`, {
