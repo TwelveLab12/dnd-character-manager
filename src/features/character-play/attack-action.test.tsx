@@ -83,6 +83,13 @@ describe("Attaque guidée (mode jeu)", () => {
     await user.click(attack.getByRole("button", { name: "Valider" }));
     const [, damageBreakdown] = attack.getAllByLabelText("Détail du calcul");
     expect(damageBreakdown).toHaveTextContent("1d8 6+3 Force=9");
+    const [, damageWhy] = attack.getAllByRole("button", { name: /Pourquoi/ });
+    await user.click(damageWhy!);
+    expect(
+      attack.getByText(
+        "Le bonus de maîtrise (+2) ne s'ajoute qu'au jet d'attaque, pas aux dégâts.",
+      ),
+    ).toBeInTheDocument();
     expect(attack.getByText("contondant")).toBeInTheDocument();
 
     const [entry] = await new LocalStorageActivityLogRepository().list(character.id);

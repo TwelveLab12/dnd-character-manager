@@ -289,6 +289,7 @@ function buildWeaponAttack(
       ]
     : [];
   const damageNotes = [
+    ...(proficient ? [proficiencyDamageNote(context.proficiencyBonus)] : []),
     ...(offHandDropped
       ? [
           "Main secondaire : le modificateur de caractéristique ne s'ajoute pas aux dégâts (sauf style Combat à deux armes).",
@@ -325,6 +326,11 @@ function buildWeaponAttack(
     attackNotes,
     damageNotes,
   };
+}
+
+/** Confusion fréquente : la maîtrise aide à toucher, elle n'augmente pas les dégâts. */
+function proficiencyDamageNote(proficiencyBonus: number): string {
+  return `Le bonus de maîtrise (${formatSigned(proficiencyBonus)}) ne s'ajoute qu'au jet d'attaque, pas aux dégâts.`;
 }
 
 function formatSigned(value: number): string {
@@ -386,7 +392,10 @@ function unarmedStrike(context: AttackContext): WeaponAttack {
       },
     ],
     attackNotes: [],
-    damageNotes: [`Arts martiaux : dé de dégâts ${context.martialArtsDie}.`],
+    damageNotes: [
+      proficiencyDamageNote(context.proficiencyBonus),
+      `Arts martiaux : dé de dégâts ${context.martialArtsDie}.`,
+    ],
   };
 }
 

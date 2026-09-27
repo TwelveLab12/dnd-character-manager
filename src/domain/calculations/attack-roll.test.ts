@@ -73,6 +73,14 @@ describe("attack breakdown", () => {
     expect(bow.attackTerms[0]?.reason).toMatch(/distance/);
   });
 
+  it("reminds that proficiency only applies to the attack roll", () => {
+    expect(attackOf(weapon({})).damageNotes[0]).toBe(
+      "Le bonus de maîtrise (+2) ne s'ajoute qu'au jet d'attaque, pas aux dégâts.",
+    );
+    const untrained = attackOf(weapon({}), { ...fighter, weaponProficiencies: ["simple"] });
+    expect(untrained.damageNotes).toEqual([]);
+  });
+
   it("notes a missing proficiency", () => {
     const untrained = attackOf(weapon({}), { ...fighter, weaponProficiencies: ["simple"] });
     expect(untrained.attackTerms.map((term) => term.label)).toEqual(["Force"]);
@@ -82,11 +90,11 @@ describe("attack breakdown", () => {
   it("drops the off-hand modifier and explains the two-handed die", () => {
     const offHand = attackOf(weapon({ light: true, damageDice: "1d6" }, { hand: "off" }));
     expect(offHand.damageTerms).toEqual([]);
-    expect(offHand.damageNotes[0]).toMatch(/Main secondaire/);
+    expect(offHand.damageNotes[1]).toMatch(/Main secondaire/);
 
     const longsword = attackOf(weapon({ versatileDamageDice: "1d10" }, { hand: "both" }));
     expect(longsword.damageDice).toBe("1d10");
-    expect(longsword.damageNotes[0]).toMatch(/deux mains/);
+    expect(longsword.damageNotes[1]).toMatch(/deux mains/);
   });
 
   it("adds the rage bonus to Strength melee damage", () => {
