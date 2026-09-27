@@ -17,6 +17,17 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: "2026-09-27-death-saves",
+    date: "2026-09-27",
+    title: "Jets contre la mort",
+    changes: [
+      "À 0 PV, un panneau « Mourant » apparaît dans l’onglet Combat : trois cases de réussites, trois d’échecs.",
+      "Lancez le d20 depuis l’application ou saisissez le résultat de votre dé : 10+ réussite, 1 naturel deux échecs, 20 naturel 1 PV.",
+      "Trois réussites ou le bouton « Stabiliser » (Médecine, trousse de soins, Épargner les mourants) rendent le personnage stabilisé ; trois échecs, il est mort.",
+      "Un dégât subi à 0 PV coche un échec, et tout soin remet les jets à zéro. Les cases se cochent aussi à la main (coup critique, erreur…).",
+    ],
+  },
+  {
     id: "2026-09-27-hit-dice",
     date: "2026-09-27",
     title: "Dés de vie",

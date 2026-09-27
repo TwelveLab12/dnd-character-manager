@@ -45,6 +45,9 @@ export function applyLongRest(character: Character): Partial<Character> {
   return {
     hitPoints: { ...character.hitPoints, current: computeMaxHitPoints(character).total },
     hitDiceUsed: hitDiceUsedAfterLongRest(character),
+    // PV au maximum : plus de jets contre la mort en cours.
+    deathSaves: undefined,
+    stable: undefined,
     spellSlotsUsed: {},
     features: resetFeaturesForRecharge(character.features, ["shortRest", "longRest"]),
     classResourcesUsed: restoreClassResources(character, "longRest"),

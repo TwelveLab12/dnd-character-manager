@@ -24,6 +24,7 @@ import { PlayDetailSheet } from "./play-detail-sheet";
 import { FeatureUsageCards } from "./feature-usage-card";
 import { ConcentrationMarker } from "./concentration-marker";
 import { HitPointsControls, HitPointsRing, TemporaryHitPointsChip } from "./hit-points-ring";
+import { DeathSavesPanel } from "./death-saves-panel";
 import { HitDiceChip } from "./hit-dice-chip";
 import { RestActions } from "./rest-actions";
 import { SpellSlotsCard } from "./spell-slots-card";
@@ -134,6 +135,8 @@ export function CombatHud({ character }: { character: Character }) {
           )}
         </div>
       </div>
+
+      <DeathSavesPanel character={character} />
 
       <div className="flex flex-wrap items-center justify-between gap-3 border-t pt-4">
         <ConcentrationMarker character={character} />

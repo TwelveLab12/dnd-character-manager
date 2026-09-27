@@ -45,6 +45,12 @@ export interface SpellcastingInfo {
   preparedSpellsMaxOverride?: number;
 }
 
+/** Jets de sauvegarde contre la mort en cours, à 0 PV (docs/adr/0060). */
+export interface DeathSaves {
+  successes: number;
+  failures: number;
+}
+
 export interface Concentration {
   active: boolean;
   spellId?: string;
@@ -79,6 +85,10 @@ export interface Character {
   /** Résultats du dé de vie aux niveaux 2, 3… (index 0 = niveau 2), en mode « dés lancés ». La
    * Constitution s'y ajoute automatiquement. */
   hitPointRolls?: number[];
+  /** Jets contre la mort à 0 PV ; absent = aucun. Remis à zéro dès que les PV remontent. */
+  deathSaves?: DeathSaves;
+  /** Stabilisé à 0 PV : plus de jets contre la mort (docs/adr/0060). */
+  stable?: boolean;
   /** Dés de vie dépensés (docs/adr/0059) ; absent = aucun. La réserve (un dé par niveau) est
    * calculée — voir src/domain/calculations/hit-dice.ts. */
   hitDiceUsed?: number;

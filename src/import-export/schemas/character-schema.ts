@@ -192,6 +192,13 @@ const currentCharacterSchema = z.object({
   concentration: concentrationSchema,
   raging: z.boolean().optional(),
   hitDiceUsed: z.number().int().min(0).optional(),
+  deathSaves: z
+    .object({
+      successes: z.number().int().min(0).max(3),
+      failures: z.number().int().min(0).max(3),
+    })
+    .optional(),
+  stable: z.boolean().optional(),
   // Pas de `meleeAttackBonus`/`rangedAttackBonus` : calculés par arme équipée. Un ancien JSON
   // qui les contient reste importable (clés inconnues ignorées par z.object).
   weaponProficiencies: z.array(weaponCategorySchema).optional(),
