@@ -135,6 +135,9 @@ export interface Character {
   /** En rage (Barbare, docs/adr/0055) : bonus aux dégâts, résistances ; fin manuelle ou au
    * repos — voir src/domain/calculations/rage.ts. */
   raging?: boolean;
+  /** Gourdin magique lancé sur cette arme (docs/adr/0068) : caractéristique d'incantation et d8
+   * tant qu'elle reste en main — voir src/domain/calculations/shillelagh.ts. */
+  shillelagh?: { itemId: string };
   /** Maîtrises d'armes par catégorie : le bonus de maîtrise ne s'ajoute au jet d'attaque que pour
    * une arme maîtrisée. Pas de bonus d'attaque stocké : il est calculé par arme équipée — voir
    * src/domain/calculations/weapon-attack.ts. */

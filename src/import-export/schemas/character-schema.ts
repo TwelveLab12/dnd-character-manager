@@ -191,6 +191,7 @@ const currentCharacterSchema = z.object({
   skillProficiencies: z.array(z.string()).default([]),
   concentration: concentrationSchema,
   raging: z.boolean().optional(),
+  shillelagh: z.object({ itemId: z.string().min(1) }).optional(),
   hitDiceUsed: z.number().int().min(0).optional(),
   deathSaves: z
     .object({

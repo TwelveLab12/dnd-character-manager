@@ -43,6 +43,7 @@ export function weaponAttackTags(attack: WeaponAttack): string[] {
     ...(attack.thrown ? [`Lancer ${attack.thrown.normal}/${attack.thrown.long} m`] : []),
     ...(attack.martialArts ? ["Arts martiaux"] : []),
     ...(attack.rageBonus ? [`Rage +${attack.rageBonus}`] : []),
+    ...(attack.shillelagh ? ["Gourdin magique"] : []),
   ];
 }
 

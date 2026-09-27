@@ -32,6 +32,11 @@ import { adjustSpellSlotsUsed } from "@/domain/calculations/spell-slot-table";
 import type { Spell } from "@/domain/spell";
 import { adjustClassResourceUsed } from "@/domain/calculations/class-resources";
 import { endRage, startRage } from "@/domain/calculations/rage";
+import {
+  endShillelagh,
+  reconcileShillelagh,
+  startShillelagh,
+} from "@/domain/calculations/shillelagh";
 import type { ClassResourceId } from "@/domain/character-class";
 import type { ActivityIntent } from "@/domain/activity-log";
 import { buildActivityEntry } from "@/domain/activity-log";
@@ -71,7 +76,8 @@ export function usePlayActions(characterId: string) {
       return;
     }
     // Toute remontée (ou chute) des PV remet les jets contre la mort à zéro (docs/adr/0060).
-    const patch = reconcileDeathSaves(current, mutate(current));
+    // Une arme lâchée met fin à Gourdin magique (docs/adr/0068).
+    const patch = reconcileShillelagh(current, reconcileDeathSaves(current, mutate(current)));
     const next = { ...current, ...patch };
     const changes = describeChanges(current, next, {
       spellName: (spellId) =>
@@ -168,9 +174,10 @@ export function usePlayActions(characterId: string) {
       if (!current) {
         return undefined;
       }
-      const previous = {
+      const previous: CastingPatch = {
         spellSlotsUsed: current.spellSlotsUsed,
         concentration: current.concentration,
+        shillelagh: current.shillelagh,
       };
       const how =
         mode.type === "ritual"
@@ -194,6 +201,13 @@ export function usePlayActions(characterId: string) {
         category: "status",
       }),
     endRage: () => withCurrent(() => endRage(), { title: "Fin de la rage", category: "status" }),
+    startShillelagh: (itemId: string) =>
+      withCurrent((character) => startShillelagh(character, itemId), {
+        title: "Gourdin magique lancé",
+        category: "spells",
+      }),
+    endShillelagh: () =>
+      withCurrent(() => endShillelagh(), { title: "Fin de Gourdin magique", category: "spells" }),
     placeWeapon: (itemId: string, placement: WeaponPlacement) =>
       withCurrent((character) => ({ inventory: placeWeapon(character, itemId, placement) })),
     adjustItemQuantity: (itemId: string, delta: number) =>
