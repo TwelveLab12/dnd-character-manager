@@ -33,6 +33,12 @@ import type { Spell } from "@/domain/spell";
 import { adjustClassResourceUsed } from "@/domain/calculations/class-resources";
 import { endRage, startRage } from "@/domain/calculations/rage";
 import {
+  endSymbioticEntity,
+  reconcileSymbioticEntity,
+  startSymbioticEntity,
+  SYMBIOTIC_ENTITY_OPTION_ID,
+} from "@/domain/calculations/circle-of-spores";
+import {
   endShillelagh,
   reconcileShillelagh,
   startShillelagh,
@@ -76,8 +82,12 @@ export function usePlayActions(characterId: string) {
       return;
     }
     // Toute remontée (ou chute) des PV remet les jets contre la mort à zéro (docs/adr/0060).
-    // Une arme lâchée met fin à Gourdin magique (docs/adr/0068).
-    const patch = reconcileShillelagh(current, reconcileDeathSaves(current, mutate(current)));
+    // Une arme lâchée met fin à Gourdin magique (docs/adr/0068), la perte des PV temporaires à
+    // l'Entité symbiotique (docs/adr/0069).
+    const patch = reconcileSymbioticEntity(
+      current,
+      reconcileShillelagh(current, reconcileDeathSaves(current, mutate(current))),
+    );
     const next = { ...current, ...patch };
     const changes = describeChanges(current, next, {
       spellName: (spellId) =>
@@ -228,6 +238,22 @@ export function usePlayActions(characterId: string) {
       withCurrent((character) => ({
         spellSlotsUsed: adjustSpellSlotsUsed(character, level, delta),
       })),
+    /** Utilise une option de ressource de classe : l'Entité symbiotique s'active (docs/adr/0069),
+     * les autres dépensent simplement une utilisation. */
+    applyResourceOption: (resourceId: ClassResourceId, optionKey: string) =>
+      optionKey === SYMBIOTIC_ENTITY_OPTION_ID
+        ? withCurrent((character) => startSymbioticEntity(character), {
+            title: "Entité symbiotique",
+            category: "status",
+          })
+        : withCurrent((character) => ({
+            classResourcesUsed: adjustClassResourceUsed(character, resourceId, 1),
+          })),
+    endSymbioticEntity: () =>
+      withCurrent(() => endSymbioticEntity(), {
+        title: "Fin de l’Entité symbiotique",
+        category: "status",
+      }),
     /** `delta` > 0 dépense des utilisations, < 0 en récupère. */
     adjustClassResource: (resourceId: ClassResourceId, delta: number) =>
       withCurrent((character) => ({

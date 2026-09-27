@@ -10,6 +10,12 @@ import { computeClassResourceOptions } from "@/domain/calculations/class-feature
 import type { ClassResourceState } from "@/domain/calculations/class-resources";
 import { computeClassResources } from "@/domain/calculations/class-resources";
 import { rageEffects, rageUnavailableReason } from "@/domain/calculations/rage";
+import {
+  hasCircleOfSporesFeatures,
+  isSymbioticEntityActive,
+  SYMBIOTIC_ENTITY_OPTION_ID,
+} from "@/domain/calculations/circle-of-spores";
+import { SporesPanel } from "./spores-panel";
 import { Button } from "@/components/ui/button";
 import { usePlayActions } from "./use-play-actions";
 
@@ -111,7 +117,7 @@ function ClassResourceCard({
   resource: ClassResourceState;
   onShowOption: (optionKey: string) => void;
 }) {
-  const { adjustClassResource } = usePlayActions(character.id);
+  const { adjustClassResource, applyResourceOption } = usePlayActions(character.id);
   const options = resourceOptions(character, resource.id);
   const RechargeIcon = resource.recharge === "shortRest" ? Hourglass : Moon;
   const ResourceIcon = RESOURCE_ICONS[resource.id];
@@ -175,6 +181,9 @@ function ClassResourceCard({
       </div>
 
       {resource.id === "rage" && <RageControls character={character} />}
+      {resource.id === "wild-shape" && hasCircleOfSporesFeatures(character) && (
+        <SporesPanel character={character} />
+      )}
 
       {options.length > 0 && (
         <div className="grid gap-1.5">
@@ -206,8 +215,11 @@ function ClassResourceCard({
               <Button
                 type="button"
                 variant="ghost"
-                disabled={exhausted}
-                onClick={() => void adjustClassResource(resource.id, 1)}
+                disabled={
+                  exhausted ||
+                  (option.key === SYMBIOTIC_ENTITY_OPTION_ID && isSymbioticEntityActive(character))
+                }
+                onClick={() => void applyResourceOption(resource.id, option.key)}
                 aria-label={`Utiliser ${option.name}`}
                 className="text-primary hover:text-primary hover:bg-primary/15 relative z-10 h-9 text-[11px] font-semibold tracking-[0.06em] uppercase"
               >

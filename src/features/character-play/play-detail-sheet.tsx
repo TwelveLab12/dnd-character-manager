@@ -69,7 +69,9 @@ export function PlayDetailSheet({
   detail: PlayDetail | undefined;
   onClose: () => void;
 }) {
-  const { adjustFeatureUse, adjustClassResource } = usePlayActions(character.id);
+  const { adjustFeatureUse, adjustClassResource, applyResourceOption } = usePlayActions(
+    character.id,
+  );
   const shown = useLastDefined(detail);
   const view = shown && resolveView(character, shown);
   if (!view) {
@@ -193,7 +195,7 @@ export function PlayDetailSheet({
               rechargeHint={`Revient au prochain ${RECHARGE_LABELS[resource.recharge].toLowerCase()}`}
               useLabel={`Utiliser ${option.name}`}
               onUse={() => {
-                void adjustClassResource(resource.id, 1);
+                void applyResourceOption(resource.id, option.key);
                 onClose();
               }}
             />
@@ -240,7 +242,13 @@ export function PlayDetailSheet({
               <DetailStats
                 stats={[
                   { label: "Au toucher", value: formatModifier(attack.attackBonus) },
-                  { label: "Dégâts", value: attack.damage },
+                  {
+                    label: "Dégâts",
+                    value: [
+                      attack.damage,
+                      ...(attack.extraDamage ?? []).map((extra) => extra.dice),
+                    ].join(" + "),
+                  },
                   { label: "Type", value: DAMAGE_TYPE_LABELS[attack.damageType] },
                   { label: "Caractéristique", value: ABILITY_LABELS[attack.ability] },
                 ]}

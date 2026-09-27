@@ -6,6 +6,7 @@ import { useId, useState } from "react";
 import type {
   AttackRollResult,
   DamageRollResult,
+  ExtraDamageRollResult,
   RollMode,
 } from "@/domain/calculations/attack-roll";
 import {
@@ -13,6 +14,7 @@ import {
   diceRange,
   resolveAttackRoll,
   resolveDamageRoll,
+  resolveExtraDamageRoll,
   rollDice,
 } from "@/domain/calculations/attack-roll";
 import { rollDie } from "@/domain/calculations/hit-dice";
@@ -53,6 +55,9 @@ export function AttackAction({
   const [attackRoll, setAttackRoll] = useState<AttackRollResult>();
   const [answered, setAnswered] = useState<boolean>();
   const [damageRoll, setDamageRoll] = useState<DamageRollResult>();
+  // Dégâts supplémentaires d'un autre type (Entité symbiotique…), un jet par entrée.
+  const [extraRolls, setExtraRolls] = useState<ExtraDamageRollResult[]>([]);
+  const extras = attack.extraDamage ?? [];
   const armorClassId = useId();
 
   const armorClass = parseTarget(targetArmorClass);
@@ -65,6 +70,7 @@ export function AttackAction({
     setAttackRoll(result);
     setAnswered(undefined);
     setDamageRoll(undefined);
+    setExtraRolls([]);
     if (result.hit === false) {
       void logActivity(attackLog(name, result, undefined, damageType));
     }
@@ -77,22 +83,55 @@ export function AttackAction({
     }
   }
 
-  function rollDamage(diceTotal: number) {
+  /** `rollExtras` : l'application lance aussi les dés supplémentaires ; sinon, ils sont saisis
+   * un par un après ceux de l'arme. */
+  function rollDamage(diceTotal: number, rollExtras = false) {
     if (!attackRoll) {
       return;
     }
     const result = resolveDamageRoll(attack, diceTotal, attackRoll.critical);
+    const extraResults = rollExtras
+      ? extras.map((extra) =>
+          resolveExtraDamageRoll(
+            extra,
+            sumDice(rollDice(dicePool(extra.dice))),
+            attackRoll.critical,
+          ),
+        )
+      : [];
     setDamageRoll(result);
-    void logActivity(attackLog(name, attackRoll, result, damageType));
+    setExtraRolls(extraResults);
+    if (extraResults.length === extras.length) {
+      void logActivity(attackLog(name, attackRoll, result, damageType, extraResults));
+    }
+  }
+
+  function rollExtra(diceTotal: number) {
+    const extra = extras[extraRolls.length];
+    if (!attackRoll || !damageRoll || !extra) {
+      return;
+    }
+    const next = [...extraRolls, resolveExtraDamageRoll(extra, diceTotal, attackRoll.critical)];
+    setExtraRolls(next);
+    if (next.length === extras.length) {
+      void logActivity(attackLog(name, attackRoll, damageRoll, damageType, next));
+    }
   }
 
   function reset() {
     setAttackRoll(undefined);
     setAnswered(undefined);
     setDamageRoll(undefined);
+    setExtraRolls([]);
   }
 
-  const damageDice = attackRoll?.critical ? criticalDice(attack.damageDice) : attack.damageDice;
+  function dicePool(dice: string): string {
+    return attackRoll?.critical ? criticalDice(dice) : dice;
+  }
+
+  const damageDice = dicePool(attack.damageDice);
+  const pendingExtra = damageRoll ? extras[extraRolls.length] : undefined;
+  const damageComplete = damageRoll !== undefined && pendingExtra === undefined;
 
   return (
     <section
@@ -209,12 +248,12 @@ export function AttackAction({
             Dégâts{attackRoll.critical ? " — critique : dés doublés" : ""}
           </p>
           <DieEntry
-            rollLabel={`Lancer ${damageDice}`}
-            inputLabel="ou total des dés"
+            rollLabel={`Lancer ${[damageDice, ...extras.map((extra) => dicePool(extra.dice))].join(" + ")}`}
+            inputLabel={extras.length > 0 ? `ou total des ${damageDice}` : "ou total des dés"}
             min={diceRange(damageDice)?.min ?? 1}
             max={diceRange(damageDice)?.max ?? 1}
-            onRoll={() => rollDamage(rollDice(damageDice).reduce((sum, value) => sum + value, 0))}
-            onEnter={rollDamage}
+            onRoll={() => rollDamage(sumDice(rollDice(damageDice)), true)}
+            onEnter={(value) => rollDamage(value)}
           />
         </div>
       )}
@@ -232,8 +271,50 @@ export function AttackAction({
                 : undefined,
               ...damageRoll.terms.map((term) => term.reason),
               ...attack.damageNotes,
+              ...extras.map((extra) => extra.reason),
             ]}
           />
+          {pendingExtra && (
+            <div className="mt-3 grid gap-2">
+              <p className="text-sm font-semibold">
+                + {pendingExtra.label} : {dicePool(pendingExtra.dice)}{" "}
+                {DAMAGE_TYPE_LABELS[pendingExtra.damageType]}
+              </p>
+              <DieEntry
+                rollLabel={`Lancer ${dicePool(pendingExtra.dice)}`}
+                inputLabel="ou total des dés"
+                min={diceRange(dicePool(pendingExtra.dice))?.min ?? 1}
+                max={diceRange(dicePool(pendingExtra.dice))?.max ?? 1}
+                onRoll={() => rollExtra(sumDice(rollDice(dicePool(pendingExtra.dice))))}
+                onEnter={rollExtra}
+              />
+            </div>
+          )}
+          {extraRolls.length > 0 && (
+            <ul aria-label="Dégâts supplémentaires" className="mt-3 grid gap-1 text-sm">
+              {extraRolls.map((extra) => (
+                <li key={extra.label}>
+                  <strong className="tabular-nums">+{extra.total}</strong>{" "}
+                  {DAMAGE_TYPE_LABELS[extra.damageType]}{" "}
+                  <span className="text-muted-foreground">
+                    ({extra.dice} · {extra.label})
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+          {damageComplete && extraRolls.length > 0 && (
+            <p className="mt-2 text-sm font-semibold">
+              Total : {damageRoll.total + sumTotals(extraRolls)} dégâts (
+              {[
+                `${damageRoll.total} ${damageType}`,
+                ...extraRolls.map(
+                  (extra) => `${extra.total} ${DAMAGE_TYPE_LABELS[extra.damageType]}`,
+                ),
+              ].join(" + ")}
+              )
+            </p>
+          )}
         </div>
       )}
     </section>
@@ -378,6 +459,14 @@ function Chip({ children }: { children: ReactNode }) {
   );
 }
 
+function sumDice(values: readonly number[]): number {
+  return values.reduce((sum, value) => sum + value, 0);
+}
+
+function sumTotals(rolls: readonly ExtraDamageRollResult[]): number {
+  return rolls.reduce((sum, roll) => sum + roll.total, 0);
+}
+
 function parseTarget(value: string): number | undefined {
   const number = Number(value);
   return value !== "" && Number.isInteger(number) && number > 0 ? number : undefined;
@@ -416,6 +505,7 @@ function attackLog(
   attack: AttackRollResult,
   damage: DamageRollResult | undefined,
   damageType: string,
+  extras: readonly ExtraDamageRollResult[] = [],
 ) {
   const verdict = attack.critical
     ? " — coup critique"
@@ -429,6 +519,10 @@ function attackLog(
     ...(damage
       ? [
           `Dégâts : ${damage.total} ${damageType} (${damage.dice} ${damage.diceTotal} ${formatTerms(damage.terms)})`,
+          ...extras.map(
+            (extra) =>
+              `+ ${extra.total} ${DAMAGE_TYPE_LABELS[extra.damageType]} (${extra.dice}, ${extra.label})`,
+          ),
         ]
       : []),
   ];

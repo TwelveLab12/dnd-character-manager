@@ -192,6 +192,7 @@ const currentCharacterSchema = z.object({
   concentration: concentrationSchema,
   raging: z.boolean().optional(),
   shillelagh: z.object({ itemId: z.string().min(1) }).optional(),
+  symbioticEntity: z.boolean().optional(),
   hitDiceUsed: z.number().int().min(0).optional(),
   deathSaves: z
     .object({

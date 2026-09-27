@@ -1,10 +1,11 @@
 "use client";
 
-import { Flame, Focus, Heart, Shield } from "lucide-react";
+import { Flame, Focus, Heart, Shield, Sprout } from "lucide-react";
 import { useEffect } from "react";
 import type { Character } from "@/domain/character";
 import { computeArmorClass } from "@/domain/calculations/armor-class";
 import { computeMaxHitPoints } from "@/domain/calculations/max-hit-points";
+import { isSymbioticEntityActive } from "@/domain/calculations/circle-of-spores";
 import { useSpellStore } from "@/stores/store-provider";
 import { hasActiveArmorClassEffect } from "./combat-hud";
 
@@ -63,6 +64,15 @@ export function CombatSummary({ character }: { character: Character }) {
           <span className="text-destructive inline-flex shrink-0 items-center gap-1.5 text-sm font-semibold">
             <Flame aria-hidden className="size-4" />
             En rage
+          </span>
+        </>
+      )}
+      {isSymbioticEntityActive(character) && (
+        <>
+          <Divider />
+          <span className="text-success inline-flex shrink-0 items-center gap-1.5 text-sm font-semibold">
+            <Sprout aria-hidden className="size-4" />
+            <span className="max-sm:sr-only">Symbiose</span>
           </span>
         </>
       )}

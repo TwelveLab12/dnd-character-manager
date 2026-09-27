@@ -1,4 +1,5 @@
-import type { RollTerm, WeaponAttack } from "./weapon-attack";
+import type { DamageType } from "../inventory";
+import type { ExtraDamage, RollTerm, WeaponAttack } from "./weapon-attack";
 
 /**
  * Résolution d'une attaque d'arme (règles 2014, docs/adr/0062) : jet d'attaque (d20 + bonus, avec
@@ -109,5 +110,28 @@ export function resolveDamageRoll(
     diceTotal,
     terms: attack.damageTerms,
     total: Math.max(0, diceTotal + sum(attack.damageTerms)),
+  };
+}
+
+export interface ExtraDamageRollResult {
+  label: string;
+  /** Dés lancés, doublés sur un coup critique. */
+  dice: string;
+  damageType: DamageType;
+  total: number;
+}
+
+/** Dégâts supplémentaires d'un autre type (docs/adr/0069) : dés doublés sur un critique, sans
+ * modificateur. */
+export function resolveExtraDamageRoll(
+  extra: ExtraDamage,
+  diceTotal: number,
+  critical: boolean,
+): ExtraDamageRollResult {
+  return {
+    label: extra.label,
+    dice: critical ? criticalDice(extra.dice) : extra.dice,
+    damageType: extra.damageType,
+    total: Math.max(0, diceTotal),
   };
 }

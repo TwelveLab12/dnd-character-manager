@@ -17,6 +17,17 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: "2026-09-27-symbiotic-entity",
+    date: "2026-09-27",
+    title: "Cercle des spores : Entité symbiotique et Halo de spores",
+    changes: [
+      "« Utiliser » sur l’Entité symbiotique (carte Forme sauvage) l’active vraiment : une Forme sauvage dépensée et 4 PV temporaires par niveau (les plus élevés sont gardés).",
+      "Pendant l’Entité, vos attaques d’arme au corps à corps infligent +1d6 dégâts nécrotiques. C’est affiché sur l’arme, et l’attaque guidée lance ou demande ce dé en plus (doublé sur un critique).",
+      "Le Halo de spores est rappelé sous la carte Forme sauvage, avec son dé et le DD. Son dé est lancé deux fois pendant l’Entité.",
+      "L’Entité prend fin quand ses PV temporaires tombent à 0, avec « Mettre fin » ou après un repos. Une pastille « Symbiose » s’affiche en haut de la fiche tant qu’elle est active.",
+    ],
+  },
+  {
     id: "2026-09-27-shillelagh",
     date: "2026-09-27",
     title: "Gourdin magique",
