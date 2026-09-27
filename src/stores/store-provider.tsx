@@ -2,7 +2,13 @@
 
 import { createContext, useContext, useMemo } from "react";
 import type { ReactNode } from "react";
-import { useCharacterRepository, useSpellRepository } from "@/repositories/repository-provider";
+import {
+  useActivityLogRepository,
+  useCharacterRepository,
+  useSpellRepository,
+} from "@/repositories/repository-provider";
+import type { ActivityLogStoreHook, ActivityLogStoreState } from "./activity-log-store";
+import { createActivityLogStore } from "./activity-log-store";
 import type { CharacterStoreHook, CharacterStoreState } from "./character-store";
 import { createCharacterStore } from "./character-store";
 import type { SpellStoreHook, SpellStoreState } from "./spell-store";
@@ -11,6 +17,7 @@ import { createSpellStore } from "./spell-store";
 interface Stores {
   characterStore: CharacterStoreHook;
   spellStore: SpellStoreHook;
+  activityLogStore: ActivityLogStoreHook;
 }
 
 const StoreContext = createContext<Stores | null>(null);
@@ -25,14 +32,19 @@ const StoreContext = createContext<Stores | null>(null);
 export function StoreProvider({ children }: { children: ReactNode }) {
   const characterRepository = useCharacterRepository();
   const spellRepository = useSpellRepository();
+  const activityLogRepository = useActivityLogRepository();
 
-  const stores = useMemo<Stores>(
-    () => ({
-      characterStore: createCharacterStore(characterRepository),
+  const stores = useMemo<Stores>(() => {
+    const activityLogStore = createActivityLogStore(activityLogRepository);
+    return {
+      // Supprimer un personnage supprime aussi son historique (docs/adr/0061).
+      characterStore: createCharacterStore(characterRepository, {
+        onRemove: (id) => activityLogStore.getState().clear(id),
+      }),
       spellStore: createSpellStore(spellRepository),
-    }),
-    [characterRepository, spellRepository],
-  );
+      activityLogStore,
+    };
+  }, [characterRepository, spellRepository, activityLogRepository]);
 
   return <StoreContext.Provider value={stores}>{children}</StoreContext.Provider>;
 }
@@ -62,4 +74,19 @@ export function useCharacterStoreApi(): CharacterStoreHook {
 export function useSpellStore<T>(selector: (state: SpellStoreState) => T): T {
   const { spellStore } = useStores();
   return spellStore(selector);
+}
+
+export function useActivityLogStore<T>(selector: (state: ActivityLogStoreState) => T): T {
+  const { activityLogStore } = useStores();
+  return activityLogStore(selector);
+}
+
+/** Hook Zustand brut de l'historique, pour enregistrer depuis une action (voir use-play-actions). */
+export function useActivityLogStoreApi(): ActivityLogStoreHook {
+  return useStores().activityLogStore;
+}
+
+/** Hook Zustand brut des sorts, pour lire leurs noms au moment d'une action. */
+export function useSpellStoreApi(): SpellStoreHook {
+  return useStores().spellStore;
 }

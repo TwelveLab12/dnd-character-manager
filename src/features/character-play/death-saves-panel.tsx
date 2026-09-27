@@ -6,6 +6,7 @@ import { useId, useState } from "react";
 import { toast } from "sonner";
 import type { Character, DeathSaves } from "@/domain/character";
 import {
+  DEATH_SAVE_OUTCOME_LABELS,
   DEATH_SAVES_TO_RESOLVE,
   deathSaveOutcome,
   deathSavesOf,
@@ -44,13 +45,6 @@ const STATUS: Record<
       "Trois échecs. Un soin (Revigorer, Rappel à la vie…) le ramène à la vie ; une case cochée par erreur se décoche.",
   },
 };
-
-const OUTCOME_MESSAGE = {
-  "critical-success": "20 naturel : 1 PV, reprend conscience !",
-  success: "réussite",
-  failure: "échec",
-  "critical-failure": "1 naturel : deux échecs",
-} as const;
 
 /**
  * Jets de sauvegarde contre la mort (docs/adr/0060), dans l'onglet Combat dès que les PV tombent
@@ -169,7 +163,7 @@ function DeathSaveActions({ character }: { character: Character }) {
     await rollDeathSave(roll);
     const consequence = next === "stable" ? " — stabilisé" : next === "dead" ? " — mort" : "";
     toast(
-      `Jet contre la mort : ${roll} — ${OUTCOME_MESSAGE[deathSaveOutcome(roll)]}${consequence}`,
+      `Jet contre la mort : ${roll} — ${DEATH_SAVE_OUTCOME_LABELS[deathSaveOutcome(roll)]}${consequence}`,
     );
   }
 

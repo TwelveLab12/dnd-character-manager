@@ -2,14 +2,17 @@
 
 import { createContext, useContext, useMemo } from "react";
 import type { ReactNode } from "react";
+import type { ActivityLogRepository } from "./contracts/activity-log-repository";
 import type { CharacterRepository } from "./contracts/character-repository";
 import type { SpellRepository } from "./contracts/spell-repository";
+import { LocalStorageActivityLogRepository } from "./local-storage/local-storage-activity-log-repository";
 import { LocalStorageCharacterRepository } from "./local-storage/local-storage-character-repository";
 import { LocalStorageSpellRepository } from "./local-storage/local-storage-spell-repository";
 
 interface Repositories {
   characterRepository: CharacterRepository;
   spellRepository: SpellRepository;
+  activityLogRepository: ActivityLogRepository;
 }
 
 const RepositoryContext = createContext<Repositories | null>(null);
@@ -24,6 +27,7 @@ export function RepositoryProvider({ children }: { children: ReactNode }) {
     () => ({
       characterRepository: new LocalStorageCharacterRepository(),
       spellRepository: new LocalStorageSpellRepository(),
+      activityLogRepository: new LocalStorageActivityLogRepository(),
     }),
     [],
   );
@@ -45,4 +49,8 @@ export function useCharacterRepository(): CharacterRepository {
 
 export function useSpellRepository(): SpellRepository {
   return useRepositories().spellRepository;
+}
+
+export function useActivityLogRepository(): ActivityLogRepository {
+  return useRepositories().activityLogRepository;
 }

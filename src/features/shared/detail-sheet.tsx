@@ -43,7 +43,7 @@ const FLICK_MIN_DISTANCE = 30;
  * Le décalage est posé en style inline sans rendu React. L'animation de sortie (tw-animate `exit`
  * n'a qu'une image `to`) part de cette position : le panneau glisse hors de l'écran sans saut.
  */
-function useSwipeToClose(onClose: () => void) {
+export function useSwipeToClose(onClose: () => void) {
   const drag = useRef<{
     sheet: HTMLElement;
     pointerId: number;

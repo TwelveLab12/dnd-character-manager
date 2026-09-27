@@ -17,6 +17,18 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: "2026-09-27-activity-log",
+    date: "2026-09-27",
+    title: "Historique des actions",
+    changes: [
+      "Le bouton horloge de l’en-tête du mode jeu, présent sur tous les onglets, ouvre l’historique du personnage.",
+      "Tout y est noté avec l’avant → après : dégâts, soins, PV temporaires, dés de vie, jets contre la mort, sorts lancés, emplacements, ressources, capacités, rage, concentration, équipement, quantités, bourse, repos.",
+      "Les actions répétées rapidement (plusieurs −1 PV d’affilée…) sont regroupées en une seule ligne.",
+      "Classement par jour et filtres par catégorie. Conservation au choix : 7, 30 (par défaut) ou 90 jours, ou illimitée, 1 000 entrées au plus. Un bouton « Vider » efface tout.",
+      "L’historique reste sur l’appareil : il n’est pas inclus dans les exports.",
+    ],
+  },
+  {
     id: "2026-09-27-death-saves",
     date: "2026-09-27",
     title: "Jets contre la mort",
