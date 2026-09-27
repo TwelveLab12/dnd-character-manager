@@ -87,6 +87,14 @@ export function usePlayActions(characterId: string) {
   }
 
   return {
+    /** Inscrit une action sans effet sur la fiche (ex : une attaque, docs/adr/0062). */
+    logActivity: (intent: ActivityIntent) => {
+      const entry = buildActivityEntry([], intent, {
+        id: generateId(),
+        at: new Date().toISOString(),
+      });
+      return entry ? activityLogStore.getState().record(characterId, entry) : Promise.resolve();
+    },
     applyDamage: (amount: number) => withCurrent((character) => damageCharacter(character, amount)),
     applyHealing: (amount: number) =>
       withCurrent((character) => ({

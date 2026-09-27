@@ -33,6 +33,7 @@ import {
 } from "@/features/shared/weapon";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { AttackAction } from "./attack-action";
 import { RECHARGE_LABELS, resourceOptions } from "./class-resource-card";
 import { usePlayActions } from "./use-play-actions";
 
@@ -227,6 +228,7 @@ export function PlayDetailSheet({
           ),
           body: (
             <>
+              <AttackAction key={attack.itemId} characterId={character.id} attack={attack} />
               <DetailStats
                 stats={[
                   { label: "Au toucher", value: formatModifier(attack.attackBonus) },

@@ -7,6 +7,7 @@ import {
   History,
   Moon,
   Sparkles,
+  Swords,
   Trash2,
   XIcon,
   Zap,
@@ -49,6 +50,7 @@ import { useActivityLogStore } from "@/stores/store-provider";
 const EMPTY: ActivityEntry[] = [];
 
 const CATEGORY_ICONS: Record<ActivityCategory, LucideIcon> = {
+  combat: Swords,
   "hit-points": Heart,
   spells: Sparkles,
   resources: Zap,
@@ -58,6 +60,7 @@ const CATEGORY_ICONS: Record<ActivityCategory, LucideIcon> = {
 };
 
 const CATEGORY_TONES: Record<ActivityCategory, string> = {
+  combat: "text-accent bg-accent/12",
   "hit-points": "text-destructive bg-destructive/12",
   spells: "text-primary bg-primary/12",
   resources: "text-warning bg-warning/12",

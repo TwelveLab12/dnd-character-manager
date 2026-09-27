@@ -19,6 +19,13 @@ const DICE_PATTERN = /^(\d+)d(\d+)$/;
 
 export const UNARMED_STRIKE_ID = "unarmed-strike";
 
+/** Terme d'un jet (caractéristique, maîtrise, magie, Rage…), avec la règle qui l'explique. */
+export interface RollTerm {
+  label: string;
+  value: number;
+  reason: string;
+}
+
 export interface WeaponAttack {
   itemId: string;
   name: string;
@@ -42,6 +49,16 @@ export interface WeaponAttack {
   offHand: boolean;
   /** Bonus de Rage inclus dans les dégâts (corps à corps avec la Force, en rage). */
   rageBonus?: number;
+  /** Dés de dégâts réellement lancés (ex : « 1d10 » à deux mains, dé d'Arts martiaux). */
+  damageDice: string;
+  /** Décomposition du bonus au toucher (docs/adr/0062) : leur somme vaut `attackBonus`. */
+  attackTerms: RollTerm[];
+  /** Décomposition du modificateur de dégâts ajouté aux dés. */
+  damageTerms: RollTerm[];
+  /** Règles appliquées au toucher sans terme chiffré (ex : arme non maîtrisée). */
+  attackNotes: string[];
+  /** Règles appliquées aux dégâts sans terme chiffré (dé à deux mains, main secondaire…). */
+  damageNotes: string[];
 }
 
 /** Dés valides au format « NdM » (ex : 1d8, 2d6), sans modificateur. */
@@ -148,6 +165,35 @@ function betterDice(weaponDice: string, martialDie: string): string {
   return weaponAverage !== undefined && weaponAverage >= martialAverage ? weaponDice : martialDie;
 }
 
+const ABILITY_NAMES: Record<"strength" | "dexterity", string> = {
+  strength: "Force",
+  dexterity: "Dextérité",
+};
+
+const CATEGORY_NAMES: Record<WeaponProperties["category"], string> = {
+  simple: "armes courantes",
+  martial: "armes de guerre",
+};
+
+function abilityReason(
+  weapon: WeaponProperties,
+  ability: AbilityName,
+  martialArts: boolean,
+): string {
+  if (martialArts) {
+    return "Arts martiaux : la meilleure de Force et Dextérité.";
+  }
+  if (weapon.finesse) {
+    return "Finesse : la meilleure de Force et Dextérité.";
+  }
+  if (weapon.range === "ranged") {
+    return "Arme à distance : Dextérité.";
+  }
+  return weapon.thrown
+    ? "Arme de corps à corps, même lancée : Force."
+    : `Arme de corps à corps : ${ABILITY_NAMES[ability as "strength"]}.`;
+}
+
 function buildWeaponAttack(
   character: Character,
   item: InventoryItem,
@@ -185,6 +231,77 @@ function buildWeaponAttack(
     versatileGrip && weapon.versatileDamageDice ? weapon.versatileDamageDice : weapon.damageDice;
   const damageDice = martialArts ? betterDice(baseDice, context.martialArtsDie) : baseDice;
 
+  const abilityName = ABILITY_NAMES[ability as "strength" | "dexterity"];
+  const reason = abilityReason(weapon, ability, martialArts);
+  const magicTerm: RollTerm[] =
+    magicBonus !== 0
+      ? [
+          {
+            label: "Arme magique",
+            value: magicBonus,
+            reason: `Arme ${formatSigned(magicBonus)} : au toucher et aux dégâts.`,
+          },
+        ]
+      : [];
+  const attackTerms: RollTerm[] = [
+    { label: abilityName, value: modifier, reason: `Modificateur de ${abilityName}. ${reason}` },
+    ...(proficient
+      ? [
+          {
+            label: "Maîtrise",
+            value: context.proficiencyBonus,
+            reason: effectiveWeaponProficiencies(character).includes(weapon.category)
+              ? `Vous maîtrisez les ${CATEGORY_NAMES[weapon.category]} : bonus de maîtrise de votre niveau.`
+              : "Moine : les armes de moine sont maîtrisées.",
+          },
+        ]
+      : []),
+    ...magicTerm,
+  ];
+  const offHandDropped = offHand && !context.twoWeaponFightingStyle && modifier > 0;
+  const damageTerms: RollTerm[] = [
+    ...(offHandDropped
+      ? []
+      : [
+          {
+            label: abilityName,
+            value: abilityDamage,
+            reason:
+              offHand && context.twoWeaponFightingStyle
+                ? "Style Combat à deux armes : le modificateur s'ajoute aussi en main secondaire."
+                : `Modificateur de ${abilityName}, comme au toucher.`,
+          },
+        ]),
+    ...magicTerm,
+    ...(rageBonus > 0
+      ? [
+          {
+            label: "Rage",
+            value: rageBonus,
+            reason: "En rage : bonus aux dégâts des attaques de corps à corps utilisant la Force.",
+          },
+        ]
+      : []),
+  ];
+  const attackNotes = !proficient
+    ? [
+        `Arme non maîtrisée (${CATEGORY_NAMES[weapon.category]}) : pas de bonus de maîtrise au toucher.`,
+      ]
+    : [];
+  const damageNotes = [
+    ...(offHandDropped
+      ? [
+          "Main secondaire : le modificateur de caractéristique ne s'ajoute pas aux dégâts (sauf style Combat à deux armes).",
+        ]
+      : []),
+    ...(versatileGrip
+      ? [`Tenue à deux mains (polyvalente) : ${baseDice} au lieu de ${weapon.damageDice}.`]
+      : []),
+    ...(martialArts && damageDice !== baseDice
+      ? [`Arts martiaux : le dé d'Arts martiaux (${damageDice}) remplace celui de l'arme.`]
+      : []),
+  ];
+
   return {
     itemId: item.id,
     name: item.name,
@@ -202,7 +319,16 @@ function buildWeaponAttack(
     martialArts,
     offHand,
     ...(rageBonus > 0 ? { rageBonus } : {}),
+    damageDice,
+    attackTerms,
+    damageTerms,
+    attackNotes,
+    damageNotes,
   };
+}
+
+function formatSigned(value: number): string {
+  return value >= 0 ? `+${value}` : `${value}`;
 }
 
 /**
@@ -239,6 +365,28 @@ function unarmedStrike(context: AttackContext): WeaponAttack {
     twoHanded: false,
     martialArts: true,
     offHand: false,
+    damageDice: context.martialArtsDie,
+    attackTerms: [
+      {
+        label: ABILITY_NAMES[ability as "strength" | "dexterity"],
+        value: modifier,
+        reason: "Arts martiaux : la meilleure de Force et Dextérité.",
+      },
+      {
+        label: "Maîtrise",
+        value: context.proficiencyBonus,
+        reason: "Les attaques à mains nues sont toujours maîtrisées.",
+      },
+    ],
+    damageTerms: [
+      {
+        label: ABILITY_NAMES[ability as "strength" | "dexterity"],
+        value: modifier,
+        reason: "Modificateur de la caractéristique utilisée au toucher.",
+      },
+    ],
+    attackNotes: [],
+    damageNotes: [`Arts martiaux : dé de dégâts ${context.martialArtsDie}.`],
   };
 }
 
