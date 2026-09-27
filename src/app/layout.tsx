@@ -4,6 +4,7 @@ import { RepositoryProvider } from "@/repositories/repository-provider";
 import { StoreProvider } from "@/stores/store-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
+import { InstallPrompt } from "@/features/pwa/install-prompt";
 import { ServiceWorkerRegistrar } from "@/features/pwa/service-worker-registrar";
 import "./globals.css";
 
@@ -51,6 +52,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           </StoreProvider>
         </RepositoryProvider>
         <Toaster />
+        <InstallPrompt />
       </body>
     </html>
   );
