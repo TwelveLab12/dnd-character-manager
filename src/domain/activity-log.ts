@@ -4,9 +4,10 @@
  */
 
 export type ActivityCategory =
-  "hit-points" | "spells" | "resources" | "inventory" | "rest" | "status";
+  "combat" | "hit-points" | "spells" | "resources" | "inventory" | "rest" | "status";
 
 export const ACTIVITY_CATEGORY_LABELS: Record<ActivityCategory, string> = {
+  combat: "Combat",
   "hit-points": "Points de vie",
   spells: "Sorts",
   resources: "Ressources",

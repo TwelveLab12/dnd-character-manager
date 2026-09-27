@@ -17,6 +17,19 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: "2026-09-27-attack-action",
+    date: "2026-09-27",
+    title: "Attaquer avec une arme",
+    changes: [
+      "Onglet Combat : touchez une arme, le panneau s’ouvre sur un bloc « Attaquer ».",
+      "Jet d’attaque normal, avec avantage ou avec désavantage : l’application lance le d20, ou vous saisissez votre dé et elle ajoute les bonus.",
+      "Le calcul est détaillé (d20 + caractéristique + maîtrise + arme magique…), et « Pourquoi ? » explique chaque bonus : Force ou Dextérité, maîtrise, finesse, main secondaire…",
+      "Indiquez la CA de la cible si vous la connaissez : l’application dit Touché ou Raté. Sinon, répondez selon ce qu’annonce le MJ.",
+      "Dégâts lancés ou saisis, avec leurs bonus (Rage, magie…). Sur un 20 naturel, les dés sont doublés, pas les bonus.",
+      "Chaque attaque est notée dans l’historique.",
+    ],
+  },
+  {
     id: "2026-09-27-activity-log",
     date: "2026-09-27",
     title: "Historique des actions",
