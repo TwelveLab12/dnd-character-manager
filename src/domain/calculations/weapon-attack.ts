@@ -1,6 +1,6 @@
 import type { AbilityName } from "../ability-scores";
 import type { Character } from "../character";
-import { canWieldOffHand } from "../equipment";
+import { canWieldOffHand, weaponGrip } from "../equipment";
 import type {
   DamageType,
   InventoryItem,
@@ -28,10 +28,12 @@ export interface WeaponAttack {
   attackBonus: number;
   /** Ex : « 1d8+3 », « 1d6-1 », « 2d6 ». */
   damage: string;
-  /** Dégâts à deux mains d'une arme polyvalente — absent si la main secondaire est occupée
-   * (bouclier ou arme) ou si l'arme est elle-même en main secondaire. */
+  /** Dégâts à deux mains d'une arme polyvalente prête, dont la prise n'est pas encore choisie —
+   * absent si la main secondaire est occupée (bouclier ou arme). Une arme en main n'a que ses
+   * dégâts de prise, dans `damage` (docs/adr/0057). */
   versatileDamage?: string;
   damageType: DamageType;
+  /** Tenue à deux mains : arme à deux mains, ou polyvalente tenue à deux mains. */
   twoHanded: boolean;
   thrown?: ThrownRange;
   /** Arts martiaux appliqués à cette attaque (arme de moine ou mains nues). */
@@ -168,15 +170,20 @@ function buildWeaponAttack(
     (hasMartialArts(character) && monkWeapon);
   const magicBonus = weapon.magicBonus ?? 0;
   const offHand = item.hand === "off";
+  // Prise choisie (docs/adr/0057) : seule une arme en main a une prise ; une arme prête garde
+  // ses deux dégâts de polyvalente.
+  const equipped = item.equipped === true;
+  const versatileGrip =
+    equipped && !weapon.twoHanded && weaponGrip(character, weapon, item.hand) === "both";
   // Main secondaire (2014) : pas de mod positif aux dégâts, sauf style Combat à deux armes.
   const abilityDamage =
     offHand && !context.twoWeaponFightingStyle ? Math.min(modifier, 0) : modifier;
   // Rage : attaques d'arme de corps à corps utilisant la Force.
   const rageBonus = weapon.range === "melee" && ability === "strength" ? context.rageBonus : 0;
   const damageModifier = abilityDamage + magicBonus + rageBonus;
-  const damageDice = martialArts
-    ? betterDice(weapon.damageDice, context.martialArtsDie)
-    : weapon.damageDice;
+  const baseDice =
+    versatileGrip && weapon.versatileDamageDice ? weapon.versatileDamageDice : weapon.damageDice;
+  const damageDice = martialArts ? betterDice(baseDice, context.martialArtsDie) : baseDice;
 
   return {
     itemId: item.id,
@@ -186,11 +193,11 @@ function buildWeaponAttack(
     proficient,
     attackBonus: modifier + (proficient ? context.proficiencyBonus : 0) + magicBonus,
     damage: formatDamage(damageDice, damageModifier),
-    ...(weapon.versatileDamageDice && !context.offHandBusy && !offHand
+    ...(weapon.versatileDamageDice && !equipped && !context.offHandBusy
       ? { versatileDamage: formatDamage(weapon.versatileDamageDice, damageModifier) }
       : {}),
     damageType: weapon.damageType,
-    twoHanded: weapon.twoHanded === true,
+    twoHanded: weapon.twoHanded === true || versatileGrip,
     ...(weapon.thrown && weapon.range === "melee" ? { thrown: weapon.thrown } : {}),
     martialArts,
     offHand,

@@ -106,7 +106,7 @@ const inventoryItemSchema = z.object({
   equipped: z.boolean().optional(),
   armor: armorPropertiesSchema.optional(),
   weapon: weaponPropertiesSchema.optional(),
-  hand: z.enum(["main", "off"]).optional(),
+  hand: z.enum(["main", "off", "both"]).optional(),
   stowed: z.boolean().optional(),
   value: z
     .object({

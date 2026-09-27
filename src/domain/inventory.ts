@@ -91,8 +91,9 @@ export interface ThrownRange {
   long: number;
 }
 
-/** Main qui tient une arme équipée. Absente = main principale. */
-export type WeaponHand = "main" | "off";
+/** Prise d'une arme équipée : main principale, secondaire, ou deux mains pour une arme
+ * polyvalente (docs/adr/0057). Absente = main principale. */
+export type WeaponHand = "main" | "off" | "both";
 
 /** Valeur marchande d'un objet, à l'unité, dans la pièce des prix du Manuel (ex : 50 po, 2 pa). */
 export interface ItemValue {

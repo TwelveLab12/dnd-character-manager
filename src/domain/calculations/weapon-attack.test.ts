@@ -122,9 +122,18 @@ describe("computeWeaponAttack", () => {
     });
   });
 
-  it("gives the two-handed damage of a versatile weapon", () => {
+  it("uses the grip of a versatile weapon in hand, both damages when ready", () => {
     const character = makeTestCharacter({ abilityScores: scores(14, 10) });
-    expect(computeWeaponAttack(character, longsword)).toMatchObject({
+    const oneHand = computeWeaponAttack(character, longsword);
+    expect(oneHand).toMatchObject({ damage: "1d8+2", twoHanded: false });
+    expect(oneHand?.versatileDamage).toBeUndefined();
+
+    expect(computeWeaponAttack(character, { ...longsword, hand: "both" })).toMatchObject({
+      damage: "1d10+2",
+      twoHanded: true,
+    });
+
+    expect(computeWeaponAttack(character, { ...longsword, equipped: false })).toMatchObject({
       damage: "1d8+2",
       versatileDamage: "1d10+2",
     });
@@ -227,10 +236,19 @@ describe("two-handed and versatile weapons", () => {
     expect(computeWeaponAttack(character, greataxe)?.twoHanded).toBe(true);
   });
 
-  it("drops the two-handed damage of a versatile weapon when a shield is equipped", () => {
-    const character = makeTestCharacter({ inventory: [quarterstaff, shield] });
-    expect(computeWeaponAttack(character, quarterstaff)?.versatileDamage).toBeUndefined();
+  it("drops the two-handed damage of a ready versatile weapon when a shield is equipped", () => {
+    const readyStaff = { ...quarterstaff, equipped: false };
+    const character = makeTestCharacter({ inventory: [readyStaff, shield] });
+    expect(computeWeaponAttack(character, readyStaff)?.versatileDamage).toBeUndefined();
     expect(weaponAttackWarnings(character)).toEqual([]);
+  });
+
+  it("ignores a two-handed grip on a weapon that is not versatile", () => {
+    const character = makeTestCharacter();
+    expect(computeWeaponAttack(character, { ...mace, hand: "both" })).toMatchObject({
+      damage: "1d6",
+      twoHanded: false,
+    });
   });
 });
 
@@ -391,16 +409,20 @@ describe("off-hand attacks", () => {
     expect(computeWeaponAttack(character, daggerOff)?.damage).toBe("1d4+3");
   });
 
-  it("hides versatile damage when the off hand is busy", () => {
-    const quarterstaffMain = weaponItem("Bâton", {
-      category: "simple",
-      range: "melee",
-      damageDice: "1d6",
-      versatileDamageDice: "1d8",
-      damageType: "bludgeoning",
-    });
-    const character = makeTestCharacter({ inventory: [quarterstaffMain, daggerOff] });
-    expect(computeWeaponAttack(character, quarterstaffMain)?.versatileDamage).toBeUndefined();
+  it("hides the versatile damage of a ready weapon when the off hand is busy", () => {
+    const readyStaff = weaponItem(
+      "Bâton",
+      {
+        category: "simple",
+        range: "melee",
+        damageDice: "1d6",
+        versatileDamageDice: "1d8",
+        damageType: "bludgeoning",
+      },
+      false,
+    );
+    const character = makeTestCharacter({ inventory: [readyStaff, daggerOff] });
+    expect(computeWeaponAttack(character, readyStaff)?.versatileDamage).toBeUndefined();
   });
 
   it("warns about an off-hand weapon that is not allowed there", () => {

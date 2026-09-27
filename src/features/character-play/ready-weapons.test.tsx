@@ -90,7 +90,7 @@ describe("Armes prêtes (mode jeu)", () => {
     ]);
 
     await user.click(
-      within(screen.getByRole("radiogroup", { name: "Main : Hachette" })).getByRole("radio", {
+      within(screen.getByRole("radiogroup", { name: "Prise : Hachette" })).getByRole("radio", {
         name: "Secondaire",
       }),
     );
