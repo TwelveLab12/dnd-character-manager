@@ -15,6 +15,7 @@ Application web pour gérer ses personnages de Donjons & Dragons 5e, à la table
 - **Mode configuration** : la fiche complète, pour créer et faire évoluer le personnage.
 - **Règles calculées** : les valeurs dérivées viennent des règles du jeu, pas d'une saisie manuelle. Quatre classes sont prises en charge à ce jour : clerc, barbare, moine et druide.
 - **Utilisable sans réseau** : l'application s'installe sur l'écran d'accueil et fonctionne hors ligne.
+- **Personnages de démo** : un bouton dans la liste vide, ou le lien direct [`/?demo=1`](https://dnd.brunoschvartz.dev/?demo=1), charge quatre personnages de niveau 3 et leurs sorts pour découvrir l'application sans rien saisir (voir l'[ADR 0072](docs/adr/0072-demo-data.md)).
 - **Sauvegarde** : import et export JSON des sorts, des personnages ou de l'ensemble, pour passer d'un appareil à l'autre.
 
 ## Choix techniques
@@ -29,8 +30,8 @@ Application web pour gérer ses personnages de Donjons & Dragons 5e, à la table
 
 ## Contraintes légales et données
 
-- **Aucun contenu de sorts n'est fourni avec l'application.** Les textes officiels sont protégés par le droit d'auteur, et leur redistribution est encadrée par les licences ouvertes du SRD. L'utilisateur importe donc ses propres données, par exemple depuis une source SRD comme [open5e](https://open5e.com), dont le format est pris en charge. Le raisonnement complet est dans l'[ADR 0004](docs/adr/0004-json-import-export-open5e-schema.md).
-- **Aucune donnée personnelle n'est collectée.** L'application n'a ni compte ni serveur de données : les personnages restent dans le navigateur de l'utilisateur. Ce dépôt public ne contient aucune fiche réelle ; les modèles de [`public/templates/`](public/templates) sont génériques et vérifiés en CI.
+- **Aucun texte officiel de sorts n'est fourni avec l'application.** Les textes officiels sont protégés par le droit d'auteur, et leur redistribution est encadrée par les licences ouvertes du SRD. L'utilisateur importe donc ses propres données, par exemple depuis une source SRD comme [open5e](https://open5e.com), dont le format est pris en charge. Les sorts des personnages de démo n'ont que des résumés originaux, pas le texte du Manuel des joueurs. Le raisonnement complet est dans l'[ADR 0004](docs/adr/0004-json-import-export-open5e-schema.md).
+- **Aucune donnée personnelle n'est collectée.** L'application n'a ni compte ni serveur de données : les personnages restent dans le navigateur de l'utilisateur. Ce dépôt public ne contient aucune donnée de joueur : seul le jeu de démo de [`public/demo/`](public/demo) y figure, avec quatre personnages sans nom de joueur ; les modèles de [`public/templates/`](public/templates) sont génériques et vérifiés en CI.
 - **Marques.** « Dungeons & Dragons » et « D&D » sont des marques de Wizards of the Coast. Ce projet est indépendant et n'est ni affilié, ni approuvé par Wizards of the Coast.
 
 ## Lancer en local
