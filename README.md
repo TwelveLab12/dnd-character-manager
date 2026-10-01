@@ -17,6 +17,9 @@ couche métier ni de l'UI.
 - **Bibliothèque de sorts** (`/spells`) : aucun sort officiel fourni avec l'appli pour des raisons
   de droits — import JSON (coller ou fichier, aligné sur le format
   [open5e](https://open5e.com)/SRD), export, modèle téléchargeable.
+- **Personnages de démo** : bouton dans la liste vide, ou lien direct `/?demo=1` — quatre
+  personnages de niveau 3 et leurs sorts, sans texte officiel (voir
+  [docs/adr/0072](docs/adr/0072-demo-data.md)).
 - **Import/export** : sorts, personnages, et sauvegarde complète combinée (round-trip entre
   environnements), avec preview ligne par ligne (Nouveau/Mise à jour/Identique/Invalide) pour les
   imports individuels.
@@ -52,8 +55,9 @@ couche métier ni de l'UI.
 
 ## ⚠️ Données
 
-Ce repo est **public**. Aucune donnée de personnage réelle ni aucun contenu de sort protégé par le
-SRD/OGL/ORC n'est commité — voir [docs/adr/0004](docs/adr/0004-json-import-export-open5e-schema.md).
+Ce repo est **public**. Aucun contenu de sort protégé par le SRD/OGL/ORC n'est commité. Seule
+exception côté personnages : le jeu de démo `public/demo/`, publié volontairement, sans nom de
+joueur et avec des résumés de sorts originaux — voir [docs/adr/0004](docs/adr/0004-json-import-export-open5e-schema.md).
 Les données personnelles sont importées à l'exécution via l'UI et restent uniquement dans le
 `localStorage` du navigateur. Les modèles JSON dans `public/templates/` sont génériques et validés
 en CI contre les schémas réels.

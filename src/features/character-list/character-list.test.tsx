@@ -1,6 +1,8 @@
 import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, it } from "vitest";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { LocalStorageCharacterRepository } from "@/repositories/local-storage/local-storage-character-repository";
 import { RepositoryProvider } from "@/repositories/repository-provider";
 import { StoreProvider } from "@/stores/store-provider";
@@ -43,9 +45,61 @@ async function openFromDataPanel(user: ReturnType<typeof userEvent.setup>, actio
   await user.click(within(panel).getByRole("button", { name: action }));
 }
 
+const demoBackup = readFileSync(join(process.cwd(), "public/demo/demo-backup.json"), "utf8");
+
+function stubDemoFetch() {
+  const fetchMock = vi.fn(async () => new Response(demoBackup, { status: 200 }));
+  vi.stubGlobal("fetch", fetchMock);
+  return fetchMock;
+}
+
 describe("CharacterList", () => {
   beforeEach(() => {
     window.localStorage.clear();
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    window.history.replaceState(null, "", "/");
+  });
+
+  it("loads the demo characters from the empty state", async () => {
+    stubDemoFetch();
+    const user = userEvent.setup();
+    renderCharacterList();
+
+    await user.click(
+      await screen.findByRole("button", { name: /charger les personnages de démo/i }),
+    );
+
+    expect(await screen.findByText("Yomi Tsuki")).toBeInTheDocument();
+    expect(screen.getAllByRole("article")).toHaveLength(4);
+  });
+
+  it("loads the demo from ?demo=1 and cleans the URL", async () => {
+    stubDemoFetch();
+    window.history.replaceState(null, "", "/?demo=1");
+    renderCharacterList();
+
+    expect(await screen.findByText("Yomi Tsuki")).toBeInTheDocument();
+    expect(window.location.search).toBe("");
+  });
+
+  it("ignores ?demo=1 when the player already has characters", async () => {
+    const fetchMock = stubDemoFetch();
+    const user = userEvent.setup();
+    const { unmount } = renderCharacterList();
+    await createCharacter(user);
+    await screen.findByText("Elara Duskwood");
+    unmount();
+
+    window.history.replaceState(null, "", "/?demo=1");
+    renderCharacterList();
+
+    expect(await screen.findByText("Elara Duskwood")).toBeInTheDocument();
+    await waitFor(() => expect(window.location.search).toBe(""));
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(screen.queryByText("Yomi Tsuki")).not.toBeInTheDocument();
   });
 
   it("shows an empty state, then creates and lists a character", async () => {
