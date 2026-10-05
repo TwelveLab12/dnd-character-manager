@@ -42,6 +42,10 @@ pnpm dev        # http://localhost:3000
 
 Avant un commit, `pnpm typecheck`, `pnpm lint`, `pnpm test` et `pnpm build` doivent passer : c'est ce que vérifie la CI. Les conventions de travail sont dans [`CLAUDE.md`](CLAUDE.md).
 
+## Licence
+
+Code sous [licence MIT](LICENSE). Elle couvre le code de ce dépôt ; elle ne donne aucun droit sur les contenus de Wizards of the Coast, qui n'y figurent pas.
+
 ## Contact
 
 Projet de [Bruno Schvartz](https://brunoschvartz.dev), développeur front-end React / TypeScript — [LinkedIn](https://www.linkedin.com/in/bruno-schvartz).
