@@ -1,0 +1,4283 @@
+{
+  "schemaVersion": 1,
+  "exportedAt": "2026-09-25T17:21:50.564Z",
+  "characters": [
+    {
+      "id": "demo-24e342a7-0344-461a-906c-857cb0ad4805",
+      "name": "Yomi Tsuki",
+      "class": "Clerc",
+      "classId": "clerc",
+      "subclass": "Domaine du Crépuscule",
+      "subclassId": "crepuscule",
+      "level": 3,
+      "race": "Humain variant",
+      "raceSelection": {
+        "raceId": "humain-variant",
+        "abilityBonusChoices": ["wisdom", "constitution"]
+      },
+      "background": "Acolyte",
+      "hitPoints": {
+        "current": 23,
+        "temporary": 0
+      },
+      "featIds": ["lanceur-de-sorts-de-bataille"],
+      "armorProficiencies": ["light", "medium", "heavy", "shield"],
+      "armorClassEffects": [
+        {
+          "id": "bouclier-de-la-foi",
+          "name": "Bouclier de la Foi",
+          "bonus": 2,
+          "trigger": {
+            "type": "concentration",
+            "spellId": "demo-bouclier-de-la-foi-shield-of-faith"
+          }
+        }
+      ],
+      "abilityScores": {
+        "strength": 13,
+        "dexterity": 8,
+        "constitution": 14,
+        "intelligence": 12,
+        "wisdom": 15,
+        "charisma": 10
+      },
+      "savingThrowProficiencies": [],
+      "skillProficiencies": ["Perception", "Histoire", "Religion", "Médecine", "Perspicacité"],
+      "concentration": {
+        "active": false
+      },
+      "weaponProficiencies": ["simple", "martial"],
+      "spellcasting": {
+        "ability": "wisdom"
+      },
+      "spellSlotsUsed": {
+        "1": 2
+      },
+      "classResourcesUsed": {},
+      "knownSpellIds": [
+        "demo-assistance",
+        "demo-flamme-sacree",
+        "demo-sonner-le-glas",
+        "demo-benediction-bless",
+        "demo-bouclier-de-la-foi-shield-of-faith",
+        "demo-lumiere-feerique",
+        "demo-mot-de-guerison-healing-word",
+        "demo-projectile-de-guidage-guiding-bolt",
+        "demo-sommeil-sleep",
+        "demo-arme-spirituelle",
+        "demo-lueur-de-lune-moonbeam",
+        "demo-voir-l-invisibilite",
+        "demo-blessure-inflict-wounds",
+        "demo-ceremonie-ceremony",
+        "demo-creation-ou-destruction-d-eau-create-or-destroy-water",
+        "demo-detection-de-la-magie-detect-magic",
+        "demo-detection-du-mal-et-du-bien-detect-evil-and-good",
+        "demo-detection-du-poison-et-des-maladies-detect-poison-and-disease",
+        "demo-fleau-bane",
+        "demo-commandement-command",
+        "demo-protection-contre-le-mal-et-le-bien-protection-from-evil-and-good",
+        "demo-purifier-nourriture-et-boisson-purify-food-and-drink",
+        "demo-sanctuaire-sanctuary",
+        "demo-soin-cure-wounds",
+        "demo-aide-aid",
+        "demo-amelioration-de-caracteristique-enhance-ability",
+        "demo-apaisement-des-emotions-calm-emotions",
+        "demo-augure-augury",
+        "demo-aveuglement-surdite-blindness-deafness",
+        "demo-detection-des-pieges-find-traps",
+        "demo-flamme-eternelle-continual-flame",
+        "demo-immobilisation-de-personne-hold-person",
+        "demo-localisation-d-objet-locate-object",
+        "demo-preservation-des-morts-gentle-repose",
+        "demo-priere-de-guerison-prayer-of-healing",
+        "demo-protection-contre-le-poison",
+        "demo-protection-d-autrui-warding-bond",
+        "demo-restauration-partielle-lesser-restoration",
+        "demo-silence",
+        "demo-zone-de-verite-zone-of-truth"
+      ],
+      "preparedSpellIds": [
+        "demo-assistance",
+        "demo-flamme-sacree",
+        "demo-sonner-le-glas",
+        "demo-benediction-bless",
+        "demo-bouclier-de-la-foi-shield-of-faith",
+        "demo-mot-de-guerison-healing-word",
+        "demo-arme-spirituelle",
+        "demo-protection-contre-le-poison",
+        "demo-aide-aid"
+      ],
+      "spellTags": [
+        {
+          "spellId": "demo-lumiere-feerique",
+          "domain": "Domaine du Crépuscule",
+          "alwaysPrepared": true
+        },
+        {
+          "spellId": "demo-sommeil-sleep",
+          "domain": "Domaine du Crépuscule",
+          "alwaysPrepared": true
+        },
+        {
+          "spellId": "demo-lueur-de-lune-moonbeam",
+          "domain": "Domaine du Crépuscule",
+          "alwaysPrepared": true
+        },
+        {
+          "spellId": "demo-voir-l-invisibilite",
+          "domain": "Domaine du Crépuscule",
+          "alwaysPrepared": true
+        }
+      ],
+      "inventory": [
+        {
+          "id": "exemple-item-1",
+          "name": "Symbole sacré",
+          "quantity": 1,
+          "equipped": true
+        },
+        {
+          "id": "fabd977d-7483-4dd9-8b83-5493e61e54cb",
+          "name": "Cotte de mailles",
+          "quantity": 1,
+          "equipped": true,
+          "armor": {
+            "category": "heavy",
+            "baseArmorClass": 16,
+            "strengthRequirement": 13
+          }
+        },
+        {
+          "id": "e0a3406a-8d42-45c5-841e-5a768a3f1a2f",
+          "name": "Bouclier",
+          "quantity": 1,
+          "equipped": true,
+          "armor": {
+            "category": "shield",
+            "baseArmorClass": 2
+          }
+        },
+        {
+          "id": "4bf2f243-3c37-4bcd-a87e-1d91c3cc5715",
+          "name": "Marteau de guerre",
+          "quantity": 1,
+          "equipped": true,
+          "weapon": {
+            "category": "martial",
+            "range": "melee",
+            "damageDice": "1d8",
+            "versatileDamageDice": "1d10",
+            "damageType": "bludgeoning"
+          }
+        },
+        {
+          "id": "3ede79fd-650d-41f8-b327-f5690ca6baa3",
+          "name": "Sac à dos",
+          "quantity": 1
+        },
+        {
+          "id": "6489dbca-cc05-4e3b-986d-3f7922a8264d",
+          "name": "Arbalète légère",
+          "quantity": 1,
+          "weapon": {
+            "category": "simple",
+            "range": "ranged",
+            "damageDice": "1d8",
+            "damageType": "piercing"
+          }
+        },
+        {
+          "id": "1e1be289-d070-44d3-8e37-50fb99667251",
+          "name": "Carreau",
+          "quantity": 8
+        },
+        {
+          "id": "af6374c0-f56f-457a-b47f-40a458c059ae",
+          "name": "Rations",
+          "quantity": 4
+        },
+        {
+          "id": "75909346-4001-41a6-a1b8-8dca3f8d9423",
+          "name": "Chapelet",
+          "quantity": 1
+        },
+        {
+          "id": "ff2fa2da-3325-4073-9404-732598b49eed",
+          "name": "Encens",
+          "quantity": 3
+        },
+        {
+          "id": "039c1316-c5cb-4f46-a86a-e1b963378a68",
+          "name": "Vêtements ordinaire",
+          "quantity": 1
+        },
+        {
+          "id": "b74f9b82-425f-46e2-9e1a-34c8acd3cf3e",
+          "name": "Couverture",
+          "quantity": 1
+        },
+        {
+          "id": "eabd67b6-1fff-4d18-a85a-510004a90868",
+          "name": "Bougie",
+          "quantity": 10
+        },
+        {
+          "id": "4a8262fe-6247-431e-9132-84fc75d122fd",
+          "name": "Habit de cérémonie",
+          "quantity": 1
+        },
+        {
+          "id": "a68c344f-3b48-4dad-a8d6-a51212cd1526",
+          "name": "Boite à amadou",
+          "quantity": 1
+        },
+        {
+          "id": "bed8054c-ea1c-4fcc-9e9a-44dd060bdeb8",
+          "name": "Tronc d'offrande ",
+          "quantity": 1
+        },
+        {
+          "id": "6d9c6e69-a4be-48b5-b31b-dcad52f08a2b",
+          "name": "Encensoir",
+          "quantity": 1
+        },
+        {
+          "id": "d06eed96-b5d9-4231-a78c-758b4b5d5695",
+          "name": "Corde",
+          "quantity": 1
+        },
+        {
+          "id": "3710c222-997c-4a01-aceb-9798cb11a866",
+          "name": "Pied de biche",
+          "quantity": 1
+        },
+        {
+          "id": "f16e8981-e7b3-44cc-ac6d-c08fe8be94e2",
+          "name": "Potion de soin",
+          "quantity": 1,
+          "description": "Rend 2d4 + 2 points de vie quand on la boit."
+        }
+      ],
+      "currency": {
+        "platinum": 0,
+        "gold": 20,
+        "electrum": 0,
+        "silver": 0,
+        "copper": 0
+      },
+      "features": [
+        {
+          "id": "canalisation-divine",
+          "name": "Canalisation divine (réserve)",
+          "source": "Clerc",
+          "description": "Pouvoir divin puisé auprès de ta divinité pour produire l'un des effets de Canalisation divine (Renvoi des morts-vivants, Sanctuaire du Crépuscule). Nombre d'utilisations selon le niveau, récupérées au repos court ou long."
+        },
+        {
+          "id": "renvoi-des-morts-vivants",
+          "name": "Renvoi des morts-vivants",
+          "source": "Clerc",
+          "description": "Action : tu brandis ton symbole sacré. Chaque mort-vivant à 9 m ou moins qui peut te voir ou t'entendre fait un jet de sauvegarde de Sagesse contre ton DD de sorts. En cas d'échec, il est renvoyé pendant 1 minute ou jusqu'à ce qu'il subisse des dégâts : il doit s'éloigner de toi et ne peut pas réagir.",
+          "resourceId": "channel-divinity"
+        },
+        {
+          "id": "sanctuaire-du-crepuscule",
+          "name": "Sanctuaire du Crépuscule",
+          "source": "Domaine du Crépuscule",
+          "description": "Action : une sphère de pénombre de 9 m de rayon, centrée sur toi, te suit pendant 1 minute (ou jusqu'à ce que tu sois neutralisé). Quand une créature termine son tour dans la sphère, tu peux lui donner 1d6 + ton niveau de clerc en PV temporaires, ou mettre fin à un effet qui la charme ou l'effraie.",
+          "resourceId": "channel-divinity"
+        },
+        {
+          "id": "yeux-de-la-nuit",
+          "name": "Yeux de la nuit",
+          "source": "Domaine du Crépuscule",
+          "description": "Vision dans le noir à 90 m. Action : tu peux la partager pendant 1 heure avec des créatures consentantes à 3 m ou moins, autant que ton modificateur de Sagesse (minimum 1). Une fois par repos long, ou en dépensant un emplacement de sort pour recommencer.",
+          "usesMax": 1,
+          "usesCurrent": 1,
+          "recharge": "longRest"
+        },
+        {
+          "id": "benediction-vigilante",
+          "name": "Bénédiction vigilante",
+          "source": "Domaine du Crépuscule",
+          "description": "Action : une créature que tu touches (toi compris) a l'avantage à son prochain jet d'initiative. L'effet s'arrête après ce jet, ou si tu réutilises la capacité."
+        },
+        {
+          "id": "maitrises-du-crepuscule",
+          "name": "Maîtrises supplémentaires",
+          "source": "Domaine du Crépuscule",
+          "description": "Maîtrise des armes de guerre et de l'armure lourde."
+        },
+        {
+          "id": "lanceur-de-sorts-de-bataille",
+          "name": "Lanceur de sorts de bataille (War Caster)",
+          "source": "Don (humain variant)",
+          "description": "Avantage aux jets de sauvegarde de Constitution pour maintenir ta concentration quand tu subis des dégâts. Composantes somatiques possibles avec arme ou bouclier en main. Quand une créature hostile provoque une attaque d'opportunité, tu peux à la place lui lancer un sort de 1 action qui ne cible qu'elle."
+        }
+      ],
+      "themeId": "selune",
+      "createdAt": "2026-09-23T12:54:26.723Z",
+      "updatedAt": "2026-09-25T11:26:50.498Z"
+    },
+    {
+      "id": "demo-d218e261-48bf-4821-9c39-478d01decef2",
+      "name": "Murrik Ronin",
+      "class": "Barbare",
+      "classId": "barbare",
+      "subclass": "Voie du guerrier totémique (Ours)",
+      "subclassId": "guerrier-totemique",
+      "level": 3,
+      "race": "Nain des collines",
+      "raceSelection": {
+        "raceId": "nain-des-collines",
+        "abilityBonusChoices": []
+      },
+      "background": "Ermite",
+      "hitPoints": {
+        "current": 44,
+        "temporary": 0
+      },
+      "featIds": ["robuste"],
+      "armorProficiencies": ["light"],
+      "abilityScores": {
+        "strength": 15,
+        "dexterity": 13,
+        "constitution": 14,
+        "intelligence": 8,
+        "wisdom": 12,
+        "charisma": 10
+      },
+      "savingThrowProficiencies": [],
+      "skillProficiencies": ["Athlétisme", "Médecine", "Perception", "Religion"],
+      "concentration": {
+        "active": false
+      },
+      "weaponProficiencies": ["simple", "martial"],
+      "spellSlotsUsed": {},
+      "classResourcesUsed": {},
+      "knownSpellIds": [],
+      "preparedSpellIds": [],
+      "spellTags": [],
+      "inventory": [
+        {
+          "id": "e1dbff49-0403-471d-b309-f6eaaec995d5",
+          "name": "Épée à deux mains",
+          "quantity": 1,
+          "description": "Arme principale. +2 dégâts supplémentaires en rage.",
+          "equipped": true,
+          "weapon": {
+            "category": "martial",
+            "range": "melee",
+            "damageDice": "1d12",
+            "damageType": "slashing",
+            "twoHanded": true
+          }
+        },
+        {
+          "id": "75126aa6-2dc1-4c03-9918-a4fcfe6cccb5",
+          "name": "Hachette",
+          "quantity": 2,
+          "description": "Arme secondaire ou de jet.",
+          "weapon": {
+            "category": "simple",
+            "range": "melee",
+            "damageDice": "1d6",
+            "damageType": "slashing",
+            "light": true,
+            "thrown": {
+              "normal": 6,
+              "long": 18
+            }
+          }
+        },
+        {
+          "id": "5a62366e-ba25-45a2-8682-efd761499a5e",
+          "name": "Armure à pointes",
+          "quantity": 1,
+          "description": "Notée « dégâts en rage » sur la fiche."
+        },
+        {
+          "id": "c4d19a84-0512-4daf-932d-b9ceb958ff05",
+          "name": "Sac à dos",
+          "quantity": 1
+        },
+        {
+          "id": "f59bcba0-516a-4b46-9ba5-d8f6ae371c73",
+          "name": "Sac de couchage",
+          "quantity": 1
+        },
+        {
+          "id": "2f6c57c7-3e94-45e7-b2a4-2c74acdfc0a7",
+          "name": "Gamelle",
+          "quantity": 1
+        },
+        {
+          "id": "fd7d82b4-931a-4617-ad13-75b0c6491bd9",
+          "name": "Allume-feu",
+          "quantity": 1
+        },
+        {
+          "id": "5554462d-60c5-4794-9231-04590b4d9f55",
+          "name": "Torche",
+          "quantity": 10
+        },
+        {
+          "id": "630ec39e-e605-4d7e-9a2b-8cfcf2c3a055",
+          "name": "Rations",
+          "quantity": 10
+        },
+        {
+          "id": "f47159c4-cd8e-417c-baa3-5dec4350162b",
+          "name": "Gourde",
+          "quantity": 1
+        },
+        {
+          "id": "d8479971-8139-4cda-bb97-e2af2e46ec12",
+          "name": "Corde (15 m)",
+          "quantity": 1
+        },
+        {
+          "id": "639fe1f7-cd1e-4243-8e6f-43b7c596c5e4",
+          "name": "Trousse d'herboriste",
+          "quantity": 1
+        },
+        {
+          "id": "a2cef9a9-b19e-4552-9e73-ab4e2ef8acf3",
+          "name": "Étui à parchemins",
+          "quantity": 1
+        },
+        {
+          "id": "b594e1bb-7418-48ba-9141-66728feb1e0b",
+          "name": "Habits de voyage",
+          "quantity": 1
+        }
+      ],
+      "currency": {
+        "platinum": 0,
+        "gold": 5,
+        "electrum": 0,
+        "silver": 0,
+        "copper": 0
+      },
+      "features": [
+        {
+          "id": "rage",
+          "name": "Rage",
+          "source": "Barbare",
+          "description": "Action bonus, 1 minute (sans armure lourde). Avantage aux tests et jets de sauvegarde de Force, +2 aux dégâts des attaques de corps à corps utilisant la Force, résistance aux dégâts contondants, perforants et tranchants. S'arrête si tu n'attaques pas et ne subis aucun dégât pendant un tour."
+        },
+        {
+          "id": "defense-sans-armure",
+          "name": "Défense sans armure",
+          "source": "Barbare",
+          "description": "Sans armure, ta CA est égale à 10 + modificateur de Dextérité + modificateur de Constitution (bouclier autorisé). Calculée automatiquement."
+        },
+        {
+          "id": "attaque-temeraire",
+          "name": "Attaque téméraire",
+          "source": "Barbare",
+          "description": "Lors de ta première attaque du tour, tu peux attaquer de façon téméraire : avantage à tes attaques de corps à corps utilisant la Force ce tour-ci, mais les attaques contre toi ont l'avantage jusqu'à ton prochain tour."
+        },
+        {
+          "id": "sens-du-danger",
+          "name": "Sens du danger",
+          "source": "Barbare",
+          "description": "Avantage aux jets de sauvegarde de Dextérité contre les effets que tu peux voir (pièges, sorts…), tant que tu n'es pas aveuglé, assourdi ou neutralisé."
+        },
+        {
+          "id": "totem-ours",
+          "name": "Esprit totem : Ours",
+          "source": "Voie du guerrier totémique",
+          "description": "En rage, tu résistes à tous les dégâts sauf psychiques."
+        },
+        {
+          "id": "vision-dans-le-noir",
+          "name": "Vision dans le noir",
+          "source": "Nain",
+          "description": "18 m."
+        },
+        {
+          "id": "resistance-naine",
+          "name": "Résistance naine",
+          "source": "Nain",
+          "description": "Avantage aux jets de sauvegarde contre le poison et résistance aux dégâts de poison."
+        },
+        {
+          "id": "robustesse-naine",
+          "name": "Robustesse naine",
+          "source": "Nain des collines",
+          "description": "+1 PV max par niveau (déjà inclus dans les PV max saisis)."
+        },
+        {
+          "id": "connaissance-de-la-pierre",
+          "name": "Connaissance de la pierre",
+          "source": "Nain",
+          "description": "Bonus de maîtrise doublé aux tests d'Intelligence (Histoire) liés à l'origine d'un ouvrage en pierre."
+        },
+        {
+          "id": "formation-aux-armes-naines",
+          "name": "Formation aux armes naines",
+          "source": "Nain",
+          "description": "Maîtrise de la hache d'armes, de la hachette, du marteau léger et du marteau de guerre."
+        },
+        {
+          "id": "decouverte",
+          "name": "Découverte",
+          "source": "Ermite",
+          "description": "Ta retraite t'a fait découvrir un secret unique et puissant (à définir avec le MJ)."
+        }
+      ],
+      "themeId": "forge-naine",
+      "notes": "Alignement : Loyal bon\nPoints d'expérience : 0\n\nLangues : commun, nain, géant\nOutils : forgeron\n\nTraits de personnalité : Fidélité et loyauté. Veut réparer ses erreurs passées.\nIdéaux : La famille et les amis avant tout.\nLiens : Son clan et ses valeurs.\nDéfauts : Impulsif et parfois vulgaire sous stress.\n\nÂge : 37 ans — Taille : 1,53 m — Corpulence : enrobé — Yeux : gris — Peau : blanche, tatouages bruns\nApparence : Il a le regard gris et dur comme du granit, il évoque la force et la solidité. Il est vêtu d'habits composés de cuir bouilli et de fourrure, une armure légère. On distingue une tête hirsute avec des cheveux et une barbe brune tressée. Son visage est marqué par quelques cicatrices et rides qui évoquent les expériences de la vie. Il sent la bière et le feu de bois.",
+      "createdAt": "2026-09-24T21:00:00.000Z",
+      "updatedAt": "2026-09-25T21:00:00.000Z",
+      "armorClassEffects": []
+    },
+    {
+      "id": "demo-acf646eb-0f95-4f72-9c82-223daf1a70ba",
+      "name": "Mordaï",
+      "class": "Moine",
+      "classId": "moine",
+      "subclass": "Voie de la main ouverte",
+      "subclassId": "main-ouverte",
+      "level": 3,
+      "race": "Tieffelin",
+      "raceSelection": {
+        "raceId": "tieffelin",
+        "abilityBonusChoices": []
+      },
+      "hitPoints": {
+        "current": 19,
+        "temporary": 0
+      },
+      "abilityScores": {
+        "strength": 10,
+        "dexterity": 15,
+        "constitution": 13,
+        "intelligence": 12,
+        "wisdom": 14,
+        "charisma": 8
+      },
+      "savingThrowProficiencies": [],
+      "skillProficiencies": ["Acrobaties", "Discrétion", "Escamotage", "Perspicacité"],
+      "concentration": {
+        "active": false
+      },
+      "weaponProficiencies": ["simple"],
+      "spellSlotsUsed": {},
+      "classResourcesUsed": {},
+      "knownSpellIds": [],
+      "preparedSpellIds": [],
+      "spellTags": [],
+      "inventory": [
+        {
+          "id": "c1538f81-bbd4-4ee4-9bfd-b284099e680e",
+          "name": "Bâton",
+          "quantity": 1,
+          "equipped": true,
+          "weapon": {
+            "category": "simple",
+            "range": "melee",
+            "damageDice": "1d6",
+            "versatileDamageDice": "1d8",
+            "damageType": "bludgeoning"
+          }
+        },
+        {
+          "id": "9b0005f3-8e26-416c-b68d-38229641275f",
+          "name": "Épée courte",
+          "quantity": 1,
+          "weapon": {
+            "category": "martial",
+            "range": "melee",
+            "damageDice": "1d6",
+            "damageType": "piercing",
+            "finesse": true,
+            "light": true,
+            "monkWeapon": true
+          }
+        },
+        {
+          "id": "1232a0c4-3cd6-4a02-b2ef-2d80e85ac50a",
+          "name": "Fléchette",
+          "quantity": 14,
+          "weapon": {
+            "category": "simple",
+            "range": "ranged",
+            "damageDice": "1d4",
+            "damageType": "piercing",
+            "finesse": true
+          }
+        },
+        {
+          "id": "694c1120-4fd4-4b2a-a63a-6d2eed9d0976",
+          "name": "Arbalète légère",
+          "quantity": 1,
+          "weapon": {
+            "category": "simple",
+            "range": "ranged",
+            "damageDice": "1d8",
+            "damageType": "piercing",
+            "twoHanded": true
+          }
+        },
+        {
+          "id": "49ef0457-0781-4063-abb9-df37a457c1de",
+          "name": "Carreau",
+          "quantity": 16
+        },
+        {
+          "id": "937896ab-407b-4413-a9ee-df04c7b0d860",
+          "name": "Carte de la ville arpentée",
+          "quantity": 1
+        },
+        {
+          "id": "233208a0-b2e7-4976-8719-aab65cc29dca",
+          "name": "Souris (Dante)",
+          "quantity": 1
+        },
+        {
+          "id": "1d170b46-8150-46fc-aae4-d5029cd799d1",
+          "name": "Déguisement",
+          "quantity": 1
+        },
+        {
+          "id": "a3916cee-23d7-4991-bcbb-f2f802f82bc3",
+          "name": "Outils de voleur",
+          "quantity": 1
+        },
+        {
+          "id": "5c2bd558-19f9-44ea-92be-fd23c76b31bf",
+          "name": "Canif",
+          "quantity": 1
+        },
+        {
+          "id": "1c546471-b697-4e39-b4b4-d21852c7fb62",
+          "name": "Souvenir",
+          "quantity": 1
+        },
+        {
+          "id": "f503708d-f8ac-4978-8a03-4015c31ff1a2",
+          "name": "Sac à dos",
+          "quantity": 1
+        },
+        {
+          "id": "f51d41c8-6448-49e4-9140-0f01a039bcdb",
+          "name": "Pied-de-biche",
+          "quantity": 1
+        },
+        {
+          "id": "768a009a-17d5-43d8-89e0-9ff63cc1ecb5",
+          "name": "Boîte à amadou",
+          "quantity": 1
+        },
+        {
+          "id": "7c03dc47-d74f-43b0-bd35-e83e6ac57368",
+          "name": "Torche",
+          "quantity": 10
+        },
+        {
+          "id": "03517f3a-c91f-4e21-ac5e-b78bec85b9a9",
+          "name": "Rations",
+          "quantity": 10,
+          "description": "Jours de rations."
+        },
+        {
+          "id": "763f14ff-8537-4d65-8cd6-a9ccd183c417",
+          "name": "Gourde",
+          "quantity": 1
+        },
+        {
+          "id": "ece10220-5d99-4d2e-bb55-a4226afbb708",
+          "name": "Piton",
+          "quantity": 10
+        },
+        {
+          "id": "1cc5d688-0298-490b-a31b-988307e120d3",
+          "name": "Corde (15 m)",
+          "quantity": 1
+        }
+      ],
+      "currency": {
+        "platinum": 0,
+        "gold": 154,
+        "electrum": 0,
+        "silver": 6,
+        "copper": 0
+      },
+      "features": [
+        {
+          "id": "ki",
+          "name": "Ki",
+          "source": "Moine",
+          "description": "Points de ki = niveau de moine, récupérés au repos court ou long. DD des effets de ki : 8 + maîtrise + Sagesse (12)."
+        },
+        {
+          "id": "deluge-de-coups",
+          "name": "Déluge de coups",
+          "source": "Moine",
+          "description": "Après l'action Attaquer, deux attaques à mains nues par une action bonus (1 point de ki).",
+          "resourceId": "ki"
+        },
+        {
+          "id": "patience-defensive",
+          "name": "Patience défensive",
+          "source": "Moine",
+          "description": "Action Esquiver par une action bonus (1 point de ki).",
+          "resourceId": "ki"
+        },
+        {
+          "id": "deplacement-du-vent",
+          "name": "Déplacement du vent",
+          "source": "Moine",
+          "description": "Action Se désengager ou Foncer par une action bonus, et distance de saut doublée pour le tour (1 point de ki).",
+          "resourceId": "ki"
+        },
+        {
+          "id": "arts-martiaux",
+          "name": "Arts martiaux",
+          "source": "Moine",
+          "description": "Sans armure ni bouclier, avec une arme de moine ou à mains nues : Dextérité au lieu de la Force à l'attaque et aux dégâts, dé d'Arts martiaux (1d4) à la place du dé de l'arme s'il est meilleur, et une attaque à mains nues par une action bonus après l'action Attaquer."
+        },
+        {
+          "id": "defense-sans-armure",
+          "name": "Défense sans armure",
+          "source": "Moine",
+          "description": "Sans armure ni bouclier, ta CA est égale à 10 + modificateur de Dextérité + modificateur de Sagesse (calculée automatiquement)."
+        },
+        {
+          "id": "deplacement-sans-armure",
+          "name": "Déplacement sans armure",
+          "source": "Moine",
+          "description": "Sans armure ni bouclier, +3 m de vitesse au niveau 2, davantage aux niveaux supérieurs (calculé automatiquement)."
+        },
+        {
+          "id": "parade-de-projectiles",
+          "name": "Parade de projectiles",
+          "source": "Moine",
+          "description": "Réaction quand une attaque à distance avec une arme te touche : les dégâts sont réduits de 1d10 + Dextérité + niveau de moine. S'ils tombent à 0 et que tu as une main libre, tu attrapes le projectile et peux dépenser 1 point de ki pour le renvoyer (attaque à distance maîtrisée, arme de moine, portée 6/18 m)."
+        },
+        {
+          "id": "technique-de-la-paume",
+          "name": "Technique de la paume",
+          "source": "Voie de la main ouverte",
+          "description": "Quand tu touches une créature avec une attaque du Déluge de coups, tu lui imposes l'un de ces effets : jet de sauvegarde de Dextérité ou elle tombe à terre ; jet de sauvegarde de Force ou elle est repoussée de 4,50 m ; ou elle ne peut pas réagir jusqu'à la fin de ton prochain tour."
+        },
+        {
+          "id": "arme-dediee",
+          "name": "Arme dédiée",
+          "source": "Moine (Chaudron de Tasha)",
+          "description": "À la fin d'un repos court, tu touches une arme que tu maîtrises, sans propriété lourde ni spéciale : elle devient une arme de moine pour toi jusqu'à ce que tu en choisisses une autre."
+        },
+        {
+          "id": "resistance-infernale",
+          "name": "Résistance infernale",
+          "source": "Tieffelin",
+          "description": "Résistance aux dégâts de feu."
+        },
+        {
+          "id": "vision-dans-le-noir",
+          "name": "Vision dans le noir",
+          "source": "Tieffelin",
+          "description": "18 m."
+        },
+        {
+          "id": "thaumaturgie",
+          "name": "Héritage infernal : Thaumaturgie",
+          "source": "Tieffelin",
+          "description": "Tu connais le tour de magie Thaumaturgie (Charisme) : petits prodiges pendant jusqu'à 1 minute, à 9 m."
+        },
+        {
+          "id": "represailles-infernales",
+          "name": "Représailles infernales",
+          "source": "Tieffelin",
+          "description": "Héritage infernal (niveau 3) : sort de niveau 2, une fois par repos long. Réaction quand une créature que tu vois te blesse, à 18 m : elle fait un jet de sauvegarde de Dextérité (DD 8 + maîtrise + Charisme = 10) ; 3d10 dégâts de feu en cas d'échec, moitié en cas de réussite.",
+          "usesMax": 1,
+          "usesCurrent": 1,
+          "recharge": "longRest"
+        }
+      ],
+      "themeId": "ki-infernal",
+      "notes": "Âge : 23 ans\n\nLangues : commun, infernal\nMaîtrises : armes courantes, épée courte, outils de sculpteur\n\nTraits de personnalité : Fidèle en amitié. Modeste, positif, et calme en apparence.\nIdéaux : Justice/Égalité.\nLiens : Confiance absolue en ses compagnons d'aventure.\nDéfauts : Méfiant et très susceptible.",
+      "createdAt": "2026-09-25T19:00:00.000Z",
+      "updatedAt": "2026-09-25T21:00:00.000Z",
+      "armorClassEffects": []
+    },
+    {
+      "id": "demo-0a449e1f-6b08-43d1-9b3a-23e5e22d66da",
+      "name": "Myrelia Ombreflore",
+      "class": "Druide",
+      "classId": "druide",
+      "subclass": "Cercle des spores",
+      "subclassId": "spores",
+      "level": 3,
+      "race": "Demi-elfe",
+      "raceSelection": {
+        "raceId": "demi-elfe",
+        "abilityBonusChoices": ["constitution", "wisdom"]
+      },
+      "background": "Sauvageon",
+      "hitPoints": {
+        "current": 24,
+        "temporary": 0
+      },
+      "armorProficiencies": ["light", "medium", "shield"],
+      "abilityScores": {
+        "strength": 8,
+        "dexterity": 13,
+        "constitution": 14,
+        "intelligence": 12,
+        "wisdom": 15,
+        "charisma": 10
+      },
+      "savingThrowProficiencies": [],
+      "skillProficiencies": [
+        "Athlétisme",
+        "Dressage",
+        "Médecine",
+        "Nature",
+        "Perception",
+        "Survie"
+      ],
+      "concentration": {
+        "active": false
+      },
+      "weaponProficiencies": ["simple"],
+      "spellSlotsUsed": {},
+      "classResourcesUsed": {},
+      "knownSpellIds": [
+        "demo-gourdin-magique-shillelagh",
+        "demo-vaporisation-de-poison-poison-spray",
+        "demo-contact-glacial-chill-touch",
+        "demo-charme-personne-charm-person",
+        "demo-enchevetrement-entangle",
+        "demo-absorption-des-elements-absorb-elements",
+        "demo-amitie-animale-animal-friendship",
+        "demo-baie-nourriciere-goodberry",
+        "demo-comprehension-animale-speak-with-animals",
+        "demo-grand-pas-longstrider",
+        "demo-lien-avec-une-bete-beast-bond",
+        "demo-nappe-de-brouillard-fog-cloud",
+        "demo-onde-de-choc-thunderwave",
+        "demo-poignard-de-glace-ice-knife",
+        "demo-saut-jump",
+        "demo-secousse-terrestre-earth-tremor",
+        "demo-creation-ou-destruction-d-eau-create-or-destroy-water",
+        "demo-detection-de-la-magie-detect-magic",
+        "demo-detection-du-poison-et-des-maladies-detect-poison-and-disease",
+        "demo-lumiere-feerique",
+        "demo-mot-de-guerison-healing-word",
+        "demo-purifier-nourriture-et-boisson-purify-food-and-drink",
+        "demo-soin-cure-wounds",
+        "demo-lame-de-feu-flame-blade",
+        "demo-sphere-de-feu-flaming-sphere",
+        "demo-bourrasque-gust-of-wind",
+        "demo-croissance-d-epines-spike-growth",
+        "demo-ecriture-aerienne-skywrite",
+        "demo-lien-terrestre-earthbind",
+        "demo-localisation-de-betes-ou-de-plantes-locate-animals-or-plants",
+        "demo-messager-animal-animal-messenger",
+        "demo-metal-brulant-heat-metal",
+        "demo-passage-sans-trace-pass-without-trace",
+        "demo-peau-d-ecorce-barkskin",
+        "demo-sens-bestial-beast-sense",
+        "demo-tourbillon-de-poussiere-dust-devil",
+        "demo-vent-violent-warding-wind",
+        "demo-vision-dans-le-noir-darkvision",
+        "demo-amelioration-de-caracteristique-enhance-ability",
+        "demo-detection-des-pieges-find-traps",
+        "demo-immobilisation-de-personne-hold-person",
+        "demo-localisation-d-objet-locate-object",
+        "demo-protection-contre-le-poison",
+        "demo-lueur-de-lune-moonbeam",
+        "demo-restauration-partielle-lesser-restoration",
+        "demo-aveuglement-surdite-blindness-deafness",
+        "demo-preservation-des-morts-gentle-repose"
+      ],
+      "preparedSpellIds": [
+        "demo-charme-personne-charm-person",
+        "demo-enchevetrement-entangle",
+        "demo-absorption-des-elements-absorb-elements",
+        "demo-mot-de-guerison-healing-word",
+        "demo-lame-de-feu-flame-blade",
+        "demo-sphere-de-feu-flaming-sphere"
+      ],
+      "spellTags": [],
+      "inventory": [
+        {
+          "id": "74b996dd-64cb-4f61-9cb5-e29cf94a5b99",
+          "name": "Armure de cuir",
+          "quantity": 1,
+          "equipped": true,
+          "armor": {
+            "category": "light",
+            "baseArmorClass": 11
+          }
+        },
+        {
+          "id": "ea28be3e-e4ed-4132-8083-45f3983c917d",
+          "name": "Bouclier en bois",
+          "quantity": 1,
+          "equipped": true,
+          "armor": {
+            "category": "shield",
+            "baseArmorClass": 2
+          }
+        },
+        {
+          "id": "2a1790ea-ec44-4800-a94b-8b9270c1cbea",
+          "name": "Bâton",
+          "quantity": 1,
+          "description": "Focaliseur druidique. Avec Gourdin magique : Sagesse à l'attaque et aux dégâts, dé de dégâts d8.",
+          "equipped": true,
+          "weapon": {
+            "category": "simple",
+            "range": "melee",
+            "damageDice": "1d6",
+            "versatileDamageDice": "1d8",
+            "damageType": "bludgeoning"
+          }
+        },
+        {
+          "id": "15227cd6-522b-4161-8be3-246bafde9ef7",
+          "name": "Dague",
+          "quantity": 0,
+          "description": "Quantité non renseignée sur la fiche.",
+          "weapon": {
+            "category": "simple",
+            "range": "melee",
+            "damageDice": "1d4",
+            "damageType": "piercing",
+            "finesse": true,
+            "light": true,
+            "thrown": {
+              "normal": 6,
+              "long": 18
+            }
+          }
+        },
+        {
+          "id": "97dd1730-c808-439b-b90f-25bcfcc26c62",
+          "name": "Fléchette",
+          "quantity": 0,
+          "description": "Quantité non renseignée sur la fiche.",
+          "weapon": {
+            "category": "simple",
+            "range": "ranged",
+            "damageDice": "1d4",
+            "damageType": "piercing",
+            "finesse": true
+          }
+        },
+        {
+          "id": "5e484cc9-80d1-41fe-8201-fb5cc4d928d4",
+          "name": "Billes de fronde",
+          "quantity": 0,
+          "description": "Quantité non renseignée sur la fiche."
+        },
+        {
+          "id": "fae282e6-8779-469f-aebc-ffbcf0db13a8",
+          "name": "Flûte en bois ornée",
+          "quantity": 1
+        },
+        {
+          "id": "7254f8db-fd7d-4716-95f0-523f751950c2",
+          "name": "Kit d'herboriste",
+          "quantity": 1
+        },
+        {
+          "id": "94bc7d88-8adf-479f-83f6-b9388fd7524c",
+          "name": "Sac à dos",
+          "quantity": 1
+        },
+        {
+          "id": "f3483c9a-13b5-4824-ab40-991536774e71",
+          "name": "Sac de couchage",
+          "quantity": 1
+        },
+        {
+          "id": "daa6bc33-fdd3-47c6-93b7-4ff62ea49414",
+          "name": "Gamelle",
+          "quantity": 1
+        },
+        {
+          "id": "9bada2f7-2f11-4afc-bd09-7b67e9078d45",
+          "name": "Boîte à amadou",
+          "quantity": 1
+        },
+        {
+          "id": "5b83c1b1-82c6-4355-9398-f5abf9bc120e",
+          "name": "Corde",
+          "quantity": 1
+        },
+        {
+          "id": "70c4e04e-f68b-48fb-9573-cf0833e27adf",
+          "name": "Rations",
+          "quantity": 0,
+          "description": "Quantité non renseignée sur la fiche."
+        },
+        {
+          "id": "15885e59-1be9-4bf8-93e4-28985f979984",
+          "name": "Torche",
+          "quantity": 0,
+          "description": "Quantité non renseignée sur la fiche."
+        },
+        {
+          "id": "baa7a634-f39f-420b-a801-1fc280f93aae",
+          "name": "Eau",
+          "quantity": 0,
+          "description": "Quantité non renseignée sur la fiche."
+        }
+      ],
+      "features": [
+        {
+          "id": "forme-de-bete",
+          "name": "Forme de bête",
+          "source": "Druide",
+          "description": "Action : tu prends la forme d'une bête déjà vue, de FP 1/4 maximum, sans vitesse de vol ni de nage, pendant jusqu'à 1 h 30 (moitié de ton niveau de druide, en heures). Formes notées : loup, araignée-loup géante, sanglier, cheval.",
+          "resourceId": "wild-shape"
+        },
+        {
+          "id": "entite-symbiotique",
+          "name": "Entité symbiotique",
+          "source": "Cercle des spores",
+          "description": "Action : au lieu de te transformer, tu dépenses une Forme sauvage pour réveiller tes spores. Tu gagnes 4 PV temporaires par niveau de druide (12 au niveau 3). Tant que l'effet dure, ton Halo de spores lance ses dégâts deux fois, et tes attaques au corps à corps avec une arme infligent 1d6 dégâts nécrotiques supplémentaires. Dure 10 minutes, jusqu'à la perte de ces PV temporaires, ou jusqu'à une nouvelle Forme sauvage.",
+          "resourceId": "wild-shape"
+        },
+        {
+          "id": "halo-de-spores",
+          "name": "Halo de spores",
+          "source": "Cercle des spores",
+          "description": "Réaction : quand une créature que tu vois entre dans un espace à 3 m ou moins de toi, ou y commence son tour, elle doit réussir un jet de sauvegarde de Constitution contre ton DD de sorts ou subir 1d4 dégâts nécrotiques (1d6 au niveau 6, 1d8 au 10, 1d10 au 14)."
+        },
+        {
+          "id": "sorts-de-cercle",
+          "name": "Sorts de cercle",
+          "source": "Cercle des spores",
+          "description": "Toujours préparés, ils ne comptent pas dans les sorts préparés chaque jour : Contact glacial (tour de magie, niveau 2) ; Cécité/Surdité et Préservation des morts (niveau 3) ; Animation des morts et Forme gazeuse (5) ; Flétrissement et Confusion (7) ; Brume mortelle et Contagion (9)."
+        },
+        {
+          "id": "druidique",
+          "name": "Druidique",
+          "source": "Druide",
+          "description": "Tu connais la langue secrète des druides et peux y laisser des messages cachés."
+        },
+        {
+          "id": "vision-dans-le-noir",
+          "name": "Vision dans le noir",
+          "source": "Demi-elfe",
+          "description": "18 m."
+        },
+        {
+          "id": "ascendance-feerique",
+          "name": "Ascendance féerique",
+          "source": "Demi-elfe",
+          "description": "Avantage aux jets de sauvegarde contre l'état charmé ; la magie ne peut pas t'endormir."
+        },
+        {
+          "id": "polyvalence",
+          "name": "Polyvalence",
+          "source": "Demi-elfe",
+          "description": "Maîtrise de deux compétences au choix."
+        },
+        {
+          "id": "voyageur",
+          "name": "Voyageur",
+          "source": "Sauvageon",
+          "description": "Excellente mémoire des cartes et des territoires. Tu trouves chaque jour de quoi nourrir et abreuver 5 personnes, si les ressources existent (chasse, plantes, eau)."
+        }
+      ],
+      "themeId": "ombreflore",
+      "notes": "Alignement : Bon chaotique\n\nLangues : commun, elfique, sylvestre, druidique\nArmures : légères, intermédiaires (non métalliques), boucliers non métalliques\nArmes : gourdin, dague, fléchette, javeline, masse d'armes, bâton, cimeterre, fronde, serpe, lance\nOutils : kit d'herboriste\nInstrument : flûte en bois ornée\n\nTraits de personnalité : Protectrice des sans-voix.\nIdéaux : Le cycle avant tout.\nLiens : Esprit de la forêt.\nDéfauts : Peu conciliante.\n\nÂge : 85 ans — Taille : 1,70 m — Corpulence : mince — Yeux : verts — Cheveux : couleur forêt — Peau : blanche, taches de rousseur\nApparence : Elle a le regard vert d'une clairière après l'averse, perçant et calme. Sa crinière bouclée — roux, brun, stries de verts multiples — est piquée de feuilles, épines. Une armure épouse sa silhouette fine. Elle sent la pluie et les fleurs.",
+      "createdAt": "2026-09-25T15:00:00.000Z",
+      "updatedAt": "2026-09-25T15:00:00.000Z",
+      "armorClassEffects": []
+    }
+  ],
+  "spells": [
+    {
+      "id": "demo-assistance",
+      "name": "Guide (Guidance)",
+      "level": 0,
+      "school": "Divination",
+      "castingTime": "1 action",
+      "range": "Contact",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "Concentration, jusqu'à 1 minute",
+      "concentration": true,
+      "ritual": false,
+      "description": "La cible touchée ajoute 1d4 à un jet de caractéristique de son choix, une seule fois.",
+      "classes": ["Clerc", "Druide"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-flamme-sacree",
+      "name": "Flamme sacrée (Sacred Flame)",
+      "level": 0,
+      "school": "Évocation",
+      "castingTime": "1 action",
+      "range": "18 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "Instantanée",
+      "concentration": false,
+      "ritual": false,
+      "description": "Une flamme radiante frappe une créature visible qui doit réussir un jet de Dextérité, sans bénéfice d'abri. Dégâts radiants croissant avec le niveau.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-sonner-le-glas",
+      "name": "Sonner le glas (Toll the Dead)",
+      "level": 0,
+      "school": "Nécromancie",
+      "castingTime": "1 action",
+      "range": "18 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "Instantanée",
+      "concentration": false,
+      "ritual": false,
+      "description": "Un glas résonne pour une créature visible : jet de Sagesse ou dégâts nécrotiques, plus élevés si elle est déjà blessée.",
+      "classes": ["Clerc"],
+      "source": "XGtE"
+    },
+    {
+      "id": "demo-lumiere-feerique",
+      "name": "Lueur féerique (Faerie Fire)",
+      "level": 1,
+      "school": "Évocation",
+      "castingTime": "1 action",
+      "range": "18 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": false,
+        "material": false
+      },
+      "duration": "Concentration, jusqu'à 1 minute",
+      "concentration": true,
+      "ritual": false,
+      "description": "Une lueur colorée souligne les créatures d'un cube : elles ne peuvent plus être invisibles et les attaques contre elles ont l'avantage.",
+      "classes": ["Clerc", "Druide"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-sommeil-sleep",
+      "name": "Sommeil (Sleep)",
+      "level": 1,
+      "school": "Enchantement",
+      "castingTime": "1 action",
+      "range": "27 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "une pincée de sable fin, de pétales de rose ou un grillon"
+      },
+      "duration": "1 minute",
+      "concentration": false,
+      "ritual": false,
+      "description": "Plonge dans le sommeil des créatures d'une zone, des moins résistantes aux plus solides, selon un total de points de vie tiré aux dés.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-lueur-de-lune-moonbeam",
+      "name": "Rayon de lune (Moonbeam)",
+      "level": 2,
+      "school": "Évocation",
+      "castingTime": "1 action",
+      "range": "36 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "plusieurs graines de plante lunaire et un éclat de feldspath opalescent"
+      },
+      "duration": "Concentration, jusqu'à 1 minute",
+      "concentration": true,
+      "ritual": false,
+      "description": "Un rayon de lune pâle inflige des dégâts radiants aux créatures qui s'y trouvent ; on peut le déplacer à chaque tour.",
+      "classes": ["Clerc", "Druide"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-voir-l-invisibilite",
+      "name": "Voir l'Invisibilité (See Invisibility)",
+      "level": 2,
+      "school": "Divination",
+      "castingTime": "1 action",
+      "range": "Personnel",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "une pincée de talc et un peu de poudre d'argent"
+      },
+      "duration": "1 heure",
+      "concentration": false,
+      "ritual": false,
+      "description": "Pendant une heure, vous voyez les créatures et objets invisibles ainsi que ce qui se trouve sur le plan éthéré.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-benediction-bless",
+      "name": "Bénédiction (Bless)",
+      "level": 1,
+      "school": "Enchantement",
+      "castingTime": "1 action",
+      "range": "9 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "une aspersion d'eau bénite"
+      },
+      "duration": "Concentration, jusqu'à 1 minute",
+      "concentration": true,
+      "ritual": false,
+      "description": "Jusqu'à trois alliés ajoutent 1d4 à leurs jets d'attaque et de sauvegarde tant que vous maintenez la concentration.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-bouclier-de-la-foi-shield-of-faith",
+      "name": "Bouclier de la Foi (Shield of Faith)",
+      "level": 1,
+      "school": "Abjuration",
+      "castingTime": "1 action bonus",
+      "range": "18 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "un bout de texte saint écrit sur un petit parchemin"
+      },
+      "duration": "Concentration, jusqu'à 10 minutes",
+      "concentration": true,
+      "ritual": false,
+      "description": "Un champ protecteur accorde +2 à la CA d'une créature proche pendant la concentration.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-mot-de-guerison-healing-word",
+      "name": "Mot de Guérison (Healing Word)",
+      "level": 1,
+      "school": "Évocation",
+      "castingTime": "1 action bonus",
+      "range": "18 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": false,
+        "material": false
+      },
+      "duration": "Instantanée",
+      "concentration": false,
+      "ritual": false,
+      "description": "D'un mot, en action bonus et à distance, une créature visible récupère quelques points de vie.",
+      "classes": ["Clerc", "Druide"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-aide-aid",
+      "name": "Aide (Aid)",
+      "level": 2,
+      "school": "Abjuration",
+      "castingTime": "1 action",
+      "range": "9 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "une petite bande de tissu blanc"
+      },
+      "duration": "8 heures",
+      "concentration": false,
+      "ritual": false,
+      "description": "Jusqu'à trois créatures gagnent des points de vie maximums et actuels supplémentaires pour huit heures.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-arme-spirituelle",
+      "name": "Arme spirituelle (Spiritual Weapon)",
+      "level": 2,
+      "school": "Évocation",
+      "castingTime": "1 action bonus",
+      "range": "18 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "1 minute",
+      "concentration": false,
+      "ritual": false,
+      "description": "Une arme spectrale flotte près d'une cible et l'attaque en action bonus à chaque tour, pendant une minute.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-protection-contre-le-poison",
+      "name": "Protection contre le poison (Protection from Poison)",
+      "level": 2,
+      "school": "Abjuration",
+      "castingTime": "1 action",
+      "range": "Contact",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "1 heure",
+      "concentration": false,
+      "ritual": false,
+      "description": "Neutralise un poison affectant la cible, puis lui donne avantage et résistance face au poison pendant une heure.",
+      "classes": ["Clerc", "Druide"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-blessure-inflict-wounds",
+      "name": "Blessure (Inflict Wounds)",
+      "level": 1,
+      "school": "Nécromancie",
+      "castingTime": "1 action",
+      "range": "Contact",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "Instantanée",
+      "concentration": false,
+      "ritual": false,
+      "description": "Un contact chargé d'énergie nécrotique inflige de lourds dégâts à la créature touchée.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-ceremonie-ceremony",
+      "name": "Cérémonie (Ceremony)",
+      "level": 1,
+      "school": "Abjuration",
+      "castingTime": "1 heure",
+      "range": "Contact",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "25 po de poudre d'argent, que le sort consomme"
+      },
+      "duration": "Instantanée",
+      "concentration": false,
+      "ritual": true,
+      "description": "Rituel religieux au choix (bénédiction de l'eau, mariage, rite funéraire…) aux effets mineurs mais durables.",
+      "classes": ["Clerc"],
+      "source": "XGtE"
+    },
+    {
+      "id": "demo-commandement-command",
+      "name": "Injonction (Command)",
+      "level": 1,
+      "school": "Enchantement",
+      "castingTime": "1 action",
+      "range": "18 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": false,
+        "material": false
+      },
+      "duration": "1 round",
+      "concentration": false,
+      "ritual": false,
+      "description": "Un ordre d'un seul mot que la cible doit exécuter à son prochain tour si elle rate un jet de Sagesse.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-creation-ou-destruction-d-eau-create-or-destroy-water",
+      "name": "Création ou Destruction d'Eau (Create or Destroy Water)",
+      "level": 1,
+      "school": "Transmutation",
+      "castingTime": "1 action",
+      "range": "9 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "une goutte d'eau (création) ou quelques grains de sable (destruction)"
+      },
+      "duration": "Instantanée",
+      "concentration": false,
+      "ritual": false,
+      "description": "Fait apparaître de l'eau potable ou la fait disparaître, y compris le brouillard d'une zone.",
+      "classes": ["Clerc", "Druide"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-detection-de-la-magie-detect-magic",
+      "name": "Détection de la Magie (Detect Magic)",
+      "level": 1,
+      "school": "Divination",
+      "castingTime": "1 action",
+      "range": "Personnel (9 mètres)",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "Concentration, jusqu'à 10 minutes",
+      "concentration": true,
+      "ritual": true,
+      "description": "Vous percevez la magie autour de vous et pouvez identifier l'école des auras visibles.",
+      "classes": ["Clerc", "Druide"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-detection-du-mal-et-du-bien-detect-evil-and-good",
+      "name": "Détection du Mal et du Bien (Detect Evil and Good)",
+      "level": 1,
+      "school": "Divination",
+      "castingTime": "1 action",
+      "range": "Personnel (9 mètres)",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "Concentration, jusqu'à 10 minutes",
+      "concentration": true,
+      "ritual": false,
+      "description": "Vous sentez la présence et l'emplacement de certaines créatures surnaturelles (fiélons, célestes, morts-vivants…) et des lieux profanés ou consacrés.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-detection-du-poison-et-des-maladies-detect-poison-and-disease",
+      "name": "Détection du Poison et des Maladies (Detect Poison and Disease)",
+      "level": 1,
+      "school": "Divination",
+      "castingTime": "1 action",
+      "range": "Personnel (9 mètres)",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "une feuille d'if"
+      },
+      "duration": "Concentration, jusqu'à 10 minutes",
+      "concentration": true,
+      "ritual": true,
+      "description": "Révèle la présence et la nature des poisons, créatures venimeuses et maladies proches.",
+      "classes": ["Clerc", "Druide"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-fleau-bane",
+      "name": "Imprécation (Bane)",
+      "level": 1,
+      "school": "Enchantement",
+      "castingTime": "1 action",
+      "range": "9 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "une goutte de sang"
+      },
+      "duration": "Concentration, jusqu'à 1 minute",
+      "concentration": true,
+      "ritual": false,
+      "description": "Jusqu'à trois ennemis qui ratent leur sauvegarde soustraient 1d4 à leurs attaques et sauvegardes.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-fou-rire-de-tasha-tasha-s-hideous-laughter",
+      "name": "Fou Rire de Tasha (Tasha's Hideous Laughter)",
+      "level": 1,
+      "school": "Enchantement",
+      "castingTime": "1 action",
+      "range": "9 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "de minuscules tartes et une plume"
+      },
+      "duration": "Concentration, jusqu'à 1 minute",
+      "concentration": true,
+      "ritual": false,
+      "description": "La cible est prise d'un fou rire irrépressible qui la fait tomber à terre et l'empêche d'agir.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-parole-de-radiance-word-of-radiance",
+      "name": "Parole de Radiance (Word of Radiance)",
+      "level": 0,
+      "school": "Évocation",
+      "castingTime": "1 action",
+      "range": "Personnel (rayon de 1,5 m)",
+      "components": {
+        "verbal": true,
+        "somatic": false,
+        "material": true,
+        "materialDescription": "un symbole sacré"
+      },
+      "duration": "Instantanée",
+      "concentration": false,
+      "ritual": false,
+      "description": "Un mot sacré fait jaillir une lumière brûlante autour de vous : les ennemis proches doivent résister ou subir des dégâts radiants.",
+      "classes": ["Clerc"],
+      "source": "XGtE"
+    },
+    {
+      "id": "demo-projectile-de-guidage-guiding-bolt",
+      "name": "Éclair guidé (Guiding Bolt)",
+      "level": 1,
+      "school": "Évocation",
+      "castingTime": "1 action",
+      "range": "36 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "1 round",
+      "concentration": false,
+      "ritual": false,
+      "description": "Un trait de lumière inflige de gros dégâts radiants et donne avantage à la prochaine attaque contre la cible.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-protection-contre-le-mal-et-le-bien-protection-from-evil-and-good",
+      "name": "Protection contre le Mal et le Bien (Protection from Evil and Good)",
+      "level": 1,
+      "school": "Abjuration",
+      "castingTime": "1 action",
+      "range": "Contact",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "de l'eau bénite ou de la poudre d'argent et de fer, que le sort consomme"
+      },
+      "duration": "Concentration, jusqu'à 10 minutes",
+      "concentration": true,
+      "ritual": false,
+      "description": "Protège une créature contre certains types de créatures surnaturelles : leurs attaques ont le désavantage et elles ne peuvent ni la charmer ni l'effrayer.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-purifier-nourriture-et-boisson-purify-food-and-drink",
+      "name": "Purification de nourriture et d'eau (Purify Food and Drink)",
+      "level": 1,
+      "school": "Transmutation",
+      "castingTime": "1 action",
+      "range": "3 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "Instantanée",
+      "concentration": false,
+      "ritual": true,
+      "description": "Débarrasse la nourriture et la boisson d'une petite zone de tout poison ou maladie.",
+      "classes": ["Clerc", "Druide"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-sanctuaire-sanctuary",
+      "name": "Sanctuaire (Sanctuary)",
+      "level": 1,
+      "school": "Abjuration",
+      "castingTime": "1 action bonus",
+      "range": "9 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "un petit miroir en argent"
+      },
+      "duration": "1 minute",
+      "concentration": false,
+      "ritual": false,
+      "description": "Les ennemis qui veulent attaquer la créature protégée doivent d'abord réussir un jet de Sagesse.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-soin-cure-wounds",
+      "name": "Soins (Cure Wounds)",
+      "level": 1,
+      "school": "Évocation",
+      "castingTime": "1 action",
+      "range": "Contact",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "Instantanée",
+      "concentration": false,
+      "ritual": false,
+      "description": "Un contact rend des points de vie à une créature.",
+      "classes": ["Clerc", "Druide"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-amelioration-de-caracteristique-enhance-ability",
+      "name": "Amélioration de caractéristique (Enhance Ability)",
+      "level": 2,
+      "school": "Transmutation",
+      "castingTime": "1 action",
+      "range": "Contact",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "de la fourrure ou une plume d'une bête"
+      },
+      "duration": "Concentration, jusqu'à 1 heure",
+      "concentration": true,
+      "ritual": false,
+      "description": "Accorde un avantage magique lié à une caractéristique au choix (force d'ours, grâce du chat, ruse du renard…).",
+      "classes": ["Clerc", "Druide"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-apaisement-des-emotions-calm-emotions",
+      "name": "Apaisement des émotions (Calm Emotions)",
+      "level": 2,
+      "school": "Enchantement",
+      "castingTime": "1 action",
+      "range": "18 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "Concentration, jusqu'à 1 minute",
+      "concentration": true,
+      "ritual": false,
+      "description": "Apaise les créatures d'une zone : supprime charme et peur, ou rend indifférents ceux qui étaient hostiles.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-augure-augury",
+      "name": "Augure (Augury)",
+      "level": 2,
+      "school": "Divination",
+      "castingTime": "1 minute",
+      "range": "Personnel",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "bâtonnets, osselets ou objets similaires spécialement marqués, d'une valeur d'au moins 25 po"
+      },
+      "duration": "Instantanée",
+      "concentration": false,
+      "ritual": true,
+      "description": "Un présage indique si une action prévue dans la demi-heure à venir sera plutôt favorable ou défavorable.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-aveuglement-surdite-blindness-deafness",
+      "name": "Cécité / Surdité (Blindness/Deafness)",
+      "level": 2,
+      "school": "Nécromancie",
+      "castingTime": "1 action",
+      "range": "9 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": false,
+        "material": false
+      },
+      "duration": "1 minute",
+      "concentration": false,
+      "ritual": false,
+      "description": "Rend une créature aveugle ou sourde si elle échoue à un jet de Constitution.",
+      "classes": ["Clerc", "Druide"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-detection-des-pieges-find-traps",
+      "name": "Détection des pièges (Find Traps)",
+      "level": 2,
+      "school": "Divination",
+      "castingTime": "1 action",
+      "range": "36 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "Instantanée",
+      "concentration": false,
+      "ritual": false,
+      "description": "Vous savez si des pièges sont présents à portée de vue, sans connaître leur emplacement exact.",
+      "classes": ["Clerc", "Druide"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-flamme-eternelle-continual-flame",
+      "name": "Flamme éternelle (Continual Flame)",
+      "level": 2,
+      "school": "Évocation",
+      "castingTime": "1 action",
+      "range": "Contact",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "de la poudre de rubis d'une valeur de 50 po, que le sort consomme"
+      },
+      "duration": "Jusqu'à dissipation",
+      "concentration": false,
+      "ritual": false,
+      "description": "Une flamme magique sans chaleur brûle indéfiniment sur un objet.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-immobilisation-de-personne-hold-person",
+      "name": "Immobilisation de personne (Hold Person)",
+      "level": 2,
+      "school": "Enchantement",
+      "castingTime": "1 action",
+      "range": "18 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "un petit morceau de fer bien droit"
+      },
+      "duration": "Concentration, jusqu'à 1 minute",
+      "concentration": true,
+      "ritual": false,
+      "description": "Paralyse un humanoïde qui rate son jet de Sagesse ; il retente sa sauvegarde à chaque tour.",
+      "classes": ["Clerc", "Druide"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-localisation-d-objet-locate-object",
+      "name": "Localisation d'objet (Locate Object)",
+      "level": 2,
+      "school": "Divination",
+      "castingTime": "1 action",
+      "range": "Personnel",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "une brindille fourchue"
+      },
+      "duration": "Concentration, jusqu'à 10 minutes",
+      "concentration": true,
+      "ritual": false,
+      "description": "Indique la direction d'un objet connu ou d'un type d'objet à proximité.",
+      "classes": ["Clerc", "Druide"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-preservation-des-morts-gentle-repose",
+      "name": "Préservation des morts (Gentle Repose)",
+      "level": 2,
+      "school": "Nécromancie",
+      "castingTime": "1 action",
+      "range": "Contact",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "une pincée de sel, et une pièce de cuivre pour chaque œil du corps, qui doivent rester en place pour la durée du sort"
+      },
+      "duration": "10 jours",
+      "concentration": false,
+      "ritual": true,
+      "description": "Protège un cadavre de la décomposition et prolonge le délai pour le ramener à la vie.",
+      "classes": ["Clerc", "Druide"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-priere-de-guerison-prayer-of-healing",
+      "name": "Prière de guérison (Prayer of Healing)",
+      "level": 2,
+      "school": "Évocation",
+      "castingTime": "10 minutes",
+      "range": "9 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": false,
+        "material": false
+      },
+      "duration": "Instantanée",
+      "concentration": false,
+      "ritual": false,
+      "description": "Une longue prière rend des points de vie à plusieurs alliés, hors combat.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-protection-d-autrui-warding-bond",
+      "name": "Protection d'autrui (Warding Bond)",
+      "level": 2,
+      "school": "Abjuration",
+      "castingTime": "1 action",
+      "range": "Contact",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "une paire d'anneaux de platine d'au moins 50 po chacun, portés par vous et la cible pour la durée du sort"
+      },
+      "duration": "1 heure",
+      "concentration": false,
+      "ritual": false,
+      "description": "Lie un allié à vous : il gagne des bonus défensifs mais vous partagez les dégâts qu'il subit.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-restauration-partielle-lesser-restoration",
+      "name": "Restauration partielle (Lesser Restoration)",
+      "level": 2,
+      "school": "Abjuration",
+      "castingTime": "1 action",
+      "range": "Contact",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "Instantanée",
+      "concentration": false,
+      "ritual": false,
+      "description": "Met fin à une maladie ou à un état comme aveuglé, assourdi, paralysé ou empoisonné.",
+      "classes": ["Clerc", "Druide"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-silence",
+      "name": "Silence",
+      "level": 2,
+      "school": "Illusion",
+      "castingTime": "1 action",
+      "range": "36 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "Concentration, jusqu'à 10 minutes",
+      "concentration": true,
+      "ritual": true,
+      "description": "Une sphère où aucun son ne passe : impossible d'y lancer des sorts à composante verbale.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-zone-de-verite-zone-of-truth",
+      "name": "Zone de vérité (Zone of Truth)",
+      "level": 2,
+      "school": "Enchantement",
+      "castingTime": "1 action",
+      "range": "18 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "10 minutes",
+      "concentration": false,
+      "ritual": false,
+      "description": "Dans la zone, les créatures qui ratent leur sauvegarde ne peuvent pas mentir délibérément.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-resistance",
+      "name": "Résistance (Resistance)",
+      "level": 0,
+      "school": "Abjuration",
+      "castingTime": "1 action",
+      "range": "Contact",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "une cape miniature"
+      },
+      "duration": "Concentration, jusqu'à 1 minute",
+      "concentration": true,
+      "ritual": false,
+      "description": "La cible touchée ajoute 1d4 à un jet de sauvegarde, une seule fois.",
+      "classes": ["Clerc", "Druide"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-lumiere-light",
+      "name": "Lumière (Light)",
+      "level": 0,
+      "school": "Évocation",
+      "castingTime": "1 action",
+      "range": "Contact",
+      "components": {
+        "verbal": true,
+        "somatic": false,
+        "material": true,
+        "materialDescription": "une luciole ou de la mousse phosphorescente"
+      },
+      "duration": "1 heure",
+      "concentration": false,
+      "ritual": false,
+      "description": "Un objet touché émet une lumière vive pendant une heure.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-reparation-mending",
+      "name": "Réparation (Mending)",
+      "level": 0,
+      "school": "Transmutation",
+      "castingTime": "1 minute",
+      "range": "Contact",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "deux magnétites"
+      },
+      "duration": "Instantanée",
+      "concentration": false,
+      "ritual": false,
+      "description": "Répare une cassure ou une déchirure simple sur un objet.",
+      "classes": ["Clerc", "Druide"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-stabilisation-spare-the-dying",
+      "name": "Stabilisation (Spare the Dying)",
+      "level": 0,
+      "school": "Nécromancie",
+      "castingTime": "1 action",
+      "range": "Contact",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "Instantanée",
+      "concentration": false,
+      "ritual": false,
+      "description": "Stabilise une créature vivante à 0 point de vie.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-thaumaturgie-thaumaturgy",
+      "name": "Thaumaturgie (Thaumaturgy)",
+      "level": 0,
+      "school": "Transmutation",
+      "castingTime": "1 action",
+      "range": "9 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": false,
+        "material": false
+      },
+      "duration": "Jusqu'à 1 minute",
+      "concentration": false,
+      "ritual": false,
+      "description": "Petits prodiges surnaturels : voix amplifiée, flammes qui vacillent, tremblements, portes qui claquent.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-animation-des-morts-animate-dead",
+      "name": "Animation des morts (Animate Dead)",
+      "level": 3,
+      "school": "Nécromancie",
+      "castingTime": "1 minute",
+      "range": "3 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "une goutte de sang, un morceau de chair et une pincée de poussière d'os"
+      },
+      "duration": "Instantanée",
+      "concentration": false,
+      "ritual": false,
+      "description": "Relève un squelette ou un zombi à votre service pour une journée.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-cercle-magique-magic-circle",
+      "name": "Cercle magique (Magic Circle)",
+      "level": 3,
+      "school": "Abjuration",
+      "castingTime": "1 minute",
+      "range": "3 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "de l'eau bénite ou de la poudre d'argent et de fer d'une valeur d'au moins 100 po, que le sort consomme"
+      },
+      "duration": "1 heure",
+      "concentration": false,
+      "ritual": false,
+      "description": "Un cylindre magique bloque ou emprisonne certains types de créatures surnaturelles.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-clairvoyance",
+      "name": "Clairvoyance (Clairvoyance)",
+      "level": 3,
+      "school": "Divination",
+      "castingTime": "10 minutes",
+      "range": "1,5 kilomètre",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "un focaliseur d'une valeur d'au moins 100 po : une corne ornée de joyaux pour l'ouïe ou un œil de verre pour la vue"
+      },
+      "duration": "Concentration, jusqu'à 10 minutes",
+      "concentration": true,
+      "ritual": false,
+      "description": "Crée un capteur invisible dans un lieu connu, à travers lequel vous voyez ou entendez.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-communication-a-distance-sending",
+      "name": "Communication à distance (Sending)",
+      "level": 3,
+      "school": "Évocation",
+      "castingTime": "1 action",
+      "range": "Illimitée",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "un petit morceau de fil de cuivre fin"
+      },
+      "duration": "1 round",
+      "concentration": false,
+      "ritual": false,
+      "description": "Envoie un court message à une créature connue, où qu'elle soit, qui peut répondre aussitôt.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-communication-avec-les-morts-speak-with-dead",
+      "name": "Communication avec les morts (Speak with Dead)",
+      "level": 3,
+      "school": "Nécromancie",
+      "castingTime": "1 action",
+      "range": "3 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "de l'encens allumé"
+      },
+      "duration": "10 minutes",
+      "concentration": false,
+      "ritual": false,
+      "description": "Un cadavre répond à quelques questions selon ce qu'il savait de son vivant.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-creation-de-nourriture-et-d-eau-create-food-and-water",
+      "name": "Création de nourriture et d'eau (Create Food and Water)",
+      "level": 3,
+      "school": "Invocation",
+      "castingTime": "1 action",
+      "range": "9 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "Instantanée",
+      "concentration": false,
+      "ritual": false,
+      "description": "Produit assez de nourriture et d'eau pour nourrir un groupe pendant une journée.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-delivrance-des-maledictions-remove-curse",
+      "name": "Délivrance des malédictions (Remove Curse)",
+      "level": 3,
+      "school": "Abjuration",
+      "castingTime": "1 action",
+      "range": "Contact",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "Instantanée",
+      "concentration": false,
+      "ritual": false,
+      "description": "Lève les malédictions qui pèsent sur une créature ou un objet.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-dissipation-de-la-magie-dispel-magic",
+      "name": "Dissipation de la magie (Dispel Magic)",
+      "level": 3,
+      "school": "Abjuration",
+      "castingTime": "1 action",
+      "range": "36 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "Instantanée",
+      "concentration": false,
+      "ritual": false,
+      "description": "Met fin aux sorts actifs sur une cible ; les plus puissants exigent un test.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-don-des-langues-tongues",
+      "name": "Don des langues (Tongues)",
+      "level": 3,
+      "school": "Divination",
+      "castingTime": "1 action",
+      "range": "Contact",
+      "components": {
+        "verbal": true,
+        "somatic": false,
+        "material": true,
+        "materialDescription": "une petite figurine en argile représentant une ziggourat"
+      },
+      "duration": "1 heure",
+      "concentration": false,
+      "ritual": false,
+      "description": "La cible comprend et se fait comprendre dans toutes les langues parlées.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-fusion-dans-la-pierre-meld-into-stone",
+      "name": "Fusion dans la pierre (Meld into Stone)",
+      "level": 3,
+      "school": "Transmutation",
+      "castingTime": "1 action",
+      "range": "Personnel",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "8 heures",
+      "concentration": false,
+      "ritual": true,
+      "description": "Vous vous fondez dans un bloc de pierre pour vous y cacher.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-gardiens-spirituels-spirit-guardians",
+      "name": "Gardiens spirituels (Spirit Guardians)",
+      "level": 3,
+      "school": "Invocation",
+      "castingTime": "1 action",
+      "range": "Personnel (rayon de 4,50 mètres)",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "un symbole sacré"
+      },
+      "duration": "Concentration, jusqu'à 10 minutes",
+      "concentration": true,
+      "ritual": false,
+      "description": "Des esprits protecteurs vous entourent, ralentissent les ennemis proches et leur infligent des dégâts.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-glyphe-de-garde-glyph-of-warding",
+      "name": "Glyphe de garde (Glyph of Warding)",
+      "level": 3,
+      "school": "Abjuration",
+      "castingTime": "1 heure",
+      "range": "Contact",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "de l'encens et de la poudre de diamant d'une valeur d'au moins 200 po, que le sort consomme"
+      },
+      "duration": "Jusqu'à dissipation ou déclenchement",
+      "concentration": false,
+      "ritual": false,
+      "description": "Inscrit un glyphe piégé qui déclenche une explosion ou un sort stocké quand on le touche.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-lumiere-du-jour-daylight",
+      "name": "Lumière du jour (Daylight)",
+      "level": 3,
+      "school": "Évocation",
+      "castingTime": "1 action",
+      "range": "18 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "1 heure",
+      "concentration": false,
+      "ritual": false,
+      "description": "Une sphère de lumière éclatante, équivalente à la lumière du jour, dissipe les ténèbres magiques plus faibles.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-malediction-bestow-curse",
+      "name": "Malédiction (Bestow Curse)",
+      "level": 3,
+      "school": "Nécromancie",
+      "castingTime": "1 action",
+      "range": "Contact",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "Concentration, jusqu'à 1 minute",
+      "concentration": true,
+      "ritual": false,
+      "description": "Une malédiction au choix affaiblit la créature touchée (désavantage, dégâts, actions perdues…).",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-marche-sur-l-onde-water-walk",
+      "name": "Marche sur l'onde (Water Walk)",
+      "level": 3,
+      "school": "Transmutation",
+      "castingTime": "1 action",
+      "range": "9 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "un morceau de liège"
+      },
+      "duration": "1 heure",
+      "concentration": false,
+      "ritual": true,
+      "description": "Plusieurs créatures peuvent marcher sur l'eau et d'autres liquides.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-mort-simulee-feign-death",
+      "name": "Mort simulée (Feign Death)",
+      "level": 3,
+      "school": "Nécromancie",
+      "castingTime": "1 action",
+      "range": "Contact",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "une pincée de terre de cimetière"
+      },
+      "duration": "1 heure",
+      "concentration": false,
+      "ritual": true,
+      "description": "Plonge une créature consentante dans un état cataleptique indiscernable de la mort.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-mot-de-guerison-de-groupe-mass-healing-word",
+      "name": "Mot de guérison de groupe (Mass Healing Word)",
+      "level": 3,
+      "school": "Évocation",
+      "castingTime": "1 action bonus",
+      "range": "18 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": false,
+        "material": false
+      },
+      "duration": "Instantanée",
+      "concentration": false,
+      "ritual": false,
+      "description": "Plusieurs créatures visibles récupèrent des points de vie, en action bonus.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-protection-contre-une-energie-protection-from-energy",
+      "name": "Protection contre une énergie (Protection from Energy)",
+      "level": 3,
+      "school": "Abjuration",
+      "castingTime": "1 action",
+      "range": "Contact",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "Concentration, jusqu'à 1 heure",
+      "concentration": true,
+      "ritual": false,
+      "description": "La cible résiste à un type de dégâts élémentaires au choix.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-reanimation-revivify",
+      "name": "Réanimation (Revivify)",
+      "level": 3,
+      "school": "Nécromancie",
+      "castingTime": "1 action",
+      "range": "Contact",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "des diamants d'une valeur de 300 po, que le sort consomme"
+      },
+      "duration": "Instantanée",
+      "concentration": false,
+      "ritual": false,
+      "description": "Ramène à la vie une créature morte depuis moins d'une minute, avec un diamant.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-signal-d-esperance-beacon-of-hope",
+      "name": "Signal d'espérance (Beacon of Hope)",
+      "level": 3,
+      "school": "Abjuration",
+      "castingTime": "1 action",
+      "range": "9 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "Concentration, jusqu'à 1 minute",
+      "concentration": true,
+      "ritual": false,
+      "description": "Les alliés gagnent avantage aux sauvegardes de Sagesse et contre la mort, et récupèrent le maximum des soins reçus.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-bannissement-banishment",
+      "name": "Bannissement (Banishment)",
+      "level": 4,
+      "school": "Abjuration",
+      "castingTime": "1 action",
+      "range": "18 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "un objet que la cible déteste"
+      },
+      "duration": "Concentration, jusqu'à 1 minute",
+      "concentration": true,
+      "ritual": false,
+      "description": "Renvoie temporairement une créature vers un autre plan ou une demi-dimension.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-controle-de-l-eau-control-water",
+      "name": "Contrôle de l'eau (Control Water)",
+      "level": 4,
+      "school": "Transmutation",
+      "castingTime": "1 action",
+      "range": "90 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "une goutte d'eau et une pincée de poussière"
+      },
+      "duration": "Concentration, jusqu'à 10 minutes",
+      "concentration": true,
+      "ritual": false,
+      "description": "Contrôle une grande étendue d'eau : crue, partage des eaux, courant ou tourbillon.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-divination",
+      "name": "Divination (Divination)",
+      "level": 4,
+      "school": "Divination",
+      "castingTime": "1 action",
+      "range": "Personnel",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "de l'encens et une offrande sacrificielle appropriée à votre religion, d'une valeur totale d'au moins 25 po, que le sort consomme"
+      },
+      "duration": "Instantanée",
+      "concentration": false,
+      "ritual": true,
+      "description": "Pose une question à votre divinité sur un événement proche et recevez une réponse véridique, parfois énigmatique.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-faconnage-de-la-pierre-stone-shape",
+      "name": "Façonnage de la pierre (Stone Shape)",
+      "level": 4,
+      "school": "Transmutation",
+      "castingTime": "1 action",
+      "range": "Contact",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "de l'argile molle, qu'il faut modeler pour lui donner grossièrement la forme voulue"
+      },
+      "duration": "Instantanée",
+      "concentration": false,
+      "ritual": false,
+      "description": "Modèle un bloc de pierre dans la forme de votre choix.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-gardien-de-la-foi-guardian-of-faith",
+      "name": "Gardien de la foi (Guardian of Faith)",
+      "level": 4,
+      "school": "Invocation",
+      "castingTime": "1 action",
+      "range": "9 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": false,
+        "material": false
+      },
+      "duration": "8 heures",
+      "concentration": false,
+      "ritual": false,
+      "description": "Un gardien spectral surveille un point et frappe les ennemis qui approchent, jusqu'à épuisement.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-liberte-de-mouvement-freedom-of-movement",
+      "name": "Liberté de mouvement (Freedom of Movement)",
+      "level": 4,
+      "school": "Abjuration",
+      "castingTime": "1 action",
+      "range": "Contact",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "une lanière de cuir, attachée autour du bras ou d'un appendice similaire"
+      },
+      "duration": "1 heure",
+      "concentration": false,
+      "ritual": false,
+      "description": "La cible ignore terrain difficile, ralentissements magiques et entraves.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-localisation-de-creature-locate-creature",
+      "name": "Localisation de créature (Locate Creature)",
+      "level": 4,
+      "school": "Divination",
+      "castingTime": "1 action",
+      "range": "Personnel",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "un peu de fourrure d'un limier"
+      },
+      "duration": "Concentration, jusqu'à 1 heure",
+      "concentration": true,
+      "ritual": false,
+      "description": "Indique la direction d'une créature connue ou d'un type de créature à proximité.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-protection-contre-la-mort-death-ward",
+      "name": "Protection contre la mort (Death Ward)",
+      "level": 4,
+      "school": "Abjuration",
+      "castingTime": "1 action",
+      "range": "Contact",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "8 heures",
+      "concentration": false,
+      "ritual": false,
+      "description": "La première fois que la cible devrait tomber à 0 point de vie, elle reste à 1.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-colonne-de-feu-flame-strike",
+      "name": "Colonne de feu (Flame Strike)",
+      "level": 5,
+      "school": "Évocation",
+      "castingTime": "1 action",
+      "range": "18 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "une pincée de soufre"
+      },
+      "duration": "Instantanée",
+      "concentration": false,
+      "ritual": false,
+      "description": "Une colonne de feu divin s'abat sur une zone, infligeant dégâts de feu et radiants.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-communion-commune",
+      "name": "Communion (Commune)",
+      "level": 5,
+      "school": "Divination",
+      "castingTime": "1 minute",
+      "range": "Personnel",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "de l'encens et une fiole d'eau bénite ou maudite"
+      },
+      "duration": "1 minute",
+      "concentration": false,
+      "ritual": true,
+      "description": "Votre divinité répond par oui ou par non à quelques questions.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-contagion",
+      "name": "Contagion (Contagion)",
+      "level": 5,
+      "school": "Nécromancie",
+      "castingTime": "1 action",
+      "range": "Contact",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "7 jours",
+      "concentration": false,
+      "ritual": false,
+      "description": "Le contact transmet une maladie magique dont les effets s'installent si la cible échoue à ses sauvegardes.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-contrat-planar-binding",
+      "name": "Contrat (Planar Binding)",
+      "level": 5,
+      "school": "Abjuration",
+      "castingTime": "1 heure",
+      "range": "18 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "un joyau d'une valeur d'au moins 1 000 po, que le sort consomme"
+      },
+      "duration": "24 heures",
+      "concentration": false,
+      "ritual": false,
+      "description": "Contraint une créature extraplanaire à vous servir pour une durée déterminée.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-mission-geas",
+      "name": "Mission (Geas)",
+      "level": 5,
+      "school": "Enchantement",
+      "castingTime": "1 minute",
+      "range": "18 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": false,
+        "material": false
+      },
+      "duration": "30 jours",
+      "concentration": false,
+      "ritual": false,
+      "description": "Impose une mission à une créature, qui subit des dégâts chaque fois qu'elle s'en détourne.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-mythes-et-legendes-legend-lore",
+      "name": "Mythes et légendes (Legend Lore)",
+      "level": 5,
+      "school": "Divination",
+      "castingTime": "10 minutes",
+      "range": "Personnel",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "de l'encens d'une valeur d'au moins 250 po, que le sort consomme, et quatre bandes d'ivoire d'une valeur d'au moins 50 po chacune"
+      },
+      "duration": "Instantanée",
+      "concentration": false,
+      "ritual": false,
+      "description": "Révèle les légendes importantes associées à une personne, un lieu ou un objet.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-nuee-d-insectes-insect-plague",
+      "name": "Nuée d'insectes (Insect Plague)",
+      "level": 5,
+      "school": "Invocation",
+      "castingTime": "1 action",
+      "range": "90 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "quelques grains de sucre, quelques grains de céréales et une tache de graisse"
+      },
+      "duration": "Concentration, jusqu'à 10 minutes",
+      "concentration": true,
+      "ritual": false,
+      "description": "Un essaim de criquets envahit une zone et pique les créatures qui s'y trouvent.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-rappel-a-la-vie-raise-dead",
+      "name": "Rappel à la vie (Raise Dead)",
+      "level": 5,
+      "school": "Nécromancie",
+      "castingTime": "1 heure",
+      "range": "Contact",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "un diamant d'une valeur d'au moins 500 po, que le sort consomme"
+      },
+      "duration": "Instantanée",
+      "concentration": false,
+      "ritual": false,
+      "description": "Ramène à la vie une créature morte depuis au plus dix jours, avec des séquelles temporaires.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-rejet-du-bien-et-du-mal-dispel-evil-and-good",
+      "name": "Rejet du Bien et du Mal (Dispel Evil and Good)",
+      "level": 5,
+      "school": "Abjuration",
+      "castingTime": "1 action",
+      "range": "Personnel",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "de l'eau bénite ou de la poudre d'argent et de fer"
+      },
+      "duration": "Concentration, jusqu'à 1 minute",
+      "concentration": true,
+      "ritual": false,
+      "description": "Une aura vous protège des créatures surnaturelles et permet de les renvoyer ou de rompre leurs effets.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-restauration-supreme-greater-restoration",
+      "name": "Restauration suprême (Greater Restoration)",
+      "level": 5,
+      "school": "Abjuration",
+      "castingTime": "1 action",
+      "range": "Contact",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "de la poudre de diamant d'une valeur d'au moins 100 po, que le sort consomme"
+      },
+      "duration": "Instantanée",
+      "concentration": false,
+      "ritual": false,
+      "description": "Met fin à un effet puissant : charme, pétrification, malédiction, réduction de caractéristique…",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-sanctification-hallow",
+      "name": "Sanctification (Hallow)",
+      "level": 5,
+      "school": "Évocation",
+      "castingTime": "24 heures",
+      "range": "Contact",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "des herbes, des huiles et de l'encens d'une valeur d'au moins 1 000 po, que le sort consomme"
+      },
+      "duration": "Jusqu'à dissipation",
+      "concentration": false,
+      "ritual": false,
+      "description": "Consacre durablement un lieu, avec un effet supplémentaire au choix.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-scrutation-scrying",
+      "name": "Scrutation (Scrying)",
+      "level": 5,
+      "school": "Divination",
+      "castingTime": "10 minutes",
+      "range": "Personnel",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "un focaliseur d'une valeur d'au moins 1 000 po, comme une boule de cristal, un miroir en argent ou des fonts baptismaux remplis d'eau bénite"
+      },
+      "duration": "Concentration, jusqu'à 10 minutes",
+      "concentration": true,
+      "ritual": false,
+      "description": "Observe une créature à distance par un capteur magique, si elle échoue à sa sauvegarde.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-soins-de-groupe-mass-cure-wounds",
+      "name": "Soins de groupe (Mass Cure Wounds)",
+      "level": 5,
+      "school": "Évocation",
+      "castingTime": "1 action",
+      "range": "18 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "Instantanée",
+      "concentration": false,
+      "ritual": false,
+      "description": "Une vague d'énergie curative soigne jusqu'à six créatures dans une zone.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-allie-d-outreplan-planar-ally",
+      "name": "Allié d'outreplan (Planar Ally)",
+      "level": 6,
+      "school": "Invocation",
+      "castingTime": "10 minutes",
+      "range": "18 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "Instantanée",
+      "concentration": false,
+      "ritual": false,
+      "description": "Implore votre divinité de vous envoyer un allié d'un autre plan, avec qui négocier un service.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-barriere-de-lames-blade-barrier",
+      "name": "Barrière de lames (Blade Barrier)",
+      "level": 6,
+      "school": "Évocation",
+      "castingTime": "1 action",
+      "range": "27 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "Concentration, jusqu'à 10 minutes",
+      "concentration": true,
+      "ritual": false,
+      "description": "Un mur de lames tourbillonnantes blesse tout ce qui le traverse.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-creation-de-mort-vivant-create-undead",
+      "name": "Création de mort-vivant (Create Undead)",
+      "level": 6,
+      "school": "Nécromancie",
+      "castingTime": "1 minute",
+      "range": "3 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "un pot en argile rempli de terre de cimetière, un pot en argile rempli d'eau saumâtre et un onyx noir d'une valeur de 150 po par cadavre"
+      },
+      "duration": "Instantanée",
+      "concentration": false,
+      "ritual": false,
+      "description": "Crée des goules ou des créatures mort-vivantes plus puissantes à votre service.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-festin-des-heros-heroes-feast",
+      "name": "Festin des héros (Heroes' Feast)",
+      "level": 6,
+      "school": "Invocation",
+      "castingTime": "10 minutes",
+      "range": "9 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "un bol serti de pierres précieuses d'une valeur d'au moins 1 000 po, que le sort consomme"
+      },
+      "duration": "Instantanée",
+      "concentration": false,
+      "ritual": false,
+      "description": "Un festin magique protège et renforce les convives pendant une journée.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-guerison-supreme-heal",
+      "name": "Guérison suprême (Heal)",
+      "level": 6,
+      "school": "Évocation",
+      "castingTime": "1 action",
+      "range": "18 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "Instantanée",
+      "concentration": false,
+      "ritual": false,
+      "description": "Une énergie positive rend un grand nombre de points de vie et soigne plusieurs afflictions.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-interdiction-forbiddance",
+      "name": "Interdiction (Forbiddance)",
+      "level": 6,
+      "school": "Abjuration",
+      "castingTime": "10 minutes",
+      "range": "Contact",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "une aspersion d'eau bénite, de l'encens rare et de la poudre de rubis d'une valeur d'au moins 1 000 po"
+      },
+      "duration": "1 jour",
+      "concentration": false,
+      "ritual": true,
+      "description": "Protège une zone des voyages magiques et blesse certains types de créatures qui y entrent.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-mise-a-mal-harm",
+      "name": "Mise à mal (Harm)",
+      "level": 6,
+      "school": "Nécromancie",
+      "castingTime": "1 action",
+      "range": "18 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "Instantanée",
+      "concentration": false,
+      "ritual": false,
+      "description": "Une maladie virulente inflige de lourds dégâts nécrotiques et réduit les points de vie maximums.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-mot-de-rappel-word-of-recall",
+      "name": "Mot de rappel (Word of Recall)",
+      "level": 6,
+      "school": "Invocation",
+      "castingTime": "1 action",
+      "range": "1,50 mètre",
+      "components": {
+        "verbal": true,
+        "somatic": false,
+        "material": false
+      },
+      "duration": "Instantanée",
+      "concentration": false,
+      "ritual": false,
+      "description": "Vous et vos alliés êtes téléportés instantanément vers un sanctuaire préparé.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-orientation-find-the-path",
+      "name": "Orientation (Find the Path)",
+      "level": 6,
+      "school": "Divination",
+      "castingTime": "1 minute",
+      "range": "Personnel",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "un ensemble d'instruments divinatoires (os, bâtonnets d'ivoire, cartes, dents ou runes gravées) d'une valeur de 100 po, et un objet provenant du lieu que vous souhaitez trouver"
+      },
+      "duration": "Concentration, jusqu'à 1 jour",
+      "concentration": true,
+      "ritual": false,
+      "description": "Vous indique le chemin le plus direct vers un lieu connu.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-vision-lucide-true-seeing",
+      "name": "Vision lucide (True Seeing)",
+      "level": 6,
+      "school": "Divination",
+      "castingTime": "1 action",
+      "range": "Contact",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "un onguent pour les yeux d'une valeur de 25 po, fait de poudre de champignon, de safran et de graisse, que le sort consomme"
+      },
+      "duration": "1 heure",
+      "concentration": false,
+      "ritual": false,
+      "description": "La cible voit à travers les illusions, l'invisibilité et les métamorphoses.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-changement-de-plan-plane-shift",
+      "name": "Changement de plan (Plane Shift)",
+      "level": 7,
+      "school": "Invocation",
+      "castingTime": "1 action",
+      "range": "Contact",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "une baguette de métal fourchue d'une valeur d'au moins 250 po, harmonisée avec un plan d'existence particulier"
+      },
+      "duration": "Instantanée",
+      "concentration": false,
+      "ritual": false,
+      "description": "Transporte un groupe vers un autre plan d'existence, ou y bannit une créature.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-forme-etheree-etherealness",
+      "name": "Forme éthérée (Etherealness)",
+      "level": 7,
+      "school": "Transmutation",
+      "castingTime": "1 action",
+      "range": "Personnel",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "Jusqu'à 8 heures",
+      "concentration": false,
+      "ritual": false,
+      "description": "Vous passez dans le plan éthéré et pouvez vous déplacer à travers le monde matériel sans être vu.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-invocation-de-celeste-conjure-celestial",
+      "name": "Invocation de céleste (Conjure Celestial)",
+      "level": 7,
+      "school": "Invocation",
+      "castingTime": "1 minute",
+      "range": "27 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "Concentration, jusqu'à 1 heure",
+      "concentration": true,
+      "ritual": false,
+      "description": "Invoque une créature céleste amicale qui combat à vos côtés.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-parole-divine-divine-word",
+      "name": "Parole divine (Divine Word)",
+      "level": 7,
+      "school": "Évocation",
+      "castingTime": "1 action bonus",
+      "range": "9 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": false,
+        "material": false
+      },
+      "duration": "Instantanée",
+      "concentration": false,
+      "ritual": false,
+      "description": "Un mot de pouvoir frappe les ennemis selon leur santé et renvoie certaines créatures surnaturelles.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-regeneration-regenerate",
+      "name": "Régénération (Regenerate)",
+      "level": 7,
+      "school": "Transmutation",
+      "castingTime": "1 minute",
+      "range": "Contact",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "un moulin à prières et de l'eau bénite"
+      },
+      "duration": "1 heure",
+      "concentration": false,
+      "ritual": false,
+      "description": "La cible récupère des points de vie en continu et ses membres perdus repoussent.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-resurrection",
+      "name": "Résurrection (Resurrection)",
+      "level": 7,
+      "school": "Nécromancie",
+      "castingTime": "1 heure",
+      "range": "Contact",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "un diamant d'une valeur d'au moins 1 000 po, que le sort consomme"
+      },
+      "duration": "Instantanée",
+      "concentration": false,
+      "ritual": false,
+      "description": "Ramène à la vie une créature morte depuis un siècle au plus.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-symbole-symbol",
+      "name": "Symbole (Symbol)",
+      "level": 7,
+      "school": "Abjuration",
+      "castingTime": "1 minute",
+      "range": "Contact",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "du mercure, du phosphore et de la poudre de diamant et d'opale d'une valeur totale d'au moins 1 000 po, que le sort consomme"
+      },
+      "duration": "Jusqu'à dissipation ou déclenchement",
+      "concentration": false,
+      "ritual": false,
+      "description": "Inscrit un glyphe puissant qui déclenche un effet au choix quand il est activé.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-tempete-de-feu-fire-storm",
+      "name": "Tempête de feu (Fire Storm)",
+      "level": 7,
+      "school": "Évocation",
+      "castingTime": "1 action",
+      "range": "45 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "Instantanée",
+      "concentration": false,
+      "ritual": false,
+      "description": "Une tempête de flammes ravage une zone que vous façonnez à votre guise.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-aura-sacree-holy-aura",
+      "name": "Aura sacrée (Holy Aura)",
+      "level": 8,
+      "school": "Abjuration",
+      "castingTime": "1 action",
+      "range": "Personnel",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "un minuscule reliquaire d'une valeur d'au moins 1 000 po contenant une relique sacrée, comme un morceau d'étoffe de la robe d'un saint ou un fragment de parchemin d'un texte religieux"
+      },
+      "duration": "Concentration, jusqu'à 1 minute",
+      "concentration": true,
+      "ritual": false,
+      "description": "Une lumière divine protège vos alliés et aveugle les créatures malfaisantes qui les frappent.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-controle-du-climat-control-weather",
+      "name": "Contrôle du climat (Control Weather)",
+      "level": 8,
+      "school": "Transmutation",
+      "castingTime": "10 minutes",
+      "range": "Personnel (rayon de 7,5 kilomètres)",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "de l'encens allumé et des morceaux de terre et de bois mélangés à de l'eau"
+      },
+      "duration": "Concentration, jusqu'à 8 heures",
+      "concentration": true,
+      "ritual": false,
+      "description": "Modifie progressivement le climat dans une vaste région.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-tremblement-de-terre-earthquake",
+      "name": "Tremblement de terre (Earthquake)",
+      "level": 8,
+      "school": "Évocation",
+      "castingTime": "1 action",
+      "range": "150 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "une pincée de terre, un morceau de roche et un morceau d'argile"
+      },
+      "duration": "Concentration, jusqu'à 1 minute",
+      "concentration": true,
+      "ritual": false,
+      "description": "Un séisme secoue une vaste zone, renversant créatures et structures.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-zone-d-antimagie-antimagic-field",
+      "name": "Zone d'antimagie (Antimagic Field)",
+      "level": 8,
+      "school": "Abjuration",
+      "castingTime": "1 action",
+      "range": "Personnel (sphère de 3 mètres de rayon)",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "une pincée de poudre ou de limaille de fer"
+      },
+      "duration": "Concentration, jusqu'à 1 heure",
+      "concentration": true,
+      "ritual": false,
+      "description": "Une sphère centrée sur vous supprime toute magie qui s'y trouve.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-guerison-supreme-de-groupe-mass-heal",
+      "name": "Guérison suprême de groupe (Mass Heal)",
+      "level": 9,
+      "school": "Évocation",
+      "castingTime": "1 action",
+      "range": "18 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "Instantanée",
+      "concentration": false,
+      "ritual": false,
+      "description": "Répartit une énorme quantité de soins entre plusieurs créatures.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-portail-gate",
+      "name": "Portail (Gate)",
+      "level": 9,
+      "school": "Invocation",
+      "castingTime": "1 action",
+      "range": "18 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "un diamant d'une valeur d'au moins 5 000 po"
+      },
+      "duration": "Concentration, jusqu'à 1 minute",
+      "concentration": true,
+      "ritual": false,
+      "description": "Ouvre un portail vers un autre plan, ou y attire une créature nommée.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-projection-astrale-astral-projection",
+      "name": "Projection astrale (Astral Projection)",
+      "level": 9,
+      "school": "Nécromancie",
+      "castingTime": "1 heure",
+      "range": "3 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "pour chaque créature affectée : une jacinthe d'une valeur d'au moins 1 000 po et un lingot d'argent gravé d'une valeur d'au moins 100 po, que le sort consomme"
+      },
+      "duration": "Spéciale",
+      "concentration": false,
+      "ritual": false,
+      "description": "Projette votre esprit et ceux de vos alliés dans le plan astral.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-resurrection-supreme-true-resurrection",
+      "name": "Résurrection suprême (True Resurrection)",
+      "level": 9,
+      "school": "Nécromancie",
+      "castingTime": "1 heure",
+      "range": "Contact",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "une aspersion d'eau bénite et des diamants d'une valeur d'au moins 25 000 po, que le sort consomme"
+      },
+      "duration": "Instantanée",
+      "concentration": false,
+      "ritual": false,
+      "description": "Ramène à la vie une créature morte depuis jusqu'à deux siècles, même sans corps.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-aura-de-vitalite-aura-of-vitality",
+      "name": "Aura de vitalité (Aura of Vitality)",
+      "level": 3,
+      "school": "Évocation",
+      "castingTime": "1 action",
+      "range": "Personnel (rayon de 9 mètres)",
+      "components": {
+        "verbal": true,
+        "somatic": false,
+        "material": false
+      },
+      "duration": "Concentration, jusqu'à 1 minute",
+      "concentration": true,
+      "ritual": false,
+      "description": "Une aura curative vous permet de soigner une créature proche en action bonus à chaque tour.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-petite-hutte-de-leomund-leomund-s-tiny-hut",
+      "name": "Petite hutte de Léomund (Leomund's Tiny Hut)",
+      "level": 3,
+      "school": "Évocation",
+      "castingTime": "1 minute",
+      "range": "Personnel (hémisphère de 3 mètres de rayon)",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "une petite perle de cristal"
+      },
+      "duration": "8 heures",
+      "concentration": false,
+      "ritual": true,
+      "description": "Un dôme de force immobile abrite le groupe pendant huit heures.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-aura-de-vie-aura-of-life",
+      "name": "Aura de vie (Aura of Life)",
+      "level": 4,
+      "school": "Abjuration",
+      "castingTime": "1 action",
+      "range": "Personnel (rayon de 9 mètres)",
+      "components": {
+        "verbal": true,
+        "somatic": false,
+        "material": false
+      },
+      "duration": "Concentration, jusqu'à 10 minutes",
+      "concentration": true,
+      "ritual": false,
+      "description": "Une aura qui protège les alliés des dégâts nécrotiques et relève ceux qui sont à 0 point de vie.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-invisibilite-supreme-greater-invisibility",
+      "name": "Invisibilité suprême (Greater Invisibility)",
+      "level": 4,
+      "school": "Illusion",
+      "castingTime": "1 action",
+      "range": "Contact",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "Concentration, jusqu'à 1 minute",
+      "concentration": true,
+      "ritual": false,
+      "description": "La cible reste invisible même lorsqu'elle attaque ou lance des sorts.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-cercle-de-pouvoir-circle-of-power",
+      "name": "Cercle de pouvoir (Circle of Power)",
+      "level": 5,
+      "school": "Abjuration",
+      "castingTime": "1 action",
+      "range": "Personnel (rayon de 9 mètres)",
+      "components": {
+        "verbal": true,
+        "somatic": false,
+        "material": false
+      },
+      "duration": "Concentration, jusqu'à 10 minutes",
+      "concentration": true,
+      "ritual": false,
+      "description": "Une aura protège les alliés proches contre les sorts et autres effets magiques.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-double-illusoire-mislead",
+      "name": "Double illusoire (Mislead)",
+      "level": 5,
+      "school": "Illusion",
+      "castingTime": "1 action",
+      "range": "Personnel",
+      "components": {
+        "verbal": false,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "Concentration, jusqu'à 1 heure",
+      "concentration": true,
+      "ritual": false,
+      "description": "Vous devenez invisible tandis qu'un double illusoire de vous apparaît et agit à votre place.",
+      "classes": ["Clerc"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-gourdin-magique-shillelagh",
+      "name": "Gourdin magique (Shillelagh)",
+      "level": 0,
+      "school": "Transmutation",
+      "castingTime": "1 action bonus",
+      "range": "Contact",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "du gui, une feuille de trèfle et un gourdin ou un bâton"
+      },
+      "duration": "1 minute",
+      "concentration": false,
+      "ritual": false,
+      "description": "Votre bâton ou gourdin devient magique : vous utilisez votre caractéristique d'incantation et son dé de dégâts augmente.",
+      "classes": ["Druide"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-vaporisation-de-poison-poison-spray",
+      "name": "Vaporisation de poison (Poison Spray)",
+      "level": 0,
+      "school": "Invocation",
+      "castingTime": "1 action",
+      "range": "3 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "Instantanée",
+      "concentration": false,
+      "ritual": false,
+      "description": "Une bouffée de gaz toxique blesse une créature proche qui rate son jet de Constitution.",
+      "higherLevel": "Les dégâts augmentent de 1d12 aux niveaux 5 (2d12), 11 (3d12) et 17 (4d12).",
+      "classes": ["Druide"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-contact-glacial-chill-touch",
+      "name": "Contact glacial (Chill Touch)",
+      "level": 0,
+      "school": "Nécromancie",
+      "castingTime": "1 action",
+      "range": "36 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "1 round",
+      "concentration": false,
+      "ritual": false,
+      "description": "Une main spectrale inflige des dégâts nécrotiques et empêche la cible de récupérer des points de vie.",
+      "higherLevel": "Les dégâts augmentent de 1d8 aux niveaux 5 (2d8), 11 (3d8) et 17 (4d8).",
+      "classes": ["Druide"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-charme-personne-charm-person",
+      "name": "Charme-personne (Charm Person)",
+      "level": 1,
+      "school": "Enchantement",
+      "castingTime": "1 action",
+      "range": "9 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "1 heure",
+      "concentration": false,
+      "ritual": false,
+      "description": "Un humanoïde qui rate sa sauvegarde vous considère comme un ami pendant un temps.",
+      "higherLevel": "Une créature supplémentaire par niveau d'emplacement au-delà du 1er ; les cibles doivent être à 9 mètres ou moins les unes des autres.",
+      "classes": ["Druide"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-enchevetrement-entangle",
+      "name": "Enchevêtrement (Entangle)",
+      "level": 1,
+      "school": "Invocation",
+      "castingTime": "1 action",
+      "range": "27 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "Concentration, jusqu'à 1 minute",
+      "concentration": true,
+      "ritual": false,
+      "description": "Des plantes jaillissent du sol et entravent les créatures d'une zone.",
+      "classes": ["Druide"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-absorption-des-elements-absorb-elements",
+      "name": "Absorption des éléments (Absorb Elements)",
+      "level": 1,
+      "school": "Abjuration",
+      "castingTime": "1 réaction, quand vous subissez des dégâts d'acide, de froid, de feu, de foudre ou de tonnerre",
+      "range": "Personnelle",
+      "components": {
+        "verbal": false,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "1 round",
+      "concentration": false,
+      "ritual": false,
+      "description": "En réaction, vous résistez à des dégâts élémentaires et renvoyez une partie de l'énergie dans votre prochaine attaque.",
+      "higherLevel": "Les dégâts supplémentaires augmentent de 1d6 par niveau d'emplacement au-delà du 1er.",
+      "classes": ["Druide"],
+      "source": "XGE"
+    },
+    {
+      "id": "demo-lame-de-feu-flame-blade",
+      "name": "Lame de feu (Flame Blade)",
+      "level": 2,
+      "school": "Évocation",
+      "castingTime": "1 action bonus",
+      "range": "Personnelle",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "une feuille de sumac"
+      },
+      "duration": "Concentration, jusqu'à 10 minutes",
+      "concentration": true,
+      "ritual": false,
+      "description": "Une lame ardente apparaît dans votre main et permet des attaques au corps à corps qui infligent des dégâts de feu.",
+      "higherLevel": "Les dégâts augmentent de 1d6 tous les deux niveaux d'emplacement au-delà du 2e.",
+      "classes": ["Druide"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-sphere-de-feu-flaming-sphere",
+      "name": "Sphère de feu (Flaming Sphere)",
+      "level": 2,
+      "school": "Invocation",
+      "castingTime": "1 action",
+      "range": "18 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "un peu de suif, une pincée de soufre et de la limaille de fer"
+      },
+      "duration": "Concentration, jusqu'à 1 minute",
+      "concentration": true,
+      "ritual": false,
+      "description": "Une boule de feu roule sur votre ordre et brûle les créatures à côté d'elle.",
+      "higherLevel": "Les dégâts augmentent de 1d6 par niveau d'emplacement au-delà du 2e.",
+      "classes": ["Druide"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-controle-des-flammes-control-flames",
+      "name": "Contrôle des flammes (Control Flames)",
+      "level": 0,
+      "school": "Transmutation",
+      "castingTime": "1 action",
+      "range": "18 mètres",
+      "components": {
+        "verbal": false,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "Instantanée ou 1 heure",
+      "concentration": false,
+      "ritual": false,
+      "description": "Manipule une flamme non magique : l'étendre, l'éteindre, la colorer ou lui donner une forme.",
+      "classes": ["Druide"],
+      "source": "XGE"
+    },
+    {
+      "id": "demo-coup-de-tonnerre-thunderclap",
+      "name": "Coup de tonnerre (Thunderclap)",
+      "level": 0,
+      "school": "Évocation",
+      "castingTime": "1 action",
+      "range": "Personnelle (rayon de 1,50 mètre)",
+      "components": {
+        "verbal": false,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "Instantanée",
+      "concentration": false,
+      "ritual": false,
+      "description": "Un grondement de tonnerre blesse toutes les créatures adjacentes.",
+      "higherLevel": "Les dégâts augmentent de 1d6 aux niveaux 5 (2d6), 11 (3d6) et 17 (4d6).",
+      "classes": ["Druide"],
+      "source": "XGE"
+    },
+    {
+      "id": "demo-creation-de-feu-de-joie-create-bonfire",
+      "name": "Création de feu de joie (Create Bonfire)",
+      "level": 0,
+      "school": "Invocation",
+      "castingTime": "1 action",
+      "range": "18 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "Concentration, jusqu'à 1 minute",
+      "concentration": true,
+      "ritual": false,
+      "description": "Allume un feu magique au sol qui brûle les créatures qui s'y tiennent.",
+      "higherLevel": "Les dégâts augmentent de 1d8 aux niveaux 5 (2d8), 11 (3d8) et 17 (4d8).",
+      "classes": ["Druide"],
+      "source": "XGE"
+    },
+    {
+      "id": "demo-druiderie-druidcraft",
+      "name": "Druiderie (Druidcraft)",
+      "level": 0,
+      "school": "Transmutation",
+      "castingTime": "1 action",
+      "range": "9 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "Instantanée",
+      "concentration": false,
+      "ritual": false,
+      "description": "Petits effets naturels : prévoir la météo, faire éclore une fleur, souffle de vent, odeur.",
+      "classes": ["Druide"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-faconnage-de-la-terre-mold-earth",
+      "name": "Façonnage de la terre (Mold Earth)",
+      "level": 0,
+      "school": "Transmutation",
+      "castingTime": "1 action",
+      "range": "9 mètres",
+      "components": {
+        "verbal": false,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "Instantanée ou 1 heure",
+      "concentration": false,
+      "ritual": false,
+      "description": "Déplace ou façonne un petit volume de terre ou de sable.",
+      "classes": ["Druide"],
+      "source": "XGE"
+    },
+    {
+      "id": "demo-flamme-produce-flame",
+      "name": "Flamme (Produce Flame)",
+      "level": 0,
+      "school": "Invocation",
+      "castingTime": "1 action",
+      "range": "Personnelle",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "10 minutes",
+      "concentration": false,
+      "ritual": false,
+      "description": "Une flamme dans votre main éclaire autour de vous et peut être lancée sur une cible.",
+      "higherLevel": "Les dégâts augmentent de 1d8 aux niveaux 5 (2d8), 11 (3d8) et 17 (4d8).",
+      "classes": ["Druide"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-gelure-frostbite",
+      "name": "Gelure (Frostbite)",
+      "level": 0,
+      "school": "Évocation",
+      "castingTime": "1 action",
+      "range": "18 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "Instantanée",
+      "concentration": false,
+      "ritual": false,
+      "description": "Un froid mordant inflige des dégâts et gêne la prochaine attaque de la cible.",
+      "higherLevel": "Les dégâts augmentent de 1d6 aux niveaux 5 (2d6), 11 (3d6) et 17 (4d6).",
+      "classes": ["Druide"],
+      "source": "XGE"
+    },
+    {
+      "id": "demo-liane-epineuse-thorn-whip",
+      "name": "Liane épineuse (Thorn Whip)",
+      "level": 0,
+      "school": "Transmutation",
+      "castingTime": "1 action",
+      "range": "9 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "la tige d'une plante épineuse"
+      },
+      "duration": "Instantanée",
+      "concentration": false,
+      "ritual": false,
+      "description": "Une liane épineuse fouette une cible et peut l'attirer vers vous.",
+      "higherLevel": "Les dégâts augmentent de 1d6 aux niveaux 5 (2d6), 11 (3d6) et 17 (4d6).",
+      "classes": ["Druide"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-manipulation-de-l-eau-shape-water",
+      "name": "Manipulation de l'eau (Shape Water)",
+      "level": 0,
+      "school": "Transmutation",
+      "castingTime": "1 action",
+      "range": "9 mètres",
+      "components": {
+        "verbal": false,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "Instantanée ou 1 heure",
+      "concentration": false,
+      "ritual": false,
+      "description": "Manipule un petit volume d'eau : le déplacer, le colorer, le geler ou lui donner forme.",
+      "classes": ["Druide"],
+      "source": "XGE"
+    },
+    {
+      "id": "demo-pierre-magique-magic-stone",
+      "name": "Pierre magique (Magic Stone)",
+      "level": 0,
+      "school": "Transmutation",
+      "castingTime": "1 action bonus",
+      "range": "Contact",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "1 minute",
+      "concentration": false,
+      "ritual": false,
+      "description": "Enchante quelques cailloux pour en faire des projectiles magiques.",
+      "classes": ["Druide"],
+      "source": "XGE"
+    },
+    {
+      "id": "demo-rafale-gust",
+      "name": "Rafale (Gust)",
+      "level": 0,
+      "school": "Transmutation",
+      "castingTime": "1 action",
+      "range": "9 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "Instantanée",
+      "concentration": false,
+      "ritual": false,
+      "description": "Une bourrasque pousse une créature ou un objet léger, ou crée un effet de vent mineur.",
+      "classes": ["Druide"],
+      "source": "XGE"
+    },
+    {
+      "id": "demo-amitie-animale-animal-friendship",
+      "name": "Amitié animale (Animal Friendship)",
+      "level": 1,
+      "school": "Enchantement",
+      "castingTime": "1 action",
+      "range": "9 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "un peu de nourriture"
+      },
+      "duration": "24 heures",
+      "concentration": false,
+      "ritual": false,
+      "description": "Une bête peu intelligente vous considère comme un ami et ne vous attaque pas.",
+      "higherLevel": "Une bête supplémentaire par niveau d'emplacement au-delà du 1er.",
+      "classes": ["Druide"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-baie-nourriciere-goodberry",
+      "name": "Baie nourricière (Goodberry)",
+      "level": 1,
+      "school": "Transmutation",
+      "castingTime": "1 action",
+      "range": "Contact",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "un brin de gui"
+      },
+      "duration": "Instantanée",
+      "concentration": false,
+      "ritual": false,
+      "description": "Crée des baies magiques qui nourrissent et rendent chacune un point de vie.",
+      "classes": ["Druide"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-comprehension-animale-speak-with-animals",
+      "name": "Compréhension animale (Speak with Animals)",
+      "level": 1,
+      "school": "Divination",
+      "castingTime": "1 action",
+      "range": "Personnelle",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "10 minutes",
+      "concentration": false,
+      "ritual": true,
+      "description": "Vous pouvez parler avec les bêtes et comprendre leurs réponses.",
+      "classes": ["Druide"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-grand-pas-longstrider",
+      "name": "Grand pas (Longstrider)",
+      "level": 1,
+      "school": "Transmutation",
+      "castingTime": "1 action",
+      "range": "Contact",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "une pincée de terre"
+      },
+      "duration": "1 heure",
+      "concentration": false,
+      "ritual": false,
+      "description": "La vitesse de déplacement de la cible augmente pendant une heure.",
+      "higherLevel": "Une créature supplémentaire par niveau d'emplacement au-delà du 1er.",
+      "classes": ["Druide"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-lien-avec-une-bete-beast-bond",
+      "name": "Lien avec une bête (Beast Bond)",
+      "level": 1,
+      "school": "Divination",
+      "castingTime": "1 action",
+      "range": "Contact",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "un peu de fourrure enveloppée dans un tissu"
+      },
+      "duration": "Concentration, jusqu'à 10 minutes",
+      "concentration": true,
+      "ritual": false,
+      "description": "Un lien télépathique avec une bête alliée l'aide à attaquer les ennemis proches de vous.",
+      "classes": ["Druide"],
+      "source": "XGE"
+    },
+    {
+      "id": "demo-nappe-de-brouillard-fog-cloud",
+      "name": "Nappe de brouillard (Fog Cloud)",
+      "level": 1,
+      "school": "Invocation",
+      "castingTime": "1 action",
+      "range": "36 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "Concentration, jusqu'à 1 heure",
+      "concentration": true,
+      "ritual": false,
+      "description": "Un épais brouillard masque complètement la vue dans une sphère.",
+      "higherLevel": "Le rayon augmente de 6 mètres par niveau d'emplacement au-delà du 1er.",
+      "classes": ["Druide"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-onde-de-choc-thunderwave",
+      "name": "Onde de choc (Thunderwave)",
+      "level": 1,
+      "school": "Évocation",
+      "castingTime": "1 action",
+      "range": "Personnelle (cube de 4,50 mètres)",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "Instantanée",
+      "concentration": false,
+      "ritual": false,
+      "description": "Une vague de force tonitruante blesse et repousse les créatures devant vous.",
+      "higherLevel": "Les dégâts augmentent de 1d8 par niveau d'emplacement au-delà du 1er.",
+      "classes": ["Druide"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-poignard-de-glace-ice-knife",
+      "name": "Poignard de glace (Ice Knife)",
+      "level": 1,
+      "school": "Invocation",
+      "castingTime": "1 action",
+      "range": "18 mètres",
+      "components": {
+        "verbal": false,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "une goutte d'eau ou un morceau de glace"
+      },
+      "duration": "Instantanée",
+      "concentration": false,
+      "ritual": false,
+      "description": "Un éclat de glace frappe une cible puis explose et blesse les créatures autour d'elle.",
+      "higherLevel": "Les dégâts de froid augmentent de 1d6 par niveau d'emplacement au-delà du 1er.",
+      "classes": ["Druide"],
+      "source": "XGE"
+    },
+    {
+      "id": "demo-saut-jump",
+      "name": "Saut (Jump)",
+      "level": 1,
+      "school": "Transmutation",
+      "castingTime": "1 action",
+      "range": "Contact",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "une patte arrière de sauterelle"
+      },
+      "duration": "1 minute",
+      "concentration": false,
+      "ritual": false,
+      "description": "La distance de saut de la créature touchée est triplée.",
+      "classes": ["Druide"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-secousse-terrestre-earth-tremor",
+      "name": "Secousse terrestre (Earth Tremor)",
+      "level": 1,
+      "school": "Évocation",
+      "castingTime": "1 action",
+      "range": "Personnelle (rayon de 3 mètres)",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "Instantanée",
+      "concentration": false,
+      "ritual": false,
+      "description": "Le sol tremble autour de vous : les créatures tombent à terre et le terrain devient difficile.",
+      "higherLevel": "Les dégâts augmentent de 1d6 par niveau d'emplacement au-delà du 1er.",
+      "classes": ["Druide"],
+      "source": "XGE"
+    },
+    {
+      "id": "demo-bourrasque-gust-of-wind",
+      "name": "Bourrasque (Gust of Wind)",
+      "level": 2,
+      "school": "Évocation",
+      "castingTime": "1 action",
+      "range": "Personnelle (ligne de 18 mètres)",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "une graine de légumineuse"
+      },
+      "duration": "Concentration, jusqu'à 1 minute",
+      "concentration": true,
+      "ritual": false,
+      "description": "Une ligne de vent puissant repousse les créatures et disperse gaz et vapeurs.",
+      "classes": ["Druide"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-croissance-d-epines-spike-growth",
+      "name": "Croissance d'épines (Spike Growth)",
+      "level": 2,
+      "school": "Transmutation",
+      "castingTime": "1 action",
+      "range": "45 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "sept épines acérées ou sept brindilles taillées en pointe"
+      },
+      "duration": "Concentration, jusqu'à 10 minutes",
+      "concentration": true,
+      "ritual": false,
+      "description": "Le sol d'une zone se couvre d'épines camouflées qui blessent ceux qui s'y déplacent.",
+      "classes": ["Druide"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-ecriture-aerienne-skywrite",
+      "name": "Écriture aérienne (Skywrite)",
+      "level": 2,
+      "school": "Transmutation",
+      "castingTime": "1 action",
+      "range": "Vue",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "Concentration, jusqu'à 1 heure",
+      "concentration": true,
+      "ritual": true,
+      "description": "Des nuages forment dans le ciel un message de quelques mots.",
+      "classes": ["Druide"],
+      "source": "XGE"
+    },
+    {
+      "id": "demo-lien-terrestre-earthbind",
+      "name": "Lien terrestre (Earthbind)",
+      "level": 2,
+      "school": "Transmutation",
+      "castingTime": "1 action",
+      "range": "90 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": false,
+        "material": false
+      },
+      "duration": "Concentration, jusqu'à 1 minute",
+      "concentration": true,
+      "ritual": false,
+      "description": "Une créature volante est attirée vers le sol et ne peut plus voler.",
+      "classes": ["Druide"],
+      "source": "XGE"
+    },
+    {
+      "id": "demo-localisation-de-betes-ou-de-plantes-locate-animals-or-plants",
+      "name": "Localisation de bêtes ou de plantes (Locate Animals or Plants)",
+      "level": 2,
+      "school": "Divination",
+      "castingTime": "1 action",
+      "range": "Personnelle",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "un peu de fourrure de limier"
+      },
+      "duration": "Instantanée",
+      "concentration": false,
+      "ritual": true,
+      "description": "Révèle la direction et la distance d'une espèce de bête ou de plante proche.",
+      "classes": ["Druide"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-messager-animal-animal-messenger",
+      "name": "Messager animal (Animal Messenger)",
+      "level": 2,
+      "school": "Enchantement",
+      "castingTime": "1 action",
+      "range": "9 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "un peu de nourriture"
+      },
+      "duration": "24 heures",
+      "concentration": false,
+      "ritual": true,
+      "description": "Un petit animal transporte un message vers un destinataire et un lieu désignés.",
+      "higherLevel": "La durée augmente de 48 heures par niveau d'emplacement au-delà du 2e.",
+      "classes": ["Druide"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-metal-brulant-heat-metal",
+      "name": "Métal brûlant (Heat Metal)",
+      "level": 2,
+      "school": "Transmutation",
+      "castingTime": "1 action",
+      "range": "18 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "un morceau de fer et une flamme"
+      },
+      "duration": "Concentration, jusqu'à 1 minute",
+      "concentration": true,
+      "ritual": false,
+      "description": "Un objet métallique devient brûlant et blesse celui qui le porte ou le tient.",
+      "higherLevel": "Les dégâts augmentent de 1d8 par niveau d'emplacement au-delà du 2e.",
+      "classes": ["Druide"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-passage-sans-trace-pass-without-trace",
+      "name": "Passage sans trace (Pass without Trace)",
+      "level": 2,
+      "school": "Abjuration",
+      "castingTime": "1 action",
+      "range": "Personnelle",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "des cendres d'une feuille de gui brûlée et un rameau d'épicéa"
+      },
+      "duration": "Concentration, jusqu'à 1 heure",
+      "concentration": true,
+      "ritual": false,
+      "description": "Un voile d'ombre facilite grandement la discrétion de vos alliés et efface leurs traces.",
+      "classes": ["Druide"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-peau-d-ecorce-barkskin",
+      "name": "Peau d'écorce (Barkskin)",
+      "level": 2,
+      "school": "Transmutation",
+      "castingTime": "1 action",
+      "range": "Contact",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "une poignée d'écorce de chêne"
+      },
+      "duration": "Concentration, jusqu'à 1 heure",
+      "concentration": true,
+      "ritual": false,
+      "description": "La peau de la cible durcit comme de l'écorce : sa CA ne peut descendre sous un minimum.",
+      "classes": ["Druide"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-sens-bestial-beast-sense",
+      "name": "Sens bestial (Beast Sense)",
+      "level": 2,
+      "school": "Divination",
+      "castingTime": "1 action",
+      "range": "Contact",
+      "components": {
+        "verbal": false,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "Concentration, jusqu'à 1 heure",
+      "concentration": true,
+      "ritual": true,
+      "description": "Vous percevez le monde à travers les sens d'une bête consentante.",
+      "classes": ["Druide"],
+      "source": "PHB"
+    },
+    {
+      "id": "demo-tourbillon-de-poussiere-dust-devil",
+      "name": "Tourbillon de poussière (Dust Devil)",
+      "level": 2,
+      "school": "Invocation",
+      "castingTime": "1 action",
+      "range": "18 mètres",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "une pincée de poussière"
+      },
+      "duration": "Concentration, jusqu'à 1 minute",
+      "concentration": true,
+      "ritual": false,
+      "description": "Un petit tourbillon de poussière blesse et repousse les créatures proches, et se déplace sur votre ordre.",
+      "higherLevel": "Les dégâts augmentent de 1d8 par niveau d'emplacement au-delà du 2e.",
+      "classes": ["Druide"],
+      "source": "XGE"
+    },
+    {
+      "id": "demo-vent-violent-warding-wind",
+      "name": "Vent violent (Warding Wind)",
+      "level": 2,
+      "school": "Évocation",
+      "castingTime": "1 action",
+      "range": "Personnelle",
+      "components": {
+        "verbal": true,
+        "somatic": false,
+        "material": false
+      },
+      "duration": "Concentration, jusqu'à 10 minutes",
+      "concentration": true,
+      "ritual": false,
+      "description": "Des vents violents vous entourent, gênent les attaques à distance et dispersent les gaz.",
+      "classes": ["Druide"],
+      "source": "XGE"
+    },
+    {
+      "id": "demo-vision-dans-le-noir-darkvision",
+      "name": "Vision dans le noir (Darkvision)",
+      "level": 2,
+      "school": "Transmutation",
+      "castingTime": "1 action",
+      "range": "Contact",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "materialDescription": "une pincée de carotte séchée ou une agate"
+      },
+      "duration": "8 heures",
+      "concentration": false,
+      "ritual": false,
+      "description": "La créature touchée voit dans l'obscurité pendant plusieurs heures.",
+      "classes": ["Druide"],
+      "source": "PHB"
+    }
+  ]
+}

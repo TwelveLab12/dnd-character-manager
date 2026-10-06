@@ -17,6 +17,15 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: "2026-10-01-demo-data",
+    date: "2026-10-01",
+    title: "Personnages de démo",
+    changes: [
+      "Liste vide ? Le bouton « Charger les personnages de démo » ajoute quatre personnages de niveau 3 (clerc, barbare, moine, druide) avec leurs sorts, pour découvrir l’application sans rien saisir.",
+      "Les personnages de démo ne remplacent jamais les vôtres : ils s’ajoutent à côté et se suppriment comme n’importe quel personnage.",
+    ],
+  },
+  {
     id: "2026-09-27-adventurer-journal",
     date: "2026-09-27",
     title: "Journal de l’aventurier",
