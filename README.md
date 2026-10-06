@@ -26,7 +26,7 @@ Application web pour gérer ses personnages de Donjons & Dragons 5e, à la table
 - **Données validées par Zod** à chaque import, avec aperçu ligne par ligne avant d'écrire quoi que ce soit.
 - **Formats versionnés** : une évolution du format des fiches migre les données déjà enregistrées au lieu de les perdre.
 - **Qualité** : tests Vitest, ESLint, TypeScript, et une CI qui exécute le tout avant chaque mise en production sur Vercel.
-- **Décisions documentées** : chaque choix structurant a son [ADR](docs/adr) ; le rôle de chaque dépendance est dans [`docs/dependencies.md`](docs/dependencies.md).
+- **Décisions documentées** : chaque choix structurant a son [ADR](docs/adr), résumé dans la [synthèse d'architecture](docs/architecture.md) ; le rôle de chaque dépendance est dans [`docs/dependencies.md`](docs/dependencies.md).
 
 ## Contraintes légales et données
 
