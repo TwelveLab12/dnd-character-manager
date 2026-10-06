@@ -108,6 +108,7 @@ encore.
 - [0004](adr/0004-json-import-export-open5e-schema.md) — Import/export JSON versionné, schéma de sorts aligné open5e/SRD
 - [0008](adr/0008-generalized-import-export-and-backup.md) — Import/export généralisé et sauvegarde complète
 - [0023](adr/0023-stored-format-migrations.md) — Migration du format stocké
+- [0072](adr/0072-demo-data.md) — Personnages de démonstration
 
 ### Hors ligne et installation
 
