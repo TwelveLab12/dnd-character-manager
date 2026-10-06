@@ -91,9 +91,21 @@ vert — c'est le baseline du projet, pas optionnel, et c'est ce que la CI véri
 
 Un ticket GitHub par tâche (label `enhancement`/`bug`/`chore`/`documentation`) ; une branche + une
 PR par sujet ; rebase sur `main` plutôt que merge ; squash-merge ; suppression des branches après
-merge ; un ADR par décision structurante plutôt que rétro-édition d'un ADR existant. Toute PR
-fonctionnelle (ce qu'un joueur voit ou peut faire) ajoute son entrée dans
-`src/features/changelog/changelog-entries.ts` — page « Nouveautés », voir
-[docs/adr/0058](docs/adr/0058-changelog-page.md). Voir aussi le
-CLAUDE.md de [BrunoSchvartzDev](https://github.com/TwelveLab12/BrunoSchvartzDev/blob/main/CLAUDE.md)
-pour le détail du cycle Project board / labels, repris tel quel ici.
+merge ; un ADR par décision structurante plutôt que rétro-édition d'un ADR existant, rangé dans
+[`docs/architecture.md`](docs/architecture.md) dans la même PR. Toute PR fonctionnelle (ce qu'un
+joueur voit ou peut faire) ajoute son entrée dans `src/features/changelog/changelog-entries.ts` —
+page « Nouveautés », voir [docs/adr/0058](docs/adr/0058-changelog-page.md).
+
+**Board du projet** : [projet 2](https://github.com/users/TwelveLab12/projects/2) de `TwelveLab12`.
+Ce n'est **pas** le board de BrunoSchvartzDev (projet 1) : ne jamais y ajouter de ticket de ce repo.
+Chaque ticket y est ajouté dès sa création, et son statut (Backlog / À faire / En cours / Terminé)
+suit l'avancement :
+
+```bash
+gh project item-add 2 --owner TwelveLab12 --url <url-du-ticket>
+```
+
+Les identifiants du champ « Status » sont propres à ce board : les lire avec
+`gh project field-list 2 --owner TwelveLab12 --format json` plutôt que de réutiliser ceux d'un autre
+board. Pour le reste (labels, découpage des commits, PR), les conventions sont celles du
+[CLAUDE.md de BrunoSchvartzDev](https://github.com/TwelveLab12/BrunoSchvartzDev/blob/main/CLAUDE.md).
