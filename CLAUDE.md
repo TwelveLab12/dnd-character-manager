@@ -57,7 +57,10 @@ vert — c'est le baseline du projet, pas optionnel, et c'est ce que la CI véri
   (`components.json` : `"base": "radix"`, package `radix-ui`) — ne pas laisser le CLI basculer sur
   Base UI (son défaut actuel), toujours relancer avec `-b radix` en cas de doute.
 - **`docs/adr/`** — décisions d'architecture (une par fichier, jamais éditées rétroactivement : une
-  décision reconsidérée donne lieu à un nouvel ADR).
+  décision reconsidérée donne lieu à un nouvel ADR). **Lire d'abord
+  [`docs/architecture.md`](docs/architecture.md)** : les règles actives, ce qui a changé en route et
+  l'index des ADR par thème ([docs/adr/0073](docs/adr/0073-architecture-summary.md)). Un nouvel ADR
+  s'y range dans la même PR ; un test le vérifie.
 
 ## Conventions de qualité (portables d'un projet à l'autre)
 
