@@ -26,7 +26,12 @@ const spectral = Spectral({
 });
 
 export const metadata: Metadata = {
-  title: "Gestionnaire de personnage D&D",
+  // Un titre distinct par page (RGAA 8.6) : chaque page.tsx fournit sa partie, le gabarit ajoute
+  // le nom de l'application.
+  title: {
+    default: "Gestionnaire de personnage D&D",
+    template: "%s — Gestionnaire de personnage D&D",
+  },
   description: "Gestionnaire de personnage D&D 5e — stats, sorts, inventaire.",
   applicationName: "D&D Perso",
   // Installée sur l'écran d'accueil iOS : lancée sans l'interface de Safari. Barre de statut « black »

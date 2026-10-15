@@ -3,7 +3,7 @@ import { BackLink } from "@/features/shared/back-link";
 import { FullscreenToggle } from "@/features/shared/fullscreen-toggle";
 import { MAIN_CONTENT_ID } from "@/features/shared/main-landmark";
 
-export const metadata: Metadata = { title: "Hors ligne — Gestionnaire de personnage D&D" };
+export const metadata: Metadata = { title: "Hors ligne" };
 
 /**
  * Page de repli servie par le service worker (`public/sw.js`) quand une page demandée hors ligne

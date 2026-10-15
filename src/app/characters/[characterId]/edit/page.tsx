@@ -1,5 +1,8 @@
+import type { Metadata } from "next";
 import { CharacterSheet } from "@/features/character-sheet/character-sheet";
 import { PageMain } from "@/features/shared/main-landmark";
+
+export const metadata: Metadata = { title: "Modifier le personnage" };
 
 export default async function CharacterEditPage(
   props: PageProps<"/characters/[characterId]/edit">,
