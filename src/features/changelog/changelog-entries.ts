@@ -19,10 +19,11 @@ export const CHANGELOG: readonly ChangelogEntry[] = [
   {
     id: "2026-10-15-keyboard-navigation",
     date: "2026-10-15",
-    title: "Navigation au clavier et titres d’onglet",
+    title: "Clavier, titres d’onglet et bibliothèque sur téléphone",
     changes: [
       "Au clavier, la première pression sur Tab fait apparaître un lien « Aller au contenu principal », qui mène directement au contenu de la page.",
       "Chaque page a son propre titre d’onglet (Mes personnages, Bibliothèque de sorts, Nouveautés, Fiche de personnage…) : plus facile à repérer parmi vos onglets, et annoncé par les lecteurs d’écran.",
+      "Bibliothèque de sorts sur téléphone : les boutons Exporter et Importer passent à la ligne au lieu de faire déborder la page sur le côté.",
     ],
   },
   {
