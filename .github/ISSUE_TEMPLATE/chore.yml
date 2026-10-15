@@ -1,0 +1,10 @@
+name: Chore
+description: Outillage, infra, maintenance (sans impact fonctionnel direct)
+labels: ["chore"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: Quoi et pourquoi
+    validations:
+      required: true

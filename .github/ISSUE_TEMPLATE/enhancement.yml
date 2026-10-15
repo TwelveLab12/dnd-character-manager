@@ -1,0 +1,16 @@
+name: Amélioration
+description: Une nouvelle fonctionnalité ou une amélioration UX
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: need
+    attributes:
+      label: Besoin
+      description: Le problème à résoudre, du point de vue de l'utilisateur.
+    validations:
+      required: true
+  - type: textarea
+    id: done
+    attributes:
+      label: Critères de fin
+      description: Ce qui doit être vrai pour considérer l'issue terminée.

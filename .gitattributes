@@ -1,4 +1,8 @@
-# Husky hooks are shell scripts run via `sh`; a CRLF checkout (e.g. with
-# core.autocrlf=true on Windows/WSL) breaks argument parsing and makes
-# lint-staged fail silently. Force LF regardless of client config.
+# Géré par claude-kit. LF partout, quel que soit core.autocrlf (Windows/WSL) : évite les diffs
+# de fins de ligne entre machines. Husky en a besoin en particulier : un checkout CRLF de ses hooks
+# (scripts `sh`) casse le parsing des arguments et fait échouer lint-staged silencieusement.
+* text=auto eol=lf
 .husky/* text eol=lf
+# Base du sync de claude-kit (ce que le kit a écrit au dernier passage) : générée, repliée dans le
+# diff des PR.
+.claude/kit/base.json linguist-generated

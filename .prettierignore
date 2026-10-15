@@ -1,3 +1,5 @@
+# Géré par claude-kit : régénéré par /claude-kit:sync.
 .next
 coverage
 pnpm-lock.yaml
+next-env.d.ts

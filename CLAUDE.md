@@ -14,26 +14,12 @@ conversation qui a créé ce repo ; les décisions structurantes sont, elles, da
 
 ## Commands
 
+Commandes courantes et baseline : règles du kit (bloc claude-kit ci-dessous). Propres au projet :
+
 ```bash
-pnpm dev            # serveur de dev (Turbopack)
-pnpm build           # build de production
-pnpm start           # sert le build de production
-pnpm lint            # eslint
-pnpm lint:ci          # eslint --max-warnings=0 (ce que la CI lance)
-pnpm typecheck        # next typegen && tsc --noEmit (next typegen est nécessaire : les helpers
-                       # LayoutProps/PageProps ne sont générés qu'au dev/build/typegen — sans ça
-                       # tsc échoue sur un clone frais qui n'a jamais lancé `next dev`)
-pnpm format          # prettier --write .
-pnpm test            # vitest run
-pnpm test:watch       # vitest en mode watch
-pnpm test:coverage    # vitest run --coverage
 pnpm convert:open5e <entree.json> <sortie.json>  # utilitaire manuel, pas lancé en CI
 pnpm generate:icons  # régénère les icônes PWA/favicon (d20) — utilitaire manuel, fichiers versionnés
 ```
-
-Avant tout commit : `pnpm typecheck`, `pnpm lint:ci`, `pnpm test` et `pnpm build` doivent être au
-vert — c'est le baseline du projet, pas optionnel, et c'est ce que la CI vérifie. Un hook
-`pre-commit` (Husky + lint-staged) formate/lint automatiquement les fichiers stagés.
 
 ## Architecture
 
@@ -62,50 +48,28 @@ vert — c'est le baseline du projet, pas optionnel, et c'est ce que la CI véri
   l'index des ADR par thème ([docs/adr/0073](docs/adr/0073-architecture-summary.md)). Un nouvel ADR
   s'y range dans la même PR ; un test le vérifie.
 
-## Conventions de qualité (portables d'un projet à l'autre)
-
-- **TypeScript strict** : `strict`, `noUncheckedIndexedAccess`, `noUnusedLocals`,
-  `noUnusedParameters`, `verbatimModuleSyntax` (imports de type toujours via `import type`),
-  `forceConsistentCasingInFileNames`, `noFallthroughCasesInSwitch`.
-- **ESLint** : flat config native `next/core-web-vitals` + `next/typescript`
-  (`eslint.config.mjs`), pas de wrapper `FlatCompat` (Next 16+ l'expose nativement). Override
-  projet : `@typescript-eslint/no-unused-vars` ignore les identifiants préfixés `_` (args,
-  variables, éléments de déstructuration) — convention pour le pattern « omettre une clé via
-  déstructuration » (`const { id: _id, ...rest } = x`). Ça aligne ESLint sur ce que TypeScript
-  tolère déjà nativement pour les patterns de déstructuration et les paramètres de fonction sous
-  `noUnusedLocals`/`noUnusedParameters` (mais pas pour une variable isolée type `const _x = 1`
-  hors déstructuration, que `noUnusedLocals` continue de signaler).
-- **Prettier** + `prettier-plugin-tailwindcss` (tri automatique des classes Tailwind),
-  `printWidth: 100`, doubles guillemets.
-- **Husky + lint-staged** sur `pre-commit` (prettier + eslint --fix sur les fichiers stagés
-  uniquement) ; **jamais** les tests dans le hook — ça reste une responsabilité CI, pour un hook
-  rapide.
-- **Vitest + Testing Library**, `environment: "jsdom"`, `resolve.tsconfigPaths: true` (pas besoin
-  du plugin `vite-tsconfig-paths`, Vite le supporte nativement). Vitest globals désactivés →
-  `afterEach(cleanup)` explicite dans `src/test/setup.ts` (sinon le DOM n'est pas nettoyé entre
-  tests et les requêtes RTL deviennent ambiguës d'un test à l'autre).
-- **CI** (`.github/workflows/ci.yml`) : `typecheck` → `lint:ci` → `test` → `build`, dans cet
-  ordre, sur chaque push/PR vers `main`.
-
 ## Workflow
 
-Un ticket GitHub par tâche (label `enhancement`/`bug`/`chore`/`documentation`) ; une branche + une
-PR par sujet ; rebase sur `main` plutôt que merge ; squash-merge ; suppression des branches après
-merge ; un ADR par décision structurante plutôt que rétro-édition d'un ADR existant, rangé dans
-[`docs/architecture.md`](docs/architecture.md) dans la même PR. Toute PR fonctionnelle (ce qu'un
-joueur voit ou peut faire) ajoute son entrée dans `src/features/changelog/changelog-entries.ts` —
-page « Nouveautés », voir [docs/adr/0058](docs/adr/0058-changelog-page.md).
+Outillage, conventions de qualité et workflow issue → branche → PR → squash-merge : règles du kit,
+importées par le bloc claude-kit ci-dessous. Propre à ce projet :
 
-**Board du projet** : [projet 2](https://github.com/users/TwelveLab12/projects/2) de `TwelveLab12`.
-Ce n'est **pas** le board de BrunoSchvartzDev (projet 1) : ne jamais y ajouter de ticket de ce repo.
-Chaque ticket y est ajouté dès sa création, et son statut (Backlog / À faire / En cours / Terminé)
-suit l'avancement :
+- Le board est le [projet 2](https://github.com/users/TwelveLab12/projects/2) de `TwelveLab12`. Ce
+  n'est **pas** le board de BrunoSchvartzDev (projet 1) : ne jamais y ajouter de ticket de ce repo.
+- Toute PR fonctionnelle (ce qu'un joueur voit ou peut faire) ajoute son entrée dans
+  `src/features/changelog/changelog-entries.ts` — page « Nouveautés », voir
+  [docs/adr/0058](docs/adr/0058-changelog-page.md).
 
-```bash
-gh project item-add 2 --owner TwelveLab12 --url <url-du-ticket>
-```
+<!-- BEGIN:claude-kit -->
 
-Les identifiants du champ « Status » sont propres à ce board : les lire avec
-`gh project field-list 2 --owner TwelveLab12 --format json` plutôt que de réutiliser ceux d'un autre
-board. Pour le reste (labels, découpage des commits, PR), les conventions sont celles du
-[CLAUDE.md de BrunoSchvartzDev](https://github.com/TwelveLab12/BrunoSchvartzDev/blob/main/CLAUDE.md).
+@.claude/kit/core.md
+@.claude/kit/tailwind-shadcn.md
+@.claude/kit/eslint.md
+@.claude/kit/prettier.md
+@.claude/kit/husky.md
+@.claude/kit/vitest.md
+@.claude/kit/docs-adr.md
+@.claude/kit/github-ci.md
+@.claude/kit/vercel-check.md
+@.claude/kit/dependabot.md
+@.claude/kit/github-workflow.md
+<!-- END:claude-kit -->

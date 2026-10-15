@@ -1,0 +1,24 @@
+{
+  "kitVersion": "0.6.0",
+  "modules": [
+    "core",
+    "tailwind-shadcn",
+    "eslint",
+    "prettier",
+    "husky",
+    "vitest",
+    "docs-adr",
+    "github-ci",
+    "vercel-check",
+    "dependabot",
+    "github-workflow",
+    "claude-settings"
+  ],
+  "vars": {
+    "owner": "TwelveLab12",
+    "boardNumber": "2",
+    "run": "pnpm",
+    "nodeVersion": "24",
+    "uiBase": "radix"
+  }
+}

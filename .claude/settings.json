@@ -1,0 +1,34 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm *)",
+      "Bash(git status *)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git fetch *)",
+      "Bash(git pull *)",
+      "Bash(git switch *)",
+      "Bash(git checkout *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git rebase origin/main)",
+      "Bash(git push *)",
+      "Bash(gh issue *)",
+      "Bash(gh pr *)",
+      "Bash(gh project *)",
+      "Bash(gh run *)"
+    ],
+    "deny": ["Bash(git push --force *)", "Bash(git push -f *)", "Bash(git commit --no-verify *)"]
+  },
+  "extraKnownMarketplaces": {
+    "twelvelab": {
+      "source": {
+        "source": "github",
+        "repo": "TwelveLab12/claude-kit"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "claude-kit@twelvelab": true
+  }
+}

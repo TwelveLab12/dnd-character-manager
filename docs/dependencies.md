@@ -1,7 +1,7 @@
 # Dépendances
 
 Ce que fait chaque librairie du `package.json` et pourquoi elle est utilisée ici. À vérifier avant
-d'ajouter ou d'évaluer une nouvelle dépendance.
+d'ajouter ou d'évaluer une nouvelle dépendance, et à tenir à jour dans la même PR que l'ajout.
 
 ## `dependencies`
 
@@ -18,6 +18,11 @@ d'ajouter ou d'évaluer une nouvelle dépendance.
 - **class-variance-authority** — variantes de composants UI typées (ex : `Button`).
 - **lucide-react** — icônes, utilisées par les composants shadcn.
 - **tw-animate-css** — animations Tailwind utilitaires, dépendance du thème shadcn.
+- **sonner** — notifications (toasts) : retours d'action en mode jeu (sort lancé, repos, jets de
+  mort) et invitation à installer la PWA ; monté une fois via `Toaster` dans `src/app/layout.tsx`.
+- **next-themes** — importé uniquement par `src/components/ui/sonner.tsx` (code généré par shadcn)
+  pour donner son thème au `Toaster`. L'app n'a pas de bascule clair/sombre ni de `ThemeProvider`
+  (voir `globals.css`) : `useTheme()` renvoie donc toujours `"system"`.
 - **zod** — validation de schémas ; colonne vertébrale de l'import/export JSON
   ([ADR 0004](adr/0004-json-import-export-open5e-schema.md)).
 - **zustand** — état réactif au-dessus des repositories
@@ -37,7 +42,13 @@ d'ajouter ou d'évaluer une nouvelle dépendance.
 - **jsdom** — environnement DOM pour les tests Vitest (composants + accès `localStorage`).
 - **@testing-library/react** / **@testing-library/jest-dom** / **@testing-library/user-event** —
   tests de composants centrés utilisateur plutôt que sur les détails d'implémentation.
+- **@testing-library/dom** — requêtes DOM de Testing Library, dépendance pair de
+  `@testing-library/react` (déclarée explicitement depuis l'adoption de claude-kit).
 - **@vitest/coverage-v8** — rapport de couverture (`pnpm test:coverage`).
-- **tsx** — exécution TypeScript directe pour `scripts/convert-open5e-spells.ts`
-  ([ADR 0004](adr/0004-json-import-export-open5e-schema.md)), pas utilisé en CI.
-- **@types/node**, **@types/react**, **@types/react-dom** — types.
+- **tsx** — exécution TypeScript directe pour les utilitaires manuels de `scripts/`
+  (`convert-open5e-spells.ts`, voir [ADR 0004](adr/0004-json-import-export-open5e-schema.md), et
+  `generate-icons.ts`), pas utilisé en CI.
+- **sharp** — rendu SVG → PNG/ICO des icônes PWA et du favicon par `scripts/generate-icons.ts`
+  (`pnpm generate:icons`), utilitaire manuel : les fichiers générés sont versionnés.
+- **@types/node**, **@types/react**, **@types/react-dom** — types. `@types/node` suit la majeure
+  de Node du projet (`.nvmrc`), pas la dernière publiée.
