@@ -109,3 +109,18 @@ Les identifiants du champ « Status » sont propres à ce board : les lire avec
 `gh project field-list 2 --owner TwelveLab12 --format json` plutôt que de réutiliser ceux d'un autre
 board. Pour le reste (labels, découpage des commits, PR), les conventions sont celles du
 [CLAUDE.md de BrunoSchvartzDev](https://github.com/TwelveLab12/BrunoSchvartzDev/blob/main/CLAUDE.md).
+
+<!-- BEGIN:claude-kit -->
+
+@.claude/kit/core.md
+@.claude/kit/tailwind-shadcn.md
+@.claude/kit/eslint.md
+@.claude/kit/prettier.md
+@.claude/kit/husky.md
+@.claude/kit/vitest.md
+@.claude/kit/docs-adr.md
+@.claude/kit/github-ci.md
+@.claude/kit/vercel-check.md
+@.claude/kit/dependabot.md
+@.claude/kit/github-workflow.md
+<!-- END:claude-kit -->
