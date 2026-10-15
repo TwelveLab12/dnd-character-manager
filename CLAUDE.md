@@ -67,6 +67,8 @@ importées par le bloc claude-kit ci-dessous. Propre à ce projet :
 @.claude/kit/prettier.md
 @.claude/kit/husky.md
 @.claude/kit/vitest.md
+@.claude/kit/playwright.md
+@.claude/kit/a11y.md
 @.claude/kit/docs-adr.md
 @.claude/kit/github-ci.md
 @.claude/kit/vercel-check.md

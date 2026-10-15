@@ -41,12 +41,12 @@ export function SpellLibrary() {
 
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 px-6 py-12">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <BackLink className="mb-2" />
           <PageTitle>Bibliothèque de sorts</PageTitle>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <FullscreenToggle />
           <Button
             variant="outline"

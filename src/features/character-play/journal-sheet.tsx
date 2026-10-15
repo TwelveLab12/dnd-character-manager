@@ -525,6 +525,10 @@ function NoteItem({ note, actions }: { note: JournalNote; actions: JournalAction
     <li className="border-muted-foreground/12 grid gap-2 border-t py-2.5">
       <Textarea
         aria-label="Texte de la note"
+        // Le focus suit le clic « Modifier la note » : le bouton qui l'avait quitte le DOM, et sans
+        // autoFocus il repartirait au conteneur du panneau (WCAG 2.4.3, ordre du focus). Rien n'est
+        // focalisé au chargement de la page.
+        // eslint-disable-next-line jsx-a11y/no-autofocus -- focus rendu après une action, voir ci-dessus
         autoFocus
         rows={3}
         value={draft}

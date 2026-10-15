@@ -70,12 +70,16 @@ changé en route, et un index de tous les ADR par thème.
 19. **L'application fonctionne hors ligne grâce à un service worker maison, versionné à chaque
     déploiement.** Fichiers hashés : cache d'abord. Navigations : réseau d'abord, avec repli sur le
     cache. [0045](adr/0045-offline-service-worker.md) [0064](adr/0064-install-prompt.md)
+20. **L'accessibilité vise WCAG 2.2 AA, et ses contrôles bloquent la CI** : jsx-a11y `strict`, axe
+    en Vitest et sur les routes de `e2e/routes.ts`, contraste des tokens. Chaque page rend un seul
+    `<main id="contenu">` (`PageMain`) et son propre titre d'onglet ; le layout porte le lien
+    d'évitement. Une nouvelle page rejoint `e2e/routes.ts`. [0074](adr/0074-accessibility-strategy.md)
 
 ### Processus
 
-20. **Une décision structurante donne un ADR, qui n'est jamais réécrit.** Une décision reconsidérée
+21. **Une décision structurante donne un ADR, qui n'est jamais réécrit.** Une décision reconsidérée
     donne un nouvel ADR, résumé dans la section suivante. [0001](adr/0001-record-architecture-decisions.md)
-21. **Toute PR qui change ce qu'un joueur voit ou peut faire ajoute son entrée « Nouveautés ».**
+22. **Toute PR qui change ce qu'un joueur voit ou peut faire ajoute son entrée « Nouveautés ».**
     [0058](adr/0058-changelog-page.md)
 
 ## Ce qui a changé en route
@@ -100,6 +104,7 @@ encore.
 - [0007](adr/0007-ui-stack-radix-shadcn-tailwind.md) — Stack UI : Radix UI + shadcn/ui + Tailwind CSS
 - [0058](adr/0058-changelog-page.md) — Page « Nouveautés » pour informer les joueurs
 - [0073](adr/0073-architecture-summary.md) — Synthèse d'architecture et index des ADR par thème
+- [0074](adr/0074-accessibility-strategy.md) — Stratégie accessibilité
 
 ### Données, stockage et échanges
 

@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
 import { InstallPrompt } from "@/features/pwa/install-prompt";
 import { ServiceWorkerRegistrar } from "@/features/pwa/service-worker-registrar";
+import { SkipLink } from "@/features/shared/main-landmark";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -25,7 +26,13 @@ const spectral = Spectral({
 });
 
 export const metadata: Metadata = {
-  title: "Gestionnaire de personnage D&D",
+  // Un titre distinct par page (RGAA 8.6) : les pages des segments enfants fournissent leur partie,
+  // le gabarit ajoute le nom de l'application. Il ne s'applique pas à la page d'accueil (même
+  // segment que ce layout), qui donne son titre complet.
+  title: {
+    default: "Gestionnaire de personnage D&D",
+    template: "%s — Gestionnaire de personnage D&D",
+  },
   description: "Gestionnaire de personnage D&D 5e — stats, sorts, inventaire.",
   applicationName: "D&D Perso",
   // Installée sur l'écran d'accueil iOS : lancée sans l'interface de Safari. Barre de statut « black »
@@ -45,6 +52,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} ${spectral.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">
+        <SkipLink />
         <RepositoryProvider>
           <StoreProvider>
             <TooltipProvider>{children}</TooltipProvider>

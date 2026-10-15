@@ -9,7 +9,8 @@
   statut, branche).
 - Chaque issue porte **exactement un** label de type, posé à la création : `bug` (comportement
   défectueux), `enhancement` (fonctionnalité ou amélioration UX), `documentation` (docs seules),
-  `chore` (outillage/infra/maintenance sans impact fonctionnel direct).
+  `chore` (outillage/infra/maintenance sans impact fonctionnel direct). Une issue qui
+  touche l'accessibilité porte **en plus** (jamais à la place) le label thématique `accessibility`.
 - **Une branche + une PR par sujet.** Ne pas empiler un changement sans rapport sur une branche qui a
   déjà une PR ouverte : repartir de `main`. Nommage : `<type>/<n°issue>-<slug>` (`feat/`, `fix/`,
   `docs/`, `chore/`).
