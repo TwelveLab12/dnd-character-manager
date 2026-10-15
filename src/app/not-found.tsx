@@ -3,9 +3,9 @@ import Link from "next/link";
 import { FullscreenToggle } from "@/features/shared/fullscreen-toggle";
 import { MAIN_CONTENT_ID } from "@/features/shared/main-landmark";
 
-// Même segment que le layout : son gabarit de titre ne s'applique pas ici, d'où le titre complet
-// (RGAA 8.6 : la 404 doit se reconnaître dans l'onglet et l'historique).
-export const metadata: Metadata = { title: "Page introuvable — Gestionnaire de personnage D&D" };
+// La 404 doit se reconnaître dans l'onglet et l'historique (RGAA 8.6). Contrairement à la page
+// d'accueil, le gabarit de titre du layout s'applique ici : il ajoute le nom de l'application.
+export const metadata: Metadata = { title: "Page introuvable" };
 
 // Next's built-in 404 has no <main> landmark (axe: landmark-one-main, region). Keep the same
 // structure as other pages: a <main> with the skip-link target id and a single h1, plus the
