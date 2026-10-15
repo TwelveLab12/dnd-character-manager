@@ -14,26 +14,12 @@ conversation qui a créé ce repo ; les décisions structurantes sont, elles, da
 
 ## Commands
 
+Commandes courantes et baseline : règles du kit (bloc claude-kit ci-dessous). Propres au projet :
+
 ```bash
-pnpm dev            # serveur de dev (Turbopack)
-pnpm build           # build de production
-pnpm start           # sert le build de production
-pnpm lint            # eslint
-pnpm lint:ci          # eslint --max-warnings=0 (ce que la CI lance)
-pnpm typecheck        # next typegen && tsc --noEmit (next typegen est nécessaire : les helpers
-                       # LayoutProps/PageProps ne sont générés qu'au dev/build/typegen — sans ça
-                       # tsc échoue sur un clone frais qui n'a jamais lancé `next dev`)
-pnpm format          # prettier --write .
-pnpm test            # vitest run
-pnpm test:watch       # vitest en mode watch
-pnpm test:coverage    # vitest run --coverage
 pnpm convert:open5e <entree.json> <sortie.json>  # utilitaire manuel, pas lancé en CI
 pnpm generate:icons  # régénère les icônes PWA/favicon (d20) — utilitaire manuel, fichiers versionnés
 ```
-
-Avant tout commit : `pnpm typecheck`, `pnpm lint:ci`, `pnpm test` et `pnpm build` doivent être au
-vert — c'est le baseline du projet, pas optionnel, et c'est ce que la CI vérifie. Un hook
-`pre-commit` (Husky + lint-staged) formate/lint automatiquement les fichiers stagés.
 
 ## Architecture
 
