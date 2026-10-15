@@ -8,7 +8,9 @@ const eslintConfig = defineConfig([
   {
     rules: {
       // Allow the common "omit a key via destructuring" pattern (const { id: _id, ...rest } = x)
-      // without a warning — the underscore prefix is the explicit opt-out signal.
+      // without a warning — the underscore prefix is the explicit opt-out signal. This mirrors
+      // what TypeScript's noUnusedLocals/noUnusedParameters already tolerate natively for
+      // destructuring patterns and function parameters (but not a bare unused `const _x = 1`).
       "@typescript-eslint/no-unused-vars": [
         "warn",
         {
