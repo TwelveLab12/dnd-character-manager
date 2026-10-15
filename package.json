@@ -61,11 +61,11 @@
   },
   "packageManager": "pnpm@12.3.4",
   "lint-staged": {
-    "*.{ts,tsx}": [
+    "*.{ts,tsx,js,mjs}": [
       "prettier --write",
       "eslint --fix"
     ],
-    "*.{css,md,json}": [
+    "*.{css,md,json,yml,yaml}": [
       "prettier --write"
     ]
   }
