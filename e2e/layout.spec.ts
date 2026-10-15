@@ -13,6 +13,12 @@ test("every audited page title names the page and the app (RGAA 8.6)", async ({ 
   }
 });
 
+test("the 404 title says the page was not found (RGAA 8.6)", async ({ page }) => {
+  await page.goto("/__dnd-character-manager-not-found");
+  await expect(page).toHaveTitle(`Page introuvable — ${APP_NAME}`);
+  await expect(page.locator("main#contenu")).toHaveCount(1);
+});
+
 test("the first Tab shows the skip link, which leads to the main content (RGAA 12.7)", async ({
   page,
 }) => {

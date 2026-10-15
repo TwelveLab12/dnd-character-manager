@@ -1,13 +1,24 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+import { FullscreenToggle } from "@/features/shared/fullscreen-toggle";
+import { MAIN_CONTENT_ID } from "@/features/shared/main-landmark";
+
+// Même segment que le layout : son gabarit de titre ne s'applique pas ici, d'où le titre complet
+// (RGAA 8.6 : la 404 doit se reconnaître dans l'onglet et l'historique).
+export const metadata: Metadata = { title: "Page introuvable — Gestionnaire de personnage D&D" };
 
 // Next's built-in 404 has no <main> landmark (axe: landmark-one-main, region). Keep the same
-// structure as other pages: a <main> with the skip-link target id and a single h1.
+// structure as other pages: a <main> with the skip-link target id and a single h1, plus the
+// fullscreen toggle every page offers (docs/adr/0063).
 export default function NotFound() {
   return (
     <main
-      id="contenu"
-      className="mx-auto flex min-h-dvh max-w-xl flex-col justify-center gap-4 px-6 py-16"
+      id={MAIN_CONTENT_ID}
+      className="relative mx-auto flex min-h-dvh max-w-xl flex-col justify-center gap-4 px-6 py-16"
     >
+      <div className="absolute top-4 right-4">
+        <FullscreenToggle />
+      </div>
       <h1 className="text-3xl font-semibold">Page introuvable</h1>
       <p>La page demandée n&apos;existe pas ou a été déplacée.</p>
       <p>

@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import NotFound from "@/app/not-found";
 import OfflinePage from "@/app/offline/page";
 import { RepositoryProvider } from "@/repositories/repository-provider";
 import { StoreProvider } from "@/stores/store-provider";
@@ -36,6 +37,7 @@ describe("Bouton plein écran sur toutes les pages", () => {
     ["bibliothèque de sorts", <SpellLibrary key="spells" />],
     ["Nouveautés", <ChangelogPage key="changelog" />],
     ["hors ligne", <OfflinePage key="offline" />],
+    ["page introuvable", <NotFound key="not-found" />],
     ["fiche en mode jeu", <CharacterPlay key="play" characterId="hero" />],
     ["configuration d'un personnage", <CharacterSheet key="edit" characterId="hero" />],
   ])("%s : propose de quitter le plein écran", async (_page, page) => {
