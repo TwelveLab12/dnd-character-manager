@@ -18,8 +18,11 @@ cibles, saisie redondante…) sont suivies par la checklist de `.claude/kit/a11y
 | Contraste des tokens (`design-tokens.a11y.test.ts`) | `test`                           | chaque paire de couleurs du design system, clair et sombre                                      | l'opacité ajoutée par une classe, les couleurs écrites en dur                                    |
 | axe-core + Playwright (`e2e/a11y.spec.ts`)          | `test:e2e`, CI                   | WCAG 2.2 AA et bonnes pratiques sur le rendu, reflow 320 px, focus visible, titres, `lang`, 404 | le texte des SVG, le lecteur d'écran, la pertinence des textes, les pages derrière une connexion |
 
-Pages couvertes par les tests e2e : celles de `e2e/routes.ts`, plus la 404. _À compléter : pages
-volontairement non couvertes (connexion requise…) et pourquoi._
+Pages couvertes par les tests e2e : celles de `e2e/routes.ts` (`/`, `/spells`, `/changelog`,
+`/offline`), plus la 404. Pas encore couvertes : la fiche et l'édition de personnage
+(`/characters/[id]`, `/characters/[id]/edit`), qui n'affichent un personnage que s'il existe dans le
+`localStorage` du navigateur de test, voir
+[#182](https://github.com/TwelveLab12/dnd-character-manager/issues/182).
 
 ## Couverture RGAA 4.1.2 par thématique
 
