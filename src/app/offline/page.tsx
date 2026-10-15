@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { BackLink } from "@/features/shared/back-link";
 import { FullscreenToggle } from "@/features/shared/fullscreen-toggle";
+import { MAIN_CONTENT_ID } from "@/features/shared/main-landmark";
 
 export const metadata: Metadata = { title: "Hors ligne — Gestionnaire de personnage D&D" };
 
@@ -10,7 +11,10 @@ export const metadata: Metadata = { title: "Hors ligne — Gestionnaire de perso
  */
 export default function OfflinePage() {
   return (
-    <main className="relative mx-auto flex w-full max-w-md flex-1 flex-col items-center justify-center gap-4 p-6 text-center">
+    <main
+      id={MAIN_CONTENT_ID}
+      className="relative mx-auto flex w-full max-w-md flex-1 flex-col items-center justify-center gap-4 p-6 text-center"
+    >
       <div className="absolute top-4 right-4">
         <FullscreenToggle />
       </div>

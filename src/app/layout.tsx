@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
 import { InstallPrompt } from "@/features/pwa/install-prompt";
 import { ServiceWorkerRegistrar } from "@/features/pwa/service-worker-registrar";
+import { SkipLink } from "@/features/shared/main-landmark";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -45,6 +46,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} ${spectral.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">
+        <SkipLink />
         <RepositoryProvider>
           <StoreProvider>
             <TooltipProvider>{children}</TooltipProvider>
