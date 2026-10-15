@@ -1,3 +1,4 @@
+# Géré par claude-kit : régénéré par /claude-kit:sync, ne pas éditer à la main.
 name: CI
 
 on:
@@ -8,21 +9,32 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: read
+      actions: read
+      statuses: write
     steps:
       - uses: actions/checkout@v7
+
+      # Reports this job's status to Vercel as a named Deployment Check
+      # (Settings > Deployment Checks in the Vercel dashboard).
+      - uses: vercel/repository-dispatch/actions/status@v1
+        with:
+          name: "Vercel - dnd-character-manager: ci"
 
       - uses: pnpm/action-setup@v6
 
       - uses: actions/setup-node@v7
         with:
-          node-version: 22
+          node-version-file: .nvmrc
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
 
       - run: pnpm typecheck
+
+      - run: pnpm format:check
 
       - run: pnpm lint:ci
 
