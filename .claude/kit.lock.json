@@ -7,6 +7,8 @@
     "prettier",
     "husky",
     "vitest",
+    "playwright",
+    "a11y",
     "docs-adr",
     "github-ci",
     "vercel-check",
