@@ -26,8 +26,9 @@ const spectral = Spectral({
 });
 
 export const metadata: Metadata = {
-  // Un titre distinct par page (RGAA 8.6) : chaque page.tsx fournit sa partie, le gabarit ajoute
-  // le nom de l'application.
+  // Un titre distinct par page (RGAA 8.6) : les pages des segments enfants fournissent leur partie,
+  // le gabarit ajoute le nom de l'application. Il ne s'applique pas à la page d'accueil (même
+  // segment que ce layout), qui donne son titre complet.
   title: {
     default: "Gestionnaire de personnage D&D",
     template: "%s — Gestionnaire de personnage D&D",
