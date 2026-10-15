@@ -103,8 +103,21 @@ Passer le HTML rendu d'une page dans le validateur du W3C (RGAA 8.2).
 
 ## Écarts ouverts
 
-_Aucun pour l'instant._ Chaque défaut trouvé à la main devient une issue (type + label
-`accessibility`) listée ici tant qu'elle est ouverte.
+Chaque défaut trouvé à la main devient une issue (type + label `accessibility`) listée ici tant
+qu'elle est ouverte. Relevés par la revue `a11y-reviewer` de
+[#181](https://github.com/TwelveLab12/dnd-character-manager/issues/181) :
+
+- [#183](https://github.com/TwelveLab12/dnd-character-manager/issues/183) — pas d'anneau
+  `:focus-visible` global : contraste de l'indicateur de focus non garanti (RGAA 10.7, WCAG 2.4.7 et
+  1.4.11).
+- [#184](https://github.com/TwelveLab12/dnd-character-manager/issues/184) — fiche en mode jeu : le
+  bandeau `CombatSummary` collant peut masquer l'élément focalisé (WCAG 2.4.11).
+- [#185](https://github.com/TwelveLab12/dnd-character-manager/issues/185) — pages de personnage :
+  pas de `h1` dans les états « Chargement » et « Personnage introuvable » (RGAA 9.1).
+- [#186](https://github.com/TwelveLab12/dnd-character-manager/issues/186) — journal : le focus n'est
+  pas rendu à la note après Annuler, Enregistrer ou Supprimer (WCAG 2.4.3).
+- [#187](https://github.com/TwelveLab12/dnd-character-manager/issues/187) — titre d'onglet générique
+  sur la fiche et l'édition : il ne nomme pas le personnage (RGAA 8.6, à arbitrer).
 
 ## Tenir ce document à jour
 
