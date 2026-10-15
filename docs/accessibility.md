@@ -3,7 +3,7 @@
 Ce document dit **ce que les outils vérifient, ce qu'ils ne voient pas, et comment tester le reste à
 la main**, gratuitement. Ce n'est **pas une déclaration de conformité** : « aucune violation
 détectée » ne veut pas dire « conforme ». La stratégie et le choix de publier ou non une déclaration
-sont dans l'ADR de stratégie accessibilité (`docs/adr/`).
+sont dans l'ADR de stratégie accessibilité ([0074](adr/0074-accessibility-strategy.md)).
 
 Référentiel : WCAG 2.2 AA, avec le RGAA 4.1.2 (aligné WCAG 2.1) comme grille de lecture jusqu'au
 RGAA 5. Les nouveautés de WCAG 2.2 que le RGAA 4.1.2 ne couvre pas (focus non masqué, taille des
