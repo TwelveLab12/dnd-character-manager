@@ -19,9 +19,9 @@ export const CHANGELOG: readonly ChangelogEntry[] = [
   {
     id: "2026-11-09-focus-ring",
     date: "2026-11-09",
-    title: "Repère de sélection plus visible au clavier",
+    title: "Repère de focus plus visible au clavier",
     changes: [
-      "Au clavier, l’élément sélectionné est entouré d’un anneau net et bien contrasté sur toutes les pages, y compris les liens et le lien « Mes personnages » en haut des pages.",
+      "Au clavier, l’élément atteint avec Tab est entouré d’un anneau net et bien contrasté, notamment les liens et le lien « Mes personnages ».",
     ],
   },
   {
