@@ -18,7 +18,7 @@ export function BackLink({
     <Link
       href="/"
       onClick={onClick}
-      className={`group bg-background/40 text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:ring-ring/50 inline-flex h-8 w-fit items-center gap-1.5 rounded-full border pr-3.5 pl-2 text-sm font-medium transition-colors outline-none focus-visible:ring-3 ${className}`}
+      className={`group bg-background/40 text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:ring-ring/50 inline-flex h-8 w-fit items-center gap-1.5 rounded-full border pr-3.5 pl-2 text-sm font-medium transition-colors focus-visible:ring-3 ${className}`}
     >
       <ChevronLeft
         aria-hidden
