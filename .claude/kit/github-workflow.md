@@ -35,3 +35,15 @@
   est un acte délibéré, pour que le vrai travail ne s'y perde pas.
 - Les workflows intégrés du board font le reste (PR liée → « En cours », PR mergée ou issue
   fermée → « Terminé ») : ne déplacer une carte à la main que s'ils ne l'ont pas fait.
+
+### Retours vers le kit
+
+Un problème qui vient peut-être de claude-kit se trie ainsi :
+
+- un fichier ou une règle du kit contourné, ou un défaut qui se reproduit sur un projet généré →
+  issue `bug` sur `TwelveLab12/claude-kit`, tout de suite : le prochain sync effacerait le
+  contournement ;
+- une cause extérieure et passagère (panne GitHub, miroir apt, registre npm) → relancer une fois.
+  Si ça échoue encore, noter une occurrence sur le signalement de ce symptôme, ou le créer avec le
+  [formulaire « Signalement »](https://github.com/TwelveLab12/claude-kit/issues/new?template=signalement.yml) ;
+- un problème propre au projet → il reste dans le projet.

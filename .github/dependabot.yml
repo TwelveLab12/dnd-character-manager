@@ -26,4 +26,3 @@ updates:
       day: "monday"
     labels:
       - "dependencies"
-      - "github-actions"
