@@ -17,6 +17,14 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: "2026-11-09-focus-ring",
+    date: "2026-11-09",
+    title: "Repère de focus plus visible au clavier",
+    changes: [
+      "Au clavier, l’élément atteint avec Tab est entouré d’un anneau net et bien contrasté, notamment les liens et le lien « Mes personnages ».",
+    ],
+  },
+  {
     id: "2026-10-15-keyboard-navigation",
     date: "2026-10-15",
     title: "Clavier, titres d’onglet et bibliothèque sur téléphone",

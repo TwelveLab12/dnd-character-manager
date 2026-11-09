@@ -82,7 +82,7 @@
   --info: oklch(0.7 0.15 250);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
+  --ring: oklch(0.708 0 0);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
@@ -254,3 +254,15 @@
     @apply font-sans;
   }
 }
+
+/* >>> claude-kit */
+/* Anneau de focus global (RGAA 10.7 / WCAG 2.4.7, 1.4.11). Couleur opaque : le contour par défaut de
+   shadcn (`outline-ring/50`) tombe sous 3:1. `:where()` garde une spécificité nulle, les composants
+   (`focus-visible:ring-*`, `border-ring`) le surchargent sans conflit. */
+@layer base {
+  :where(a, button, input, textarea, select, summary, [tabindex="0"]):focus-visible {
+    outline: 3px solid var(--ring);
+    outline-offset: 2px;
+  }
+}
+/* <<< claude-kit */

@@ -24,6 +24,9 @@ function pairsFor(tokens: Map<string, string>): Pair[] {
     { fg: "destructive", bg: "background", min: 4.5 },
     // Focus indicator and form field borders: non-text contrast (WCAG 1.4.11, RGAA 3.3).
     { fg: "ring", bg: "background", min: 3 },
+    // The focus ring is also drawn over cards and popovers (sheets, dialogs, menus).
+    { fg: "ring", bg: "card", min: 3 },
+    { fg: "ring", bg: "popover", min: 3 },
   ];
   return [...pairs, ...extra.filter((p) => tokens.has(p.fg) && tokens.has(p.bg))];
 }
