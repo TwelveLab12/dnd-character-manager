@@ -107,9 +107,9 @@ Chaque défaut trouvé à la main devient une issue (type + label `accessibility
 qu'elle est ouverte. Relevés par la revue `a11y-reviewer` de
 [#181](https://github.com/TwelveLab12/dnd-character-manager/issues/181) :
 
-- [#183](https://github.com/TwelveLab12/dnd-character-manager/issues/183) — pas d'anneau
-  `:focus-visible` global : contraste de l'indicateur de focus non garanti (RGAA 10.7, WCAG 2.4.7 et
-  1.4.11).
+- [#183](https://github.com/TwelveLab12/dnd-character-manager/issues/183) — indicateur de focus sous
+  3:1 sur les contrôles des pages de personnage qui n'ont qu'un halo translucide (`ring-ring/50`) ;
+  l'anneau `:focus-visible` global est en place (RGAA 10.7, WCAG 2.4.7 et 1.4.11).
 - [#184](https://github.com/TwelveLab12/dnd-character-manager/issues/184) — fiche en mode jeu : le
   bandeau `CombatSummary` collant peut masquer l'élément focalisé (WCAG 2.4.11).
 - [#185](https://github.com/TwelveLab12/dnd-character-manager/issues/185) — pages de personnage :
@@ -118,6 +118,16 @@ qu'elle est ouverte. Relevés par la revue `a11y-reviewer` de
   pas rendu à la note après Annuler, Enregistrer ou Supprimer (WCAG 2.4.3).
 - [#187](https://github.com/TwelveLab12/dnd-character-manager/issues/187) — titre d'onglet générique
   sur la fiche et l'édition : il ne nomme pas le personnage (RGAA 8.6, à arbitrer).
+
+Relevés par la revue `a11y-reviewer` de
+[#191](https://github.com/TwelveLab12/dnd-character-manager/issues/191) :
+
+- [#192](https://github.com/TwelveLab12/dnd-character-manager/issues/192) — bouton `destructive` :
+  focus presque invisible sur « Supprimer » dans les confirmations (RGAA 3.3, 10.7, WCAG 1.4.11).
+- [#193](https://github.com/TwelveLab12/dnd-character-manager/issues/193) — case cochée et
+  interrupteur activé : indicateur de focus sous 3:1 (RGAA 3.3, 10.7, WCAG 1.4.11).
+- [#194](https://github.com/TwelveLab12/dnd-character-manager/issues/194) — champs numériques de la
+  fiche : aucun indicateur de focus (RGAA 10.7, WCAG 2.4.7).
 
 ## Tenir ce document à jour
 
