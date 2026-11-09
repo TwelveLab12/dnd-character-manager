@@ -17,6 +17,8 @@ const FOCUS_MARGIN = 8;
 const A11Y = { tag: "@a11y" };
 
 type Box = { x: number; y: number; width: number; height: number };
+type Radius = { x: number; y: number };
+type Corners = { topLeft: Radius; topRight: Radius; bottomRight: Radius; bottomLeft: Radius };
 
 async function wcagViolations(page: Page) {
   const results = await new AxeBuilder({ page }).withTags(AXE_TAGS).analyze();
@@ -55,7 +57,13 @@ async function shot(page: Page, clip: Box) {
 // pseudo-element, as drawn over the real background. Returns the thickest band of pixels that
 // change at `contrast` or more, read on scanlines across each side of the element, and the
 // strongest change anywhere (for the report).
-async function measureFocus(arg: { focused: string; blurred: string; el: Box; contrast: number }) {
+async function measureFocus(arg: {
+  focused: string;
+  blurred: string;
+  el: Box;
+  radii: Corners;
+  contrast: number;
+}) {
   const decode = async (base64: string) => {
     const bytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
     const bitmap = await createImageBitmap(new Blob([bytes], { type: "image/png" }), {
@@ -97,14 +105,23 @@ async function measureFocus(arg: { focused: string; blurred: string; el: Box; co
   const clamp = (v: number, max: number) => Math.min(max - 1, Math.max(0, Math.round(v)));
   const cx = clamp(arg.el.x + arg.el.width / 2, width);
   const cy = clamp(arg.el.y + arg.el.height / 2, height);
-  const columns = [0.25, 0.5, 0.75].map((f) => clamp(arg.el.x + arg.el.width * f, width));
-  const rows = [0.25, 0.5, 0.75].map((f) => clamp(arg.el.y + arg.el.height * f, height));
+  // Scanlines cross each side on its straight part, between the rounded corners: on a curve,
+  // anti-aliasing spreads a 1 px border over fainter pixels. A fully rounded side shrinks to its
+  // middle, where the curve is flat.
+  const along = (from: number, start: number, end: number, max: number) =>
+    [0.25, 0.5, 0.75].map((f) => clamp(from + start + Math.max(0, end - start) * f, max));
+  const { topLeft, topRight, bottomRight, bottomLeft } = arg.radii;
+  const { x: left, y: top, width: w, height: h } = arg.el;
+  const topColumns = along(left, topLeft.x, w - topRight.x, width);
+  const bottomColumns = along(left, bottomLeft.x, w - bottomRight.x, width);
+  const leftRows = along(top, topLeft.y, h - bottomLeft.y, height);
+  const rightRows = along(top, topRight.y, h - bottomRight.y, height);
   // Each side is scanned from the edge of the screenshot to the element's centre.
   const sides = [
-    median(columns.map((x) => run(x, 0, 0, 1, cy + 1))),
-    median(columns.map((x) => run(x, height - 1, 0, -1, height - cy))),
-    median(rows.map((y) => run(0, y, 1, 0, cx + 1))),
-    median(rows.map((y) => run(width - 1, y, -1, 0, width - cx))),
+    median(topColumns.map((x) => run(x, 0, 0, 1, cy + 1))),
+    median(bottomColumns.map((x) => run(x, height - 1, 0, -1, height - cy))),
+    median(leftRows.map((y) => run(0, y, 1, 0, cx + 1))),
+    median(rightRows.map((y) => run(width - 1, y, -1, 0, width - cx))),
   ];
   return { thickness: Math.max(...sides), strongest: Math.round(strongest * 100) / 100 };
 }
@@ -165,7 +182,38 @@ for (const route of ROUTES) {
             el.textContent?.trim().slice(0, 40) ||
             el.tagName;
           const { x, y, width, height } = el.getBoundingClientRect();
-          return { id: `${el.tagName}:${name}`, box: { x, y, width, height } };
+          // Corner radii as drawn: CSS scales them down together when they overlap (rounded-full).
+          const style = getComputedStyle(el);
+          const corner = (name: string) => {
+            const [rx = 0, ry = rx] = style
+              .getPropertyValue(`border-${name}-radius`)
+              .split(" ")
+              .map(parseFloat);
+            return { x: rx, y: ry };
+          };
+          const topLeft = corner("top-left");
+          const topRight = corner("top-right");
+          const bottomRight = corner("bottom-right");
+          const bottomLeft = corner("bottom-left");
+          const fit = (size: number, sum: number) => (sum > 0 ? size / sum : 1);
+          const scale = Math.min(
+            1,
+            fit(width, topLeft.x + topRight.x),
+            fit(width, bottomLeft.x + bottomRight.x),
+            fit(height, topLeft.y + bottomLeft.y),
+            fit(height, topRight.y + bottomRight.y),
+          );
+          const scaled = (r: { x: number; y: number }) => ({ x: r.x * scale, y: r.y * scale });
+          return {
+            id: `${el.tagName}:${name}`,
+            box: { x, y, width, height },
+            radii: {
+              topLeft: scaled(topLeft),
+              topRight: scaled(topRight),
+              bottomRight: scaled(bottomRight),
+              bottomLeft: scaled(bottomLeft),
+            },
+          };
         });
         if (!stop) break; // focus left the page or came back to a visited element: all covered
         const clip = around(stop.box, viewport);
@@ -183,6 +231,7 @@ for (const route of ROUTES) {
           focused,
           blurred,
           el,
+          radii: stop.radii,
           contrast: FOCUS_CONTRAST,
         });
         if (indicator.thickness < FOCUS_THICKNESS) {
