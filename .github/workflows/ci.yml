@@ -12,16 +12,22 @@ jobs:
     timeout-minutes: 15
     permissions:
       contents: read
-      actions: read
       statuses: write
+    # Deployment Check sélectionné dans Vercel (Settings > Deployment Checks) : ne pas changer ce
+    # nom sans mettre Vercel à jour.
+    env:
+      VERCEL_CHECK: "Vercel - dnd-character-manager: ci"
     steps:
-      - uses: actions/checkout@v7
+      # Statut Vercel « en cours » avant toute autre étape, état réel du job à la dernière.
+      - name: Statut Vercel (en cours)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api "repos/$GITHUB_REPOSITORY/statuses/$GITHUB_SHA" --silent \
+            -f context="$VERCEL_CHECK" -f state=pending -f description="Job build en cours" \
+            -f target_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
 
-      # Reports this job's status to Vercel as a named Deployment Check
-      # (Settings > Deployment Checks in the Vercel dashboard).
-      - uses: vercel/repository-dispatch/actions/status@v1
-        with:
-          name: "Vercel - dnd-character-manager: ci"
+      - uses: actions/checkout@v7
 
       - uses: pnpm/action-setup@v6
 
@@ -61,3 +67,17 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 7
+
+      # Toujours exécutée : seul un job build réussi pose success, quels que soient les autres
+      # jobs du workflow.
+      - name: Statut Vercel (résultat du job)
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          JOB_STATUS: ${{ job.status }}
+        run: |
+          state=failure
+          if [ "$JOB_STATUS" = success ]; then state=success; fi
+          gh api "repos/$GITHUB_REPOSITORY/statuses/$GITHUB_SHA" --silent \
+            -f context="$VERCEL_CHECK" -f state="$state" -f description="Job build : $JOB_STATUS" \
+            -f target_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
