@@ -109,7 +109,7 @@ export function InventoryItemEditor({
           />
         </Field>
         <div className="grid gap-1.5">
-          <span className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
+          <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
             Quantité
           </span>
           <QuantityStepper
@@ -132,7 +132,7 @@ export function InventoryItemEditor({
       </div>
 
       <div className="grid gap-1.5">
-        <span className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
+        <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
           Type
         </span>
         <SegmentedControl
@@ -190,7 +190,7 @@ function Field({
     <div className="grid content-start gap-1.5">
       <Label
         htmlFor={htmlFor}
-        className="text-muted-foreground text-xs font-semibold tracking-wider uppercase"
+        className="text-xs font-semibold tracking-wider text-muted-foreground uppercase"
       >
         {label}
       </Label>
@@ -201,7 +201,7 @@ function Field({
 
 /** Bloc des champs propres au type, sur un fond distinct. */
 function TypeBlock({ children }: { children: ReactNode }) {
-  return <div className="bg-card grid gap-4 rounded-xl border p-3.5">{children}</div>;
+  return <div className="grid gap-4 rounded-xl border bg-card p-3.5">{children}</div>;
 }
 
 /** Propriété d'arme en jeton (Finesse, Légère…). */
@@ -220,7 +220,7 @@ function PropertyChip({
       aria-pressed={pressed}
       onClick={() => onPressedChange(!pressed)}
       className={cn(
-        "focus-visible:ring-ring/50 h-9 rounded-full border px-3.5 text-sm font-medium transition-colors outline-none focus-visible:ring-3",
+        "h-9 rounded-full border px-3.5 text-sm font-medium transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
         pressed
           ? "border-primary bg-primary/15 text-foreground"
           : "text-muted-foreground hover:bg-muted/40",
@@ -330,7 +330,7 @@ function WeaponFields({
       </div>
 
       <div className="grid gap-2">
-        <span className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
+        <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
           Propriétés
         </span>
         <div className="flex flex-wrap gap-1.5">
@@ -371,7 +371,7 @@ function WeaponFields({
           )}
         </div>
         {melee && thrown && (
-          <div className="text-muted-foreground flex flex-wrap items-center gap-2 text-sm">
+          <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
             <Label htmlFor={thrownNormalId}>Portée de lancer</Label>
             <Input
               id={thrownNormalId}
@@ -401,16 +401,16 @@ function WeaponFields({
       </div>
 
       {attack && (
-        <p className="border-primary/25 bg-primary/5 flex flex-wrap items-center gap-2.5 rounded-lg border px-3 py-2">
-          <span className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
+        <p className="flex flex-wrap items-center gap-2.5 rounded-lg border border-primary/25 bg-primary/5 px-3 py-2">
+          <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
             Attaque calculée
           </span>
-          <span className="bg-primary/15 text-primary rounded-md px-2 py-0.5 font-bold tabular-nums">
+          <span className="rounded-md bg-primary/15 px-2 py-0.5 font-bold text-primary tabular-nums">
             {formatModifier(attack.attackBonus)}
           </span>
           <span className="text-sm">{formatWeaponDamage(attack)}</span>
           {!attack.proficient && (
-            <span className="text-warning text-xs">sans maîtrise de cette catégorie</span>
+            <span className="text-xs text-warning">sans maîtrise de cette catégorie</span>
           )}
         </p>
       )}
@@ -481,7 +481,7 @@ function ArmorFields({
           </Field>
         )}
       </div>
-      <p className="text-muted-foreground text-sm">
+      <p className="text-sm text-muted-foreground">
         {shield
           ? "Équipé, il s’ajoute à la CA."
           : "Équipée, elle remplace 10 + Dex dans le calcul de la CA."}
@@ -515,7 +515,7 @@ function PlainItemFields({
         </Field>
         <EquipControl item={item} onEquip={onEquip} />
       </div>
-      <p className="text-muted-foreground text-sm">
+      <p className="text-sm text-muted-foreground">
         Pour un objet porté qui protège (anneau, cape…) : le bonus compte quand il est équipé.
       </p>
     </TypeBlock>

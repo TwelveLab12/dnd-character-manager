@@ -150,14 +150,14 @@ export function IdentitySection({ draft, onChange }: CharacterTabProps) {
           <FieldLabel htmlFor={nameId}>Nom du personnage</FieldLabel>
           <Input
             id={nameId}
-            className="font-heading h-14 rounded-xl px-4 text-2xl font-semibold md:text-2xl"
+            className="h-14 rounded-xl px-4 font-heading text-2xl font-semibold md:text-2xl"
             value={draft.name}
             onChange={(event) => onChange({ name: event.target.value })}
           />
         </div>
         <div className="grid justify-items-center gap-1.5">
           <FieldLabel htmlFor={levelId}>Niveau</FieldLabel>
-          <div className="border-input dark:bg-input/30 flex h-14 items-center rounded-xl border">
+          <div className="flex h-14 items-center rounded-xl border border-input dark:bg-input/30">
             <Button
               type="button"
               variant="ghost"
@@ -174,7 +174,7 @@ export function IdentitySection({ draft, onChange }: CharacterTabProps) {
               type="number"
               min={MIN_LEVEL}
               max={MAX_LEVEL}
-              className="font-heading text-primary w-12 [appearance:textfield] bg-transparent text-center text-3xl font-semibold outline-none [&::-webkit-inner-spin-button]:appearance-none"
+              className="w-12 [appearance:textfield] bg-transparent text-center font-heading text-3xl font-semibold text-primary outline-none [&::-webkit-inner-spin-button]:appearance-none"
               value={draft.level}
               onChange={(event) => onChange({ level: clampLevel(toNumber(event.target.value)) })}
             />
@@ -282,7 +282,7 @@ export function IdentitySection({ draft, onChange }: CharacterTabProps) {
           {!race && (
             <div className="grid grid-cols-[minmax(0,1fr)_7rem] gap-2">
               <div className="grid gap-1">
-                <Label htmlFor={raceNameId} className="text-muted-foreground text-xs font-normal">
+                <Label htmlFor={raceNameId} className="text-xs font-normal text-muted-foreground">
                   Nom de la race
                 </Label>
                 <Input
@@ -294,7 +294,7 @@ export function IdentitySection({ draft, onChange }: CharacterTabProps) {
                 />
               </div>
               <div className="grid gap-1">
-                <Label htmlFor={baseSpeedId} className="text-muted-foreground text-xs font-normal">
+                <Label htmlFor={baseSpeedId} className="text-xs font-normal text-muted-foreground">
                   Vitesse (m)
                 </Label>
                 <Input
@@ -351,9 +351,9 @@ function RulesCallout({
   children: ReactNode;
 }) {
   return (
-    <div className="border-primary/40 bg-primary/10 grid gap-2 rounded-xl border p-3">
+    <div className="grid gap-2 rounded-xl border border-primary/40 bg-primary/10 p-3">
       <p className="flex gap-2 text-sm">
-        <Sparkles aria-hidden className="text-primary mt-0.5 size-4 shrink-0" />
+        <Sparkles aria-hidden className="mt-0.5 size-4 shrink-0 text-primary" />
         <span>{children}</span>
       </p>
       <Button type="button" size="sm" className="justify-self-start" onClick={onApply}>
@@ -367,7 +367,7 @@ function FieldLabel({ htmlFor, children }: { htmlFor: string; children: ReactNod
   return (
     <Label
       htmlFor={htmlFor}
-      className="text-muted-foreground text-xs font-semibold tracking-wider uppercase"
+      className="text-xs font-semibold tracking-wider text-muted-foreground uppercase"
     >
       {children}
     </Label>
@@ -434,13 +434,13 @@ function RaceBonusPanel({ draft, onChange, race }: CharacterTabProps & { race: R
   const choice = choiceRule?.type === "choice" ? choiceRule : undefined;
 
   return (
-    <div className="bg-background/60 grid gap-2.5 rounded-xl border p-3.5">
+    <div className="grid gap-2.5 rounded-xl border bg-background/60 p-3.5">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <span id={titleId} className="text-sm font-medium">
           {race.name} · {describeRaceBonuses(race)} · vitesse {formatSpeed(race.speed)}
         </span>
         {choice && (
-          <span className="text-muted-foreground text-xs">
+          <span className="text-xs text-muted-foreground">
             {choices.length} / {choice.count} choisies
           </span>
         )}
@@ -485,7 +485,7 @@ function RaceBonusPanel({ draft, onChange, race }: CharacterTabProps & { race: R
               onClick={() => toggle(ability)}
               className={cn(
                 chipClass,
-                "focus-visible:ring-ring/50 outline-none focus-visible:ring-3 disabled:opacity-40",
+                "outline-none focus-visible:ring-3 focus-visible:ring-ring/50 disabled:opacity-40",
                 bonus === 0 && "hover:bg-muted/40",
               )}
             >

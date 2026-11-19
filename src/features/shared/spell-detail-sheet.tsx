@@ -81,7 +81,7 @@ export function SpellDetailSheet({
         ]}
       />
       {shown.components.materialDescription && (
-        <p className="text-muted-foreground -mt-1.5 text-[13px] italic">
+        <p className="-mt-1.5 text-[13px] text-muted-foreground italic">
           Matériel : {shown.components.materialDescription}
         </p>
       )}
@@ -89,19 +89,19 @@ export function SpellDetailSheet({
       <DetailText>{shown.description || "Pas de description."}</DetailText>
 
       {shown.higherLevel && (
-        <div className="border-primary/30 bg-primary/8 grid gap-1 rounded-2xl border px-3.5 py-3">
-          <p className="text-primary flex items-center gap-1.5 text-xs font-semibold tracking-wide">
+        <div className="grid gap-1 rounded-2xl border border-primary/30 bg-primary/8 px-3.5 py-3">
+          <p className="flex items-center gap-1.5 text-xs font-semibold tracking-wide text-primary">
             <TrendingUp aria-hidden className="size-3.5" />
             Aux niveaux supérieurs
           </p>
-          <p className="text-foreground/88 text-sm leading-relaxed whitespace-pre-line">
+          <p className="text-sm leading-relaxed whitespace-pre-line text-foreground/88">
             {shown.higherLevel}
           </p>
         </div>
       )}
 
       {showOrigin && origin.length > 0 && (
-        <p className="text-muted-foreground text-xs">{origin.join(" · ")}</p>
+        <p className="text-xs text-muted-foreground">{origin.join(" · ")}</p>
       )}
     </DetailSheet>
   );

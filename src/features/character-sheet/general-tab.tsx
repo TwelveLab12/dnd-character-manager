@@ -112,15 +112,15 @@ function SummaryTiles({ draft }: { draft: CharacterTabProps["draft"] }) {
         <a
           key={tile.label}
           href={tile.href}
-          className="bg-background/60 border-primary/30 hover:border-primary/60 focus-visible:ring-ring/50 grid content-start gap-1 rounded-xl border px-4 py-3 transition-colors outline-none focus-visible:ring-3"
+          className="grid content-start gap-1 rounded-xl border border-primary/30 bg-background/60 px-4 py-3 transition-colors outline-none hover:border-primary/60 focus-visible:ring-3 focus-visible:ring-ring/50"
         >
-          <span className="text-muted-foreground text-[11px] font-semibold tracking-widest uppercase">
+          <span className="text-[11px] font-semibold tracking-widest text-muted-foreground uppercase">
             {tile.label}
           </span>
-          <span className="font-heading text-primary text-3xl leading-tight font-semibold tabular-nums">
+          <span className="font-heading text-3xl leading-tight font-semibold text-primary tabular-nums">
             {tile.value}
           </span>
-          <span className="text-muted-foreground line-clamp-2 text-xs">{tile.detail}</span>
+          <span className="line-clamp-2 text-xs text-muted-foreground">{tile.detail}</span>
         </a>
       ))}
     </div>
@@ -213,10 +213,10 @@ function RulesSection({ draft, onChange }: CharacterTabProps) {
       </div>
 
       <div className="grid gap-2 sm:grid-cols-2">
-        <div className="bg-background/60 flex items-center gap-3 rounded-xl border px-3.5 py-2.5">
+        <div className="flex items-center gap-3 rounded-xl border bg-background/60 px-3.5 py-2.5">
           <Label htmlFor={initiativeId} className="grid flex-1 gap-0.5">
             <span className="text-sm font-medium">Bonus d&rsquo;initiative hors Dextérité</span>
-            <span id={initiativeHintId} className="text-muted-foreground text-xs font-normal">
+            <span id={initiativeHintId} className="text-xs font-normal text-muted-foreground">
               Ex : don Vigilant +5
             </span>
           </Label>
@@ -235,10 +235,10 @@ function RulesSection({ draft, onChange }: CharacterTabProps) {
           />
         </div>
 
-        <div className="bg-background/60 flex items-center gap-3 rounded-xl border px-3.5 py-2.5">
+        <div className="flex items-center gap-3 rounded-xl border bg-background/60 px-3.5 py-2.5">
           <Label htmlFor={speedId} className="grid flex-1 gap-0.5">
             <span className="text-sm font-medium">Bonus de vitesse (m)</span>
-            <span id={speedHintId} className="text-muted-foreground text-xs font-normal">
+            <span id={speedHintId} className="text-xs font-normal text-muted-foreground">
               Ex : Déplacement sans armure du Moine +3
             </span>
           </Label>
@@ -292,7 +292,7 @@ function ThemeAndNotesSection({ draft, onChange }: CharacterTabProps) {
                 onChange({ themeId: theme.id === DEFAULT_THEME ? undefined : theme.id })
               }
               className={cn(
-                "focus-visible:ring-ring/50 flex min-h-16 items-center gap-3.5 rounded-xl border px-3.5 py-2.5 text-left transition-colors outline-none focus-visible:ring-3",
+                "flex min-h-16 items-center gap-3.5 rounded-xl border px-3.5 py-2.5 text-left transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
                 checked ? "border-primary bg-primary/10" : "bg-background/60 hover:bg-muted/40",
               )}
             >
@@ -307,7 +307,7 @@ function ThemeAndNotesSection({ draft, onChange }: CharacterTabProps) {
               </span>
               <span className="grid gap-0.5">
                 <span className="text-sm font-semibold">{theme.label}</span>
-                {theme.hint && <span className="text-muted-foreground text-xs">{theme.hint}</span>}
+                {theme.hint && <span className="text-xs text-muted-foreground">{theme.hint}</span>}
               </span>
             </button>
           );

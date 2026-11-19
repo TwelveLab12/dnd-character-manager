@@ -22,15 +22,15 @@ export function SpellSlotsCard({ character }: { character: Character }) {
   return (
     <section
       aria-label="Emplacements de sorts"
-      className="border-info/30 bg-info/5 flex flex-col gap-3 rounded-2xl border px-3.5 py-4 sm:px-4.5"
+      className="flex flex-col gap-3 rounded-2xl border border-info/30 bg-info/5 px-3.5 py-4 sm:px-4.5"
     >
       <div className="flex items-center justify-between gap-2">
-        <span className="text-info inline-flex items-center gap-1.5 text-[13px] font-semibold">
+        <span className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-info">
           <Sparkles aria-hidden className="size-4" />
           Emplacements de sorts
         </span>
-        <span className="text-muted-foreground text-xs">
-          <strong className="text-foreground font-semibold tabular-nums">{remaining}</strong> /{" "}
+        <span className="text-xs text-muted-foreground">
+          <strong className="font-semibold text-foreground tabular-nums">{remaining}</strong> /{" "}
           {total} restants
         </span>
       </div>
@@ -47,7 +47,7 @@ function SpellSlotRow({ characterId, slot }: { characterId: string; slot: SpellS
 
   return (
     <div className="flex items-center gap-2.5">
-      <span className="font-heading text-muted-foreground w-12 shrink-0 text-[15px] font-semibold">
+      <span className="w-12 shrink-0 font-heading text-[15px] font-semibold text-muted-foreground">
         Niv. <span className="text-foreground">{slot.level}</span>
       </span>
       <div className="flex flex-1 flex-wrap gap-1">
@@ -63,7 +63,7 @@ function SpellSlotRow({ characterId, slot }: { characterId: string; slot: SpellS
                   ? `Utiliser un emplacement de niveau ${slot.level}`
                   : `Récupérer un emplacement de niveau ${slot.level}`
               }
-              className="focus-visible:ring-ring/50 grid size-9 place-items-center rounded-lg outline-none focus-visible:ring-3 sm:size-8"
+              className="grid size-9 place-items-center rounded-lg outline-none focus-visible:ring-3 focus-visible:ring-ring/50 sm:size-8"
             >
               <svg viewBox="0 0 24 24" aria-hidden className="size-[22px] overflow-visible">
                 <path
@@ -74,7 +74,7 @@ function SpellSlotRow({ characterId, slot }: { characterId: string; slot: SpellS
                   className={`transition-[fill,stroke] duration-200 ${
                     isAvailable
                       ? "fill-info stroke-info drop-shadow-[0_0_5px_color-mix(in_oklab,var(--info)_55%,transparent)]"
-                      : "stroke-muted-foreground/45 fill-transparent"
+                      : "fill-transparent stroke-muted-foreground/45"
                   }`}
                 />
               </svg>
@@ -84,7 +84,7 @@ function SpellSlotRow({ characterId, slot }: { characterId: string; slot: SpellS
       </div>
       <span className="shrink-0 text-[13px] font-semibold tabular-nums">
         {available}
-        <span className="text-muted-foreground font-normal">/{slot.total}</span>
+        <span className="font-normal text-muted-foreground">/{slot.total}</span>
       </span>
     </div>
   );

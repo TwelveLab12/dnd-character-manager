@@ -71,7 +71,7 @@ export function AttacksSection({ draft, onChange }: CharacterTabProps) {
       </div>
 
       {warnings.length > 0 && (
-        <ul className="text-warning grid gap-1 text-xs">
+        <ul className="grid gap-1 text-xs text-warning">
           {warnings.map((warning) => (
             <li key={warning}>{warning}</li>
           ))}
@@ -79,11 +79,11 @@ export function AttacksSection({ draft, onChange }: CharacterTabProps) {
       )}
 
       {attacks.length === 0 ? (
-        <p className="text-muted-foreground rounded-xl border border-dashed p-3 text-center text-sm">
+        <p className="rounded-xl border border-dashed p-3 text-center text-sm text-muted-foreground">
           Aucune arme équipée.
         </p>
       ) : (
-        <ul className="bg-background/60 divide-y rounded-xl border">
+        <ul className="divide-y rounded-xl border bg-background/60">
           {attacks.map((attack) => {
             const tags = weaponAttackTags(attack);
             return (
@@ -94,16 +94,16 @@ export function AttacksSection({ draft, onChange }: CharacterTabProps) {
                 <span className="grid min-w-0 gap-0.5">
                   <span className="font-medium">{attack.name || "Arme"}</span>
                   {tags.length > 0 && (
-                    <span className="text-muted-foreground text-xs">{tags.join(" · ")}</span>
+                    <span className="text-xs text-muted-foreground">{tags.join(" · ")}</span>
                   )}
                 </span>
                 <span
                   aria-label={`Bonus d’attaque ${formatModifier(attack.attackBonus)}`}
-                  className="bg-primary/15 text-primary justify-self-center rounded-lg px-2.5 py-1 font-semibold tabular-nums"
+                  className="justify-self-center rounded-lg bg-primary/15 px-2.5 py-1 font-semibold text-primary tabular-nums"
                 >
                   {formatModifier(attack.attackBonus)}
                 </span>
-                <span className="text-muted-foreground col-span-2 text-sm sm:col-span-1">
+                <span className="col-span-2 text-sm text-muted-foreground sm:col-span-1">
                   {formatWeaponDamage(attack)}
                 </span>
               </li>

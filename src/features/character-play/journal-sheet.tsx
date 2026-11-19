@@ -121,13 +121,13 @@ export function JournalButton({ character }: { character: Character }) {
           variant="ghost"
           size="icon-lg"
           aria-label="Journal"
-          className="text-primary hover:text-primary relative"
+          className="relative text-primary hover:text-primary"
         >
           <BookOpen />
           {hasToday && (
             <span
               aria-hidden
-              className="bg-primary ring-card absolute top-1.5 right-1.5 size-1.5 rounded-full ring-2"
+              className="absolute top-1.5 right-1.5 size-1.5 rounded-full bg-primary ring-2 ring-card"
             />
           )}
         </Button>
@@ -136,7 +136,7 @@ export function JournalButton({ character }: { character: Character }) {
         side={wide ? "right" : "bottom"}
         showCloseButton={false}
         data-theme={theme}
-        className={`bg-card text-card-foreground border-primary/35 gap-0 ring-0 ${
+        className={`gap-0 border-primary/35 bg-card text-card-foreground ring-0 ${
           wide ? "w-full border-l sm:max-w-md" : "h-[88dvh] rounded-t-3xl border-x border-t"
         }`}
       >
@@ -146,19 +146,19 @@ export function JournalButton({ character }: { character: Character }) {
         >
           {!wide && (
             <div aria-hidden className="flex justify-center pt-2.5 pb-1">
-              <span className="bg-muted-foreground/45 h-1 w-10 rounded-full" />
+              <span className="h-1 w-10 rounded-full bg-muted-foreground/45" />
             </div>
           )}
           <div className="flex items-start gap-2 pt-4 pr-3 pb-3 pl-5">
             <div className="grid min-w-0 flex-1 gap-1">
-              <SheetDescription className="text-primary text-[11px] font-semibold tracking-widest uppercase">
+              <SheetDescription className="text-[11px] font-semibold tracking-widest text-primary uppercase">
                 {character.name}
               </SheetDescription>
               <div className="flex items-baseline gap-2">
                 <SheetTitle className="font-heading text-[28px] leading-8 font-semibold">
                   Journal
                 </SheetTitle>
-                <span className="text-muted-foreground text-sm">
+                <span className="text-sm text-muted-foreground">
                   {journal.length === 0 ? "Aucune session" : plural(journal.length, "session")}
                 </span>
               </div>
@@ -177,7 +177,7 @@ export function JournalButton({ character }: { character: Character }) {
                 type="button"
                 variant="ghost"
                 size="icon"
-                className="bg-muted-foreground/12 size-11 shrink-0 rounded-full"
+                className="size-11 shrink-0 rounded-full bg-muted-foreground/12"
               >
                 <XIcon />
                 <span className="sr-only">Fermer</span>
@@ -253,13 +253,13 @@ function JournalContent({
       {journal.length === 0 ? (
         <section
           aria-label="Journal vide"
-          className="bg-background/50 grid justify-items-center gap-3 rounded-2xl border px-5 pt-7 pb-4 text-center"
+          className="grid justify-items-center gap-3 rounded-2xl border bg-background/50 px-5 pt-7 pb-4 text-center"
         >
-          <span className="bg-primary/12 text-primary flex size-14 items-center justify-center rounded-full">
+          <span className="flex size-14 items-center justify-center rounded-full bg-primary/12 text-primary">
             <BookOpen className="size-6" />
           </span>
           <h3 className="font-heading text-[22px] font-semibold">Journal de l’aventurier</h3>
-          <p className="text-muted-foreground max-w-72 text-sm leading-relaxed">
+          <p className="max-w-72 text-sm leading-relaxed text-muted-foreground">
             Consigne ce que le MJ vous révèle : noms, lieux, indices, rendez-vous. Chaque partie
             devient une session, datée du jour.
           </p>
@@ -269,7 +269,7 @@ function JournalContent({
               onAdd={(text) => actions.addJournalNote(text)}
             />
           </div>
-          <Button type="button" variant="ghost" className="text-accent h-11" onClick={onCreate}>
+          <Button type="button" variant="ghost" className="h-11 text-accent" onClick={onCreate}>
             <CalendarDays />
             Recopier des notes d’une partie passée
           </Button>
@@ -285,7 +285,7 @@ function JournalContent({
       ) : (
         <section
           aria-label="Session du jour"
-          className="border-primary/55 bg-primary/5 grid gap-2.5 rounded-2xl border border-dashed p-4"
+          className="grid gap-2.5 rounded-2xl border border-dashed border-primary/55 bg-primary/5 p-4"
         >
           <div className="grid gap-0.5">
             <Kicker className="text-primary">
@@ -295,7 +295,7 @@ function JournalContent({
               {formatSessionDate(today, today)}
             </p>
           </div>
-          <p className="text-muted-foreground text-sm leading-relaxed">
+          <p className="text-sm leading-relaxed text-muted-foreground">
             La session démarre avec ta première note. Tu pourras lui donner un titre ou changer sa
             date ensuite.
           </p>
@@ -308,7 +308,7 @@ function JournalContent({
 
       {others.length > 0 && (
         <section aria-label="Sessions précédentes" className="grid gap-2">
-          <h3 className="text-muted-foreground mt-1 text-xs font-semibold tracking-widest uppercase">
+          <h3 className="mt-1 text-xs font-semibold tracking-widest text-muted-foreground uppercase">
             Sessions précédentes
           </h3>
           {others.map((view) =>
@@ -369,16 +369,16 @@ function SessionRow({
       type="button"
       aria-expanded={false}
       onClick={onExpand}
-      className="bg-background/45 hover:bg-background/70 flex w-full items-center gap-3 rounded-xl border px-3.5 py-3 text-left transition-colors"
+      className="flex w-full items-center gap-3 rounded-xl border bg-background/45 px-3.5 py-3 text-left transition-colors hover:bg-background/70"
     >
       <span className="grid min-w-0 flex-1 gap-0.5">
         <Kicker className="text-muted-foreground">{sessionKicker(view, today)}</Kicker>
         <span className="font-heading text-[17px] font-semibold">
           {formatSessionDate(view.session.date, today)}
         </span>
-        <span className="text-muted-foreground truncate text-[13px]">{preview}</span>
+        <span className="truncate text-[13px] text-muted-foreground">{preview}</span>
       </span>
-      <ChevronDown aria-hidden className="text-muted-foreground size-[18px] shrink-0" />
+      <ChevronDown aria-hidden className="size-[18px] shrink-0 text-muted-foreground" />
     </button>
   );
 }
@@ -403,7 +403,7 @@ function SessionCard({
   return (
     <section
       aria-label={`Session ${number}`}
-      className={`bg-background grid gap-2.5 rounded-2xl border p-4 ${
+      className={`grid gap-2.5 rounded-2xl border bg-background p-4 ${
         current ? "border-primary/35 shadow-lg shadow-black/35" : ""
       }`}
     >
@@ -417,25 +417,25 @@ function SessionCard({
               type="button"
               aria-expanded
               onClick={onCollapse}
-              className="font-heading flex items-center gap-1.5 text-left text-[22px] leading-tight font-semibold"
+              className="flex items-center gap-1.5 text-left font-heading text-[22px] leading-tight font-semibold"
             >
               {date}
-              <ChevronDown aria-hidden className="text-muted-foreground size-[18px] rotate-180" />
+              <ChevronDown aria-hidden className="size-[18px] rotate-180 text-muted-foreground" />
             </button>
           ) : (
             <p className="font-heading text-[22px] leading-tight font-semibold">{date}</p>
           )}
           {session.title ? (
-            <p className="font-heading text-muted-foreground text-base italic">{session.title}</p>
+            <p className="font-heading text-base text-muted-foreground italic">{session.title}</p>
           ) : (
-            <p className="text-muted-foreground/70 text-sm">Sans titre</p>
+            <p className="text-sm text-muted-foreground/70">Sans titre</p>
           )}
         </div>
         <Button
           type="button"
           variant="ghost"
           size="icon"
-          className="text-muted-foreground size-10 shrink-0"
+          className="size-10 shrink-0 text-muted-foreground"
           aria-label={`Modifier la session ${number}`}
           onClick={onEdit}
         >
@@ -482,7 +482,7 @@ function NoteComposer({
         placeholder={placeholder}
         value={draft}
         onChange={(event) => setDraft(event.target.value)}
-        className="bg-muted-foreground/7 h-11 flex-1 text-[15px] md:text-[15px]"
+        className="h-11 flex-1 bg-muted-foreground/7 text-[15px] md:text-[15px]"
       />
       <Button
         type="submit"
@@ -502,7 +502,7 @@ function NoteItem({ note, actions }: { note: JournalNote; actions: JournalAction
 
   if (!editing) {
     return (
-      <li className="border-muted-foreground/12 border-t">
+      <li className="border-t border-muted-foreground/12">
         <button
           type="button"
           aria-label={`Modifier la note : ${note.text}`}
@@ -510,9 +510,9 @@ function NoteItem({ note, actions }: { note: JournalNote; actions: JournalAction
             setDraft(note.text);
             setEditing(true);
           }}
-          className="hover:bg-muted-foreground/6 flex w-full gap-3 rounded-md py-2.5 text-left"
+          className="flex w-full gap-3 rounded-md py-2.5 text-left hover:bg-muted-foreground/6"
         >
-          <span aria-hidden className="bg-primary/80 mt-2 size-1.5 shrink-0 rotate-45" />
+          <span aria-hidden className="mt-2 size-1.5 shrink-0 rotate-45 bg-primary/80" />
           <span className="text-[15px] leading-relaxed break-words whitespace-pre-line">
             {note.text}
           </span>
@@ -522,7 +522,7 @@ function NoteItem({ note, actions }: { note: JournalNote; actions: JournalAction
   }
 
   return (
-    <li className="border-muted-foreground/12 grid gap-2 border-t py-2.5">
+    <li className="grid gap-2 border-t border-muted-foreground/12 py-2.5">
       <Textarea
         aria-label="Texte de la note"
         // Le focus suit le clic « Modifier la note » : le bouton qui l'avait quitte le DOM, et sans
@@ -539,7 +539,7 @@ function NoteItem({ note, actions }: { note: JournalNote; actions: JournalAction
         <Button
           type="button"
           variant="ghost"
-          className="text-destructive hover:text-destructive h-10"
+          className="h-10 text-destructive hover:text-destructive"
           onClick={() => void actions.deleteJournalNote(note.id)}
         >
           <Trash2 />
@@ -596,7 +596,7 @@ function SessionDialog({
 
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>
-      <DialogContent data-theme={theme} className="bg-card text-card-foreground gap-5 sm:max-w-md">
+      <DialogContent data-theme={theme} className="gap-5 bg-card text-card-foreground sm:max-w-md">
         <form onSubmit={submit} className="grid gap-5">
           <DialogHeader>
             <DialogTitle className="font-heading text-2xl font-semibold">
@@ -622,7 +622,7 @@ function SessionDialog({
             </div>
             <div className="grid gap-1.5">
               <Label htmlFor="journal-session-title">
-                Titre <span className="text-muted-foreground font-normal">(facultatif)</span>
+                Titre <span className="font-normal text-muted-foreground">(facultatif)</span>
               </Label>
               <Input
                 id="journal-session-title"
@@ -634,11 +634,11 @@ function SessionDialog({
             </div>
           </div>
           {!editing && validDate && (
-            <p className="text-muted-foreground flex gap-2 text-[13px] leading-relaxed">
-              <CalendarDays aria-hidden className="text-accent mt-0.5 size-4 shrink-0" />
+            <p className="flex gap-2 text-[13px] leading-relaxed text-muted-foreground">
+              <CalendarDays aria-hidden className="mt-0.5 size-4 shrink-0 text-accent" />
               <span>
                 Les sessions sont classées et numérotées par date : elle deviendra la{" "}
-                <strong className="text-foreground font-semibold">
+                <strong className="font-semibold text-foreground">
                   session {nextSessionNumber(journal, date)}
                 </strong>
                 .
@@ -660,7 +660,7 @@ function SessionDialog({
               <Button
                 type="button"
                 variant="outline"
-                className="border-destructive/40 text-destructive hover:text-destructive h-11"
+                className="h-11 border-destructive/40 text-destructive hover:text-destructive"
               >
                 <Trash2 />
                 Supprimer la session

@@ -101,7 +101,7 @@ export function ActivityLogButton({ character }: { character: Character }) {
         side={wide ? "right" : "bottom"}
         showCloseButton={false}
         data-theme={isKnownThemeId(character.themeId) ? character.themeId : undefined}
-        className={`bg-card text-card-foreground border-primary/35 gap-0 ring-0 ${
+        className={`gap-0 border-primary/35 bg-card text-card-foreground ring-0 ${
           wide ? "w-full border-l sm:max-w-md" : "max-h-[88dvh] rounded-t-3xl border-x border-t"
         }`}
       >
@@ -111,12 +111,12 @@ export function ActivityLogButton({ character }: { character: Character }) {
         >
           {!wide && (
             <div aria-hidden className="flex justify-center pt-2.5 pb-1">
-              <span className="bg-muted-foreground/45 h-1 w-10 rounded-full" />
+              <span className="h-1 w-10 rounded-full bg-muted-foreground/45" />
             </div>
           )}
           <div className="flex items-start gap-2 pt-4 pr-3 pb-3 pl-5">
             <div className="grid min-w-0 flex-1 gap-1">
-              <SheetDescription className="text-primary text-[11px] font-semibold tracking-widest uppercase">
+              <SheetDescription className="text-[11px] font-semibold tracking-widest text-primary uppercase">
                 {character.name}
               </SheetDescription>
               <SheetTitle className="font-heading text-[28px] leading-8 font-semibold">
@@ -128,7 +128,7 @@ export function ActivityLogButton({ character }: { character: Character }) {
                 type="button"
                 variant="ghost"
                 size="icon"
-                className="bg-muted-foreground/12 size-11 shrink-0 rounded-full"
+                className="size-11 shrink-0 rounded-full bg-muted-foreground/12"
               >
                 <XIcon />
                 <span className="sr-only">Fermer</span>
@@ -177,7 +177,7 @@ function ActivityLogContent({ characterId }: { characterId: string }) {
               onClick={() => setFilter(value)}
               className={`h-8 shrink-0 rounded-full border px-3 text-xs font-medium whitespace-nowrap transition-colors ${
                 filter === value
-                  ? "bg-primary text-primary-foreground border-primary"
+                  ? "border-primary bg-primary text-primary-foreground"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
@@ -189,7 +189,7 @@ function ActivityLogContent({ characterId }: { characterId: string }) {
 
       <div className="min-h-0 flex-1 overflow-y-auto border-t px-5 py-4">
         {days.length === 0 ? (
-          <p className="text-muted-foreground py-8 text-center text-sm">
+          <p className="py-8 text-center text-sm text-muted-foreground">
             Aucune action enregistrée pour l’instant. Les dégâts, soins, sorts, repos, ressources et
             objets utilisés en mode jeu apparaîtront ici.
           </p>
@@ -197,7 +197,7 @@ function ActivityLogContent({ characterId }: { characterId: string }) {
           <div className="grid gap-5">
             {days.map((day) => (
               <section key={day.key} aria-label={day.label} className="grid gap-2">
-                <h3 className="text-muted-foreground text-[11px] font-semibold tracking-widest uppercase">
+                <h3 className="text-[11px] font-semibold tracking-widest text-muted-foreground uppercase">
                   {day.label}
                 </h3>
                 <ol className="grid gap-2">
@@ -219,7 +219,7 @@ function ActivityLogContent({ characterId }: { characterId: string }) {
 function ActivityRow({ entry }: { entry: ActivityEntry }) {
   const Icon = CATEGORY_ICONS[entry.category];
   return (
-    <li className="bg-background/50 flex gap-3 rounded-xl border px-3 py-2.5">
+    <li className="flex gap-3 rounded-xl border bg-background/50 px-3 py-2.5">
       <span
         aria-hidden
         className={`mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full ${CATEGORY_TONES[entry.category]}`}
@@ -229,7 +229,7 @@ function ActivityRow({ entry }: { entry: ActivityEntry }) {
       <div className="grid min-w-0 flex-1 gap-0.5">
         <div className="flex items-baseline gap-2">
           <p className="min-w-0 flex-1 text-sm font-semibold break-words">{entry.title}</p>
-          <time dateTime={entry.at} className="text-muted-foreground shrink-0 text-xs tabular-nums">
+          <time dateTime={entry.at} className="shrink-0 text-xs text-muted-foreground tabular-nums">
             {TIME_FORMAT.format(new Date(entry.at))}
           </time>
         </div>
@@ -239,7 +239,7 @@ function ActivityRow({ entry }: { entry: ActivityEntry }) {
           </p>
         ))}
         {entry.changes.length > 0 && (
-          <ul className="text-muted-foreground grid gap-0.5 text-xs">
+          <ul className="grid gap-0.5 text-xs text-muted-foreground">
             {entry.changes.map((change) => (
               <li key={change.key}>
                 <ChangeLine change={change} />
@@ -293,9 +293,9 @@ function ActivityLogFooter({
   const size = useMemo(() => new Blob([JSON.stringify(entries)]).size, [entries]);
 
   return (
-    <div className="bg-background/40 grid gap-3 border-t px-5 pt-3 pb-5">
+    <div className="grid gap-3 border-t bg-background/40 px-5 pt-3 pb-5">
       <div className="flex items-center gap-3">
-        <span className="text-muted-foreground shrink-0 text-xs">Conserver</span>
+        <span className="shrink-0 text-xs text-muted-foreground">Conserver</span>
         <SegmentedControl<string>
           label="Durée de conservation de l'historique"
           className="flex-1"
@@ -310,7 +310,7 @@ function ActivityLogFooter({
         />
       </div>
       <div className="flex items-center justify-between gap-3">
-        <p className="text-muted-foreground text-xs tabular-nums">
+        <p className="text-xs text-muted-foreground tabular-nums">
           {entries.length} entrée{entries.length > 1 ? "s" : ""} · {formatSize(size)} · 1 000 max.
         </p>
         <AlertDialog>

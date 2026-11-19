@@ -38,7 +38,7 @@ export function AbilitiesViewTab({ character }: { character: Character }) {
       {exhaustion > 0 && (
         <p
           role="note"
-          className="border-warning/50 bg-warning/10 text-warning rounded-xl border px-3 py-2 text-sm"
+          className="rounded-xl border border-warning/50 bg-warning/10 px-3 py-2 text-sm text-warning"
         >
           Épuisement {exhaustion} : désavantage aux tests de caractéristique et de compétence
           {exhaustion >= 3 ? ", et aux jets de sauvegarde" : ""}.
@@ -47,7 +47,7 @@ export function AbilitiesViewTab({ character }: { character: Character }) {
       {form && (
         <p
           role="note"
-          className="border-primary/40 bg-primary/10 rounded-xl border px-3 py-2 text-sm"
+          className="rounded-xl border border-primary/40 bg-primary/10 px-3 py-2 text-sm"
         >
           Forme sauvage ({form.name}) : Force, Dextérité et Constitution sont celles de la bête,
           avec vos maîtrises. Si la bête a un meilleur bonus dans une compétence ou une sauvegarde,
@@ -94,14 +94,14 @@ export function AbilitiesViewTab({ character }: { character: Character }) {
                 <ProficiencyDot proficient={proficient} />
                 <span className="flex-1 text-sm">
                   {skill.name}
-                  <span className="text-muted-foreground ml-1.5 text-[10px] font-semibold tracking-wider">
+                  <span className="ml-1.5 text-[10px] font-semibold tracking-wider text-muted-foreground">
                     {ABILITY_SHORT_LABELS[skill.ability]}
                   </span>
                   <span className="sr-only">{proficient ? " (maîtrisée)" : ""}</span>
                 </span>
                 <span
                   className={`w-8 text-right text-sm tabular-nums ${
-                    proficient ? "text-primary font-bold" : "text-muted-foreground font-medium"
+                    proficient ? "font-bold text-primary" : "font-medium text-muted-foreground"
                   }`}
                 >
                   {formatModifier(skillTotal(skill.name, skill.ability))}
@@ -125,8 +125,8 @@ function HeaderChip({
   accent?: boolean;
 }) {
   return (
-    <p className="bg-background/50 flex items-baseline gap-2 rounded-full border px-3 py-1">
-      <span className="text-muted-foreground text-xs">{label}</span>
+    <p className="flex items-baseline gap-2 rounded-full border bg-background/50 px-3 py-1">
+      <span className="text-xs text-muted-foreground">{label}</span>
       <span
         className={`font-heading text-lg font-bold tabular-nums ${accent ? "text-primary" : ""}`}
       >
@@ -158,10 +158,10 @@ function AbilityCard({
   return (
     <section
       aria-label={ABILITY_LABELS[ability]}
-      className="bg-background/50 flex flex-col overflow-hidden rounded-2xl border"
+      className="flex flex-col overflow-hidden rounded-2xl border bg-background/50"
     >
       <div className="flex flex-col items-center gap-0.5 px-3 pt-3.5 pb-3">
-        <span className="text-muted-foreground text-[11px] font-semibold tracking-widest uppercase">
+        <span className="text-[11px] font-semibold tracking-widest text-muted-foreground uppercase">
           {ABILITY_LABELS[ability]}
         </span>
         <span
@@ -173,7 +173,7 @@ function AbilityCard({
           {formatModifier(total)}
         </span>
         <span
-          className="text-muted-foreground text-xs"
+          className="text-xs text-muted-foreground"
           title={
             racialBonus !== 0
               ? `${baseScore} ${formatModifier(racialBonus)} racial`

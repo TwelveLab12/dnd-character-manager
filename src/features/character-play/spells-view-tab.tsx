@@ -133,7 +133,7 @@ export function SpellsViewTab({ character }: { character: Character }) {
     <div className="grid gap-6">
       {spellcasting && (
         <div className="grid gap-3 sm:grid-cols-[auto_minmax(0,1fr)]">
-          <div className="bg-card flex items-center justify-around gap-6 rounded-2xl border px-6 py-4 shadow-lg">
+          <div className="flex items-center justify-around gap-6 rounded-2xl border bg-card px-6 py-4 shadow-lg">
             <CastingValue label="DD" value={String(spellcasting.spellSaveDC)} />
             <CastingValue label="Attaque" value={formatModifier(spellcasting.spellAttackBonus)} />
           </div>
@@ -171,21 +171,21 @@ export function SpellsViewTab({ character }: { character: Character }) {
       </div>
 
       {availableSpells.length === 0 && (
-        <p className="text-muted-foreground text-sm">
+        <p className="text-sm text-muted-foreground">
           Aucun sort préparé ou toujours disponible pour l&rsquo;instant.
         </p>
       )}
       {availableSpells.length > 0 && visibleSpells.length === 0 && (
-        <p className="text-muted-foreground text-sm">Aucun sort ne correspond aux filtres.</p>
+        <p className="text-sm text-muted-foreground">Aucun sort ne correspond aux filtres.</p>
       )}
 
       {groups.map((group) => (
         <section key={group.level} aria-label={levelLabel(group.level)} className="grid gap-3">
           <div className="flex items-baseline gap-2.5">
-            <h3 className="font-heading text-primary text-xl font-semibold">
+            <h3 className="font-heading text-xl font-semibold text-primary">
               {levelLabel(group.level)}
             </h3>
-            <span className="text-muted-foreground text-sm">{slotsHint(group.level)}</span>
+            <span className="text-sm text-muted-foreground">{slotsHint(group.level)}</span>
           </div>
           <div className="grid gap-3 md:grid-cols-2">
             {group.spells.map((spell: Spell) => (
@@ -223,7 +223,7 @@ export function SpellsViewTab({ character }: { character: Character }) {
 function CastingValue({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex flex-col items-center gap-0.5">
-      <span className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
+      <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
         {label}
       </span>
       <span className="font-heading text-3xl leading-none font-semibold">{value}</span>

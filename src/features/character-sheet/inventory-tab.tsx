@@ -87,7 +87,7 @@ export function InventoryTab({ draft, onChange }: CharacterTabProps) {
               />
             </div>
           ) : item.quantity !== 1 ? (
-            <span className="text-muted-foreground text-sm font-semibold tabular-nums">
+            <span className="text-sm font-semibold text-muted-foreground tabular-nums">
               ×{item.quantity}
             </span>
           ) : null
@@ -118,7 +118,7 @@ export function InventoryTab({ draft, onChange }: CharacterTabProps) {
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div className="grid gap-0.5">
           <h3 className="font-heading text-xl font-semibold">Objets</h3>
-          <p className="text-muted-foreground text-sm">
+          <p className="text-sm text-muted-foreground">
             {draft.inventory.length} objet{draft.inventory.length > 1 ? "s" : ""} ·{" "}
             {formatDecimal(totalInventoryWeight(draft.inventory))} kg portés
             {formatInventoryValue(draft.inventory)}
@@ -181,17 +181,17 @@ function ItemGroup({
   return (
     <section aria-label={title} className="grid gap-2">
       <div className="flex items-baseline justify-between gap-2">
-        <h4 className="text-muted-foreground text-xs font-semibold tracking-widest uppercase">
+        <h4 className="text-xs font-semibold tracking-widest text-muted-foreground uppercase">
           {title}
         </h4>
         {items.length > 0 && (
-          <span className="text-muted-foreground text-xs">
+          <span className="text-xs text-muted-foreground">
             {formatDecimal(totalInventoryWeight(items))} kg
           </span>
         )}
       </div>
       {items.length === 0 ? (
-        <p className="text-muted-foreground rounded-xl border border-dashed p-3 text-center text-sm">
+        <p className="rounded-xl border border-dashed p-3 text-center text-sm text-muted-foreground">
           {empty}
         </p>
       ) : (
@@ -266,7 +266,7 @@ function ItemCard({
           aria-expanded={open}
           aria-controls={panelId}
           onClick={onToggle}
-          className="focus-visible:ring-ring/50 flex min-w-0 flex-1 basis-56 items-center gap-3 rounded-lg py-1 text-left outline-none focus-visible:ring-3"
+          className="flex min-w-0 flex-1 basis-56 items-center gap-3 rounded-lg py-1 text-left outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
         >
           <span
             aria-hidden
@@ -282,12 +282,12 @@ function ItemCard({
               {item.name || "Nouvel objet"}
               {kind === "item" && equipped && <Badge variant="secondary">Équipé</Badge>}
             </span>
-            {summary && <span className="text-muted-foreground truncate text-xs">{summary}</span>}
+            {summary && <span className="truncate text-xs text-muted-foreground">{summary}</span>}
           </span>
           <ChevronDown
             aria-hidden
             className={cn(
-              "text-muted-foreground size-4.5 shrink-0 transition-transform",
+              "size-4.5 shrink-0 text-muted-foreground transition-transform",
               open && "rotate-180",
             )}
           />

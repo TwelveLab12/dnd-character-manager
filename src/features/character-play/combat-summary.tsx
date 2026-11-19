@@ -31,11 +31,11 @@ export function CombatSummary({ character }: { character: Character }) {
   return (
     <section
       aria-label="Résumé"
-      className="bg-background/85 sticky top-0 z-10 flex flex-nowrap items-center gap-2.5 overflow-hidden rounded-xl border px-3 py-2 shadow-lg shadow-black/35 backdrop-blur-sm sm:gap-3.5 sm:px-4 sm:py-2.5"
+      className="sticky top-0 z-10 flex flex-nowrap items-center gap-2.5 overflow-hidden rounded-xl border bg-background/85 px-3 py-2 shadow-lg shadow-black/35 backdrop-blur-sm sm:gap-3.5 sm:px-4 sm:py-2.5"
     >
       <span className="inline-flex shrink-0 items-center gap-1.5 sm:gap-2">
-        <Shield aria-hidden className="text-primary size-4 sm:size-[18px]" />
-        <span className="text-muted-foreground text-xs">CA</span>
+        <Shield aria-hidden className="size-4 text-primary sm:size-[18px]" />
+        <span className="text-xs text-muted-foreground">CA</span>
         <span
           className={`font-heading text-xl font-bold tabular-nums sm:text-[22px] ${boosted ? "text-info" : ""}`}
         >
@@ -44,20 +44,20 @@ export function CombatSummary({ character }: { character: Character }) {
       </span>
       <Divider />
       <span className="inline-flex shrink-0 items-center gap-1.5 sm:gap-2">
-        <Heart aria-hidden className="text-success size-4 sm:size-[18px]" />
-        <span className="text-muted-foreground text-xs">PV</span>
+        <Heart aria-hidden className="size-4 text-success sm:size-[18px]" />
+        <span className="text-xs text-muted-foreground">PV</span>
         {formName && (
-          <span className="text-primary inline-flex items-center gap-1 text-xs font-semibold">
+          <span className="inline-flex items-center gap-1 text-xs font-semibold text-primary">
             <PawPrint aria-hidden className="size-3.5" />
             <span className="max-w-20 truncate max-sm:sr-only">{formName}</span>
           </span>
         )}
         <span className="font-heading text-xl font-bold tabular-nums sm:text-[22px]">
           {current}
-          <span className="text-muted-foreground text-sm font-medium"> / {max}</span>
+          <span className="text-sm font-medium text-muted-foreground"> / {max}</span>
         </span>
         {temporary > 0 && (
-          <span className="border-info/40 bg-info/10 text-info rounded-full border px-2 text-xs">
+          <span className="rounded-full border border-info/40 bg-info/10 px-2 text-xs text-info">
             +{temporary}
             <span className="max-sm:hidden"> temp.</span>
           </span>
@@ -66,7 +66,7 @@ export function CombatSummary({ character }: { character: Character }) {
       {character.raging && (
         <>
           <Divider />
-          <span className="text-destructive inline-flex shrink-0 items-center gap-1.5 text-sm font-semibold">
+          <span className="inline-flex shrink-0 items-center gap-1.5 text-sm font-semibold text-destructive">
             <Flame aria-hidden className="size-4" />
             En rage
           </span>
@@ -75,7 +75,7 @@ export function CombatSummary({ character }: { character: Character }) {
       {isSymbioticEntityActive(character) && (
         <>
           <Divider />
-          <span className="text-success inline-flex shrink-0 items-center gap-1.5 text-sm font-semibold">
+          <span className="inline-flex shrink-0 items-center gap-1.5 text-sm font-semibold text-success">
             <Sprout aria-hidden className="size-4" />
             <span className="max-sm:sr-only">Symbiose</span>
           </span>
@@ -84,7 +84,7 @@ export function CombatSummary({ character }: { character: Character }) {
       {concentration.active && (
         <>
           <Divider />
-          <span className="text-info inline-flex min-w-0 items-center gap-1.5 text-sm">
+          <span className="inline-flex min-w-0 items-center gap-1.5 text-sm text-info">
             <Focus aria-hidden className="size-4 shrink-0" />
             <span className={concentrationSpell ? "text-muted-foreground max-sm:sr-only" : ""}>
               Concentration{concentrationSpell ? " :" : ""}
@@ -100,5 +100,5 @@ export function CombatSummary({ character }: { character: Character }) {
 }
 
 function Divider() {
-  return <span aria-hidden className="bg-border h-5 w-px shrink-0" />;
+  return <span aria-hidden className="h-5 w-px shrink-0 bg-border" />;
 }

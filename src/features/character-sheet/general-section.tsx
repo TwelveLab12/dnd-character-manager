@@ -31,7 +31,7 @@ export function GeneralSection({
           <h3 id={titleId} className="font-heading text-xl font-semibold">
             {title}
           </h3>
-          {description && <p className="text-muted-foreground text-sm">{description}</p>}
+          {description && <p className="text-sm text-muted-foreground">{description}</p>}
         </div>
         {action}
       </div>
@@ -43,7 +43,7 @@ export function GeneralSection({
 /** Petit intitulé en capitales au-dessus d'un groupe de contrôles. */
 export function GroupLabel({ id, children }: { id?: string; children: ReactNode }) {
   return (
-    <span id={id} className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
+    <span id={id} className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
       {children}
     </span>
   );
@@ -80,7 +80,7 @@ export function ProficiencyChip({
       aria-pressed={checked}
       onClick={() => onCheckedChange(!checked)}
       className={cn(
-        "focus-visible:ring-ring/50 flex min-h-14 flex-col items-start justify-center gap-0.5 rounded-xl border px-3 py-2 text-left transition-colors outline-none focus-visible:ring-3",
+        "flex min-h-14 flex-col items-start justify-center gap-0.5 rounded-xl border px-3 py-2 text-left transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
         checked
           ? "border-primary bg-primary/15 text-foreground"
           : "text-muted-foreground hover:bg-muted/40",
@@ -115,10 +115,10 @@ export function RuleSwitchRow({
   const id = useId();
   const effectId = useId();
   return (
-    <div className="bg-background/60 flex items-center gap-3 rounded-xl border px-3.5 py-2.5">
+    <div className="flex items-center gap-3 rounded-xl border bg-background/60 px-3.5 py-2.5">
       <label htmlFor={id} className="grid min-w-0 flex-1 cursor-pointer gap-0.5">
         <span className="text-sm font-medium">{name}</span>
-        <span id={effectId} className="text-muted-foreground text-xs">
+        <span id={effectId} className="text-xs text-muted-foreground">
           {effect}
         </span>
       </label>

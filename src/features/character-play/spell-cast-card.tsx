@@ -130,7 +130,7 @@ function SpellCastButton({
         disabled={defaultMode === undefined}
         variant={defaultMode === undefined ? "outline" : "default"}
         className={`${size === "lg" ? "h-11 px-4 text-[15px]" : ""} ${hasMenu ? "rounded-r-none" : ""} ${
-          defaultMode?.type === "ritual" ? "bg-warning hover:bg-warning/90 text-background" : ""
+          defaultMode?.type === "ritual" ? "bg-warning text-background hover:bg-warning/90" : ""
         }`}
         onClick={() => defaultMode && run(defaultMode)}
       >
@@ -142,7 +142,7 @@ function SpellCastButton({
             <Button
               type="button"
               size={size === "lg" ? "icon-lg" : "icon"}
-              className={`border-background/30 rounded-l-none border-l ${size === "lg" ? "h-11 w-10" : ""}`}
+              className={`rounded-l-none border-l border-background/30 ${size === "lg" ? "h-11 w-10" : ""}`}
               aria-label={`Autres options de lancement : ${spell.name}`}
             >
               <ChevronDown />
@@ -161,7 +161,7 @@ function SpellCastButton({
                   Emplacement niv. {slot.level}
                   {slot.level > spell.level ? " (supérieur)" : ""}
                 </span>
-                <span className="text-muted-foreground text-xs tabular-nums">
+                <span className="text-xs text-muted-foreground tabular-nums">
                   {slot.available}/{slot.total}
                 </span>
               </DropdownMenuItem>
@@ -172,7 +172,7 @@ function SpellCastButton({
                 className="justify-between"
               >
                 <span>En rituel</span>
-                <span className="text-muted-foreground text-xs">+10 min, sans emplacement</span>
+                <span className="text-xs text-muted-foreground">+10 min, sans emplacement</span>
               </DropdownMenuItem>
             )}
           </DropdownMenuContent>
@@ -184,10 +184,10 @@ function SpellCastButton({
 
 function ConcentratingStatus({ onBreak }: { onBreak: () => void }) {
   return (
-    <span className="text-info relative z-10 flex items-center gap-1 text-xs font-semibold">
+    <span className="relative z-10 flex items-center gap-1 text-xs font-semibold text-info">
       <Focus aria-hidden className="size-3.5" />
       En concentration
-      <Button type="button" variant="ghost" size="sm" className="text-info h-7" onClick={onBreak}>
+      <Button type="button" variant="ghost" size="sm" className="h-7 text-info" onClick={onBreak}>
         Rompre
       </Button>
     </span>
@@ -222,7 +222,7 @@ export function SpellCastCard({
         alwaysPrepared ? "bg-primary/10" : "bg-card"
       } ${
         concentrating
-          ? "border-info ring-info/60 shadow-info/20 shadow-lg ring-1"
+          ? "border-info shadow-lg ring-1 shadow-info/20 ring-info/60"
           : alwaysPrepared
             ? "border-primary/50"
             : ""
@@ -232,7 +232,7 @@ export function SpellCastCard({
         type="button"
         aria-label={`Détails : ${spell.name}`}
         onClick={onShowDetails}
-        className="hover:bg-foreground/[0.03] focus-visible:ring-ring absolute inset-0 cursor-pointer rounded-xl outline-none focus-visible:ring-2"
+        className="absolute inset-0 cursor-pointer rounded-xl outline-none hover:bg-foreground/[0.03] focus-visible:ring-2 focus-visible:ring-ring"
       />
       <div className="flex items-start gap-2">
         <div className="grid min-w-0 flex-1 gap-1.5">
@@ -243,7 +243,7 @@ export function SpellCastCard({
             {spell.ritual && <RitualTag />}
             {domain && <Badge variant="secondary">{domain}</Badge>}
           </span>
-          <span className="text-muted-foreground text-xs">
+          <span className="text-xs text-muted-foreground">
             {[spell.castingTime, spell.range, spell.duration].filter(Boolean).join(" · ")}
           </span>
         </div>
@@ -289,14 +289,14 @@ export function SpellCastFooter({
   return (
     <>
       {replacesConcentration && (
-        <p className="text-info flex items-center gap-1.5 text-[12.5px]">
+        <p className="flex items-center gap-1.5 text-[12.5px] text-info">
           <Focus aria-hidden className="size-3.5 shrink-0" />
           Remplacera la concentration sur {concentrationSpellName}
         </p>
       )}
       <div className="flex flex-wrap items-center gap-3">
         <div className="grid flex-1 gap-1.5">
-          <span className="text-muted-foreground text-xs">
+          <span className="text-xs text-muted-foreground">
             {spell.level === 0
               ? "Tour de magie · à volonté"
               : slot
@@ -310,7 +310,7 @@ export function SpellCastFooter({
             type="button"
             size="lg"
             variant="outline"
-            className="border-info/50 text-info hover:text-info h-11 px-4"
+            className="h-11 border-info/50 px-4 text-info hover:text-info"
             onClick={() => void toggleConcentration()}
           >
             Rompre

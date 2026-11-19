@@ -99,7 +99,7 @@ export function ArmorClassSection({ draft, onChange }: CharacterTabProps) {
       }
     >
       {result.warnings.length > 0 && (
-        <ul className="text-warning grid gap-1 text-xs">
+        <ul className="grid gap-1 text-xs text-warning">
           {result.warnings.map((warning) => (
             <li key={warning}>{warning}</li>
           ))}
@@ -146,7 +146,7 @@ export function ArmorClassSection({ draft, onChange }: CharacterTabProps) {
           </Button>
         </div>
         {effects.length === 0 ? (
-          <p className="text-muted-foreground rounded-xl border border-dashed p-3 text-center text-sm">
+          <p className="rounded-xl border border-dashed p-3 text-center text-sm text-muted-foreground">
             Aucun effet. Ex : Bouclier de la foi +2, lié à sa concentration.
           </p>
         ) : (
@@ -188,7 +188,7 @@ function EffectRow({
   }
 
   return (
-    <div className="bg-background/60 grid gap-2 rounded-xl border p-2 sm:grid-cols-[minmax(0,1fr)_6rem_15rem_auto] sm:items-center">
+    <div className="grid gap-2 rounded-xl border bg-background/60 p-2 sm:grid-cols-[minmax(0,1fr)_6rem_15rem_auto] sm:items-center">
       <Input
         aria-label="Nom de l’effet"
         placeholder="Nom de l’effet"
@@ -196,7 +196,7 @@ function EffectRow({
         value={effect.name}
         onChange={(event) => onChange({ name: event.target.value })}
       />
-      <label className="bg-primary/10 text-primary flex h-8 items-center gap-1 rounded-lg px-2.5 font-semibold">
+      <label className="flex h-8 items-center gap-1 rounded-lg bg-primary/10 px-2.5 font-semibold text-primary">
         <span aria-hidden>+</span>
         <input
           aria-label="Bonus de CA"

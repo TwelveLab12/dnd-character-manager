@@ -105,7 +105,7 @@ export function DataPanel() {
 function PanelSection({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section className="flex flex-col gap-1">
-      <h3 className="text-muted-foreground mb-1 px-2 text-xs font-medium tracking-wide uppercase">
+      <h3 className="mb-1 px-2 text-xs font-medium tracking-wide text-muted-foreground uppercase">
         {title}
       </h3>
       {children}
@@ -134,10 +134,10 @@ function PanelAction({
       disabled={disabled}
       onClick={onClick}
     >
-      <Icon className="text-primary size-5" />
+      <Icon className="size-5 text-primary" />
       <span className="flex flex-col">
         <span>{label}</span>
-        <span className="text-muted-foreground text-xs font-normal">{description}</span>
+        <span className="text-xs font-normal text-muted-foreground">{description}</span>
       </span>
     </Button>
   );

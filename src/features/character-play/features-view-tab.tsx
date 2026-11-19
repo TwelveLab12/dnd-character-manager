@@ -39,7 +39,7 @@ export function FeaturesViewTab({ character }: { character: Character }) {
   return (
     <div className="grid gap-6">
       <div className="flex items-center justify-between gap-3">
-        <p className="text-muted-foreground text-sm">
+        <p className="text-sm text-muted-foreground">
           {count} capacité{count > 1 ? "s" : ""}
           {tracked.length > 0 && ` · ${tracked.length} à utilisations`}
         </p>
@@ -55,7 +55,7 @@ export function FeaturesViewTab({ character }: { character: Character }) {
       </div>
 
       {count === 0 && (
-        <p className="text-muted-foreground text-sm">Aucune capacité pour l&rsquo;instant.</p>
+        <p className="text-sm text-muted-foreground">Aucune capacité pour l&rsquo;instant.</p>
       )}
 
       {tracked.length > 0 && (
@@ -75,11 +75,11 @@ export function FeaturesViewTab({ character }: { character: Character }) {
                 type="button"
                 aria-label={`Détails : ${feature.name}`}
                 onClick={() => setDetail({ kind: "feature", featureId: feature.id })}
-                className="bg-background/35 hover:bg-foreground/[0.04] focus-visible:ring-ring/50 flex min-h-11 w-full cursor-pointer items-center gap-2.5 rounded-xl border px-3.5 py-2 text-left transition-colors outline-none focus-visible:ring-3"
+                className="flex min-h-11 w-full cursor-pointer items-center gap-2.5 rounded-xl border bg-background/35 px-3.5 py-2 text-left transition-colors outline-none hover:bg-foreground/[0.04] focus-visible:ring-3 focus-visible:ring-ring/50"
               >
                 <span className="flex-1 text-[15px] font-medium">{feature.name}</span>
                 {feature.resourceId && (
-                  <span className="border-primary/35 bg-primary/10 text-primary shrink-0 rounded-full border px-2 py-0.5 text-[11px]">
+                  <span className="shrink-0 rounded-full border border-primary/35 bg-primary/10 px-2 py-0.5 text-[11px] text-primary">
                     {findClassResourceDefinition(character.classId, feature.resourceId)?.name ??
                       feature.resourceId}
                   </span>
@@ -99,7 +99,7 @@ export function FeaturesViewTab({ character }: { character: Character }) {
 function FeatureGroup({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section aria-label={title} className="grid gap-2">
-      <h3 className="text-muted-foreground text-[11px] font-semibold tracking-widest uppercase">
+      <h3 className="text-[11px] font-semibold tracking-widest text-muted-foreground uppercase">
         {title}
       </h3>
       {children}

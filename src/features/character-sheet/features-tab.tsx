@@ -85,7 +85,7 @@ export function FeaturesTab({ draft, onChange }: CharacterTabProps) {
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div className="grid gap-0.5">
           <h3 className="font-heading text-xl font-semibold">Capacités</h3>
-          <p className="text-muted-foreground text-sm">
+          <p className="text-sm text-muted-foreground">
             {draft.features.length} capacité{draft.features.length > 1 ? "s" : ""}
           </p>
         </div>
@@ -109,7 +109,7 @@ export function FeaturesTab({ draft, onChange }: CharacterTabProps) {
       )}
 
       {draft.features.length === 0 ? (
-        <p className="text-muted-foreground rounded-xl border border-dashed p-3 text-center text-sm">
+        <p className="rounded-xl border border-dashed p-3 text-center text-sm text-muted-foreground">
           Aucune capacité pour l&rsquo;instant.
         </p>
       ) : (
@@ -119,7 +119,7 @@ export function FeaturesTab({ draft, onChange }: CharacterTabProps) {
             .sort((a, b) => compareNames(nameOf(a), nameOf(b)));
           return (
             <section key={source} aria-label={source} className="grid gap-2">
-              <h4 className="text-muted-foreground text-xs font-semibold tracking-widest uppercase">
+              <h4 className="text-xs font-semibold tracking-widest text-muted-foreground uppercase">
                 {source}
               </h4>
               {features.map((feature) => (
@@ -197,17 +197,17 @@ function ClassResourceCard({
   return (
     <section
       aria-labelledby={titleId}
-      className="border-primary/35 bg-background/60 grid gap-3 rounded-2xl border p-4"
+      className="grid gap-3 rounded-2xl border border-primary/35 bg-background/60 p-4"
     >
       <div className="flex items-center gap-3.5">
-        <span className="border-primary text-primary font-heading flex size-13 shrink-0 items-center justify-center rounded-full border-2 text-2xl font-bold tabular-nums">
+        <span className="flex size-13 shrink-0 items-center justify-center rounded-full border-2 border-primary font-heading text-2xl font-bold text-primary tabular-nums">
           {resource.max}
         </span>
         <div className="grid gap-0.5">
           <h4 id={titleId} className="font-heading text-lg font-semibold">
             {resource.name}
           </h4>
-          <p className="text-muted-foreground text-xs">
+          <p className="text-xs text-muted-foreground">
             Réserve de classe · {resource.max} utilisation{resource.max > 1 ? "s" : ""} au niveau{" "}
             {clampCharacterLevel(character.level)}
             {next ? ` (${next.uses} au niveau ${next.level})` : ""} ·{" "}
@@ -218,7 +218,7 @@ function ClassResourceCard({
       <div role="group" aria-labelledby={optionsId} className="grid gap-1.5">
         <span
           id={optionsId}
-          className="text-muted-foreground text-[11px] font-semibold tracking-wider uppercase"
+          className="text-[11px] font-semibold tracking-wider text-muted-foreground uppercase"
         >
           Options qui la dépensent
         </span>
@@ -232,15 +232,15 @@ function ClassResourceCard({
                 aria-pressed={active}
                 onClick={() => toggleOption(option.id)}
                 className={cn(
-                  "focus-visible:ring-ring/50 flex h-9 items-center gap-1.5 rounded-full border px-3 text-sm transition-colors outline-none focus-visible:ring-3",
+                  "flex h-9 items-center gap-1.5 rounded-full border px-3 text-sm transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
                   active
                     ? "border-primary/40 bg-primary/10"
-                    : "text-muted-foreground hover:bg-muted/40 border-dashed",
+                    : "border-dashed text-muted-foreground hover:bg-muted/40",
                 )}
               >
-                {active && <Check className="text-primary size-3.5" aria-hidden />}
+                {active && <Check className="size-3.5 text-primary" aria-hidden />}
                 {option.name}
-                <span className="text-muted-foreground text-xs">
+                <span className="text-xs text-muted-foreground">
                   {active ? option.source : `Retirée · ${option.source}`}
                 </span>
               </button>
@@ -252,7 +252,7 @@ function ClassResourceCard({
               className="flex h-9 items-center gap-1.5 rounded-full border px-3 text-sm"
             >
               {feature.name || "Nouvelle capacité"}
-              <span className="text-muted-foreground text-xs">ajoutée</span>
+              <span className="text-xs text-muted-foreground">ajoutée</span>
             </span>
           ))}
         </div>
@@ -289,31 +289,31 @@ function FeatureCard({
         aria-expanded={open}
         aria-controls={panelId}
         onClick={onToggle}
-        className="focus-visible:ring-ring/50 flex w-full items-center gap-3 rounded-xl py-2.5 pr-3 pl-3.5 text-left outline-none focus-visible:ring-3"
+        className="flex w-full items-center gap-3 rounded-xl py-2.5 pr-3 pl-3.5 text-left outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
       >
         <span className="grid min-w-0 flex-1 gap-0.5">
           <span className="text-[15px] font-medium">{feature.name || "Nouvelle capacité"}</span>
-          <span className="text-muted-foreground truncate text-xs">
+          <span className="truncate text-xs text-muted-foreground">
             {feature.description || "Pas encore de description"}
           </span>
         </span>
         {hasOwnUses(feature) && (
-          <span className="border-primary/45 bg-primary/10 flex h-7 shrink-0 items-center gap-1 rounded-full border px-2.5 text-xs">
-            <span className="text-primary text-sm font-bold tabular-nums">{feature.usesMax}</span>
+          <span className="flex h-7 shrink-0 items-center gap-1 rounded-full border border-primary/45 bg-primary/10 px-2.5 text-xs">
+            <span className="text-sm font-bold text-primary tabular-nums">{feature.usesMax}</span>
             {feature.recharge && feature.recharge !== "other"
               ? ` · ${FEATURE_RECHARGE_LABELS[feature.recharge].toLowerCase()}`
               : ""}
           </span>
         )}
         {resource && (
-          <span className="border-primary/45 text-primary flex h-7 shrink-0 items-center rounded-full border px-2.5 text-xs">
+          <span className="flex h-7 shrink-0 items-center rounded-full border border-primary/45 px-2.5 text-xs text-primary">
             {resource.name}
           </span>
         )}
         <ChevronDown
           aria-hidden
           className={cn(
-            "text-muted-foreground size-4.5 shrink-0 transition-transform",
+            "size-4.5 shrink-0 text-muted-foreground transition-transform",
             open && "rotate-180",
           )}
         />
@@ -435,7 +435,7 @@ function FeatureEditor({
                 aria-pressed={feature.source === source}
                 onClick={() => onChange({ source })}
                 className={cn(
-                  "focus-visible:ring-ring/50 h-7 rounded-full border px-2.5 text-xs transition-colors outline-none focus-visible:ring-3",
+                  "h-7 rounded-full border px-2.5 text-xs transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
                   feature.source === source
                     ? "border-primary bg-primary/15"
                     : "text-muted-foreground hover:bg-muted/40",
@@ -459,7 +459,7 @@ function FeatureEditor({
       </Field>
 
       <div className="grid gap-1.5">
-        <span className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
+        <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
           Utilisations
         </span>
         <SegmentedControl
@@ -471,10 +471,10 @@ function FeatureEditor({
       </div>
 
       {own && (
-        <div className="bg-card flex flex-wrap items-end gap-4 rounded-xl border p-3.5">
+        <div className="flex flex-wrap items-end gap-4 rounded-xl border bg-card p-3.5">
           <div className="grid gap-1.5">
-            <span className="text-muted-foreground text-xs">Maximum</span>
-            <div className="border-input flex h-11 items-center rounded-lg border">
+            <span className="text-xs text-muted-foreground">Maximum</span>
+            <div className="flex h-11 items-center rounded-lg border border-input">
               <Button
                 type="button"
                 variant="ghost"
@@ -486,7 +486,7 @@ function FeatureEditor({
               >
                 <Minus />
               </Button>
-              <span className="font-heading text-primary min-w-8 text-center text-xl font-bold tabular-nums">
+              <span className="min-w-8 text-center font-heading text-xl font-bold text-primary tabular-nums">
                 {feature.usesMax}
               </span>
               <Button
@@ -502,7 +502,7 @@ function FeatureEditor({
             </div>
           </div>
           <div className="grid flex-1 gap-1.5">
-            <span className="text-muted-foreground text-xs">Récupération</span>
+            <span className="text-xs text-muted-foreground">Récupération</span>
             <SegmentedControl
               label="Récupération"
               options={RECHARGE_OPTIONS}
@@ -514,7 +514,7 @@ function FeatureEditor({
       )}
 
       {feature.resourceId && (
-        <p className="border-primary/25 bg-primary/5 rounded-xl border px-3.5 py-3 text-sm">
+        <p className="rounded-xl border border-primary/25 bg-primary/5 px-3.5 py-3 text-sm">
           Chaque utilisation dépense une{" "}
           {resources.find((resource) => resource.id === feature.resourceId)?.name ??
             "utilisation de la réserve"}{" "}
@@ -548,7 +548,7 @@ function Field({
     <div className="grid content-start gap-1.5">
       <Label
         htmlFor={htmlFor}
-        className="text-muted-foreground text-xs font-semibold tracking-wider uppercase"
+        className="text-xs font-semibold tracking-wider text-muted-foreground uppercase"
       >
         {label}
       </Label>

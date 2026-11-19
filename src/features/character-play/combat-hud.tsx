@@ -66,7 +66,7 @@ export function CombatHud({ character }: { character: Character }) {
   return (
     <section
       aria-label="Combat"
-      className="bg-background/50 flex flex-col gap-5 rounded-2xl border px-3 pt-5 pb-4 sm:gap-6 sm:px-7 sm:pt-7 sm:pb-5"
+      className="flex flex-col gap-5 rounded-2xl border bg-background/50 px-3 pt-5 pb-4 sm:gap-6 sm:px-7 sm:pt-7 sm:pb-5"
     >
       <div className="grid grid-cols-2 grid-rows-[40px_140px_auto] items-center justify-items-center gap-x-2 gap-y-3 sm:grid-cols-[170px_minmax(0,1fr)_216px] sm:grid-rows-[40px_188px_auto_auto] sm:gap-x-5 sm:gap-y-3.5">
         <div className="col-start-1 row-start-1">
@@ -94,7 +94,7 @@ export function CombatHud({ character }: { character: Character }) {
           <HitDiceChip character={character} />
         </div>
 
-        <p className="text-muted-foreground col-span-2 col-start-1 row-start-4 text-center text-xs sm:col-span-1">
+        <p className="col-span-2 col-start-1 row-start-4 text-center text-xs text-muted-foreground sm:col-span-1">
           {formatArmorClassBreakdown(armorClass)}
         </p>
 
@@ -113,7 +113,7 @@ export function CombatHud({ character }: { character: Character }) {
             value={
               <>
                 {computeSpeed(character).total}
-                <span className="text-muted-foreground text-sm font-semibold"> m</span>
+                <span className="text-sm font-semibold text-muted-foreground"> m</span>
               </>
             }
             label="Vitesse"
@@ -209,10 +209,10 @@ function AttackGroup({
   return (
     <div className="grid gap-2">
       <div className="flex items-baseline justify-between gap-2">
-        <h3 className="text-muted-foreground text-[11px] font-semibold tracking-widest uppercase">
+        <h3 className="text-[11px] font-semibold tracking-widest text-muted-foreground uppercase">
           {title}
         </h3>
-        {hint && <span className="text-muted-foreground text-xs">{hint}</span>}
+        {hint && <span className="text-xs text-muted-foreground">{hint}</span>}
       </div>
       {children}
     </div>

@@ -117,7 +117,7 @@ export function KnownSpellsPicker({
 
           <div className="relative">
             <Search
-              className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2"
+              className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
               aria-hidden
             />
             <Input
@@ -165,7 +165,7 @@ export function KnownSpellsPicker({
 
         <div className="flex-1 overflow-y-auto py-2">
           {library.length === 0 && (
-            <p className="text-muted-foreground px-6 py-4 text-sm">
+            <p className="px-6 py-4 text-sm text-muted-foreground">
               Votre bibliothèque est vide —{" "}
               <Link href="/spells" className="text-primary underline underline-offset-4">
                 importez des sorts
@@ -175,7 +175,7 @@ export function KnownSpellsPicker({
           )}
 
           {library.length > 0 && groups.length === 0 && (
-            <p className="text-muted-foreground px-6 py-4 text-sm">
+            <p className="px-6 py-4 text-sm text-muted-foreground">
               Aucun sort ne correspond. Il en manque un ?{" "}
               <Link href="/spells" className="text-primary underline underline-offset-4">
                 Importez-le dans la bibliothèque
@@ -186,7 +186,7 @@ export function KnownSpellsPicker({
 
           {groups.map((group) => (
             <section key={group.level} aria-label={levelLabel(group.level)}>
-              <h3 className="font-heading text-primary px-6 pt-3 pb-1 text-base font-semibold">
+              <h3 className="px-6 pt-3 pb-1 font-heading text-base font-semibold text-primary">
                 {levelLabel(group.level)}
               </h3>
               <ul>
@@ -202,7 +202,7 @@ export function KnownSpellsPicker({
                     .join(" · ");
                   return (
                     <li key={spell.id}>
-                      <label className="has-[[data-state=checked]:not(:disabled)]:bg-primary/10 flex min-h-14 cursor-pointer items-center gap-3 px-6 py-2 has-disabled:cursor-default has-disabled:opacity-60">
+                      <label className="flex min-h-14 cursor-pointer items-center gap-3 px-6 py-2 has-disabled:cursor-default has-disabled:opacity-60 has-[[data-state=checked]:not(:disabled)]:bg-primary/10">
                         <Checkbox
                           checked={checked}
                           disabled={known}
@@ -212,7 +212,7 @@ export function KnownSpellsPicker({
                         />
                         <span className="grid flex-1 gap-0.5">
                           <span className="text-sm font-medium">{spell.name}</span>
-                          <span className="text-muted-foreground text-xs">{details}</span>
+                          <span className="text-xs text-muted-foreground">{details}</span>
                         </span>
                         {known && <Badge variant="secondary">Connu</Badge>}
                       </label>
@@ -225,7 +225,7 @@ export function KnownSpellsPicker({
         </div>
 
         <SheetFooter className="flex-row items-center justify-between gap-3 border-t p-4 px-6">
-          <span className="text-muted-foreground text-sm">
+          <span className="text-sm text-muted-foreground">
             {selected.length === 0
               ? "Aucun sort sélectionné"
               : `${spellsCount(selected.length)} sélectionné${selected.length > 1 ? "s" : ""}`}

@@ -193,20 +193,20 @@ export function ImportBackupDialog({
           </div>
 
           {parseError && (
-            <p className="text-destructive text-sm" role="alert">
+            <p className="text-sm text-destructive" role="alert">
               {parseError}
             </p>
           )}
 
           {characterRows && characterRows.length > 0 && (
             <div className="grid gap-1">
-              <p className="text-muted-foreground text-xs">Personnages</p>
+              <p className="text-xs text-muted-foreground">Personnages</p>
               <ImportRowsTable rows={characterRows} />
             </div>
           )}
           {spellRows && spellRows.length > 0 && (
             <div className="grid gap-1">
-              <p className="text-muted-foreground text-xs">Sorts</p>
+              <p className="text-xs text-muted-foreground">Sorts</p>
               <ImportRowsTable rows={spellRows} />
             </div>
           )}

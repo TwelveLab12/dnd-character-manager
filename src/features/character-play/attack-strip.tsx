@@ -31,14 +31,14 @@ export function AttackStrip({
           <li
             key={attack.itemId}
             className={`relative flex items-center gap-3 rounded-xl border px-3 py-2.5 sm:rounded-2xl sm:px-3.5 ${
-              ready ? "border-foreground/25 border-dashed" : "bg-card"
+              ready ? "border-dashed border-foreground/25" : "bg-card"
             }`}
           >
             <button
               type="button"
               aria-label={`Détails : ${attack.name || "Arme"}`}
               onClick={() => onShowDetails(attack.itemId)}
-              className="hover:bg-foreground/[0.03] focus-visible:ring-ring/50 absolute inset-0 cursor-pointer rounded-xl outline-none focus-visible:ring-3 sm:rounded-2xl"
+              className="absolute inset-0 cursor-pointer rounded-xl outline-none hover:bg-foreground/[0.03] focus-visible:ring-3 focus-visible:ring-ring/50 sm:rounded-2xl"
             />
             <span
               className={`grid size-8 shrink-0 place-items-center rounded-lg sm:size-9 ${
@@ -52,9 +52,9 @@ export function AttackStrip({
                 <span className="truncate text-sm font-medium">{attack.name || "Arme"}</span>
                 <DetailsHint className="size-3.5" />
               </span>
-              <span className="text-muted-foreground text-xs">{details}</span>
+              <span className="text-xs text-muted-foreground">{details}</span>
               {!attack.proficient && (
-                <span className="text-warning text-xs">Non maîtrisée (sans bonus de maîtrise)</span>
+                <span className="text-xs text-warning">Non maîtrisée (sans bonus de maîtrise)</span>
               )}
             </span>
             <span

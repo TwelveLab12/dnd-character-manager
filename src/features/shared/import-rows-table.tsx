@@ -29,7 +29,7 @@ export function ImportRowsTable<T>({ rows }: { rows: ImportRow<T>[] }) {
                   {STATUS_LABELS[row.status]}
                 </span>
                 {row.errors && (
-                  <ul className="text-destructive mt-1 list-disc pl-4 text-xs">
+                  <ul className="mt-1 list-disc pl-4 text-xs text-destructive">
                     {row.errors.map((message, messageIndex) => (
                       <li key={messageIndex}>{message}</li>
                     ))}

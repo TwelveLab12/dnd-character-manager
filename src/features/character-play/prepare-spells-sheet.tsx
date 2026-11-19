@@ -91,13 +91,13 @@ export function PrepareSpellsSheet({
                   {count} / {max}
                 </span>
               </div>
-              <div className="bg-muted h-2 overflow-hidden rounded-full">
+              <div className="h-2 overflow-hidden rounded-full bg-muted">
                 <div
                   className={`h-full rounded-full ${over ? "bg-destructive" : "bg-primary"}`}
                   style={{ width: `${max === 0 ? 100 : Math.min(100, (count / max) * 100)}%` }}
                 />
               </div>
-              <p className="text-muted-foreground text-xs">
+              <p className="text-xs text-muted-foreground">
                 {over
                   ? `Limite dépassée : retirez ${count - max} sort${count - max > 1 ? "s" : ""}.`
                   : full
@@ -110,13 +110,13 @@ export function PrepareSpellsSheet({
 
         <div className="flex-1 overflow-y-auto py-2">
           {knownSpells.length === 0 && (
-            <p className="text-muted-foreground px-6 py-4 text-sm">
+            <p className="px-6 py-4 text-sm text-muted-foreground">
               Aucun sort connu de niveau 1 ou plus : ajoutez-en depuis la configuration.
             </p>
           )}
           {levels.map((level) => (
             <section key={level} aria-label={`Niveau ${level}`}>
-              <h3 className="font-heading text-primary px-6 pt-3 pb-1 text-base font-semibold">
+              <h3 className="px-6 pt-3 pb-1 font-heading text-base font-semibold text-primary">
                 Niveau {level}
               </h3>
               <ul>
@@ -154,7 +154,7 @@ export function PrepareSpellsSheet({
           ))}
         </div>
 
-        <SheetFooter className="text-muted-foreground border-t px-6 text-xs">
+        <SheetFooter className="border-t px-6 text-xs text-muted-foreground">
           Les tours de magie et les sorts toujours préparés ne comptent pas. Ajouter un sort connu
           se fait depuis la configuration.
         </SheetFooter>

@@ -28,7 +28,7 @@ export function EquipControl({
         checked={currentSlot(item) !== null}
         onCheckedChange={(checked) => onEquip(checked ? "equipped" : null)}
       />
-      <Label htmlFor={id} className="text-muted-foreground text-xs">
+      <Label htmlFor={id} className="text-xs text-muted-foreground">
         Équipé
       </Label>
     </div>

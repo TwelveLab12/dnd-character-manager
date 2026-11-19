@@ -72,10 +72,10 @@ export function WildShapeFormsSection({
     <section aria-label="Formes sauvages" className="grid gap-2.5">
       <div className="flex flex-wrap items-end justify-between gap-2">
         <div className="grid gap-0.5">
-          <h4 className="text-muted-foreground text-xs font-semibold tracking-widest uppercase">
+          <h4 className="text-xs font-semibold tracking-widest text-muted-foreground uppercase">
             Formes sauvages
           </h4>
-          <p className="text-muted-foreground text-xs">
+          <p className="text-xs text-muted-foreground">
             À ce niveau : FP {limits.maxLabel} au plus
             {limits.noSwim ? ", ni nage ni vol" : limits.noFly ? ", pas de vol" : ""}.
           </p>
@@ -102,7 +102,7 @@ export function WildShapeFormsSection({
       </div>
 
       {forms.length === 0 ? (
-        <p className="text-muted-foreground rounded-xl border border-dashed p-3 text-center text-sm">
+        <p className="rounded-xl border border-dashed p-3 text-center text-sm text-muted-foreground">
           Aucune forme : ajoutez les bêtes dans lesquelles votre druide se transforme (profil du
           Manuel des monstres).
         </p>
@@ -162,23 +162,23 @@ function FormCard({
         aria-expanded={open}
         aria-controls={panelId}
         onClick={onToggle}
-        className="focus-visible:ring-ring/50 flex w-full items-center gap-3 rounded-xl py-2.5 pr-3 pl-3.5 text-left outline-none focus-visible:ring-3"
+        className="flex w-full items-center gap-3 rounded-xl py-2.5 pr-3 pl-3.5 text-left outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
       >
-        <PawPrint aria-hidden className="text-primary size-4.5 shrink-0" />
+        <PawPrint aria-hidden className="size-4.5 shrink-0 text-primary" />
         <span className="grid min-w-0 flex-1 gap-0.5">
           <span className="text-[15px] font-medium">{form.name || "Nouvelle forme"}</span>
-          <span className="text-muted-foreground truncate text-xs">{formSummary(form)}</span>
+          <span className="truncate text-xs text-muted-foreground">{formSummary(form)}</span>
         </span>
         {form.favorite && (
-          <Star aria-label="Accès rapide" className="fill-warning text-warning size-4 shrink-0" />
+          <Star aria-label="Accès rapide" className="size-4 shrink-0 fill-warning text-warning" />
         )}
         {warnings.length > 0 && (
-          <TriangleAlert aria-label="Hors limites" className="text-warning size-4 shrink-0" />
+          <TriangleAlert aria-label="Hors limites" className="size-4 shrink-0 text-warning" />
         )}
         <ChevronDown
           aria-hidden
           className={cn(
-            "text-muted-foreground size-4.5 shrink-0 transition-transform",
+            "size-4.5 shrink-0 text-muted-foreground transition-transform",
             open && "rotate-180",
           )}
         />
@@ -186,7 +186,7 @@ function FormCard({
       {open && (
         <div id={panelId} className="grid gap-3 border-t p-4">
           {warnings.length > 0 && (
-            <ul className="border-warning/40 bg-warning/10 text-warning grid gap-0.5 rounded-lg border px-3 py-2 text-xs">
+            <ul className="grid gap-0.5 rounded-lg border border-warning/40 bg-warning/10 px-3 py-2 text-xs text-warning">
               {warnings.map((warning) => (
                 <li key={warning}>{warning}</li>
               ))}
@@ -322,7 +322,7 @@ function FormEditor({
       </div>
 
       <div className="grid gap-2">
-        <span className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
+        <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
           Attaques
         </span>
         {form.attacks.map((attack) => (
@@ -404,7 +404,7 @@ function AttackRow({
 }) {
   const typeId = useId();
   return (
-    <div className="bg-card grid gap-2 rounded-xl border p-3">
+    <div className="grid gap-2 rounded-xl border bg-card p-3">
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-[minmax(0,1fr)_4.5rem_5rem_4.5rem_8.5rem_auto] sm:items-end">
         <TextField
           className="col-span-2 sm:col-span-1"
@@ -454,7 +454,7 @@ function AttackRow({
           variant="ghost"
           size="icon"
           aria-label={`Supprimer l’attaque ${attack.name || ""}`.trim()}
-          className="text-destructive hover:bg-destructive/10 hover:text-destructive justify-self-end"
+          className="justify-self-end text-destructive hover:bg-destructive/10 hover:text-destructive"
           onClick={onRemove}
         >
           <Trash2 />
@@ -474,7 +474,7 @@ function FieldLabel({ htmlFor, children }: { htmlFor: string; children: ReactNod
   return (
     <Label
       htmlFor={htmlFor}
-      className="text-muted-foreground text-xs font-semibold tracking-wider uppercase"
+      className="text-xs font-semibold tracking-wider text-muted-foreground uppercase"
     >
       {children}
     </Label>

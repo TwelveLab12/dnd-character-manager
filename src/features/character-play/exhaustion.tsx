@@ -40,7 +40,7 @@ export function ExhaustionControl({ character }: { character: Character }) {
       </Button>
       <output
         aria-label="Niveau d'épuisement"
-        className={`font-heading w-5 text-center text-lg font-bold tabular-nums ${
+        className={`w-5 text-center font-heading text-lg font-bold tabular-nums ${
           level > 0 ? "text-warning" : ""
         }`}
       >
@@ -72,9 +72,9 @@ export function ExhaustionBanner({ character }: { character: Character }) {
   return (
     <section
       aria-label={`Épuisement ${level}`}
-      className="border-warning/50 bg-warning/10 grid gap-2 rounded-xl border p-3 sm:p-4"
+      className="grid gap-2 rounded-xl border border-warning/50 bg-warning/10 p-3 sm:p-4"
     >
-      <h2 className="text-warning flex items-center gap-2 font-semibold">
+      <h2 className="flex items-center gap-2 font-semibold text-warning">
         <BatteryLow aria-hidden className="size-5" />
         Épuisement {level}
       </h2>
@@ -83,7 +83,7 @@ export function ExhaustionBanner({ character }: { character: Character }) {
           <li key={effect}>{effect}</li>
         ))}
       </ul>
-      <p className="text-muted-foreground text-xs">
+      <p className="text-xs text-muted-foreground">
         Les effets se cumulent. Un repos long retire un niveau, si le personnage a mangé et bu.
       </p>
     </section>
