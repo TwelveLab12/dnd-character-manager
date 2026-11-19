@@ -63,7 +63,7 @@ export function WeaponPlacementControl({
           onValueChange={onPlace}
         />
       )}
-      <p className="text-muted-foreground text-xs">
+      <p className="text-xs text-muted-foreground">
         {placementCaption(zone, grip, weapon.versatileDamageDice)}
         {zone === "hand" && !weapon.twoHanded && !offHandAllowed && (
           <> Secondaire : arme légère de corps à corps requise (sauf Ambidextre).</>

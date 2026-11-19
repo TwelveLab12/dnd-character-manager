@@ -136,7 +136,7 @@ export function AttackAction({
   return (
     <section
       aria-label="Attaquer"
-      className="border-primary/40 bg-primary/5 grid gap-3 rounded-2xl border p-3.5 sm:p-4"
+      className="grid gap-3 rounded-2xl border border-primary/40 bg-primary/5 p-3.5 sm:p-4"
     >
       <div className="flex items-center justify-between gap-2">
         <h3 className="font-heading text-lg font-semibold">Attaquer</h3>
@@ -164,7 +164,7 @@ export function AttackAction({
             />
             <label
               htmlFor={armorClassId}
-              className="text-muted-foreground flex items-center gap-2 text-xs"
+              className="flex items-center gap-2 text-xs text-muted-foreground"
             >
               CA cible
               <Input
@@ -189,12 +189,12 @@ export function AttackAction({
             }
             onEnter={(value) => rollAttack([value])}
           />
-          <p className="text-muted-foreground text-xs">
+          <p className="text-xs text-muted-foreground">
             Bonus au toucher {formatModifier(attack.attackBonus)} : saisissez seulement le résultat
             du d20, l’application ajoute les bonus.
           </p>
           {exhaustionDisadvantage && (
-            <p className="text-warning text-xs">
+            <p className="text-xs text-warning">
               Épuisement {exhaustion} : désavantage aux jets d’attaque, déjà sélectionné.
             </p>
           )}
@@ -232,7 +232,7 @@ export function AttackAction({
 
       {attackRoll && hit === undefined && (
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-muted-foreground text-sm">Annoncez {attackRoll.total} au MJ :</span>
+          <span className="text-sm text-muted-foreground">Annoncez {attackRoll.total} au MJ :</span>
           <Button type="button" size="lg" onClick={() => answer(true)}>
             Touché
           </Button>
@@ -261,7 +261,7 @@ export function AttackAction({
       {damageRoll && pendingExtra && (
         <div className="grid gap-2 border-t pt-3">
           {/* Sous-total discret : seul le total final est mis en avant. */}
-          <p className="text-muted-foreground text-sm">
+          <p className="text-sm text-muted-foreground">
             {capitalize(damageType)} :{" "}
             <strong className="text-foreground tabular-nums">{damageRoll.total}</strong> (
             {damageRoll.dice} {damageRoll.diceTotal} {formatTerms(damageRoll.terms)})
@@ -360,7 +360,7 @@ function DieEntry({
         {rollLabel}
       </Button>
       <form onSubmit={submit} className="flex items-center gap-2">
-        <label htmlFor={inputId} className="text-muted-foreground text-xs">
+        <label htmlFor={inputId} className="text-xs text-muted-foreground">
           {inputLabel}
         </label>
         <Input
@@ -409,13 +409,13 @@ function RollResult({
     <div className="grid gap-2">
       <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
         <span className="font-heading text-4xl leading-none font-bold tabular-nums">{total}</span>
-        <span className="text-muted-foreground text-sm">{label}</span>
+        <span className="text-sm text-muted-foreground">{label}</span>
         {verdict && (
           <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${verdict.tone}`}>
             {verdict.text}
           </span>
         )}
-        {caption && <span className="text-muted-foreground w-full text-sm">{caption}</span>}
+        {caption && <span className="w-full text-sm text-muted-foreground">{caption}</span>}
       </div>
       <p aria-label="Détail du calcul" className="flex flex-wrap items-center gap-1.5 text-sm">
         <Chip>
@@ -446,7 +446,7 @@ function RollResult({
             type="button"
             aria-expanded={open}
             onClick={() => setOpen((current) => !current)}
-            className="text-primary inline-flex items-center gap-1 text-xs font-medium underline-offset-4 hover:underline"
+            className="inline-flex items-center gap-1 text-xs font-medium text-primary underline-offset-4 hover:underline"
           >
             Pourquoi ?
             <ChevronDown
@@ -455,7 +455,7 @@ function RollResult({
             />
           </button>
           {open && (
-            <ul className="text-muted-foreground mt-1.5 grid list-disc gap-1 pl-5 text-xs">
+            <ul className="mt-1.5 grid list-disc gap-1 pl-5 text-xs text-muted-foreground">
               {shownReasons.map((reason) => (
                 <li key={reason}>{reason}</li>
               ))}
@@ -469,7 +469,7 @@ function RollResult({
 
 function Chip({ children }: { children: ReactNode }) {
   return (
-    <span className="bg-background/70 inline-flex items-center gap-1 rounded-lg border px-2 py-0.5">
+    <span className="inline-flex items-center gap-1 rounded-lg border bg-background/70 px-2 py-0.5">
       {children}
     </span>
   );

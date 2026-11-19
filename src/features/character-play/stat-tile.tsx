@@ -27,7 +27,7 @@ export function StatTile({
       <span className="font-heading text-[22px] leading-none font-bold tabular-nums sm:text-[26px]">
         {value}
       </span>
-      <span className="text-muted-foreground text-[10px] sm:text-[11px]">{label}</span>
+      <span className="text-[10px] text-muted-foreground sm:text-[11px]">{label}</span>
     </div>
   );
 }

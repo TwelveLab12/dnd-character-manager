@@ -202,7 +202,7 @@ export function NotesViewTab({ character }: { character: Character }) {
         <section className="grid gap-2">
           <SectionTitle>Règles appliquées</SectionTitle>
           {rules.length === 0 ? (
-            <p className="text-muted-foreground text-sm">Aucune règle particulière.</p>
+            <p className="text-sm text-muted-foreground">Aucune règle particulière.</p>
           ) : (
             <ul className="grid list-disc gap-1 pl-5 text-sm">
               {rules.map((rule) => (
@@ -215,7 +215,7 @@ export function NotesViewTab({ character }: { character: Character }) {
         {warnings.length > 0 && (
           <section className="grid gap-2">
             <SectionTitle>Avertissements</SectionTitle>
-            <ul className="text-warning grid list-disc gap-1 pl-5 text-sm">
+            <ul className="grid list-disc gap-1 pl-5 text-sm text-warning">
               {warnings.map((warning) => (
                 <li key={warning}>{warning}</li>
               ))}

@@ -40,7 +40,7 @@ export function InventoryViewTab({ character }: { character: Character }) {
   return (
     <div className="grid gap-6">
       <div className="flex items-center justify-between gap-3">
-        <p className="text-muted-foreground text-sm">
+        <p className="text-sm text-muted-foreground">
           {character.inventory.length} objet{character.inventory.length > 1 ? "s" : ""} ·{" "}
           {formatDecimal(totalInventoryWeight(character.inventory))} kg
           {formatInventoryValue(character.inventory)}
@@ -90,7 +90,7 @@ export function InventoryViewTab({ character }: { character: Character }) {
 
       <ItemSection title="Sac">
         {bag.length === 0 ? (
-          <p className="text-muted-foreground text-sm">Aucun objet pour l&rsquo;instant.</p>
+          <p className="text-sm text-muted-foreground">Aucun objet pour l&rsquo;instant.</p>
         ) : (
           bag.map((item) => (
             <ItemRow
@@ -119,7 +119,7 @@ export function InventoryViewTab({ character }: { character: Character }) {
 function ItemSection({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section aria-label={title} className="grid gap-2">
-      <h3 className="text-muted-foreground text-[11px] font-semibold tracking-widest uppercase">
+      <h3 className="text-[11px] font-semibold tracking-widest text-muted-foreground uppercase">
         {title}
       </h3>
       {children}
@@ -158,7 +158,7 @@ function ItemRow({
         type="button"
         aria-label={`Détails : ${item.name}`}
         onClick={onShowDetails}
-        className="hover:bg-foreground/[0.03] focus-visible:ring-ring/50 absolute inset-0 cursor-pointer rounded-xl outline-none focus-visible:ring-3"
+        className="absolute inset-0 cursor-pointer rounded-xl outline-none hover:bg-foreground/[0.03] focus-visible:ring-3 focus-visible:ring-ring/50"
       />
       <div className="grid min-w-0 flex-1 basis-48 gap-0.5">
         <span className="flex flex-wrap items-center gap-2 text-[15px] font-medium">
@@ -168,7 +168,7 @@ function ItemRow({
             <Badge variant="secondary">Équipé</Badge>
           )}
         </span>
-        {details && <span className="text-muted-foreground text-xs">{details}</span>}
+        {details && <span className="text-xs text-muted-foreground">{details}</span>}
       </div>
       {children}
     </div>

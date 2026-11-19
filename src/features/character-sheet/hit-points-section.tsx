@@ -46,7 +46,7 @@ export function HitPointsSection({ draft, onChange }: CharacterTabProps) {
               })
             }
           />
-          <p className="text-muted-foreground text-xs">
+          <p className="text-xs text-muted-foreground">
             Choisis une classe gérée pour que les PV max soient calculés.
           </p>
         </div>
@@ -83,9 +83,9 @@ export function HitPointsSection({ draft, onChange }: CharacterTabProps) {
           return (
             <li
               key={entry.level}
-              className="bg-background/60 grid justify-items-center gap-1.5 rounded-xl border px-2 py-3"
+              className="grid justify-items-center gap-1.5 rounded-xl border bg-background/60 px-2 py-3"
             >
-              <span className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
+              <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                 Niv. {entry.level}
               </span>
               {editable ? (
@@ -95,7 +95,7 @@ export function HitPointsSection({ draft, onChange }: CharacterTabProps) {
                   max={hitDie}
                   aria-label={`Résultat du d${hitDie} au niveau ${entry.level}`}
                   placeholder={String(fixedHitDieValue(hitDie))}
-                  className="border-primary/50 h-10 w-14 text-center text-lg font-semibold"
+                  className="h-10 w-14 border-primary/50 text-center text-lg font-semibold"
                   value={rolls[entry.level - 2] ?? ""}
                   onChange={(event) =>
                     setRoll(
@@ -109,7 +109,7 @@ export function HitPointsSection({ draft, onChange }: CharacterTabProps) {
                   {entry.die}
                 </span>
               )}
-              <span className="text-muted-foreground text-center text-xs tabular-nums">
+              <span className="text-center text-xs text-muted-foreground tabular-nums">
                 {formatModifier(entry.constitution)} Con
                 {entry.bonus !== 0 && ` ${formatModifier(entry.bonus)} bonus`} = {entry.total}
               </span>
@@ -118,12 +118,12 @@ export function HitPointsSection({ draft, onChange }: CharacterTabProps) {
         })}
       </ul>
 
-      <p className="text-muted-foreground text-xs">
+      <p className="text-xs text-muted-foreground">
         Niveau 1 : maximum du dé. PV actuels et temporaires se gèrent en mode jeu.
       </p>
 
       {result.warnings.length > 0 && (
-        <ul className="text-warning grid gap-1 text-xs">
+        <ul className="grid gap-1 text-xs text-warning">
           {result.warnings.map((warning) => (
             <li key={warning}>{warning}</li>
           ))}

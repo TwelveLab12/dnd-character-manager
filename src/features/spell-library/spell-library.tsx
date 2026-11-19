@@ -60,7 +60,7 @@ export function SpellLibrary() {
         </div>
       </div>
 
-      <p className="text-muted-foreground text-sm">
+      <p className="text-sm text-muted-foreground">
         Aucun sort officiel n&rsquo;est fourni avec l&rsquo;application pour des raisons de droits —
         importez les vôtres via « Importer », ou{" "}
         <a
@@ -74,17 +74,17 @@ export function SpellLibrary() {
       </p>
 
       {error && (
-        <p className="text-destructive text-sm" role="alert">
+        <p className="text-sm text-destructive" role="alert">
           Impossible de charger les sorts : {error}
         </p>
       )}
 
       {isLoading && spells.length === 0 && !error && (
-        <p className="text-muted-foreground text-sm">Chargement…</p>
+        <p className="text-sm text-muted-foreground">Chargement…</p>
       )}
 
       {!isLoading && spells.length === 0 && !error && (
-        <p className="text-muted-foreground text-sm">Aucun sort importé pour l&rsquo;instant.</p>
+        <p className="text-sm text-muted-foreground">Aucun sort importé pour l&rsquo;instant.</p>
       )}
 
       {sortedSpells.length > 0 && (
@@ -104,7 +104,7 @@ export function SpellLibrary() {
             {sortedSpells.map((spell) => (
               <tr
                 key={spell.id}
-                className="hover:bg-foreground/[0.03] relative border-b last:border-0"
+                className="relative border-b last:border-0 hover:bg-foreground/[0.03]"
               >
                 <td className="py-2 pr-2 font-medium">
                   {/* Toute la ligne ouvre le détail du sort (docs/adr/0041) ; « Supprimer » passe
@@ -113,7 +113,7 @@ export function SpellLibrary() {
                     type="button"
                     aria-label={`Détails : ${spell.name}`}
                     onClick={() => setDetailSpellId(spell.id)}
-                    className="focus-visible:ring-ring absolute inset-0 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-inset"
+                    className="absolute inset-0 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
                   />
                   <span className="flex items-center gap-1.5">
                     {spell.name}
@@ -122,7 +122,7 @@ export function SpellLibrary() {
                 </td>
                 <td className="py-2 pr-2">{spell.level === 0 ? "Tour de magie" : spell.level}</td>
                 <td className="py-2 pr-2">{spell.school}</td>
-                <td className="text-muted-foreground py-2 pr-2">{spell.classes.join(", ")}</td>
+                <td className="py-2 pr-2 text-muted-foreground">{spell.classes.join(", ")}</td>
                 <td className="relative z-10 py-2 text-right">
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
@@ -147,7 +147,7 @@ export function SpellLibrary() {
                         <AlertDialogCancel>Annuler</AlertDialogCancel>
                         <AlertDialogAction
                           variant="destructive"
-                          className="bg-destructive hover:bg-destructive/90 text-white"
+                          className="bg-destructive text-white hover:bg-destructive/90"
                           onClick={() => void remove(spell.id)}
                         >
                           Supprimer

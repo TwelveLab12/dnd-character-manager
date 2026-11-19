@@ -37,9 +37,9 @@ export function WildShapePanel({ character }: { character: Character }) {
   if (form) {
     const hours = wildShapeDurationHours(character.level);
     return (
-      <div className="border-primary/40 bg-primary/10 grid gap-2.5 rounded-xl border p-3">
+      <div className="grid gap-2.5 rounded-xl border border-primary/40 bg-primary/10 p-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <span className="text-primary inline-flex items-center gap-1.5 text-sm font-semibold">
+          <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary">
             <PawPrint aria-hidden className="size-4" />
             {form.name || "Forme sauvage"}
           </span>
@@ -48,8 +48,8 @@ export function WildShapePanel({ character }: { character: Character }) {
             Reprendre ma forme
           </Button>
         </div>
-        <p className="text-muted-foreground text-xs">{formSummary(form)}</p>
-        <ul className="text-muted-foreground grid gap-1 text-[13px]">
+        <p className="text-xs text-muted-foreground">{formSummary(form)}</p>
+        <ul className="grid gap-1 text-[13px] text-muted-foreground">
           <li>
             Vos PV : {character.hitPoints.current} / {computeMaxHitPoints(character).total},
             retrouvés au retour. À 0 PV de bête, vous reprenez votre forme et le surplus de dégâts
@@ -70,7 +70,7 @@ export function WildShapePanel({ character }: { character: Character }) {
 
   if (forms.length === 0) {
     return (
-      <p className="text-muted-foreground text-[13px]">
+      <p className="text-[13px] text-muted-foreground">
         Aucune forme enregistrée.{" "}
         <Link
           href={characterEditHref(character.id, "features")}
@@ -117,7 +117,7 @@ function FormPicker({
               disabled={unavailable !== undefined}
               onClick={() => onStart(form.id)}
               aria-label={`Se transformer : ${form.name || "forme"}`}
-              className="border-primary/40 hover:bg-primary/15 h-10 rounded-full pr-4 pl-3"
+              className="h-10 rounded-full border-primary/40 pr-4 pl-3 hover:bg-primary/15"
             >
               <PawPrint aria-hidden className="text-primary" />
               {form.name || "Forme sans nom"}
@@ -128,7 +128,7 @@ function FormPicker({
           ))}
         </div>
       ) : (
-        <p className="text-muted-foreground text-xs">
+        <p className="text-xs text-muted-foreground">
           Marquez vos formes préférées d’une étoile pour les avoir ici en un geste.
         </p>
       )}
@@ -141,7 +141,7 @@ function FormPicker({
         Toutes les formes ({forms.length})
         <ChevronRight />
       </Button>
-      {unavailable && <span className="text-muted-foreground text-xs">{unavailable}</span>}
+      {unavailable && <span className="text-xs text-muted-foreground">{unavailable}</span>}
       <AllFormsSheet
         character={character}
         open={open}
@@ -199,7 +199,7 @@ function AllFormsSheet({
           <div className="relative">
             <Search
               aria-hidden
-              className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2"
+              className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
             />
             <Input
               type="search"
@@ -221,12 +221,12 @@ function AllFormsSheet({
               onValueChange={setChallenge}
             />
           )}
-          {disabledReason && <p className="text-warning text-xs">{disabledReason}</p>}
+          {disabledReason && <p className="text-xs text-warning">{disabledReason}</p>}
         </div>
       }
     >
       {shown.length === 0 ? (
-        <p className="text-muted-foreground py-6 text-center text-sm">
+        <p className="py-6 text-center text-sm text-muted-foreground">
           Aucune forme ne correspond.
         </p>
       ) : (
@@ -266,18 +266,18 @@ function FormCard({
   return (
     <article
       aria-label={name}
-      className="bg-background/60 grid h-full content-start gap-2 rounded-xl border p-3"
+      className="grid h-full content-start gap-2 rounded-xl border bg-background/60 p-3"
     >
       <header className="flex items-center gap-2">
-        <PawPrint aria-hidden className="text-primary size-4 shrink-0" />
+        <PawPrint aria-hidden className="size-4 shrink-0 text-primary" />
         <h3 className="min-w-0 flex-1 truncate font-medium">{name}</h3>
-        <span className="text-muted-foreground shrink-0 text-xs">FP {form.challengeRating}</span>
+        <span className="shrink-0 text-xs text-muted-foreground">FP {form.challengeRating}</span>
         <button
           type="button"
           aria-pressed={form.favorite === true}
           aria-label={`Accès rapide : ${name}`}
           onClick={onToggleFavorite}
-          className="focus-visible:ring-ring/50 hover:bg-primary/10 grid size-8 shrink-0 place-items-center rounded-full outline-none focus-visible:ring-3"
+          className="grid size-8 shrink-0 place-items-center rounded-full outline-none hover:bg-primary/10 focus-visible:ring-3 focus-visible:ring-ring/50"
         >
           <Star
             aria-hidden
@@ -287,12 +287,12 @@ function FormCard({
       </header>
       <p className="flex flex-wrap gap-x-3 gap-y-0.5 text-sm tabular-nums">
         <span>
-          <span className="text-muted-foreground text-xs">CA </span>
+          <span className="text-xs text-muted-foreground">CA </span>
           <strong>{form.armorClass}</strong>
         </span>
         <span>
           <strong>{form.maxHitPoints}</strong>
-          <span className="text-muted-foreground text-xs"> PV</span>
+          <span className="text-xs text-muted-foreground"> PV</span>
         </span>
         <span>{speedSummary(form)}</span>
       </p>
@@ -301,7 +301,7 @@ function FormCard({
           {beastAttacks(form).map((attack) => (
             <li key={attack.itemId}>
               <span className="font-medium">{attack.name || "Attaque"}</span>{" "}
-              <span className="text-primary font-semibold tabular-nums">
+              <span className="font-semibold text-primary tabular-nums">
                 {formatModifier(attack.attackBonus)}
               </span>
               <span className="text-muted-foreground">
@@ -313,12 +313,12 @@ function FormCard({
         </ul>
       )}
       {form.notes && (
-        <p className="text-muted-foreground line-clamp-2 text-xs" title={form.notes}>
+        <p className="line-clamp-2 text-xs text-muted-foreground" title={form.notes}>
           {form.notes}
         </p>
       )}
       {warnings.map((warning) => (
-        <p key={warning} className="text-warning inline-flex items-start gap-1 text-xs">
+        <p key={warning} className="inline-flex items-start gap-1 text-xs text-warning">
           <TriangleAlert aria-hidden className="mt-0.5 size-3 shrink-0" />
           {warning}
         </p>

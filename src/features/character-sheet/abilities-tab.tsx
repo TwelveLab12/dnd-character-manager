@@ -64,9 +64,9 @@ export function AbilitiesTab({ draft, onChange }: CharacterTabProps) {
           <h3 id={titleId} className="font-heading text-xl font-semibold">
             Caractéristiques
           </h3>
-          <p className="text-muted-foreground text-sm">
+          <p className="text-sm text-muted-foreground">
             Bonus de maîtrise{" "}
-            <span className="font-heading text-primary text-lg font-bold tabular-nums">
+            <span className="font-heading text-lg font-bold text-primary tabular-nums">
               {formatModifier(proficiencyBonus)}
             </span>
           </p>
@@ -138,14 +138,14 @@ function AbilityCard({
     <div
       role="group"
       aria-labelledby={nameId}
-      className="bg-background/60 flex flex-col gap-3 rounded-2xl border p-3.5"
+      className="flex flex-col gap-3 rounded-2xl border bg-background/60 p-3.5"
     >
       <span id={nameId} className="font-heading text-lg font-semibold">
         {label}
       </span>
 
       <div className="flex items-center justify-between gap-2">
-        <div className="border-input bg-card flex h-11 items-center rounded-lg border">
+        <div className="flex h-11 items-center rounded-lg border border-input bg-card">
           <Button
             type="button"
             variant="ghost"
@@ -191,7 +191,7 @@ function AbilityCard({
       </div>
 
       {racialBonus !== 0 && (
-        <span className="text-primary text-xs">
+        <span className="text-xs text-primary">
           {formatModifier(racialBonus)} race → {effectiveScore}
         </span>
       )}
@@ -203,7 +203,7 @@ function AbilityCard({
       >
         <span
           id={saveLabelId}
-          className="text-muted-foreground text-[11px] font-semibold tracking-wider uppercase"
+          className="text-[11px] font-semibold tracking-wider text-muted-foreground uppercase"
         >
           Jet de sauvegarde
         </span>
@@ -212,7 +212,7 @@ function AbilityCard({
           aria-pressed={proficient}
           onClick={() => onProficiencyChange(!proficient)}
           className={cn(
-            "focus-visible:ring-ring/50 flex min-h-12 items-center gap-2.5 rounded-xl border px-3 py-1.5 text-left transition-colors outline-none focus-visible:ring-3",
+            "flex min-h-12 items-center gap-2.5 rounded-xl border px-3 py-1.5 text-left transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
             proficient ? "border-primary bg-primary/10" : "hover:bg-muted/40",
             removed && "border-dashed",
           )}
@@ -221,7 +221,7 @@ function AbilityCard({
           <span className="grid flex-1 gap-px">
             <span className="text-sm font-semibold">Maîtrise</span>
             {removed && (
-              <span className="text-muted-foreground text-[11px]">Retirée · {grantedBy}</span>
+              <span className="text-[11px] text-muted-foreground">Retirée · {grantedBy}</span>
             )}
           </span>
           <span
@@ -281,8 +281,8 @@ function SkillsSection({
     <GeneralSection
       title="Compétences"
       action={
-        <p className="text-muted-foreground text-sm">
-          <span className="text-primary font-semibold">{count}</span> maîtrisée
+        <p className="text-sm text-muted-foreground">
+          <span className="font-semibold text-primary">{count}</span> maîtrisée
           {count > 1 ? "s" : ""}
         </p>
       }
@@ -339,7 +339,7 @@ function SkillGroup({
     >
       <span
         aria-hidden
-        className="text-muted-foreground px-1 pb-0.5 text-xs font-semibold tracking-widest uppercase"
+        className="px-1 pb-0.5 text-xs font-semibold tracking-widest text-muted-foreground uppercase"
       >
         {ABILITY_LABELS[ability]}
       </span>
@@ -352,7 +352,7 @@ function SkillGroup({
             aria-pressed={proficient}
             onClick={() => onToggle(skill.name, !proficient)}
             className={cn(
-              "focus-visible:ring-ring/50 flex min-h-11 items-center gap-2.5 rounded-lg border px-3 text-left transition-colors outline-none focus-visible:ring-3",
+              "flex min-h-11 items-center gap-2.5 rounded-lg border px-3 text-left transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
               proficient ? "border-primary/45 bg-primary/5" : "bg-background/60 hover:bg-muted/40",
             )}
           >

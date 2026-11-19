@@ -81,7 +81,7 @@ export function CharacterList() {
                   <span className="sr-only"> (non lues)</span>
                   <span
                     aria-hidden
-                    className="bg-primary ring-background absolute -top-1 -right-1 size-2.5 rounded-full ring-2"
+                    className="absolute -top-1 -right-1 size-2.5 rounded-full bg-primary ring-2 ring-background"
                   />
                 </>
               )}
@@ -93,18 +93,18 @@ export function CharacterList() {
       </div>
 
       {error && (
-        <p className="text-destructive text-sm" role="alert">
+        <p className="text-sm text-destructive" role="alert">
           Impossible de charger les personnages : {error}
         </p>
       )}
 
       {isLoading && characters.length === 0 && !error && (
-        <p className="text-muted-foreground text-sm">Chargement…</p>
+        <p className="text-sm text-muted-foreground">Chargement…</p>
       )}
 
       {!isLoading && characters.length === 0 && !error && (
         <div className="flex flex-col items-start gap-3">
-          <p className="text-muted-foreground text-sm">
+          <p className="text-sm text-muted-foreground">
             Aucun personnage pour l&rsquo;instant. Créez-en un pour commencer, ou découvrez
             l&rsquo;application avec quatre personnages de niveau 3.
           </p>
@@ -113,7 +113,7 @@ export function CharacterList() {
             {isLoadingDemo ? "Chargement de la démo…" : "Charger les personnages de démo"}
           </Button>
           {demoError && (
-            <p className="text-destructive text-sm" role="alert">
+            <p className="text-sm text-destructive" role="alert">
               Impossible de charger la démo : {demoError}
             </p>
           )}

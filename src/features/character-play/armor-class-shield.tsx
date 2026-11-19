@@ -15,8 +15,8 @@ import { usePlayActions } from "./use-play-actions";
 
 export function ArmorClassHeading() {
   return (
-    <span className="text-muted-foreground inline-flex items-center gap-1.5 text-xs font-medium whitespace-nowrap">
-      <Shield aria-hidden className="text-primary size-3.5" />
+    <span className="inline-flex items-center gap-1.5 text-xs font-medium whitespace-nowrap text-muted-foreground">
+      <Shield aria-hidden className="size-3.5 text-primary" />
       Classe d&apos;armure
     </span>
   );
@@ -52,7 +52,7 @@ export function ArmorClassShield({
         />
         <path
           d={SHIELD_INNER_OUTLINE}
-          className="stroke-primary/35 fill-none"
+          className="fill-none stroke-primary/35"
           strokeWidth={1.4}
           strokeLinejoin="round"
         />
@@ -61,7 +61,7 @@ export function ArmorClassShield({
         aria-hidden
         className="absolute inset-0 flex flex-col items-center justify-center gap-0.5"
       >
-        <span className="text-primary text-[10px] font-semibold tracking-[0.14em]">CA</span>
+        <span className="text-[10px] font-semibold tracking-[0.14em] text-primary">CA</span>
         <span className="font-heading text-[44px] leading-none font-bold tabular-nums sm:text-[56px]">
           {armorClass.total}
         </span>
@@ -105,10 +105,10 @@ function ArmorClassEffectChip({
       aria-checked={active}
       aria-label={`${effect.name || "Effet"} (${formatModifier(effect.bonus)} CA)`}
       onClick={() => void toggleArmorClassEffect(effect.id)}
-      className={`focus-visible:ring-ring/50 inline-flex h-8 max-w-full items-center gap-1.5 rounded-full border px-3 text-xs font-medium whitespace-nowrap transition-colors outline-none focus-visible:ring-3 ${
+      className={`inline-flex h-8 max-w-full items-center gap-1.5 rounded-full border px-3 text-xs font-medium whitespace-nowrap transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50 ${
         active
           ? "border-info/60 bg-info/15 text-info"
-          : "border-muted-foreground/40 text-muted-foreground hover:text-foreground border-dashed"
+          : "border-dashed border-muted-foreground/40 text-muted-foreground hover:text-foreground"
       }`}
     >
       <ShieldPlus aria-hidden className="size-3.5 shrink-0" />

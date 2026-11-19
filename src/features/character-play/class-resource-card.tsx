@@ -127,19 +127,19 @@ function ClassResourceCard({
   return (
     <section
       aria-label={resource.name}
-      className="border-primary/30 bg-primary/5 flex flex-col gap-3 rounded-2xl border px-3.5 py-4 sm:px-4.5"
+      className="flex flex-col gap-3 rounded-2xl border border-primary/30 bg-primary/5 px-3.5 py-4 sm:px-4.5"
     >
       <div className="flex items-start justify-between gap-2">
         <div className="grid gap-0.5">
-          <span className="text-muted-foreground text-[10px] font-semibold tracking-[0.16em] uppercase">
+          <span className="text-[10px] font-semibold tracking-[0.16em] text-muted-foreground uppercase">
             {classLabel}
           </span>
-          <span className="text-primary inline-flex items-center gap-1.5 text-[13px] font-semibold">
+          <span className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-primary">
             <ResourceIcon aria-hidden className="size-4" />
             {resource.name}
           </span>
         </div>
-        <span className="text-muted-foreground inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] whitespace-nowrap">
+        <span className="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] whitespace-nowrap text-muted-foreground">
           <RechargeIcon aria-hidden className="size-3" />
           {RECHARGE_LABELS[resource.recharge]}
         </span>
@@ -155,10 +155,10 @@ function ClassResourceCard({
                 type="button"
                 onClick={() => void adjustClassResource(resource.id, lit ? 1 : -1)}
                 aria-label={lit ? `Dépenser : ${resource.name}` : `Récupérer : ${resource.name}`}
-                className={`focus-visible:ring-ring/50 grid size-14 place-items-center rounded-full border-2 transition-all duration-300 outline-none focus-visible:ring-3 ${
+                className={`grid size-14 place-items-center rounded-full border-2 transition-all duration-300 outline-none focus-visible:ring-3 focus-visible:ring-ring/50 ${
                   lit
                     ? "border-primary bg-primary/15 text-primary shadow-[0_0_20px_color-mix(in_oklab,var(--primary)_35%,transparent)]"
-                    : "border-muted-foreground/40 text-muted-foreground/50 border-dashed"
+                    : "border-dashed border-muted-foreground/40 text-muted-foreground/50"
                 }`}
               >
                 <ResourceIcon aria-hidden className="size-7" />
@@ -169,9 +169,9 @@ function ClassResourceCard({
         <div className="grid gap-0.5">
           <span className="font-heading text-xl font-bold tabular-nums">
             {resource.remaining}
-            <span className="text-muted-foreground text-sm font-medium"> / {resource.max}</span>
+            <span className="text-sm font-medium text-muted-foreground"> / {resource.max}</span>
           </span>
-          <span className="text-muted-foreground text-xs">
+          <span className="text-xs text-muted-foreground">
             {exhausted
               ? `Revient au prochain ${RECHARGE_LABELS[resource.recharge].toLowerCase()}`
               : options.length > 0
@@ -192,15 +192,15 @@ function ClassResourceCard({
           {options.map((option) => (
             <div
               key={option.key}
-              className="border-primary/30 bg-card relative flex min-h-11 items-center gap-2.5 rounded-xl border py-1.5 pr-1.5 pl-3"
+              className="relative flex min-h-11 items-center gap-2.5 rounded-xl border border-primary/30 bg-card py-1.5 pr-1.5 pl-3"
             >
               <button
                 type="button"
                 aria-label={`Détails : ${option.name}`}
                 onClick={() => onShowOption(option.key)}
-                className="hover:bg-primary/10 focus-visible:ring-ring/50 absolute inset-0 cursor-pointer rounded-xl transition-colors outline-none focus-visible:ring-3"
+                className="absolute inset-0 cursor-pointer rounded-xl transition-colors outline-none hover:bg-primary/10 focus-visible:ring-3 focus-visible:ring-ring/50"
               />
-              <span className="bg-primary/10 text-primary grid size-7.5 shrink-0 place-items-center rounded-lg">
+              <span className="grid size-7.5 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary">
                 <ResourceIcon aria-hidden className="size-4" />
               </span>
               <span className="grid min-w-0 flex-1 gap-px">
@@ -209,7 +209,7 @@ function ClassResourceCard({
                   <DetailsHint className="size-3.5" />
                 </span>
                 {option.source && (
-                  <span className="text-muted-foreground truncate text-[11px]">
+                  <span className="truncate text-[11px] text-muted-foreground">
                     {option.source}
                   </span>
                 )}
@@ -223,7 +223,7 @@ function ClassResourceCard({
                 }
                 onClick={() => void applyResourceOption(resource.id, option.key)}
                 aria-label={`Utiliser ${option.name}`}
-                className="text-primary hover:text-primary hover:bg-primary/15 relative z-10 h-9 text-[11px] font-semibold tracking-[0.06em] uppercase"
+                className="relative z-10 h-9 text-[11px] font-semibold tracking-[0.06em] text-primary uppercase hover:bg-primary/15 hover:text-primary"
               >
                 Utiliser
               </Button>
@@ -245,9 +245,9 @@ function RageControls({ character }: { character: Character }) {
 
   if (character.raging) {
     return (
-      <div className="border-destructive/40 bg-destructive/10 grid gap-2.5 rounded-xl border p-3">
+      <div className="grid gap-2.5 rounded-xl border border-destructive/40 bg-destructive/10 p-3">
         <div className="flex items-center justify-between gap-2">
-          <span className="text-destructive inline-flex items-center gap-1.5 text-sm font-semibold">
+          <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-destructive">
             <Flame aria-hidden className="size-4" />
             En rage
           </span>
@@ -255,7 +255,7 @@ function RageControls({ character }: { character: Character }) {
             Mettre fin à la rage
           </Button>
         </div>
-        <ul className="text-muted-foreground grid gap-1 text-[13px]">
+        <ul className="grid gap-1 text-[13px] text-muted-foreground">
           <li>+{effects.damageBonus} aux dégâts des attaques au corps à corps avec la Force</li>
           <li>Résistance : {effects.resistances}</li>
           <li>Avantage aux tests et jets de sauvegarde de Force</li>
@@ -272,7 +272,7 @@ function RageControls({ character }: { character: Character }) {
         <Flame aria-hidden />
         Entrer en rage
       </Button>
-      {unavailable && <span className="text-muted-foreground text-xs">{unavailable}</span>}
+      {unavailable && <span className="text-xs text-muted-foreground">{unavailable}</span>}
     </div>
   );
 }

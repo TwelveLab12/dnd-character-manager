@@ -222,7 +222,7 @@ export function PlayDetailSheet({
           tags: (!attack.proficient || tags.length > 0) && (
             <>
               {!attack.proficient && (
-                <Badge className="bg-warning/15 text-warning border-transparent">
+                <Badge className="border-transparent bg-warning/15 text-warning">
                   Non maîtrisée
                 </Badge>
               )}
@@ -259,12 +259,12 @@ export function PlayDetailSheet({
                 ]}
               />
               {attack.versatileDamage && (
-                <p className="text-muted-foreground -mt-1.5 text-[13px]">
+                <p className="-mt-1.5 text-[13px] text-muted-foreground">
                   À deux mains : {attack.versatileDamage}
                 </p>
               )}
               {!attack.proficient && (
-                <p className="text-warning text-[13px]">
+                <p className="text-[13px] text-warning">
                   Arme non maîtrisée : le bonus de maîtrise n&rsquo;est pas ajouté au toucher.
                 </p>
               )}
@@ -358,7 +358,7 @@ function itemStats(item: InventoryItem): { label: string; value: string }[] {
 function RechargeTag({ recharge }: { recharge: "shortRest" | "longRest" }) {
   const Icon = recharge === "shortRest" ? Hourglass : Moon;
   return (
-    <Badge variant="outline" className="text-muted-foreground gap-1">
+    <Badge variant="outline" className="gap-1 text-muted-foreground">
       <Icon aria-hidden className="size-3" />
       {FEATURE_RECHARGE_LABELS[recharge]}
     </Badge>
@@ -381,11 +381,11 @@ function Description({
     return <DetailText>{text}</DetailText>;
   }
   return (
-    <div className="text-muted-foreground grid gap-1.5 rounded-2xl border border-dashed px-4 py-3.5 text-sm">
+    <div className="grid gap-1.5 rounded-2xl border border-dashed px-4 py-3.5 text-sm text-muted-foreground">
       <p>Pas de description.{missingHint && ` ${missingHint}`}</p>
       <Link
         href={`/characters/${characterId}/edit?tab=${tab}`}
-        className="text-primary w-fit underline underline-offset-4"
+        className="w-fit text-primary underline underline-offset-4"
       >
         Ajouter une description
       </Link>
@@ -413,7 +413,7 @@ function UseFooter({
   return (
     <div className="flex flex-wrap items-center gap-3">
       <div className="grid flex-1 gap-1.5">
-        <span className="text-muted-foreground text-xs">
+        <span className="text-xs text-muted-foreground">
           {label}
           {exhausted && rechargeHint && ` · ${rechargeHint}`}
         </span>

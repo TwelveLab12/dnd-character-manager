@@ -74,24 +74,24 @@ function FeatureUsageCard({
           type="button"
           aria-label={`Détails : ${feature.name}`}
           onClick={onShowDetails}
-          className="hover:bg-foreground/[0.03] focus-visible:ring-ring/50 absolute inset-0 cursor-pointer rounded-2xl outline-none focus-visible:ring-3"
+          className="absolute inset-0 cursor-pointer rounded-2xl outline-none hover:bg-foreground/[0.03] focus-visible:ring-3 focus-visible:ring-ring/50"
         />
       )}
       <div className="flex items-start justify-between gap-2">
         <div className="grid min-w-0 gap-0.5">
           {feature.source && (
-            <span className="text-muted-foreground truncate text-[10px] font-semibold tracking-[0.16em] uppercase">
+            <span className="truncate text-[10px] font-semibold tracking-[0.16em] text-muted-foreground uppercase">
               {feature.source}
             </span>
           )}
-          <span className="font-heading text-primary inline-flex items-center gap-1.5 text-lg leading-tight font-bold">
+          <span className="inline-flex items-center gap-1.5 font-heading text-lg leading-tight font-bold text-primary">
             <Sparkles aria-hidden className="size-4 shrink-0" />
             {feature.name}
             {onShowDetails && <DetailsHint />}
           </span>
         </div>
         {rechargeLabel && (
-          <span className="text-muted-foreground inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] whitespace-nowrap">
+          <span className="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] whitespace-nowrap text-muted-foreground">
             <RechargeIcon aria-hidden className="size-3" />
             {rechargeLabel}
           </span>
@@ -109,10 +109,10 @@ function FeatureUsageCard({
                   type="button"
                   onClick={() => void adjustFeatureUse(feature.id, lit ? -1 : 1)}
                   aria-label={lit ? `Dépenser : ${feature.name}` : `Récupérer : ${feature.name}`}
-                  className={`focus-visible:ring-ring/50 grid size-12 place-items-center rounded-full border-2 transition-all duration-300 outline-none focus-visible:ring-3 ${
+                  className={`grid size-12 place-items-center rounded-full border-2 transition-all duration-300 outline-none focus-visible:ring-3 focus-visible:ring-ring/50 ${
                     lit
                       ? "border-primary bg-primary/15 text-primary shadow-[0_0_18px_color-mix(in_oklab,var(--primary)_35%,transparent)]"
-                      : "border-muted-foreground/40 text-muted-foreground/50 border-dashed"
+                      : "border-dashed border-muted-foreground/40 text-muted-foreground/50"
                   }`}
                 >
                   <Sparkles aria-hidden className="size-5" />
@@ -121,7 +121,7 @@ function FeatureUsageCard({
             })}
           </div>
         ) : (
-          <div className="bg-card relative z-10 flex items-center overflow-hidden rounded-lg border">
+          <div className="relative z-10 flex items-center overflow-hidden rounded-lg border bg-card">
             <Button
               type="button"
               variant="ghost"
@@ -149,9 +149,9 @@ function FeatureUsageCard({
         <div className="grid gap-0.5">
           <span className="font-heading text-xl font-bold tabular-nums">
             {remaining}
-            <span className="text-muted-foreground text-sm font-medium"> / {max}</span>
+            <span className="text-sm font-medium text-muted-foreground"> / {max}</span>
           </span>
-          <span className="text-muted-foreground text-xs">
+          <span className="text-xs text-muted-foreground">
             {!exhausted
               ? "Disponible"
               : rechargeLabel
@@ -162,7 +162,7 @@ function FeatureUsageCard({
       </div>
 
       {showDescription && feature.description && (
-        <p className="text-foreground/80 text-[13px] leading-relaxed whitespace-pre-line">
+        <p className="text-[13px] leading-relaxed whitespace-pre-line text-foreground/80">
           {feature.description}
         </p>
       )}

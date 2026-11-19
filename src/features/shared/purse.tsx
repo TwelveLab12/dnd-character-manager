@@ -21,13 +21,13 @@ export function Purse({
   return (
     <section
       aria-label="Bourse"
-      className="border-primary/30 bg-background/50 grid gap-3 rounded-2xl border p-3.5 sm:p-4"
+      className="grid gap-3 rounded-2xl border border-primary/30 bg-background/50 p-3.5 sm:p-4"
     >
       <div className="flex items-baseline justify-between gap-2">
         <SectionTitle className="text-base">Bourse</SectionTitle>
-        <p className="text-muted-foreground text-xs">
+        <p className="text-xs text-muted-foreground">
           ≈{" "}
-          <span className="font-heading text-primary text-lg font-bold tabular-nums">
+          <span className="font-heading text-lg font-bold text-primary tabular-nums">
             {formatDecimal(totalInGold(currency))}
           </span>{" "}
           po au total
@@ -72,10 +72,10 @@ function CoinField({
   }
 
   return (
-    <div className="bg-card flex flex-col items-center gap-1 rounded-xl border px-1 pt-2 pb-1.5">
+    <div className="flex flex-col items-center gap-1 rounded-xl border bg-card px-1 pt-2 pb-1.5">
       <span className="flex items-center gap-1.5">
         <span aria-hidden className={`size-3 rounded-full ring-2 ring-inset ${label.tokenClass}`} />
-        <span className="text-muted-foreground text-[11px] font-semibold tracking-wider">
+        <span className="text-[11px] font-semibold tracking-wider text-muted-foreground">
           {label.abbreviation}
         </span>
       </span>
@@ -92,9 +92,9 @@ function CoinField({
             event.currentTarget.blur();
           }
         }}
-        className="font-heading border-border focus:border-ring w-full [appearance:textfield] border-b border-dashed bg-transparent text-center text-xl font-bold tabular-nums outline-none sm:text-2xl [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+        className="w-full [appearance:textfield] border-b border-dashed border-border bg-transparent text-center font-heading text-xl font-bold tabular-nums outline-none focus:border-ring sm:text-2xl [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
       />
-      <label htmlFor={id} className="text-muted-foreground text-[11px]">
+      <label htmlFor={id} className="text-[11px] text-muted-foreground">
         {label.name}
       </label>
     </div>

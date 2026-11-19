@@ -63,7 +63,7 @@ export function CharacterCard({ character }: { character: Character }) {
     <CharacterThemeScope themeId={character.themeId}>
       <article
         aria-labelledby={nameId}
-        className="group/card bg-card text-card-foreground hover:border-primary/50 relative flex h-full flex-col overflow-hidden rounded-2xl border shadow-2xl shadow-black/50 transition-colors"
+        className="group/card relative flex h-full flex-col overflow-hidden rounded-2xl border bg-card text-card-foreground shadow-2xl shadow-black/50 transition-colors hover:border-primary/50"
       >
         <div className="flex flex-1 flex-col gap-4 p-5 pb-4">
           <div className="flex items-start justify-between gap-3">
@@ -71,9 +71,9 @@ export function CharacterCard({ character }: { character: Character }) {
               <h2 id={nameId} className="font-heading text-[22px] leading-tight font-semibold">
                 {character.name}
               </h2>
-              {subtitle && <p className="text-muted-foreground text-[13px]">{subtitle}</p>}
+              {subtitle && <p className="text-[13px] text-muted-foreground">{subtitle}</p>}
             </div>
-            <span className="border-primary/40 text-primary flex min-w-11 shrink-0 flex-col items-center gap-0.5 rounded-xl border px-2 py-1.5 text-[10px] font-semibold tracking-widest uppercase">
+            <span className="flex min-w-11 shrink-0 flex-col items-center gap-0.5 rounded-xl border border-primary/40 px-2 py-1.5 text-[10px] font-semibold tracking-widest text-primary uppercase">
               Niv.
               <span className="font-heading text-xl leading-none font-bold tracking-normal tabular-nums">
                 {character.level}
@@ -88,23 +88,23 @@ export function CharacterCard({ character }: { character: Character }) {
                 aria-label={`Classe d'armure ${armorClass}`}
                 className="inline-flex items-center gap-1.5"
               >
-                <Shield aria-hidden className="text-primary size-[18px]" />
-                <span aria-hidden className="text-muted-foreground text-xs">
+                <Shield aria-hidden className="size-[18px] text-primary" />
+                <span aria-hidden className="text-xs text-muted-foreground">
                   CA
                 </span>
                 <span aria-hidden className="font-heading text-2xl font-bold tabular-nums">
                   {armorClass}
                 </span>
               </span>
-              <span aria-hidden className="bg-border h-5 w-px" />
+              <span aria-hidden className="h-5 w-px bg-border" />
               <span className="inline-flex items-center gap-1.5">
                 <Heart aria-hidden className={cn("size-[18px]", tone.text, tone.fill)} />
-                <span aria-hidden className="text-muted-foreground text-xs">
+                <span aria-hidden className="text-xs text-muted-foreground">
                   PV
                 </span>
                 <span aria-hidden className="font-heading text-2xl font-bold tabular-nums">
                   {current}
-                  <span className="text-muted-foreground font-sans text-xs font-medium">
+                  <span className="font-sans text-xs font-medium text-muted-foreground">
                     {" "}
                     / {max}
                   </span>
@@ -114,7 +114,7 @@ export function CharacterCard({ character }: { character: Character }) {
             <div
               role="img"
               aria-label={`Points de vie ${current} sur ${max}`}
-              className="bg-border h-1.5 overflow-hidden rounded-full"
+              className="h-1.5 overflow-hidden rounded-full bg-border"
             >
               <span
                 className={cn("block h-full rounded-full", tone.bar)}
@@ -124,7 +124,7 @@ export function CharacterCard({ character }: { character: Character }) {
           </div>
 
           {concentration.active && (
-            <p className="text-info flex items-center gap-1.5 text-[13px]">
+            <p className="flex items-center gap-1.5 text-[13px] text-info">
               <Focus aria-hidden className="size-4 shrink-0" />
               <span className="opacity-75">Concentration{concentrationSpell ? " :" : ""}</span>
               {concentrationSpell && <span className="truncate">{concentrationSpell}</span>}
@@ -132,7 +132,7 @@ export function CharacterCard({ character }: { character: Character }) {
           )}
         </div>
 
-        <div className="bg-background/60 flex items-center gap-2 border-t px-4 py-3">
+        <div className="flex items-center gap-2 border-t bg-background/60 px-4 py-3">
           <Button asChild size="lg" className="h-11 flex-1">
             <Link
               href={`/characters/${character.id}`}
@@ -158,7 +158,7 @@ export function CharacterCard({ character }: { character: Character }) {
                 variant="ghost"
                 size="icon-lg"
                 aria-label={`Supprimer ${character.name}`}
-                className="text-muted-foreground hover:bg-destructive/10 hover:text-destructive relative z-10 size-11"
+                className="relative z-10 size-11 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
               >
                 <Trash2 />
               </Button>
@@ -175,7 +175,7 @@ export function CharacterCard({ character }: { character: Character }) {
                 <AlertDialogCancel>Annuler</AlertDialogCancel>
                 <AlertDialogAction
                   variant="destructive"
-                  className="bg-destructive hover:bg-destructive/90 text-white"
+                  className="bg-destructive text-white hover:bg-destructive/90"
                   onClick={() => void remove(character.id)}
                 >
                   Supprimer

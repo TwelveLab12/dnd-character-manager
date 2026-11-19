@@ -16,7 +16,7 @@ import {
 
 /** Indice visuel « détails disponibles » posé sur un bloc dont le clic ouvre un `DetailSheet`. */
 export function DetailsHint({ className = "" }: { className?: string }) {
-  return <Info aria-hidden className={`text-muted-foreground size-4 shrink-0 ${className}`} />;
+  return <Info aria-hidden className={`size-4 shrink-0 text-muted-foreground ${className}`} />;
 }
 
 /**
@@ -140,7 +140,7 @@ export function DetailSheet({
         side="bottom"
         showCloseButton={false}
         data-theme={isKnownThemeId(themeId) ? themeId : undefined}
-        className="bg-card text-card-foreground border-primary/35 mx-auto max-h-[88dvh] w-full max-w-2xl gap-0 rounded-t-3xl border-x border-t ring-0 sm:max-h-[80dvh]"
+        className="mx-auto max-h-[88dvh] w-full max-w-2xl gap-0 rounded-t-3xl border-x border-t border-primary/35 bg-card text-card-foreground ring-0 sm:max-h-[80dvh]"
       >
         {/* Zone de préhension : barre + en-tête. `touch-none` empêche le navigateur de faire défiler
             la page (ou de la recharger) pendant le geste. */}
@@ -149,12 +149,12 @@ export function DetailSheet({
           {...swipeHandlers}
         >
           <div aria-hidden className="flex justify-center pt-2.5 pb-1">
-            <span className="bg-muted-foreground/45 h-1 w-10 rounded-full" />
+            <span className="h-1 w-10 rounded-full bg-muted-foreground/45" />
           </div>
 
           <div className="flex items-start gap-2 pt-2 pr-3 pb-4 pl-5 sm:pl-7">
             <div className="grid min-w-0 flex-1 gap-1.5">
-              <SheetDescription className="text-primary text-[11px] font-semibold tracking-widest uppercase">
+              <SheetDescription className="text-[11px] font-semibold tracking-widest text-primary uppercase">
                 {eyebrow}
               </SheetDescription>
               <SheetTitle className="font-heading text-[28px] leading-8 font-semibold break-words">
@@ -167,7 +167,7 @@ export function DetailSheet({
                 type="button"
                 variant="ghost"
                 size="icon"
-                className="bg-muted-foreground/12 size-11 shrink-0 rounded-full"
+                className="size-11 shrink-0 rounded-full bg-muted-foreground/12"
               >
                 <XIcon />
                 <span className="sr-only">Fermer</span>
@@ -181,7 +181,7 @@ export function DetailSheet({
         </div>
 
         {footer && (
-          <SheetFooter className="bg-background/40 mt-0 gap-2.5 border-t px-5 pt-3 pb-5 sm:px-7">
+          <SheetFooter className="mt-0 gap-2.5 border-t bg-background/40 px-5 pt-3 pb-5 sm:px-7">
             {footer}
           </SheetFooter>
         )}
@@ -193,10 +193,10 @@ export function DetailSheet({
 /** Grille de valeurs clés (2 colonnes, 4 sur grand écran). */
 export function DetailStats({ stats }: { stats: { label: string; value: ReactNode }[] }) {
   return (
-    <dl className="bg-border grid grid-cols-2 gap-px overflow-hidden rounded-2xl border sm:grid-cols-4">
+    <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl border bg-border sm:grid-cols-4">
       {stats.map((stat) => (
         <div key={stat.label} className="bg-background/60 px-3 py-2.5">
-          <dt className="text-muted-foreground text-[10.5px] tracking-wider uppercase">
+          <dt className="text-[10.5px] tracking-wider text-muted-foreground uppercase">
             {stat.label}
           </dt>
           <dd className="mt-0.5 text-sm">{stat.value || "—"}</dd>
@@ -209,7 +209,7 @@ export function DetailStats({ stats }: { stats: { label: string; value: ReactNod
 /** Texte principal d'un panneau (description saisie ou importée), retours à la ligne conservés. */
 export function DetailText({ children }: { children: ReactNode }) {
   return (
-    <p className="text-foreground/90 text-[15px] leading-relaxed whitespace-pre-line">{children}</p>
+    <p className="text-[15px] leading-relaxed whitespace-pre-line text-foreground/90">{children}</p>
   );
 }
 
@@ -221,7 +221,7 @@ export function UsePips({ remaining, total }: { remaining: number; total: number
         <span
           key={index}
           className={`size-2.5 rounded-full ${
-            index < remaining ? "bg-primary" : "border-muted-foreground/50 border-[1.5px]"
+            index < remaining ? "bg-primary" : "border-[1.5px] border-muted-foreground/50"
           }`}
         />
       ))}

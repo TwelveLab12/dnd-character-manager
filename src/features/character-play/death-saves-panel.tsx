@@ -69,12 +69,12 @@ export function DeathSavesPanel({ character }: { character: Character }) {
       <header className="flex flex-wrap items-center gap-x-3 gap-y-1">
         <Icon aria-hidden className="size-5" />
         <h2 className="font-heading text-lg font-semibold">{title}</h2>
-        <span className="text-muted-foreground text-xs">
+        <span className="text-xs text-muted-foreground">
           {exhausted ? "Épuisement 6" : "Jets de sauvegarde contre la mort"}
         </span>
       </header>
       {exhausted ? (
-        <p className="text-muted-foreground text-xs">
+        <p className="text-xs text-muted-foreground">
           Le sixième niveau d’épuisement est mortel. Une erreur ? Retirez un niveau avec le compteur
           « Épuisement ».
         </p>
@@ -99,7 +99,7 @@ function DeathSavesDetails({
       <DeathSaveTracks character={character} status={status} />
       {status === "dying" && <DeathSaveActions character={character} />}
       {status === "stable" && <RegainConsciousness character={character} />}
-      <p className="text-muted-foreground text-xs">{caption}</p>
+      <p className="text-xs text-muted-foreground">{caption}</p>
     </>
   );
 }
@@ -166,7 +166,7 @@ function Track({
             aria-pressed={checked}
             disabled={!editable}
             onClick={() => onToggle(index)}
-            className={`focus-visible:ring-ring/50 flex size-9 items-center justify-center rounded-full border-2 transition-colors outline-none focus-visible:ring-3 disabled:cursor-default ${
+            className={`flex size-9 items-center justify-center rounded-full border-2 transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-default ${
               checked ? filled : "border-muted-foreground/40 hover:border-muted-foreground"
             }`}
           >
@@ -210,7 +210,7 @@ function DeathSaveActions({ character }: { character: Character }) {
         Lancer 1d20
       </Button>
       <form onSubmit={submitManual} className="flex items-center gap-2">
-        <label htmlFor={manualId} className="text-muted-foreground text-xs">
+        <label htmlFor={manualId} className="text-xs text-muted-foreground">
           ou résultat
         </label>
         <Input

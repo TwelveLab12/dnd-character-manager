@@ -15,7 +15,7 @@ export function QuantityStepper({
   onAdjust: (delta: number) => void;
 }) {
   return (
-    <div className="bg-card flex items-center overflow-hidden rounded-lg border">
+    <div className="flex items-center overflow-hidden rounded-lg border bg-card">
       <Button
         type="button"
         variant="ghost"

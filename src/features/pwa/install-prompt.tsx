@@ -153,21 +153,21 @@ function InstallToast({
     <div
       role="dialog"
       aria-label="Installer l'application"
-      className="bg-popover text-popover-foreground grid w-[min(356px,calc(100vw-2rem))] gap-3 rounded-xl border p-4 shadow-lg"
+      className="grid w-[min(356px,calc(100vw-2rem))] gap-3 rounded-xl border bg-popover p-4 text-popover-foreground shadow-lg"
     >
       <div className="flex gap-3">
-        <span className="bg-primary/15 text-primary flex size-9 shrink-0 items-center justify-center rounded-full">
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary/15 text-primary">
           <Download aria-hidden className="size-4" />
         </span>
         <div className="grid gap-1">
           <p className="text-sm font-semibold">Installer l’application</p>
           {installEvent ? (
-            <p className="text-muted-foreground text-xs">
+            <p className="text-xs text-muted-foreground">
               Ouvrez vos personnages en un geste depuis l’écran d’accueil, en plein écran et même
               sans connexion.
             </p>
           ) : (
-            <p className="text-muted-foreground text-xs">
+            <p className="text-xs text-muted-foreground">
               Touchez <Share aria-label="Partager" className="inline size-3.5 align-text-bottom" />{" "}
               <strong className="text-foreground">Partager</strong>, puis{" "}
               <strong className="text-foreground">Sur l’écran d’accueil</strong> : vos personnages
@@ -182,7 +182,7 @@ function InstallToast({
           checked={never}
           onCheckedChange={(checked) => setNever(checked === true)}
         />
-        <Label htmlFor={checkboxId} className="text-muted-foreground text-xs font-normal">
+        <Label htmlFor={checkboxId} className="text-xs font-normal text-muted-foreground">
           Ne plus me demander
         </Label>
       </div>

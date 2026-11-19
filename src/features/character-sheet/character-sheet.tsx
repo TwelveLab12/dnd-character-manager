@@ -115,7 +115,7 @@ export function CharacterSheet({
   }
 
   if (isLoading && !character) {
-    return <p className="text-muted-foreground p-6 text-sm">Chargement…</p>;
+    return <p className="p-6 text-sm text-muted-foreground">Chargement…</p>;
   }
 
   if (!character || !draft) {
@@ -132,14 +132,14 @@ export function CharacterSheet({
 
   return (
     <CharacterThemeScope themeId={draft.themeId}>
-      <div className="bg-card text-card-foreground ring-foreground/10 mx-auto my-8 flex w-full max-w-3xl flex-col gap-6 rounded-2xl px-6 py-10 shadow-2xl ring-1 shadow-black/70 sm:my-12">
+      <div className="mx-auto my-8 flex w-full max-w-3xl flex-col gap-6 rounded-2xl bg-card px-6 py-10 text-card-foreground shadow-2xl ring-1 shadow-black/70 ring-foreground/10 sm:my-12">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <BackLink onClick={guardNavigation("/")} className="mb-2" />
             <PageTitle>{draft.name}</PageTitle>
           </div>
           <div className="flex items-center gap-3">
-            {justSaved && <span className="text-muted-foreground text-xs">Enregistré</span>}
+            {justSaved && <span className="text-xs text-muted-foreground">Enregistré</span>}
             <FullscreenToggle />
             <Button type="button" variant="ghost" asChild>
               <Link href={sheetHref} onClick={guardNavigation(sheetHref)}>

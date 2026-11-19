@@ -142,7 +142,7 @@ function KeepConcentration({
           Garder la concentration{spellName ? ` (${spellName})` : ""}
         </Label>
       </div>
-      <p className="text-muted-foreground text-xs">
+      <p className="text-xs text-muted-foreground">
         {checked
           ? "Le sort dure plus d’une heure : la concentration continue après le repos."
           : "Un repos court dure 1 heure : la concentration prendra fin. Cochez seulement pour un sort plus long (Maléfice ou Marque du chasseur à haut niveau…)."}
@@ -196,13 +196,13 @@ function HitDiceSpending({
           <span className="tabular-nums">
             {remaining}/{total}
           </span>{" "}
-          <span className="text-muted-foreground font-normal">
+          <span className="font-normal text-muted-foreground">
             · d{die} {formatModifier(constitution)} Con
           </span>
         </p>
         <p className="text-sm tabular-nums" aria-label="Points de vie après le repos">
           PV {current}
-          {preview !== current && <span className="text-success font-semibold"> → {preview}</span>}
+          {preview !== current && <span className="font-semibold text-success"> → {preview}</span>}
           <span className="text-muted-foreground">/{max}</span>
         </p>
       </div>
@@ -219,7 +219,7 @@ function HitDiceSpending({
           Lancer 1d{die}
         </Button>
         <form onSubmit={submitManual} className="flex items-center gap-2">
-          <label htmlFor={manualId} className="text-muted-foreground text-xs">
+          <label htmlFor={manualId} className="text-xs text-muted-foreground">
             ou résultat
           </label>
           <Input
@@ -244,7 +244,7 @@ function HitDiceSpending({
           {rolls.map((roll, index) => (
             <li
               key={index}
-              className="bg-success/10 border-success/40 inline-flex h-8 items-center gap-1 rounded-full border pr-1 pl-3 text-xs tabular-nums"
+              className="inline-flex h-8 items-center gap-1 rounded-full border border-success/40 bg-success/10 pr-1 pl-3 text-xs tabular-nums"
             >
               d{die} : {roll} →{" "}
               <span className="font-semibold">+{hitDieHealing(roll, constitution)} PV</span>
@@ -262,7 +262,7 @@ function HitDiceSpending({
         </ul>
       )}
 
-      <p className="text-muted-foreground text-xs">
+      <p className="text-xs text-muted-foreground">
         {remaining === 0
           ? "Plus de dé de vie : un repos long en rend la moitié du niveau."
           : full

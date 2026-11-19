@@ -49,22 +49,22 @@ export function ChangelogPage() {
       <ol className="grid gap-4">
         {CHANGELOG.map((entry, index) => (
           <li key={entry.id}>
-            <article aria-label={entry.title} className="bg-card grid gap-3 rounded-xl border p-4">
+            <article aria-label={entry.title} className="grid gap-3 rounded-xl border bg-card p-4">
               <header className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
                 <h2 className="font-heading text-lg font-semibold">{entry.title}</h2>
                 {index < previousIndex && <Badge>Nouveau</Badge>}
-                <time dateTime={entry.date} className="text-muted-foreground ml-auto text-xs">
+                <time dateTime={entry.date} className="ml-auto text-xs text-muted-foreground">
                   {formatDate(entry.date)}
                 </time>
               </header>
-              <ul className="text-muted-foreground grid list-disc gap-1.5 pl-5 text-sm">
+              <ul className="grid list-disc gap-1.5 pl-5 text-sm text-muted-foreground">
                 {entry.changes.map((change) => (
                   <li key={change}>{change}</li>
                 ))}
               </ul>
               {entry.action && (
-                <p className="border-primary/40 bg-primary/10 rounded-lg border px-3 py-2 text-sm">
-                  <span className="text-primary font-semibold">À faire : </span>
+                <p className="rounded-lg border border-primary/40 bg-primary/10 px-3 py-2 text-sm">
+                  <span className="font-semibold text-primary">À faire : </span>
                   {entry.action}
                 </p>
               )}

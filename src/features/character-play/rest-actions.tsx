@@ -124,7 +124,7 @@ function RestConfirmButton({
         {ends.length > 0 && (
           <ul
             aria-label="Prend fin avec le repos"
-            className="border-warning/40 bg-warning/10 grid list-disc gap-1 rounded-lg border py-2 pr-3 pl-7 text-sm"
+            className="grid list-disc gap-1 rounded-lg border border-warning/40 bg-warning/10 py-2 pr-3 pl-7 text-sm"
           >
             {ends.map((end) => (
               <li key={end}>{end}</li>

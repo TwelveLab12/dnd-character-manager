@@ -39,9 +39,9 @@ export function ShillelaghControl({
 
   if (active) {
     return (
-      <div className="border-success/40 bg-success/10 grid gap-2.5 rounded-xl border p-3">
+      <div className="grid gap-2.5 rounded-xl border border-success/40 bg-success/10 p-3">
         <div className="flex items-center justify-between gap-2">
-          <span className="text-success inline-flex items-center gap-1.5 text-sm font-semibold">
+          <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-success">
             <Sparkles aria-hidden className="size-4" />
             Gourdin magique
           </span>
@@ -49,7 +49,7 @@ export function ShillelaghControl({
             Mettre fin
           </Button>
         </div>
-        <ul className="text-muted-foreground grid gap-1 text-[13px]">
+        <ul className="grid gap-1 text-[13px] text-muted-foreground">
           <li>{ability} au lieu de la Force, au toucher et aux dégâts</li>
           <li>Dé de dégâts {SHILLELAGH_DAMAGE_DICE}, quelle que soit la prise</li>
           <li>Arme magique · 1 minute, ou jusqu’à ce que vous la lâchiez</li>
@@ -69,7 +69,7 @@ export function ShillelaghControl({
         <Sparkles aria-hidden />
         Lancer Gourdin magique
       </Button>
-      <span className="text-muted-foreground text-xs">
+      <span className="text-xs text-muted-foreground">
         {character.raging
           ? "Pas de sorts en rage."
           : `Action bonus · ${ability} et ${SHILLELAGH_DAMAGE_DICE} pendant 1 minute`}

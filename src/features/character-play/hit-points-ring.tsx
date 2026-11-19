@@ -42,15 +42,15 @@ export function HitPointsControls({ character }: { character: Character }) {
         size="icon"
         onClick={() => void applyDamage(1)}
         aria-label="Infliger 1 dégât"
-        className="border-destructive/70 bg-destructive/15 text-destructive hover:bg-destructive/25 hover:text-destructive dark:bg-destructive/15 dark:hover:bg-destructive/25 size-10 rounded-full [&_svg:not([class*='size-'])]:size-5"
+        className="size-10 rounded-full border-destructive/70 bg-destructive/15 text-destructive hover:bg-destructive/25 hover:text-destructive dark:bg-destructive/15 dark:hover:bg-destructive/25 [&_svg:not([class*='size-'])]:size-5"
       >
         <ChevronLeft />
       </Button>
-      <span className="text-muted-foreground inline-flex items-center gap-1.5 text-xs font-medium">
-        <Heart aria-hidden className="fill-destructive text-destructive size-3.5" />
+      <span className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+        <Heart aria-hidden className="size-3.5 fill-destructive text-destructive" />
         <span>
           max{" "}
-          <strong className="text-foreground font-semibold tabular-nums">
+          <strong className="font-semibold text-foreground tabular-nums">
             {displayedHitPoints(character).max}
           </strong>
         </span>
@@ -61,7 +61,7 @@ export function HitPointsControls({ character }: { character: Character }) {
         size="icon"
         onClick={() => void applyHealing(1)}
         aria-label="Soigner 1 point de vie"
-        className="border-success/70 bg-success/15 text-success hover:bg-success/25 hover:text-success dark:bg-success/15 dark:hover:bg-success/25 size-10 rounded-full [&_svg:not([class*='size-'])]:size-5"
+        className="size-10 rounded-full border-success/70 bg-success/15 text-success hover:bg-success/25 hover:text-success dark:bg-success/15 dark:hover:bg-success/25 [&_svg:not([class*='size-'])]:size-5"
       >
         <ChevronRight />
       </Button>
@@ -90,7 +90,7 @@ export function HitPointsRing({ character }: { character: Character }) {
           cx="100"
           cy="100"
           r={RING_RADIUS}
-          className="stroke-muted-foreground/20 fill-none"
+          className="fill-none stroke-muted-foreground/20"
           strokeWidth={12}
         />
         <circle
@@ -108,7 +108,7 @@ export function HitPointsRing({ character }: { character: Character }) {
             cx="100"
             cy="100"
             r={TEMPORARY_RADIUS}
-            className="stroke-info fill-none transition-[stroke-dashoffset] duration-300"
+            className="fill-none stroke-info transition-[stroke-dashoffset] duration-300"
             strokeWidth={4}
             strokeLinecap="round"
             strokeDasharray={TEMPORARY_CIRCUMFERENCE}
@@ -133,7 +133,7 @@ export function HitPointsRing({ character }: { character: Character }) {
           value={current}
           onChange={(event) => void setCurrentHitPoints(toNumber(event.target.value))}
           aria-label={formName ? `PV actuels (${formName})` : "PV actuels"}
-          className={`${NUMBER_INPUT_CLASSES} font-heading focus-visible:border-ring w-20 border-b-2 border-transparent text-[44px] leading-none font-bold sm:w-24 sm:text-[56px]`}
+          className={`${NUMBER_INPUT_CLASSES} w-20 border-b-2 border-transparent font-heading text-[44px] leading-none font-bold focus-visible:border-ring sm:w-24 sm:text-[56px]`}
         />
       </div>
     </div>
@@ -145,7 +145,7 @@ export function TemporaryHitPointsChip({ character }: { character: Character }) 
   const { temporary } = character.hitPoints;
 
   return (
-    <label className="border-info/55 bg-info/10 text-info inline-flex h-8 items-center gap-1.5 rounded-full border px-3 text-xs font-medium whitespace-nowrap">
+    <label className="inline-flex h-8 items-center gap-1.5 rounded-full border border-info/55 bg-info/10 px-3 text-xs font-medium whitespace-nowrap text-info">
       <ShieldPlus aria-hidden className="size-3.5" />
       PV temp.
       <input
@@ -155,7 +155,7 @@ export function TemporaryHitPointsChip({ character }: { character: Character }) 
         value={temporary}
         onChange={(event) => void setTemporaryHitPoints(toNumber(event.target.value))}
         aria-label="PV temporaires"
-        className={`${NUMBER_INPUT_CLASSES} border-info/40 focus-visible:border-info w-7 border-b text-[13px] font-semibold`}
+        className={`${NUMBER_INPUT_CLASSES} w-7 border-b border-info/40 text-[13px] font-semibold focus-visible:border-info`}
       />
     </label>
   );

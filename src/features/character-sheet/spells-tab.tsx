@@ -98,7 +98,7 @@ function SpellcastingSection({ draft, onChange }: CharacterTabProps) {
     return (
       <section className="grid gap-2">
         <SectionTitle>Incantation</SectionTitle>
-        <p className="text-muted-foreground text-sm">
+        <p className="text-sm text-muted-foreground">
           Ce personnage n&rsquo;a pas de caractéristique d&rsquo;incantation définie.
         </p>
         <div>
@@ -128,7 +128,7 @@ function SpellcastingSection({ draft, onChange }: CharacterTabProps) {
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <SectionTitle>Incantation</SectionTitle>
         <div className="flex items-center gap-3">
-          <span className="text-muted-foreground text-sm">
+          <span className="text-sm text-muted-foreground">
             {classDefinition ? `${classDefinition.name} niv. ${level} · ` : ""}maîtrise{" "}
             {formatModifier(resolved.proficiencyBonus)}
           </span>
@@ -234,13 +234,13 @@ function StatTile({
     <div
       role="group"
       aria-label={label}
-      className="bg-card relative flex flex-col items-center gap-1.5 rounded-xl border px-3 pt-5 pb-4 text-center shadow-lg"
+      className="relative flex flex-col items-center gap-1.5 rounded-xl border bg-card px-3 pt-5 pb-4 text-center shadow-lg"
     >
-      <span className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
+      <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
         {label}
       </span>
       <div className={forced ? "text-sky-400" : undefined}>{children}</div>
-      <span className="text-muted-foreground text-xs">{detail}</span>
+      <span className="text-xs text-muted-foreground">{detail}</span>
       {action && <div className="absolute top-1.5 right-1.5">{action}</div>}
     </div>
   );
@@ -324,7 +324,7 @@ function SpellSlotsSection({ draft, onChange }: CharacterTabProps) {
         <div className="grid gap-0.5">
           <SectionTitle>Emplacements de sorts</SectionTitle>
           {slots.length > 0 && (
-            <p className="text-muted-foreground text-xs">
+            <p className="text-xs text-muted-foreground">
               Calculés depuis la classe et le niveau · touchez un emplacement pour le dépenser
             </p>
           )}
@@ -352,7 +352,7 @@ function SpellSlotsSection({ draft, onChange }: CharacterTabProps) {
       </div>
 
       {slots.length === 0 && (
-        <p className="text-muted-foreground text-sm">
+        <p className="text-sm text-muted-foreground">
           Aucun emplacement : choisis une classe de lanceur de sorts dans l&rsquo;onglet Général.
         </p>
       )}
@@ -372,12 +372,12 @@ function SpellSlotCard({ slot, draft, onChange }: CharacterTabProps & { slot: Sp
   const available = slot.total - slot.used;
 
   return (
-    <div className="bg-card grid gap-3 rounded-xl border p-3">
+    <div className="grid gap-3 rounded-xl border bg-card p-3">
       <div className="flex items-baseline justify-between gap-2">
-        <span className="font-heading text-primary text-base font-semibold">
+        <span className="font-heading text-base font-semibold text-primary">
           Niveau {slot.level}
         </span>
-        <span className="text-muted-foreground text-xs">
+        <span className="text-xs text-muted-foreground">
           <strong className="text-foreground">{available}</strong> / {slot.total}
         </span>
       </div>
@@ -397,8 +397,8 @@ function SpellSlotCard({ slot, draft, onChange }: CharacterTabProps & { slot: Sp
               }
               className={
                 spent
-                  ? "border-muted-foreground/50 size-7 rounded-full border-2 border-dashed transition-colors"
-                  : "border-primary bg-primary shadow-primary/50 size-7 rounded-full border-2 shadow-[0_0_10px] transition-colors"
+                  ? "size-7 rounded-full border-2 border-dashed border-muted-foreground/50 transition-colors"
+                  : "size-7 rounded-full border-2 border-primary bg-primary shadow-[0_0_10px] shadow-primary/50 transition-colors"
               }
             />
           );
@@ -468,29 +468,29 @@ function KnownSpellsSection({ draft, onChange, spells }: CharacterTabProps & { s
                   forced={draft.spellcasting?.preparedSpellsMaxOverride !== undefined}
                 />
               )}
-              <p className="text-muted-foreground flex flex-wrap items-center gap-x-3 text-xs">
+              <p className="flex flex-wrap items-center gap-x-3 text-xs text-muted-foreground">
                 <span>
-                  <strong className="text-foreground font-semibold">{knownSpells.length}</strong>{" "}
+                  <strong className="font-semibold text-foreground">{knownSpells.length}</strong>{" "}
                   connus
                 </span>
                 {preparedMax === undefined && (
                   <span className="flex items-center gap-1.5">
-                    <span className="bg-primary size-2 rounded-full" aria-hidden />
-                    <strong className="text-foreground font-semibold">{preparedCount}</strong>{" "}
+                    <span className="size-2 rounded-full bg-primary" aria-hidden />
+                    <strong className="font-semibold text-foreground">{preparedCount}</strong>{" "}
                     préparés
                   </span>
                 )}
                 <span className="flex items-center gap-1.5">
                   <span className="size-2 rounded-full bg-sky-400" aria-hidden />
-                  <strong className="text-foreground font-semibold">{alwaysCount}</strong> toujours
+                  <strong className="font-semibold text-foreground">{alwaysCount}</strong> toujours
                   préparés
                 </span>
                 <span>· les sorts toujours préparés et les tours de magie ne comptent pas</span>
               </p>
             </>
           ) : (
-            <p className="text-muted-foreground text-sm">
-              <strong className="text-foreground font-semibold">{knownSpells.length}</strong> connus
+            <p className="text-sm text-muted-foreground">
+              <strong className="font-semibold text-foreground">{knownSpells.length}</strong> connus
               · {classDefinition?.name ?? "Ce lanceur"} ne prépare pas ses sorts : tous ses sorts
               connus sont utilisables en jeu.
             </p>
@@ -505,13 +505,13 @@ function KnownSpellsSection({ draft, onChange, spells }: CharacterTabProps & { s
       </div>
 
       {knownSpells.length === 0 ? (
-        <p className="text-muted-foreground rounded-lg border border-dashed p-6 text-center text-sm">
+        <p className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">
           Aucun sort connu — ajoutez-en depuis votre bibliothèque.
         </p>
       ) : (
-        <div className="bg-card overflow-hidden rounded-xl border shadow-lg">
+        <div className="overflow-hidden rounded-xl border bg-card shadow-lg">
           <div
-            className={`text-muted-foreground hidden items-center gap-4 border-b px-4 py-2.5 text-xs font-semibold tracking-wider uppercase sm:grid ${grid}`}
+            className={`hidden items-center gap-4 border-b px-4 py-2.5 text-xs font-semibold tracking-wider text-muted-foreground uppercase sm:grid ${grid}`}
           >
             <span>Sort</span>
             <span>Domaine</span>
@@ -527,11 +527,11 @@ function KnownSpellsSection({ draft, onChange, spells }: CharacterTabProps & { s
             const levelSpells = knownSpells.filter((spell) => spell.level === level);
             return (
               <section key={level} aria-label={levelLabel(level)}>
-                <h3 className="bg-background/40 flex items-baseline gap-2 px-4 pt-3 pb-1.5">
-                  <span className="font-heading text-primary text-base font-semibold">
+                <h3 className="flex items-baseline gap-2 bg-background/40 px-4 pt-3 pb-1.5">
+                  <span className="font-heading text-base font-semibold text-primary">
                     {levelLabel(level)}
                   </span>
-                  <span className="text-muted-foreground text-xs">
+                  <span className="text-xs text-muted-foreground">
                     {levelSpells.length} sort{levelSpells.length > 1 ? "s" : ""}
                   </span>
                 </h3>
@@ -626,7 +626,7 @@ function PreparationGauge({ count, max, forced }: { count: number; max: number; 
         aria-valuemin={0}
         aria-valuemax={max}
         aria-valuenow={count}
-        className="bg-muted h-2 overflow-hidden rounded-full"
+        className="h-2 overflow-hidden rounded-full bg-muted"
       >
         <div
           className={`h-full rounded-full transition-[width] ${over ? "bg-destructive" : "bg-primary"}`}
@@ -634,7 +634,7 @@ function PreparationGauge({ count, max, forced }: { count: number; max: number; 
         />
       </div>
       {over && (
-        <p className="text-destructive text-xs">
+        <p className="text-xs text-destructive">
           Limite dépassée : retirez {count - max} sort{count - max > 1 ? "s" : ""} préparé
           {count - max > 1 ? "s" : ""}.
         </p>
@@ -675,7 +675,7 @@ function KnownSpellRow({
         type="button"
         aria-label={`Détails : ${spell.name}`}
         onClick={onShowDetails}
-        className="hover:bg-foreground/[0.03] focus-visible:ring-ring absolute inset-0 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-inset"
+        className="absolute inset-0 cursor-pointer outline-none hover:bg-foreground/[0.03] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
       />
       <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
         <span className="min-w-0 text-sm font-medium break-words">{spell.name}</span>
@@ -695,7 +695,7 @@ function KnownSpellRow({
         type="button"
         variant="ghost"
         size="icon"
-        className="text-muted-foreground hover:text-destructive relative z-10 sm:order-last"
+        className="relative z-10 text-muted-foreground hover:text-destructive sm:order-last"
         aria-label={`Retirer ${spell.name} des sorts connus`}
         onClick={() => onChange(removeKnownSpell(draft, spell.id))}
       >
@@ -710,14 +710,14 @@ function KnownSpellRow({
       />
       {preparesSpells &&
         (spell.level === 0 ? (
-          <span className="text-muted-foreground relative z-10 col-span-2 flex items-center gap-1.5 text-xs sm:justify-center">
+          <span className="relative z-10 col-span-2 flex items-center gap-1.5 text-xs text-muted-foreground sm:justify-center">
             <MoonStar className="size-3.5" aria-hidden />
             Toujours disponible
           </span>
         ) : (
           <>
             <Label
-              className="text-muted-foreground relative z-10 flex items-center gap-2 text-xs sm:justify-center"
+              className="relative z-10 flex items-center gap-2 text-xs text-muted-foreground sm:justify-center"
               title={preparedLocked ? "Limite de sorts préparés atteinte" : undefined}
             >
               <Switch
@@ -728,7 +728,7 @@ function KnownSpellRow({
               />
               <span className="sm:sr-only">Préparé</span>
             </Label>
-            <Label className="text-muted-foreground relative z-10 flex items-center gap-2 text-xs sm:justify-center">
+            <Label className="relative z-10 flex items-center gap-2 text-xs text-muted-foreground sm:justify-center">
               <Switch
                 checked={state === "always"}
                 aria-label={`Toujours préparé : ${spell.name}`}
