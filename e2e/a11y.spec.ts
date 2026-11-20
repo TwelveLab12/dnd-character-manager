@@ -265,3 +265,124 @@ test("404 page has no WCAG 2.2 AA violation (axe)", A11Y, async ({ page }) => {
   expect(response?.status()).toBe(404);
   expect(await wcagViolations(page)).toEqual([]);
 });
+
+// >>> dnd-character-manager : états de focus hors des routes fixes
+// Le parcours clavier ci-dessus ne voit que l'état initial des routes de `routes.ts`, sans
+// personnage. Ces tests chargent la démo (`/?demo=1`, un personnage par thème) et mesurent, avec
+// le même calcul que le parcours (`measureFocus`), les états signalés par les revues a11y :
+// champs numériques de l'édition (TwelveLab12/dnd-character-manager#194). Bloc propre au
+// projet : le reporter si `/claude-kit:sync` propose de réécrire ce fichier.
+
+// Alias plutôt qu'import : la ligne d'import reste celle du kit.
+type Locator = ReturnType<Page["locator"]>;
+
+// Charge la démo et renvoie, pour chaque personnage, son nom et le lien de son édition.
+async function openDemo(page: Page) {
+  await open(page, "/?demo=1");
+  const edits = page.getByRole("link", { name: /^Modifier / });
+  await expect(edits.first()).toBeVisible();
+  return edits.evaluateAll((links) =>
+    links.map((link) => ({
+      name: (link.getAttribute("aria-label") ?? "").replace(/^Modifier /, ""),
+      href: link.getAttribute("href") ?? "",
+    })),
+  );
+}
+
+// Donne le focus à `target` au clavier (Maj+Tab puis Tab : `:focus-visible` suit la modalité
+// clavier) et vérifie son indicateur comme le parcours ci-dessus : 3:1 sur au moins 1 px.
+async function expectFocusIndicator(page: Page, target: Locator, name: string) {
+  await target.scrollIntoViewIfNeeded();
+  await target.focus();
+  await page.keyboard.press("Shift+Tab");
+  await page.keyboard.press("Tab");
+  await expect(target, `${name} : focalisé au clavier`).toBeFocused();
+  const geometry = await target.evaluate((el) => {
+    const { x, y, width, height } = el.getBoundingClientRect();
+    const style = getComputedStyle(el);
+    const corner = (side: string) => {
+      const [rx = 0, ry = rx] = style
+        .getPropertyValue(`border-${side}-radius`)
+        .split(" ")
+        .map(parseFloat);
+      return { x: rx, y: ry };
+    };
+    const [topLeft, topRight, bottomRight, bottomLeft] = [
+      "top-left",
+      "top-right",
+      "bottom-right",
+      "bottom-left",
+    ].map(corner) as [Radius, Radius, Radius, Radius];
+    // Rayons tels que dessinés : CSS les réduit ensemble quand ils se chevauchent.
+    const fit = (size: number, sum: number) => (sum > 0 ? size / sum : 1);
+    const scale = Math.min(
+      1,
+      fit(width, topLeft.x + topRight.x),
+      fit(width, bottomLeft.x + bottomRight.x),
+      fit(height, topLeft.y + bottomLeft.y),
+      fit(height, topRight.y + bottomRight.y),
+    );
+    const scaled = (r: Radius) => ({ x: r.x * scale, y: r.y * scale });
+    return {
+      box: { x, y, width, height },
+      radii: {
+        topLeft: scaled(topLeft),
+        topRight: scaled(topRight),
+        bottomRight: scaled(bottomRight),
+        bottomLeft: scaled(bottomLeft),
+      },
+    };
+  });
+  const clip = around(geometry.box, page.viewportSize() ?? { width: 1280, height: 720 });
+  expect.soft(clip, `${name} : à l'écran`).not.toBeNull();
+  if (!clip) return;
+  const focused = await shot(page, clip);
+  await target.evaluate((el) => (el as HTMLElement).blur());
+  const blurred = await shot(page, clip);
+  const indicator = await page.evaluate(measureFocus, {
+    focused,
+    blurred,
+    el: { ...geometry.box, x: geometry.box.x - clip.x, y: geometry.box.y - clip.y },
+    radii: geometry.radii,
+    contrast: FOCUS_CONTRAST,
+  });
+  expect
+    .soft(
+      indicator.thickness,
+      `${name} : ${indicator.thickness} px à ${FOCUS_CONTRAST}:1 (changement le plus fort ${indicator.strongest}:1)`,
+    )
+    .toBeGreaterThanOrEqual(FOCUS_THICKNESS);
+}
+
+test.describe("a11y : états de focus de la démo", A11Y, () => {
+  test("les champs numériques de l'édition ont un indicateur contrasté (WCAG 1.4.11, RGAA 10.7)", async ({
+    page,
+  }) => {
+    const characters = await openDemo(page);
+    expect(characters.length, "personnages de la démo").toBeGreaterThan(0);
+    for (const { name, href } of characters) {
+      await test.step(name, async () => {
+        await open(page, href);
+        await expectFocusIndicator(
+          page,
+          page.getByLabel("Niveau", { exact: true }),
+          `${name} › Niveau`,
+        );
+        await page.getByRole("tab", { name: "Caractéristiques" }).click();
+        await expectFocusIndicator(
+          page,
+          page.getByLabel("Score de base : Force"),
+          `${name} › Score de base : Force`,
+        );
+        await page.getByRole("tab", { name: "Général" }).click();
+        await page.getByRole("button", { name: "Ajouter un effet" }).click();
+        await expectFocusIndicator(
+          page,
+          page.getByLabel("Bonus de CA").last(),
+          `${name} › Bonus de CA`,
+        );
+      });
+    }
+  });
+});
+// <<< dnd-character-manager

@@ -145,7 +145,7 @@ function AbilityCard({
       </span>
 
       <div className="flex items-center justify-between gap-2">
-        <div className="flex h-11 items-center rounded-lg border border-input bg-card">
+        <div className="flex h-11 items-center rounded-lg border border-input bg-card has-[input:focus-visible]:outline-3 has-[input:focus-visible]:outline-offset-2 has-[input:focus-visible]:outline-ring">
           <Button
             type="button"
             variant="ghost"
@@ -157,13 +157,15 @@ function AbilityCard({
           >
             <Minus />
           </Button>
+          {/* Indicateur de focus sur le groupe −/score/+ (WCAG 1.4.11), comme un seul champ.
+              `outline-none` évite un second anneau autour du chiffre. */}
           <input
             id={scoreId}
             type="number"
             min={MIN_SCORE}
             max={MAX_SCORE}
             aria-label={`Score de base : ${label}`}
-            className="w-10 [appearance:textfield] bg-transparent text-center text-lg font-semibold tabular-nums outline-none [&::-webkit-inner-spin-button]:appearance-none"
+            className="h-full w-10 [appearance:textfield] bg-transparent text-center text-lg font-semibold tabular-nums outline-none [&::-webkit-inner-spin-button]:appearance-none"
             value={baseScore}
             onChange={(event) => {
               const parsed = Number.parseInt(event.target.value, 10);

@@ -196,12 +196,14 @@ function EffectRow({
         value={effect.name}
         onChange={(event) => onChange({ name: event.target.value })}
       />
-      <label className="flex h-8 items-center gap-1 rounded-lg bg-primary/10 px-2.5 font-semibold text-primary">
+      <label className="flex h-8 items-center gap-1 rounded-lg bg-primary/10 px-2.5 font-semibold text-primary has-[input:focus-visible]:outline-3 has-[input:focus-visible]:outline-offset-2 has-[input:focus-visible]:outline-ring">
         <span aria-hidden>+</span>
+        {/* Indicateur de focus sur le label (WCAG 1.4.11) : autour du seul champ, l'anneau
+            passerait sur « + » et « CA ». `outline-none` évite un second anneau. */}
         <input
           aria-label="Bonus de CA"
           type="number"
-          className="w-8 min-w-0 bg-transparent outline-none"
+          className="h-full w-8 min-w-0 [appearance:textfield] bg-transparent outline-none [&::-webkit-inner-spin-button]:appearance-none"
           value={effect.bonus}
           onChange={(event) => onChange({ bonus: toNumber(event.target.value) })}
         />
