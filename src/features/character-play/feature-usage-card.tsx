@@ -74,7 +74,7 @@ function FeatureUsageCard({
           type="button"
           aria-label={`Détails : ${feature.name}`}
           onClick={onShowDetails}
-          className="absolute inset-0 cursor-pointer rounded-2xl outline-none hover:bg-foreground/[0.03] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+          className="absolute inset-0 cursor-pointer rounded-2xl hover:bg-foreground/[0.03] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden focus-visible:ring-inset"
         />
       )}
       <div className="flex items-start justify-between gap-2">

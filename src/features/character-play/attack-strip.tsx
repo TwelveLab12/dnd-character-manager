@@ -38,7 +38,7 @@ export function AttackStrip({
               type="button"
               aria-label={`Détails : ${attack.name || "Arme"}`}
               onClick={() => onShowDetails(attack.itemId)}
-              className="absolute inset-0 cursor-pointer rounded-xl outline-none hover:bg-foreground/[0.03] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset sm:rounded-2xl"
+              className="absolute inset-0 cursor-pointer rounded-xl hover:bg-foreground/[0.03] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden focus-visible:ring-inset sm:rounded-2xl"
             />
             <span
               className={`grid size-8 shrink-0 place-items-center rounded-lg sm:size-9 ${

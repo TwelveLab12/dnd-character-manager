@@ -271,8 +271,9 @@ test("404 page has no WCAG 2.2 AA violation (axe)", A11Y, async ({ page }) => {
 // personnage. Ces tests chargent la démo (`/?demo=1`, un personnage par thème) et mesurent, avec
 // le même calcul que le parcours (`measureFocus`), les états signalés par les revues a11y :
 // champs numériques de l'édition (TwelveLab12/dnd-character-manager#194), case cochée et
-// interrupteur activé (#193), bouton « Supprimer » des dialogues de confirmation (#192). Bloc
-// propre au projet : le reporter si `/claude-kit:sync` propose de réécrire ce fichier.
+// interrupteur activé (#193), bouton « Supprimer » des dialogues de confirmation (#192), et en
+// contraste forcé les boutons « Détails » posés sur une carte (#183). Bloc propre au projet : le
+// reporter si `/claude-kit:sync` propose de réécrire ce fichier.
 
 // Alias plutôt qu'import : la ligne d'import reste celle du kit.
 type Locator = ReturnType<Page["locator"]>;
@@ -463,6 +464,36 @@ test.describe("a11y : états de focus de la démo", A11Y, () => {
         await expectFocusIndicator(page, confirm, `${name} › Journal › Supprimer la session`);
       });
     }
+  });
+
+  test("en contraste forcé, les boutons « Détails » posés sur une carte ont un indicateur (WCAG 2.4.7, RGAA 10.7)", async ({
+    page,
+  }) => {
+    const characters = await openDemo(page);
+    // Le mode contraste forcé efface l'anneau dessiné en box-shadow : ces boutons gardent un
+    // contour grâce à `focus-visible:outline-hidden`, que `outline-none` supprimerait.
+    await page.emulateMedia({ forcedColors: "active" });
+    let measured = 0;
+    for (const { name, href } of characters) {
+      await test.step(name, async () => {
+        await open(page, href.replace(/\/edit$/, ""));
+        // Combat : armes, ressources de classe et capacités à usages. Inventaire : objets. La
+        // carte de sort de l'onglet Sorts a le même défaut, hors de ce lot.
+        for (const tab of ["Combat", "Inventaire"]) {
+          await page.getByRole("tab", { name: tab, exact: true }).click();
+          const details = page.getByRole("tabpanel").getByRole("button", { name: /^Détails : / });
+          const count =
+            tab === "Combat" ? await details.count() : Math.min(1, await details.count());
+          for (let i = 0; i < count; i++) {
+            const button = details.nth(i);
+            const label = await button.getAttribute("aria-label");
+            await expectFocusIndicator(page, button, `${name} › ${tab} › ${label}`);
+            measured++;
+          }
+        }
+      });
+    }
+    expect(measured, "boutons « Détails » mesurés").toBeGreaterThan(0);
   });
 });
 // <<< dnd-character-manager

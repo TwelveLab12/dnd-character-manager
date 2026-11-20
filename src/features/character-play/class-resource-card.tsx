@@ -198,7 +198,7 @@ function ClassResourceCard({
                 type="button"
                 aria-label={`Détails : ${option.name}`}
                 onClick={() => onShowOption(option.key)}
-                className="absolute inset-0 cursor-pointer rounded-xl transition-colors outline-none hover:bg-primary/10 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+                className="absolute inset-0 cursor-pointer rounded-xl transition-colors hover:bg-primary/10 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden focus-visible:ring-inset"
               />
               <span className="grid size-7.5 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary">
                 <ResourceIcon aria-hidden className="size-4" />
