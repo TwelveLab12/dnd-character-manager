@@ -1,5 +1,5 @@
 {
-  "kitVersion": "0.13.0",
+  "kitVersion": "0.14.0",
   "modules": [
     "core",
     "tailwind-shadcn",
