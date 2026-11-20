@@ -1,5 +1,5 @@
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type ElementHandle, type Page } from "@playwright/test";
 import { ROUTES } from "./routes";
 
 // WCAG 2.0 → 2.2, levels A and AA (RGAA 4.1.2 is built on WCAG 2.1 AA), plus axe's best
@@ -126,6 +126,83 @@ async function measureFocus(arg: {
   return { thickness: Math.max(...sides), strongest: Math.round(strongest * 100) / 100 };
 }
 
+// Runs in the page: how the report names the element.
+function label(el: HTMLElement) {
+  const name =
+    el.getAttribute("aria-label") ||
+    (el as HTMLInputElement).labels?.[0]?.textContent?.trim() ||
+    el.textContent?.trim().slice(0, 40) ||
+    el.tagName;
+  return `${el.tagName}:${name}`;
+}
+
+// Runs in the page: the element's box and its corner radii as drawn (CSS scales them down together
+// when they overlap, as with rounded-full).
+function geometry(el: HTMLElement) {
+  const { x, y, width, height } = el.getBoundingClientRect();
+  const style = getComputedStyle(el);
+  const corner = (name: string) => {
+    const [rx = 0, ry = rx] = style
+      .getPropertyValue(`border-${name}-radius`)
+      .split(" ")
+      .map(parseFloat);
+    return { x: rx, y: ry };
+  };
+  const topLeft = corner("top-left");
+  const topRight = corner("top-right");
+  const bottomRight = corner("bottom-right");
+  const bottomLeft = corner("bottom-left");
+  const fit = (size: number, sum: number) => (sum > 0 ? size / sum : 1);
+  const scale = Math.min(
+    1,
+    fit(width, topLeft.x + topRight.x),
+    fit(width, bottomLeft.x + bottomRight.x),
+    fit(height, topLeft.y + bottomLeft.y),
+    fit(height, topRight.y + bottomRight.y),
+  );
+  const scaled = (r: Radius) => ({ x: r.x * scale, y: r.y * scale });
+  return {
+    box: { x, y, width, height },
+    radii: {
+      topLeft: scaled(topLeft),
+      topRight: scaled(topRight),
+      bottomRight: scaled(bottomRight),
+      bottomLeft: scaled(bottomLeft),
+    },
+  };
+}
+
+// Indicator of the focused element: screenshots it focused then blurred, and compares them
+// (measureFocus). Leaves it focused. Null when nothing of it is on screen.
+async function focusIndicator(page: Page, element: ElementHandle<HTMLElement>) {
+  const { box, radii } = await element.evaluate(geometry);
+  const clip = around(box, page.viewportSize() ?? { width: 1280, height: 720 });
+  if (!clip) return null;
+  const focused = await shot(page, clip);
+  await element.evaluate((el) => el.blur());
+  const blurred = await shot(page, clip);
+  // Refocusing keeps the keyboard modality: :focus-visible still applies and Tab goes on.
+  await element.evaluate((el) => el.focus());
+  const el = { ...box, x: box.x - clip.x, y: box.y - clip.y };
+  return page.evaluate(measureFocus, { focused, blurred, el, radii, contrast: FOCUS_CONTRAST });
+}
+
+// A target that only a script focuses (tabindex="-1": heading after an in-page link or an action,
+// status message) is never a tab stop. The page's h1 when it is one, otherwise a probe at the top
+// of <main> that only the global focus ring styles.
+function scriptTarget(page: Page) {
+  return page.evaluateHandle(() => {
+    const heading = document.querySelector<HTMLElement>('h1[tabindex="-1"]');
+    if (heading) return heading;
+    const probe = document.createElement("p");
+    probe.tabIndex = -1;
+    probe.textContent = "claude-kit focus probe";
+    probe.style.width = "max-content";
+    (document.querySelector("main") ?? document.body).prepend(probe);
+    return probe;
+  });
+}
+
 for (const route of ROUTES) {
   test.describe(`a11y ${route}`, A11Y, () => {
     test("no WCAG 2.2 AA violation (axe)", async ({ page }) => {
@@ -166,77 +243,26 @@ for (const route of ROUTES) {
       page,
     }) => {
       await open(page, route);
-      const viewport = page.viewportSize() ?? { width: 1280, height: 720 };
       const faint: string[] = [];
       for (let i = 0; i < MAX_TAB_STOPS; i++) {
         await page.keyboard.press("Tab");
-        const handle = await page.evaluateHandle(
-          () => document.activeElement as HTMLElement | null,
-        );
-        const stop = await handle.evaluate((el) => {
-          if (!el || el === document.body || el.dataset.a11yVisited) return null;
+        const element = (
+          await page.evaluateHandle(() => document.activeElement as HTMLElement | null)
+        ).asElement();
+        const visited = await element?.evaluate((el) => {
+          if (el === document.body || el.dataset.a11yVisited) return true;
           el.dataset.a11yVisited = "true";
-          const name =
-            el.getAttribute("aria-label") ||
-            (el as HTMLInputElement).labels?.[0]?.textContent?.trim() ||
-            el.textContent?.trim().slice(0, 40) ||
-            el.tagName;
-          const { x, y, width, height } = el.getBoundingClientRect();
-          // Corner radii as drawn: CSS scales them down together when they overlap (rounded-full).
-          const style = getComputedStyle(el);
-          const corner = (name: string) => {
-            const [rx = 0, ry = rx] = style
-              .getPropertyValue(`border-${name}-radius`)
-              .split(" ")
-              .map(parseFloat);
-            return { x: rx, y: ry };
-          };
-          const topLeft = corner("top-left");
-          const topRight = corner("top-right");
-          const bottomRight = corner("bottom-right");
-          const bottomLeft = corner("bottom-left");
-          const fit = (size: number, sum: number) => (sum > 0 ? size / sum : 1);
-          const scale = Math.min(
-            1,
-            fit(width, topLeft.x + topRight.x),
-            fit(width, bottomLeft.x + bottomRight.x),
-            fit(height, topLeft.y + bottomLeft.y),
-            fit(height, topRight.y + bottomRight.y),
-          );
-          const scaled = (r: { x: number; y: number }) => ({ x: r.x * scale, y: r.y * scale });
-          return {
-            id: `${el.tagName}:${name}`,
-            box: { x, y, width, height },
-            radii: {
-              topLeft: scaled(topLeft),
-              topRight: scaled(topRight),
-              bottomRight: scaled(bottomRight),
-              bottomLeft: scaled(bottomLeft),
-            },
-          };
+          return false;
         });
-        if (!stop) break; // focus left the page or came back to a visited element: all covered
-        const clip = around(stop.box, viewport);
-        if (!clip) {
-          faint.push(`${stop.id}: off screen`);
-          continue;
-        }
-        const focused = await shot(page, clip);
-        await handle.evaluate((el) => el?.blur());
-        const blurred = await shot(page, clip);
-        // Refocusing keeps the keyboard modality: :focus-visible still applies and Tab goes on.
-        await handle.evaluate((el) => el?.focus());
-        const el = { ...stop.box, x: stop.box.x - clip.x, y: stop.box.y - clip.y };
-        const indicator = await page.evaluate(measureFocus, {
-          focused,
-          blurred,
-          el,
-          radii: stop.radii,
-          contrast: FOCUS_CONTRAST,
-        });
-        if (indicator.thickness < FOCUS_THICKNESS) {
+        // Focus left the page or came back to a visited element: all covered.
+        if (!element || visited) break;
+        const id = await element.evaluate(label);
+        const indicator = await focusIndicator(page, element);
+        if (!indicator) {
+          faint.push(`${id}: off screen`);
+        } else if (indicator.thickness < FOCUS_THICKNESS) {
           faint.push(
-            `${stop.id}: ${indicator.thickness} px at ${FOCUS_CONTRAST}:1 (strongest change ${indicator.strongest}:1)`,
+            `${id}: ${indicator.thickness} px at ${FOCUS_CONTRAST}:1 (strongest change ${indicator.strongest}:1)`,
           );
         }
       }
@@ -246,6 +272,31 @@ for (const route of ROUTES) {
         faint,
         `focus indicators under ${FOCUS_CONTRAST}:1 over ${FOCUS_THICKNESS} px`,
       ).toEqual([]);
+    });
+
+    test("a script-focused target shows a contrasted indicator (WCAG 2.4.7, 1.4.11, RGAA 10.7)", async ({
+      page,
+    }) => {
+      await open(page, route);
+      // A keyboard user acts, then a script moves the focus.
+      await page.keyboard.press("Tab");
+      const target = await scriptTarget(page);
+      await target.evaluate((el) => el.focus());
+      const id = await target.evaluate(label);
+      expect(
+        await target.evaluate((el) => el.matches(":focus-visible")),
+        `${id} matches :focus-visible`,
+      ).toBe(true);
+      const indicator = await focusIndicator(page, target);
+      const found = indicator
+        ? `${indicator.thickness} px at ${FOCUS_CONTRAST}:1 (strongest change ${indicator.strongest}:1)`
+        : "off screen";
+      // Missing (outline-none), or the browser's default outline left translucent by shadcn
+      // (outline-ring/50) when the global focus ring does not cover [tabindex="-1"].
+      expect(
+        indicator?.thickness ?? 0,
+        `script-focused target ${id}: ${found}`,
+      ).toBeGreaterThanOrEqual(FOCUS_THICKNESS);
     });
   });
 }
