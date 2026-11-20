@@ -134,6 +134,15 @@ Relevé en mesurant les indicateurs de focus de
 - [#203](https://github.com/TwelveLab12/dnd-character-manager/issues/203) — thèmes de personnage :
   texte rouge (`--destructive`) sous 4,5:1 sur les fonds du thème (RGAA 3.2, WCAG 1.4.3).
 
+Relevés par la revue `a11y-reviewer` de
+[la PR #205](https://github.com/TwelveLab12/dnd-character-manager/pull/205) :
+
+- [#206](https://github.com/TwelveLab12/dnd-character-manager/issues/206) — `aria-controls` vers un
+  panneau absent du DOM quand il est fermé, groupes radio sans navigation aux flèches (RGAA 7.1,
+  WCAG 2.1.1 et 4.1.2).
+- [#207](https://github.com/TwelveLab12/dnd-character-manager/issues/207) — indicateur de focus
+  invisible en contraste forcé : bouton shadcn de base, cartes de sort (RGAA 10.7, WCAG 2.4.7).
+
 ## Tenir ce document à jour
 
 - Remplir la colonne « Sur ce projet » au premier audit (`/claude-kit:a11y-audit`), puis à chaque
