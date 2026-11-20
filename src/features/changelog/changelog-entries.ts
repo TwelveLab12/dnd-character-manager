@@ -17,6 +17,17 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: "2026-11-20-focus-character-pages",
+    date: "2026-11-20",
+    title: "Repère de focus visible sur les fiches de personnage",
+    changes: [
+      "Au clavier, l’anneau net et bien contrasté entoure désormais aussi les contrôles de la fiche et de la configuration d’un personnage, quel que soit son thème : compteurs, emplacements de sorts, jets contre la mort, cartes, onglets…",
+      "Les champs numériques (niveau, caractéristiques, bonus de CA) affichent un repère quand on les atteint avec Tab : avant, rien ne signalait qu’ils avaient le focus.",
+      "Une case cochée ou un interrupteur activé (objet équipé, sort préparé) reste repérable quand il a le focus.",
+      "Dans les confirmations de suppression, le bouton « Supprimer » est clairement entouré quand il a le focus.",
+    ],
+  },
+  {
     id: "2026-11-09-focus-ring",
     date: "2026-11-09",
     title: "Repère de focus plus visible au clavier",
