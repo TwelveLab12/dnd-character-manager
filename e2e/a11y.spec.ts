@@ -271,8 +271,8 @@ test("404 page has no WCAG 2.2 AA violation (axe)", A11Y, async ({ page }) => {
 // personnage. Ces tests chargent la démo (`/?demo=1`, un personnage par thème) et mesurent, avec
 // le même calcul que le parcours (`measureFocus`), les états signalés par les revues a11y :
 // champs numériques de l'édition (TwelveLab12/dnd-character-manager#194), case cochée et
-// interrupteur activé (#193). Bloc propre au projet : le reporter si `/claude-kit:sync` propose
-// de réécrire ce fichier.
+// interrupteur activé (#193), bouton « Supprimer » des dialogues de confirmation (#192). Bloc
+// propre au projet : le reporter si `/claude-kit:sync` propose de réécrire ce fichier.
 
 // Alias plutôt qu'import : la ligne d'import reste celle du kit.
 type Locator = ReturnType<Page["locator"]>;
@@ -431,6 +431,38 @@ test.describe("a11y : états de focus de la démo", A11Y, () => {
     expect(measured.equipSwitch, "interrupteurs « Équipé » activés mesurés").toBeGreaterThan(0);
     expect(measured.pickerSwitch, "interrupteurs du sélecteur de sorts mesurés").toBeGreaterThan(0);
     expect(measured.checkbox, "cases cochées mesurées").toBeGreaterThan(0);
+  });
+
+  test("le bouton « Supprimer » d'un dialogue de confirmation a un indicateur contrasté (WCAG 1.4.11, RGAA 10.7)", async ({
+    page,
+  }) => {
+    const characters = await openDemo(page);
+    const confirm = page.getByRole("alertdialog").getByRole("button", {
+      name: "Supprimer",
+      exact: true,
+    });
+    // Accueil : dialogue hors de la carte du personnage, dans la palette par défaut.
+    const [first] = characters;
+    if (!first) throw new Error("aucun personnage dans la démo");
+    await page.getByRole("button", { name: `Supprimer ${first.name}` }).click();
+    await expectFocusIndicator(page, confirm, "Accueil › Supprimer le personnage");
+    await page.keyboard.press("Escape");
+    // Journal : dialogue dans la palette du personnage. La démo n'a pas de journal : la première
+    // note crée la session, que l'on ouvre pour la supprimer.
+    for (const { name, href } of characters) {
+      await test.step(name, async () => {
+        await open(page, href.replace(/\/edit$/, ""));
+        await page.getByRole("button", { name: "Journal" }).click();
+        await page.getByRole("textbox", { name: "Nouvelle note" }).fill("Note de test");
+        await page.getByRole("button", { name: "Ajouter la note" }).click();
+        await page
+          .getByRole("button", { name: /^Modifier la session/ })
+          .first()
+          .click();
+        await page.getByRole("button", { name: "Supprimer la session" }).click();
+        await expectFocusIndicator(page, confirm, `${name} › Journal › Supprimer la session`);
+      });
+    }
   });
 });
 // <<< dnd-character-manager
