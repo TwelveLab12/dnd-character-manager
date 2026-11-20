@@ -26,8 +26,9 @@ Pages couvertes par les tests e2e : celles de `e2e/routes.ts` (`/`, `/spells`, `
 [#182](https://github.com/TwelveLab12/dnd-character-manager/issues/182). En attendant, le bloc
 « états de focus » de `e2e/a11y.spec.ts` charge la démo (`/?demo=1`, un personnage par thème) et y
 mesure l'indicateur de focus des champs numériques de l'édition, d'une case cochée, d'un
-interrupteur activé et du bouton « Supprimer » des dialogues de confirmation : ce n'est pas le
-parcours complet (axe, reflow, titres, chaque arrêt de tabulation).
+interrupteur activé et du bouton « Supprimer » des dialogues de confirmation, ainsi que, en
+contraste forcé, celui des boutons « Détails » posés sur une carte : ce n'est pas le parcours
+complet (axe, reflow, titres, chaque arrêt de tabulation).
 
 ## Couverture RGAA 4.1.2 par thématique
 
