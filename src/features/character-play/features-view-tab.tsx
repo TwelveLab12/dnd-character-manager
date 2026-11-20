@@ -75,7 +75,7 @@ export function FeaturesViewTab({ character }: { character: Character }) {
                 type="button"
                 aria-label={`Détails : ${feature.name}`}
                 onClick={() => setDetail({ kind: "feature", featureId: feature.id })}
-                className="flex min-h-11 w-full cursor-pointer items-center gap-2.5 rounded-xl border bg-background/35 px-3.5 py-2 text-left transition-colors outline-none hover:bg-foreground/[0.04] focus-visible:ring-3 focus-visible:ring-ring/50"
+                className="flex min-h-11 w-full cursor-pointer items-center gap-2.5 rounded-xl border bg-background/35 px-3.5 py-2 text-left transition-colors hover:bg-foreground/[0.04]"
               >
                 <span className="flex-1 text-[15px] font-medium">{feature.name}</span>
                 {feature.resourceId && (

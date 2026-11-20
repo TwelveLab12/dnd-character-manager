@@ -105,7 +105,7 @@ function ArmorClassEffectChip({
       aria-checked={active}
       aria-label={`${effect.name || "Effet"} (${formatModifier(effect.bonus)} CA)`}
       onClick={() => void toggleArmorClassEffect(effect.id)}
-      className={`inline-flex h-8 max-w-full items-center gap-1.5 rounded-full border px-3 text-xs font-medium whitespace-nowrap transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50 ${
+      className={`inline-flex h-8 max-w-full items-center gap-1.5 rounded-full border px-3 text-xs font-medium whitespace-nowrap transition-colors ${
         active
           ? "border-info/60 bg-info/15 text-info"
           : "border-dashed border-muted-foreground/40 text-muted-foreground hover:text-foreground"

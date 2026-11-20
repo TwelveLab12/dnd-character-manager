@@ -82,6 +82,8 @@
   --info: oklch(0.7 0.15 250);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
+  /* Anneau de focus (WCAG 1.4.11), mesuré le 20/11/2026 (#183) : 7,59:1 sur --background,
+     6,91:1 sur --card et --popover ; 7,71:1 au moins autour de la fiche de personnage. */
   --ring: oklch(0.708 0 0);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
@@ -135,6 +137,8 @@
   --info: #8fa9ff; /* lueur */
   --border: rgba(152, 160, 194, 0.22); /* bord */
   --input: rgba(152, 160, 194, 0.22); /* bord */
+  /* Anneau de focus (WCAG 1.4.11), mesuré le 20/11/2026 (#183) : 8,29:1 sur --background,
+     7,55:1 sur --card, 6,51:1 sur --popover ; 5,13:1 au moins sur les surfaces de la fiche. */
   --ring: #8fa9ff; /* lueur */
 }
 
@@ -167,6 +171,8 @@
   --info: #9fb0bb; /* granit */
   --border: rgba(168, 153, 138, 0.22); /* cendre */
   --input: rgba(168, 153, 138, 0.22); /* cendre */
+  /* Anneau de focus (WCAG 1.4.11), mesuré le 20/11/2026 (#183) : 8,47:1 sur --background,
+     7,79:1 sur --card, 7,06:1 sur --popover ; 5,39:1 au moins sur les surfaces de la fiche. */
   --ring: #9fb0bb; /* granit */
 }
 
@@ -198,6 +204,8 @@
   --info: #7fc4c0; /* pluie */
   --border: rgba(155, 171, 159, 0.22); /* lichen */
   --input: rgba(155, 171, 159, 0.22); /* lichen */
+  /* Anneau de focus (WCAG 1.4.11), mesuré le 20/11/2026 (#183) : 9,31:1 sur --background,
+     8,41:1 sur --card, 7,39:1 sur --popover ; 5,54:1 au moins sur les surfaces de la fiche. */
   --ring: #7fc4c0; /* pluie */
 }
 
@@ -230,6 +238,8 @@
   --info: #b9a3e3; /* encens */
   --border: rgba(176, 154, 163, 0.22); /* fumée */
   --input: rgba(176, 154, 163, 0.22); /* fumée */
+  /* Anneau de focus (WCAG 1.4.11), mesuré le 20/11/2026 (#183) : 8,62:1 sur --background,
+     8,02:1 sur --card, 7,36:1 sur --popover ; 5,37:1 au moins sur les surfaces de la fiche. */
   --ring: #b9a3e3; /* encens */
 }
 
@@ -255,6 +265,15 @@
   }
 }
 
+/* Mesure de l'anneau de focus du bloc claude-kit ci-dessous (20/11/2026, #183), hors du bloc pour
+   ne pas le faire dériver du kit. Calcul sur les tokens : 6,51:1 au moins sur --background, --card
+   et --popover dans chaque palette, vérifié par src/test/design-tokens.a11y.test.ts (palette par
+   défaut) et src/features/character-theme/theme-contrast.a11y.test.ts (thèmes de personnage).
+   Pixels affichés là où passe l'anneau (3,5 px du bord), fiche et édition des 4 personnages de la
+   démo, tous onglets, et leurs cartes de l'accueil : 5,13:1 au moins sur les surfaces (carte,
+   panneaux translucides, champs). Un côté posé sur un contrôle voisin en --primary (bouton scindé,
+   segment actif) descend à 1,1:1, mais chaque élément garde au moins un côté à 3:1. Valeurs par
+   palette : commentaire au-dessus de chaque --ring. */
 /* >>> claude-kit */
 /* Anneau de focus global (RGAA 10.7 / WCAG 2.4.7, 1.4.11). Couleur opaque : le contour par défaut de
    shadcn (`outline-ring/50`) tombe sous 3:1. `:where()` garde une spécificité nulle, les composants

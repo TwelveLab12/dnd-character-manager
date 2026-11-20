@@ -112,7 +112,7 @@ function SummaryTiles({ draft }: { draft: CharacterTabProps["draft"] }) {
         <a
           key={tile.label}
           href={tile.href}
-          className="grid content-start gap-1 rounded-xl border border-primary/30 bg-background/60 px-4 py-3 transition-colors outline-none hover:border-primary/60 focus-visible:ring-3 focus-visible:ring-ring/50"
+          className="grid content-start gap-1 rounded-xl border border-primary/30 bg-background/60 px-4 py-3 transition-colors hover:border-primary/60"
         >
           <span className="text-[11px] font-semibold tracking-widest text-muted-foreground uppercase">
             {tile.label}
@@ -292,7 +292,7 @@ function ThemeAndNotesSection({ draft, onChange }: CharacterTabProps) {
                 onChange({ themeId: theme.id === DEFAULT_THEME ? undefined : theme.id })
               }
               className={cn(
-                "flex min-h-16 items-center gap-3.5 rounded-xl border px-3.5 py-2.5 text-left transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
+                "flex min-h-16 items-center gap-3.5 rounded-xl border px-3.5 py-2.5 text-left transition-colors",
                 checked ? "border-primary bg-primary/10" : "bg-background/60 hover:bg-muted/40",
               )}
             >

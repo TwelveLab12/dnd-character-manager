@@ -162,7 +162,7 @@ function FormCard({
         aria-expanded={open}
         aria-controls={panelId}
         onClick={onToggle}
-        className="flex w-full items-center gap-3 rounded-xl py-2.5 pr-3 pl-3.5 text-left outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+        className="flex w-full items-center gap-3 rounded-xl py-2.5 pr-3 pl-3.5 text-left"
       >
         <PawPrint aria-hidden className="size-4.5 shrink-0 text-primary" />
         <span className="grid min-w-0 flex-1 gap-0.5">

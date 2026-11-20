@@ -485,11 +485,7 @@ function RaceBonusPanel({ draft, onChange, race }: CharacterTabProps & { race: R
               aria-pressed={selected}
               disabled={choice.exclude?.includes(ability)}
               onClick={() => toggle(ability)}
-              className={cn(
-                chipClass,
-                "outline-none focus-visible:ring-3 focus-visible:ring-ring/50 disabled:opacity-40",
-                bonus === 0 && "hover:bg-muted/40",
-              )}
+              className={cn(chipClass, "disabled:opacity-40", bonus === 0 && "hover:bg-muted/40")}
             >
               {content}
             </button>

@@ -214,7 +214,7 @@ function AbilityCard({
           aria-pressed={proficient}
           onClick={() => onProficiencyChange(!proficient)}
           className={cn(
-            "flex min-h-12 items-center gap-2.5 rounded-xl border px-3 py-1.5 text-left transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
+            "flex min-h-12 items-center gap-2.5 rounded-xl border px-3 py-1.5 text-left transition-colors",
             proficient ? "border-primary bg-primary/10" : "hover:bg-muted/40",
             removed && "border-dashed",
           )}
@@ -354,7 +354,7 @@ function SkillGroup({
             aria-pressed={proficient}
             onClick={() => onToggle(skill.name, !proficient)}
             className={cn(
-              "flex min-h-11 items-center gap-2.5 rounded-lg border px-3 text-left transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
+              "flex min-h-11 items-center gap-2.5 rounded-lg border px-3 text-left transition-colors",
               proficient ? "border-primary/45 bg-primary/5" : "bg-background/60 hover:bg-muted/40",
             )}
           >

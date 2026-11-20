@@ -148,6 +148,8 @@ export function TemporaryHitPointsChip({ character }: { character: Character }) 
     <label className="inline-flex h-8 items-center gap-1.5 rounded-full border border-info/55 bg-info/10 px-3 text-xs font-medium whitespace-nowrap text-info">
       <ShieldPlus aria-hidden className="size-3.5" />
       PV temp.
+      {/* Contour au focus (WCAG 1.4.11, #183) : le soulignement passant de --info/40 à --info
+          ne contrastait qu'à 3,0–3,1:1, et --ring vaut --info dans les thèmes. */}
       <input
         type="number"
         inputMode="numeric"
@@ -155,7 +157,7 @@ export function TemporaryHitPointsChip({ character }: { character: Character }) 
         value={temporary}
         onChange={(event) => void setTemporaryHitPoints(toNumber(event.target.value))}
         aria-label="PV temporaires"
-        className={`${NUMBER_INPUT_CLASSES} w-7 border-b border-info/40 text-[13px] font-semibold focus-visible:border-info`}
+        className={`${NUMBER_INPUT_CLASSES} w-7 border-b border-info/40 text-[13px] font-semibold focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring focus-visible:outline-solid`}
       />
     </label>
   );

@@ -92,7 +92,7 @@ function CoinField({
             event.currentTarget.blur();
           }
         }}
-        className="w-full [appearance:textfield] border-b border-dashed border-border bg-transparent text-center font-heading text-xl font-bold tabular-nums outline-none focus:border-ring sm:text-2xl [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+        className="w-full [appearance:textfield] border-b border-dashed border-border bg-transparent text-center font-heading text-xl font-bold tabular-nums outline-none focus:border-solid focus:border-ring sm:text-2xl [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
       />
       <label htmlFor={id} className="text-[11px] text-muted-foreground">
         {label.name}
