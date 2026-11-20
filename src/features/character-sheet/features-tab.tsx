@@ -232,7 +232,7 @@ function ClassResourceCard({
                 aria-pressed={active}
                 onClick={() => toggleOption(option.id)}
                 className={cn(
-                  "flex h-9 items-center gap-1.5 rounded-full border px-3 text-sm transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
+                  "flex h-9 items-center gap-1.5 rounded-full border px-3 text-sm transition-colors",
                   active
                     ? "border-primary/40 bg-primary/10"
                     : "border-dashed text-muted-foreground hover:bg-muted/40",
@@ -289,7 +289,7 @@ function FeatureCard({
         aria-expanded={open}
         aria-controls={panelId}
         onClick={onToggle}
-        className="flex w-full items-center gap-3 rounded-xl py-2.5 pr-3 pl-3.5 text-left outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+        className="flex w-full items-center gap-3 rounded-xl py-2.5 pr-3 pl-3.5 text-left"
       >
         <span className="grid min-w-0 flex-1 gap-0.5">
           <span className="text-[15px] font-medium">{feature.name || "Nouvelle capacité"}</span>
@@ -435,7 +435,7 @@ function FeatureEditor({
                 aria-pressed={feature.source === source}
                 onClick={() => onChange({ source })}
                 className={cn(
-                  "h-7 rounded-full border px-2.5 text-xs transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
+                  "h-7 rounded-full border px-2.5 text-xs transition-colors",
                   feature.source === source
                     ? "border-primary bg-primary/15"
                     : "text-muted-foreground hover:bg-muted/40",

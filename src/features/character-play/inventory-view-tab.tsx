@@ -158,7 +158,7 @@ function ItemRow({
         type="button"
         aria-label={`Détails : ${item.name}`}
         onClick={onShowDetails}
-        className="absolute inset-0 cursor-pointer rounded-xl outline-none hover:bg-foreground/[0.03] focus-visible:ring-3 focus-visible:ring-ring/50"
+        className="absolute inset-0 cursor-pointer rounded-xl hover:bg-foreground/[0.03] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden focus-visible:ring-inset"
       />
       <div className="grid min-w-0 flex-1 basis-48 gap-0.5">
         <span className="flex flex-wrap items-center gap-2 text-[15px] font-medium">

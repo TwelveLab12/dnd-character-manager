@@ -157,7 +157,7 @@ export function IdentitySection({ draft, onChange }: CharacterTabProps) {
         </div>
         <div className="grid justify-items-center gap-1.5">
           <FieldLabel htmlFor={levelId}>Niveau</FieldLabel>
-          <div className="flex h-14 items-center rounded-xl border border-input dark:bg-input/30">
+          <div className="flex h-14 items-center rounded-xl border border-input has-[input:focus-visible]:outline-3 has-[input:focus-visible]:outline-offset-2 has-[input:focus-visible]:outline-ring dark:bg-input/30">
             <Button
               type="button"
               variant="ghost"
@@ -169,12 +169,14 @@ export function IdentitySection({ draft, onChange }: CharacterTabProps) {
             >
               <Minus />
             </Button>
+            {/* Indicateur de focus sur le groupe −/niveau/+ (WCAG 1.4.11), comme un seul champ.
+                `outline-none` évite un second anneau autour du chiffre. */}
             <input
               id={levelId}
               type="number"
               min={MIN_LEVEL}
               max={MAX_LEVEL}
-              className="w-12 [appearance:textfield] bg-transparent text-center font-heading text-3xl font-semibold text-primary outline-none [&::-webkit-inner-spin-button]:appearance-none"
+              className="h-full w-12 [appearance:textfield] bg-transparent text-center font-heading text-3xl font-semibold text-primary outline-none [&::-webkit-inner-spin-button]:appearance-none"
               value={draft.level}
               onChange={(event) => onChange({ level: clampLevel(toNumber(event.target.value)) })}
             />
@@ -483,11 +485,7 @@ function RaceBonusPanel({ draft, onChange, race }: CharacterTabProps & { race: R
               aria-pressed={selected}
               disabled={choice.exclude?.includes(ability)}
               onClick={() => toggle(ability)}
-              className={cn(
-                chipClass,
-                "outline-none focus-visible:ring-3 focus-visible:ring-ring/50 disabled:opacity-40",
-                bonus === 0 && "hover:bg-muted/40",
-              )}
+              className={cn(chipClass, "disabled:opacity-40", bonus === 0 && "hover:bg-muted/40")}
             >
               {content}
             </button>

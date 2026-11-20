@@ -266,7 +266,7 @@ function ItemCard({
           aria-expanded={open}
           aria-controls={panelId}
           onClick={onToggle}
-          className="flex min-w-0 flex-1 basis-56 items-center gap-3 rounded-lg py-1 text-left outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+          className="flex min-w-0 flex-1 basis-56 items-center gap-3 rounded-lg py-1 text-left"
         >
           <span
             aria-hidden

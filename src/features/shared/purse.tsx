@@ -79,6 +79,8 @@ function CoinField({
           {label.abbreviation}
         </span>
       </span>
+      {/* Repère de focus (WCAG 1.4.11, #183) : la bordure pointillée devient pleine, plus un
+          contour de 2 px comme les PV temporaires ; la bordure seule ne fait qu'un trait de 1 px. */}
       <input
         id={id}
         type="number"
@@ -92,7 +94,7 @@ function CoinField({
             event.currentTarget.blur();
           }
         }}
-        className="w-full [appearance:textfield] border-b border-dashed border-border bg-transparent text-center font-heading text-xl font-bold tabular-nums outline-none focus:border-ring sm:text-2xl [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+        className="w-full [appearance:textfield] border-b border-dashed border-border bg-transparent text-center font-heading text-xl font-bold tabular-nums outline-none focus:border-solid focus:border-ring focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring focus-visible:outline-solid sm:text-2xl [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
       />
       <label htmlFor={id} className="text-[11px] text-muted-foreground">
         {label.name}

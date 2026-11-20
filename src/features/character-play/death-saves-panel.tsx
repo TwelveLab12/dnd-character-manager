@@ -166,7 +166,7 @@ function Track({
             aria-pressed={checked}
             disabled={!editable}
             onClick={() => onToggle(index)}
-            className={`flex size-9 items-center justify-center rounded-full border-2 transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-default ${
+            className={`flex size-9 items-center justify-center rounded-full border-2 transition-colors disabled:cursor-default ${
               checked ? filled : "border-muted-foreground/40 hover:border-muted-foreground"
             }`}
           >

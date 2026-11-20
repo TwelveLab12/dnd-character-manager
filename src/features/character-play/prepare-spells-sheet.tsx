@@ -61,7 +61,13 @@ export function PrepareSpellsSheet({
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button type="button" variant="outline" className="border-primary bg-primary/10">
+        {/* Bordure --primary au repos : passer à --ring au focus ne contraste qu'à 1,1–2,1:1.
+            Contour comme l'anneau global à la place (WCAG 1.4.11, #183). */}
+        <Button
+          type="button"
+          variant="outline"
+          className="border-primary bg-primary/10 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring focus-visible:outline-solid"
+        >
           <NotebookPen className="text-primary" />
           Préparer les sorts
           <Badge

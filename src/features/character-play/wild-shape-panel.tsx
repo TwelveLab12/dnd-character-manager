@@ -277,7 +277,7 @@ function FormCard({
           aria-pressed={form.favorite === true}
           aria-label={`Accès rapide : ${name}`}
           onClick={onToggleFavorite}
-          className="grid size-8 shrink-0 place-items-center rounded-full outline-none hover:bg-primary/10 focus-visible:ring-3 focus-visible:ring-ring/50"
+          className="grid size-8 shrink-0 place-items-center rounded-full hover:bg-primary/10"
         >
           <Star
             aria-hidden

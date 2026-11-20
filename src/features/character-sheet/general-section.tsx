@@ -80,7 +80,7 @@ export function ProficiencyChip({
       aria-pressed={checked}
       onClick={() => onCheckedChange(!checked)}
       className={cn(
-        "flex min-h-14 flex-col items-start justify-center gap-0.5 rounded-xl border px-3 py-2 text-left transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
+        "flex min-h-14 flex-col items-start justify-center gap-0.5 rounded-xl border px-3 py-2 text-left transition-colors",
         checked
           ? "border-primary bg-primary/15 text-foreground"
           : "text-muted-foreground hover:bg-muted/40",

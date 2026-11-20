@@ -22,7 +22,7 @@ export function HitDiceChip({ character }: { character: Character }) {
       <button
         type="button"
         aria-label={`Dés de vie : ${remaining} sur ${total} (d${die}) — repos court`}
-        className={`inline-flex h-8 items-center gap-1.5 rounded-full border px-3 text-xs font-medium whitespace-nowrap transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50 ${
+        className={`inline-flex h-8 items-center gap-1.5 rounded-full border px-3 text-xs font-medium whitespace-nowrap transition-colors ${
           remaining === 0
             ? "border-border text-muted-foreground"
             : "border-success/55 bg-success/10 text-success hover:bg-success/20"

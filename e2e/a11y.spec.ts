@@ -265,3 +265,235 @@ test("404 page has no WCAG 2.2 AA violation (axe)", A11Y, async ({ page }) => {
   expect(response?.status()).toBe(404);
   expect(await wcagViolations(page)).toEqual([]);
 });
+
+// >>> dnd-character-manager : états de focus hors des routes fixes
+// Le parcours clavier ci-dessus ne voit que l'état initial des routes de `routes.ts`, sans
+// personnage. Ces tests chargent la démo (`/?demo=1`, un personnage par thème) et mesurent, avec
+// le même calcul que le parcours (`measureFocus`), les états signalés par les revues a11y :
+// champs numériques de l'édition (TwelveLab12/dnd-character-manager#194), case cochée et
+// interrupteur activé (#193), bouton « Supprimer » des dialogues de confirmation (#192), et en
+// contraste forcé les boutons « Détails » posés sur une carte (#183). Bloc propre au projet : le
+// reporter si `/claude-kit:sync` propose de réécrire ce fichier.
+
+// Alias plutôt qu'import : la ligne d'import reste celle du kit.
+type Locator = ReturnType<Page["locator"]>;
+
+// Charge la démo et renvoie, pour chaque personnage, son nom et le lien de son édition.
+async function openDemo(page: Page) {
+  await open(page, "/?demo=1");
+  const edits = page.getByRole("link", { name: /^Modifier / });
+  await expect(edits.first()).toBeVisible();
+  return edits.evaluateAll((links) =>
+    links.map((link) => ({
+      name: (link.getAttribute("aria-label") ?? "").replace(/^Modifier /, ""),
+      href: link.getAttribute("href") ?? "",
+    })),
+  );
+}
+
+// Donne le focus à `target` au clavier (Maj+Tab puis Tab : `:focus-visible` suit la modalité
+// clavier) et vérifie son indicateur comme le parcours ci-dessus : 3:1 sur au moins 1 px.
+async function expectFocusIndicator(page: Page, target: Locator, name: string) {
+  await target.scrollIntoViewIfNeeded();
+  await target.focus();
+  await page.keyboard.press("Shift+Tab");
+  await page.keyboard.press("Tab");
+  await expect(target, `${name} : focalisé au clavier`).toBeFocused();
+  const geometry = await target.evaluate((el) => {
+    const { x, y, width, height } = el.getBoundingClientRect();
+    const style = getComputedStyle(el);
+    const corner = (side: string) => {
+      const [rx = 0, ry = rx] = style
+        .getPropertyValue(`border-${side}-radius`)
+        .split(" ")
+        .map(parseFloat);
+      return { x: rx, y: ry };
+    };
+    const [topLeft, topRight, bottomRight, bottomLeft] = [
+      "top-left",
+      "top-right",
+      "bottom-right",
+      "bottom-left",
+    ].map(corner) as [Radius, Radius, Radius, Radius];
+    // Rayons tels que dessinés : CSS les réduit ensemble quand ils se chevauchent.
+    const fit = (size: number, sum: number) => (sum > 0 ? size / sum : 1);
+    const scale = Math.min(
+      1,
+      fit(width, topLeft.x + topRight.x),
+      fit(width, bottomLeft.x + bottomRight.x),
+      fit(height, topLeft.y + bottomLeft.y),
+      fit(height, topRight.y + bottomRight.y),
+    );
+    const scaled = (r: Radius) => ({ x: r.x * scale, y: r.y * scale });
+    return {
+      box: { x, y, width, height },
+      radii: {
+        topLeft: scaled(topLeft),
+        topRight: scaled(topRight),
+        bottomRight: scaled(bottomRight),
+        bottomLeft: scaled(bottomLeft),
+      },
+    };
+  });
+  const clip = around(geometry.box, page.viewportSize() ?? { width: 1280, height: 720 });
+  expect.soft(clip, `${name} : à l'écran`).not.toBeNull();
+  if (!clip) return;
+  const focused = await shot(page, clip);
+  await target.evaluate((el) => (el as HTMLElement).blur());
+  const blurred = await shot(page, clip);
+  const indicator = await page.evaluate(measureFocus, {
+    focused,
+    blurred,
+    el: { ...geometry.box, x: geometry.box.x - clip.x, y: geometry.box.y - clip.y },
+    radii: geometry.radii,
+    contrast: FOCUS_CONTRAST,
+  });
+  expect
+    .soft(
+      indicator.thickness,
+      `${name} : ${indicator.thickness} px à ${FOCUS_CONTRAST}:1 (changement le plus fort ${indicator.strongest}:1)`,
+    )
+    .toBeGreaterThanOrEqual(FOCUS_THICKNESS);
+}
+
+test.describe("a11y : états de focus de la démo", A11Y, () => {
+  test("les champs numériques de l'édition ont un indicateur contrasté (WCAG 1.4.11, RGAA 10.7)", async ({
+    page,
+  }) => {
+    const characters = await openDemo(page);
+    expect(characters.length, "personnages de la démo").toBeGreaterThan(0);
+    for (const { name, href } of characters) {
+      await test.step(name, async () => {
+        await open(page, href);
+        await expectFocusIndicator(
+          page,
+          page.getByLabel("Niveau", { exact: true }),
+          `${name} › Niveau`,
+        );
+        await page.getByRole("tab", { name: "Caractéristiques" }).click();
+        await expectFocusIndicator(
+          page,
+          page.getByLabel("Score de base : Force"),
+          `${name} › Score de base : Force`,
+        );
+        await page.getByRole("tab", { name: "Général" }).click();
+        await page.getByRole("button", { name: "Ajouter un effet" }).click();
+        await expectFocusIndicator(
+          page,
+          page.getByLabel("Bonus de CA").last(),
+          `${name} › Bonus de CA`,
+        );
+      });
+    }
+  });
+
+  test("une case cochée et un interrupteur activé ont un indicateur contrasté (WCAG 1.4.11, RGAA 10.7)", async ({
+    page,
+  }) => {
+    const characters = await openDemo(page);
+    // Ces états dépendent des données de la démo : chacun doit être mesuré au moins une fois.
+    const measured = { equipSwitch: 0, pickerSwitch: 0, checkbox: 0 };
+    for (const { name, href } of characters) {
+      await test.step(name, async () => {
+        await open(page, href);
+        // Interrupteur « Équipé » d'une armure ou d'un objet porté (une arme se place autrement).
+        await page.getByRole("tab", { name: "Inventaire" }).click();
+        const equipped = page.getByRole("switch", { name: "Équipé", checked: true });
+        if ((await equipped.count()) > 0) {
+          await expectFocusIndicator(page, equipped.first(), `${name} › Inventaire › Équipé`);
+          measured.equipSwitch++;
+        }
+        // Sélecteur de sorts connus (lanceurs de sorts seulement), dans un volet.
+        await page.getByRole("tab", { name: "Sorts" }).click();
+        const picker = page.getByRole("button", { name: "Ajouter des sorts" });
+        if ((await picker.count()) === 0) return;
+        await picker.click();
+        const sheet = page.getByRole("dialog");
+        // « Uniquement les sorts de <classe> », activé à l'ouverture.
+        await expectFocusIndicator(
+          page,
+          sheet.getByRole("switch", { checked: true }).first(),
+          `${name} › Ajouter des sorts › interrupteur activé`,
+        );
+        measured.pickerSwitch++;
+        // Liste vide pour une classe sans sorts (barbare) : rien à cocher.
+        const unchecked = sheet.getByRole("checkbox", { checked: false, disabled: false });
+        if ((await unchecked.count()) === 0) return;
+        // Marque la case : un locator `checked: false` désignerait la suivante une fois cochée.
+        await unchecked.first().evaluate((el) => el.setAttribute("data-e2e-focus-target", ""));
+        const checkbox = sheet.locator("[data-e2e-focus-target]");
+        await checkbox.focus();
+        await page.keyboard.press("Space");
+        await expect(checkbox).toBeChecked();
+        await expectFocusIndicator(page, checkbox, `${name} › Ajouter des sorts › case cochée`);
+        measured.checkbox++;
+      });
+    }
+    expect(measured.equipSwitch, "interrupteurs « Équipé » activés mesurés").toBeGreaterThan(0);
+    expect(measured.pickerSwitch, "interrupteurs du sélecteur de sorts mesurés").toBeGreaterThan(0);
+    expect(measured.checkbox, "cases cochées mesurées").toBeGreaterThan(0);
+  });
+
+  test("le bouton « Supprimer » d'un dialogue de confirmation a un indicateur contrasté (WCAG 1.4.11, RGAA 10.7)", async ({
+    page,
+  }) => {
+    const characters = await openDemo(page);
+    const confirm = page.getByRole("alertdialog").getByRole("button", {
+      name: "Supprimer",
+      exact: true,
+    });
+    // Accueil : dialogue hors de la carte du personnage, dans la palette par défaut.
+    const [first] = characters;
+    if (!first) throw new Error("aucun personnage dans la démo");
+    await page.getByRole("button", { name: `Supprimer ${first.name}` }).click();
+    await expectFocusIndicator(page, confirm, "Accueil › Supprimer le personnage");
+    await page.keyboard.press("Escape");
+    // Journal : dialogue dans la palette du personnage. La démo n'a pas de journal : la première
+    // note crée la session, que l'on ouvre pour la supprimer.
+    for (const { name, href } of characters) {
+      await test.step(name, async () => {
+        await open(page, href.replace(/\/edit$/, ""));
+        await page.getByRole("button", { name: "Journal" }).click();
+        await page.getByRole("textbox", { name: "Nouvelle note" }).fill("Note de test");
+        await page.getByRole("button", { name: "Ajouter la note" }).click();
+        await page
+          .getByRole("button", { name: /^Modifier la session/ })
+          .first()
+          .click();
+        await page.getByRole("button", { name: "Supprimer la session" }).click();
+        await expectFocusIndicator(page, confirm, `${name} › Journal › Supprimer la session`);
+      });
+    }
+  });
+
+  test("en contraste forcé, les boutons « Détails » posés sur une carte ont un indicateur (WCAG 2.4.7, RGAA 10.7)", async ({
+    page,
+  }) => {
+    const characters = await openDemo(page);
+    // Le mode contraste forcé efface l'anneau dessiné en box-shadow : ces boutons gardent un
+    // contour grâce à `focus-visible:outline-hidden`, que `outline-none` supprimerait.
+    await page.emulateMedia({ forcedColors: "active" });
+    let measured = 0;
+    for (const { name, href } of characters) {
+      await test.step(name, async () => {
+        await open(page, href.replace(/\/edit$/, ""));
+        // Combat : armes, ressources de classe et capacités à usages. Inventaire : objets. La
+        // carte de sort de l'onglet Sorts a le même défaut, hors de ce lot.
+        for (const tab of ["Combat", "Inventaire"]) {
+          await page.getByRole("tab", { name: tab, exact: true }).click();
+          const details = page.getByRole("tabpanel").getByRole("button", { name: /^Détails : / });
+          const count =
+            tab === "Combat" ? await details.count() : Math.min(1, await details.count());
+          for (let i = 0; i < count; i++) {
+            const button = details.nth(i);
+            const label = await button.getAttribute("aria-label");
+            await expectFocusIndicator(page, button, `${name} › ${tab} › ${label}`);
+            measured++;
+          }
+        }
+      });
+    }
+    expect(measured, "boutons « Détails » mesurés").toBeGreaterThan(0);
+  });
+});
+// <<< dnd-character-manager

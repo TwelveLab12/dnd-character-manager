@@ -155,7 +155,7 @@ function ClassResourceCard({
                 type="button"
                 onClick={() => void adjustClassResource(resource.id, lit ? 1 : -1)}
                 aria-label={lit ? `Dépenser : ${resource.name}` : `Récupérer : ${resource.name}`}
-                className={`grid size-14 place-items-center rounded-full border-2 transition-all duration-300 outline-none focus-visible:ring-3 focus-visible:ring-ring/50 ${
+                className={`grid size-14 place-items-center rounded-full border-2 transition-all duration-300 ${
                   lit
                     ? "border-primary bg-primary/15 text-primary shadow-[0_0_20px_color-mix(in_oklab,var(--primary)_35%,transparent)]"
                     : "border-dashed border-muted-foreground/40 text-muted-foreground/50"
@@ -198,7 +198,7 @@ function ClassResourceCard({
                 type="button"
                 aria-label={`Détails : ${option.name}`}
                 onClick={() => onShowOption(option.key)}
-                className="absolute inset-0 cursor-pointer rounded-xl transition-colors outline-none hover:bg-primary/10 focus-visible:ring-3 focus-visible:ring-ring/50"
+                className="absolute inset-0 cursor-pointer rounded-xl transition-colors hover:bg-primary/10 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden focus-visible:ring-inset"
               />
               <span className="grid size-7.5 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary">
                 <ResourceIcon aria-hidden className="size-4" />

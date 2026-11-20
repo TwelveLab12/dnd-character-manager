@@ -220,7 +220,7 @@ function PropertyChip({
       aria-pressed={pressed}
       onClick={() => onPressedChange(!pressed)}
       className={cn(
-        "h-9 rounded-full border px-3.5 text-sm font-medium transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
+        "h-9 rounded-full border px-3.5 text-sm font-medium transition-colors",
         pressed
           ? "border-primary bg-primary/15 text-foreground"
           : "text-muted-foreground hover:bg-muted/40",

@@ -63,7 +63,7 @@ function SpellSlotRow({ characterId, slot }: { characterId: string; slot: SpellS
                   ? `Utiliser un emplacement de niveau ${slot.level}`
                   : `Récupérer un emplacement de niveau ${slot.level}`
               }
-              className="grid size-9 place-items-center rounded-lg outline-none focus-visible:ring-3 focus-visible:ring-ring/50 sm:size-8"
+              className="grid size-9 place-items-center rounded-lg sm:size-8"
             >
               <svg viewBox="0 0 24 24" aria-hidden className="size-[22px] overflow-visible">
                 <path

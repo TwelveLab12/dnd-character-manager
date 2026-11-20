@@ -145,7 +145,7 @@ function AbilityCard({
       </span>
 
       <div className="flex items-center justify-between gap-2">
-        <div className="flex h-11 items-center rounded-lg border border-input bg-card">
+        <div className="flex h-11 items-center rounded-lg border border-input bg-card has-[input:focus-visible]:outline-3 has-[input:focus-visible]:outline-offset-2 has-[input:focus-visible]:outline-ring">
           <Button
             type="button"
             variant="ghost"
@@ -157,13 +157,15 @@ function AbilityCard({
           >
             <Minus />
           </Button>
+          {/* Indicateur de focus sur le groupe −/score/+ (WCAG 1.4.11), comme un seul champ.
+              `outline-none` évite un second anneau autour du chiffre. */}
           <input
             id={scoreId}
             type="number"
             min={MIN_SCORE}
             max={MAX_SCORE}
             aria-label={`Score de base : ${label}`}
-            className="w-10 [appearance:textfield] bg-transparent text-center text-lg font-semibold tabular-nums outline-none [&::-webkit-inner-spin-button]:appearance-none"
+            className="h-full w-10 [appearance:textfield] bg-transparent text-center text-lg font-semibold tabular-nums outline-none [&::-webkit-inner-spin-button]:appearance-none"
             value={baseScore}
             onChange={(event) => {
               const parsed = Number.parseInt(event.target.value, 10);
@@ -212,7 +214,7 @@ function AbilityCard({
           aria-pressed={proficient}
           onClick={() => onProficiencyChange(!proficient)}
           className={cn(
-            "flex min-h-12 items-center gap-2.5 rounded-xl border px-3 py-1.5 text-left transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
+            "flex min-h-12 items-center gap-2.5 rounded-xl border px-3 py-1.5 text-left transition-colors",
             proficient ? "border-primary bg-primary/10" : "hover:bg-muted/40",
             removed && "border-dashed",
           )}
@@ -352,7 +354,7 @@ function SkillGroup({
             aria-pressed={proficient}
             onClick={() => onToggle(skill.name, !proficient)}
             className={cn(
-              "flex min-h-11 items-center gap-2.5 rounded-lg border px-3 text-left transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
+              "flex min-h-11 items-center gap-2.5 rounded-lg border px-3 text-left transition-colors",
               proficient ? "border-primary/45 bg-primary/5" : "bg-background/60 hover:bg-muted/40",
             )}
           >

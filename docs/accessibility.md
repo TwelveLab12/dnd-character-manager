@@ -11,18 +11,24 @@ cibles, saisie redondante…) sont suivies par la checklist de `.claude/kit/a11y
 
 ## Ce qui est automatisé
 
-| Couche                                              | Quand                            | Ce qu'elle voit                                                                                 | Ce qu'elle ne voit pas                                                                           |
-| --------------------------------------------------- | -------------------------------- | ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| Lint `jsx-a11y` (preset `strict`)                   | pré-commit, `lint:ci` (bloquant) | ARIA invalide, `alt` manquant, gestionnaires sans clavier, liens vides, `tabindex` positif      | le rendu : contraste, ordre de focus, landmarks calculés                                         |
-| axe-core dans Vitest (`*.a11y.test.tsx`)            | `test`                           | structure et ARIA de chaque composant                                                           | contraste, mise en page, cibles (pas de moteur de rendu dans jsdom)                              |
-| Contraste des tokens (`design-tokens.a11y.test.ts`) | `test`                           | chaque paire de couleurs du design system, clair et sombre                                      | l'opacité ajoutée par une classe, les couleurs écrites en dur                                    |
-| axe-core + Playwright (`e2e/a11y.spec.ts`)          | `test:e2e`, CI                   | WCAG 2.2 AA et bonnes pratiques sur le rendu, reflow 320 px, focus visible, titres, `lang`, 404 | le texte des SVG, le lecteur d'écran, la pertinence des textes, les pages derrière une connexion |
+| Couche                                                     | Quand                            | Ce qu'elle voit                                                                                 | Ce qu'elle ne voit pas                                                                           |
+| ---------------------------------------------------------- | -------------------------------- | ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| Lint `jsx-a11y` (preset `strict`)                          | pré-commit, `lint:ci` (bloquant) | ARIA invalide, `alt` manquant, gestionnaires sans clavier, liens vides, `tabindex` positif      | le rendu : contraste, ordre de focus, landmarks calculés                                         |
+| axe-core dans Vitest (`*.a11y.test.tsx`)                   | `test`                           | structure et ARIA de chaque composant                                                           | contraste, mise en page, cibles (pas de moteur de rendu dans jsdom)                              |
+| Contraste des tokens (`design-tokens.a11y.test.ts`)        | `test`                           | chaque paire de couleurs du design system, clair et sombre                                      | l'opacité ajoutée par une classe, les couleurs écrites en dur                                    |
+| Anneau de focus des thèmes (`theme-contrast.a11y.test.ts`) | `test`                           | `--ring` de chaque thème de personnage sur `--background`, `--card` et `--popover`, à 3:1       | les surfaces translucides, mesurées en pixels (commentaire de `globals.css`)                     |
+| axe-core + Playwright (`e2e/a11y.spec.ts`)                 | `test:e2e`, CI                   | WCAG 2.2 AA et bonnes pratiques sur le rendu, reflow 320 px, focus visible, titres, `lang`, 404 | le texte des SVG, le lecteur d'écran, la pertinence des textes, les pages derrière une connexion |
 
 Pages couvertes par les tests e2e : celles de `e2e/routes.ts` (`/`, `/spells`, `/changelog`,
 `/offline`), plus la 404. Pas encore couvertes : la fiche et l'édition de personnage
 (`/characters/[id]`, `/characters/[id]/edit`), qui n'affichent un personnage que s'il existe dans le
 `localStorage` du navigateur de test, voir
-[#182](https://github.com/TwelveLab12/dnd-character-manager/issues/182).
+[#182](https://github.com/TwelveLab12/dnd-character-manager/issues/182). En attendant, le bloc
+« états de focus » de `e2e/a11y.spec.ts` charge la démo (`/?demo=1`, un personnage par thème) et y
+mesure l'indicateur de focus des champs numériques de l'édition, d'une case cochée, d'un
+interrupteur activé et du bouton « Supprimer » des dialogues de confirmation, ainsi que, en
+contraste forcé, celui des boutons « Détails » posés sur une carte : ce n'est pas le parcours
+complet (axe, reflow, titres, chaque arrêt de tabulation).
 
 ## Couverture RGAA 4.1.2 par thématique
 
@@ -107,11 +113,14 @@ Chaque défaut trouvé à la main devient une issue (type + label `accessibility
 qu'elle est ouverte. Relevés par la revue `a11y-reviewer` de
 [#181](https://github.com/TwelveLab12/dnd-character-manager/issues/181) :
 
-- [#183](https://github.com/TwelveLab12/dnd-character-manager/issues/183) — indicateur de focus sous
-  3:1 sur les contrôles des pages de personnage qui n'ont qu'un halo translucide (`ring-ring/50`) ;
-  l'anneau `:focus-visible` global est en place (RGAA 10.7, WCAG 2.4.7 et 1.4.11).
+- [#183](https://github.com/TwelveLab12/dnd-character-manager/issues/183) — indicateur de focus des
+  pages de personnage (RGAA 10.7, WCAG 2.4.7 et 1.4.11) : les halos translucides sont remplacés par
+  l'anneau global, et une mesure manuelle de tous les arrêts de tabulation de la démo ne trouve plus
+  d'indicateur sous 3:1 hors du masquage de #184. Reste ouvert tant qu'aucun test du dépôt ne
+  parcourt ces pages (#182).
 - [#184](https://github.com/TwelveLab12/dnd-character-manager/issues/184) — fiche en mode jeu : le
-  bandeau `CombatSummary` collant peut masquer l'élément focalisé (WCAG 2.4.11).
+  bandeau `CombatSummary` collant masque l'élément focalisé en tabulant vers l'avant, reproduit
+  sur les boutons de PV et les liens « Modifier… » (WCAG 2.4.11).
 - [#185](https://github.com/TwelveLab12/dnd-character-manager/issues/185) — pages de personnage :
   pas de `h1` dans les états « Chargement » et « Personnage introuvable » (RGAA 9.1).
 - [#186](https://github.com/TwelveLab12/dnd-character-manager/issues/186) — journal : le focus n'est
@@ -119,15 +128,20 @@ qu'elle est ouverte. Relevés par la revue `a11y-reviewer` de
 - [#187](https://github.com/TwelveLab12/dnd-character-manager/issues/187) — titre d'onglet générique
   sur la fiche et l'édition : il ne nomme pas le personnage (RGAA 8.6, à arbitrer).
 
-Relevés par la revue `a11y-reviewer` de
-[#191](https://github.com/TwelveLab12/dnd-character-manager/issues/191) :
+Relevé en mesurant les indicateurs de focus de
+[#183](https://github.com/TwelveLab12/dnd-character-manager/issues/183) :
 
-- [#192](https://github.com/TwelveLab12/dnd-character-manager/issues/192) — bouton `destructive` :
-  focus presque invisible sur « Supprimer » dans les confirmations (RGAA 3.3, 10.7, WCAG 1.4.11).
-- [#193](https://github.com/TwelveLab12/dnd-character-manager/issues/193) — case cochée et
-  interrupteur activé : indicateur de focus sous 3:1 (RGAA 3.3, 10.7, WCAG 1.4.11).
-- [#194](https://github.com/TwelveLab12/dnd-character-manager/issues/194) — champs numériques de la
-  fiche : aucun indicateur de focus (RGAA 10.7, WCAG 2.4.7).
+- [#203](https://github.com/TwelveLab12/dnd-character-manager/issues/203) — thèmes de personnage :
+  texte rouge (`--destructive`) sous 4,5:1 sur les fonds du thème (RGAA 3.2, WCAG 1.4.3).
+
+Relevés par la revue `a11y-reviewer` de
+[la PR #205](https://github.com/TwelveLab12/dnd-character-manager/pull/205) :
+
+- [#206](https://github.com/TwelveLab12/dnd-character-manager/issues/206) — `aria-controls` vers un
+  panneau absent du DOM quand il est fermé, groupes radio sans navigation aux flèches (RGAA 7.1,
+  WCAG 2.1.1 et 4.1.2).
+- [#207](https://github.com/TwelveLab12/dnd-character-manager/issues/207) — indicateur de focus
+  invisible en contraste forcé : bouton shadcn de base, cartes de sort (RGAA 10.7, WCAG 2.4.7).
 
 ## Tenir ce document à jour
 
