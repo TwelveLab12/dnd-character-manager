@@ -270,8 +270,9 @@ test("404 page has no WCAG 2.2 AA violation (axe)", A11Y, async ({ page }) => {
 // Le parcours clavier ci-dessus ne voit que l'état initial des routes de `routes.ts`, sans
 // personnage. Ces tests chargent la démo (`/?demo=1`, un personnage par thème) et mesurent, avec
 // le même calcul que le parcours (`measureFocus`), les états signalés par les revues a11y :
-// champs numériques de l'édition (TwelveLab12/dnd-character-manager#194). Bloc propre au
-// projet : le reporter si `/claude-kit:sync` propose de réécrire ce fichier.
+// champs numériques de l'édition (TwelveLab12/dnd-character-manager#194), case cochée et
+// interrupteur activé (#193). Bloc propre au projet : le reporter si `/claude-kit:sync` propose
+// de réécrire ce fichier.
 
 // Alias plutôt qu'import : la ligne d'import reste celle du kit.
 type Locator = ReturnType<Page["locator"]>;
@@ -383,6 +384,53 @@ test.describe("a11y : états de focus de la démo", A11Y, () => {
         );
       });
     }
+  });
+
+  test("une case cochée et un interrupteur activé ont un indicateur contrasté (WCAG 1.4.11, RGAA 10.7)", async ({
+    page,
+  }) => {
+    const characters = await openDemo(page);
+    // Ces états dépendent des données de la démo : chacun doit être mesuré au moins une fois.
+    const measured = { equipSwitch: 0, pickerSwitch: 0, checkbox: 0 };
+    for (const { name, href } of characters) {
+      await test.step(name, async () => {
+        await open(page, href);
+        // Interrupteur « Équipé » d'une armure ou d'un objet porté (une arme se place autrement).
+        await page.getByRole("tab", { name: "Inventaire" }).click();
+        const equipped = page.getByRole("switch", { name: "Équipé", checked: true });
+        if ((await equipped.count()) > 0) {
+          await expectFocusIndicator(page, equipped.first(), `${name} › Inventaire › Équipé`);
+          measured.equipSwitch++;
+        }
+        // Sélecteur de sorts connus (lanceurs de sorts seulement), dans un volet.
+        await page.getByRole("tab", { name: "Sorts" }).click();
+        const picker = page.getByRole("button", { name: "Ajouter des sorts" });
+        if ((await picker.count()) === 0) return;
+        await picker.click();
+        const sheet = page.getByRole("dialog");
+        // « Uniquement les sorts de <classe> », activé à l'ouverture.
+        await expectFocusIndicator(
+          page,
+          sheet.getByRole("switch", { checked: true }).first(),
+          `${name} › Ajouter des sorts › interrupteur activé`,
+        );
+        measured.pickerSwitch++;
+        // Liste vide pour une classe sans sorts (barbare) : rien à cocher.
+        const unchecked = sheet.getByRole("checkbox", { checked: false, disabled: false });
+        if ((await unchecked.count()) === 0) return;
+        // Marque la case : un locator `checked: false` désignerait la suivante une fois cochée.
+        await unchecked.first().evaluate((el) => el.setAttribute("data-e2e-focus-target", ""));
+        const checkbox = sheet.locator("[data-e2e-focus-target]");
+        await checkbox.focus();
+        await page.keyboard.press("Space");
+        await expect(checkbox).toBeChecked();
+        await expectFocusIndicator(page, checkbox, `${name} › Ajouter des sorts › case cochée`);
+        measured.checkbox++;
+      });
+    }
+    expect(measured.equipSwitch, "interrupteurs « Équipé » activés mesurés").toBeGreaterThan(0);
+    expect(measured.pickerSwitch, "interrupteurs du sélecteur de sorts mesurés").toBeGreaterThan(0);
+    expect(measured.checkbox, "cases cochées mesurées").toBeGreaterThan(0);
   });
 });
 // <<< dnd-character-manager
