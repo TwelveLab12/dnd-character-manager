@@ -13,6 +13,10 @@ const FOCUS_CONTRAST = 3;
 const FOCUS_THICKNESS = 1;
 // Outlines and rings are drawn outside the element: read this many CSS px around it.
 const FOCUS_MARGIN = 8;
+// A page may still replace its <main> or its h1 once loaded (data read on the client, as in an
+// offline-first app). Within this budget, a script-focused target that changed while measured is
+// measured again.
+const SCRIPT_FOCUS_TIMEOUT = 10_000;
 // Tagged so CI can run these specs in a separate, non-blocking job (kit var a11yGate=advisory).
 const A11Y = { tag: "@a11y" };
 
@@ -194,13 +198,47 @@ function scriptTarget(page: Page) {
   return page.evaluateHandle(() => {
     const heading = document.querySelector<HTMLElement>('h1[tabindex="-1"]');
     if (heading) return heading;
+    // The probe of a previous attempt, when the page kept it.
+    document.querySelector("[data-claude-kit-probe]")?.remove();
     const probe = document.createElement("p");
+    probe.dataset.claudeKitProbe = "";
     probe.tabIndex = -1;
     probe.textContent = "claude-kit focus probe";
     probe.style.width = "max-content";
     (document.querySelector("main") ?? document.body).prepend(probe);
     return probe;
   });
+}
+
+// Runs in the page: what must not change while the target is measured. Null once the page has
+// removed it (React unmounting the <main> it was in).
+function targetState(el: HTMLElement) {
+  if (!el.isConnected) return null;
+  const { x, y, width, height } = el.getBoundingClientRect();
+  return JSON.stringify([el.textContent, x, y, width, height]);
+}
+
+// Focuses the script target and measures its indicator. When the page replaced the target, its
+// text or its place in the meantime, the screenshots show another element, or none: the attempt
+// does not count and starts over.
+async function scriptFocus(page: Page) {
+  const deadline = Date.now() + SCRIPT_FOCUS_TIMEOUT;
+  for (let attempt = 1; ; attempt++) {
+    const target = await scriptTarget(page);
+    await target.evaluate((el) => el.focus());
+    const before = await target.evaluate(targetState);
+    const id = await target.evaluate(label);
+    const visible = await target.evaluate((el) => el.matches(":focus-visible"));
+    const indicator = await focusIndicator(page, target);
+    if (before !== null && (await target.evaluate(targetState)) === before) {
+      return { id, visible, indicator };
+    }
+    if (Date.now() >= deadline) {
+      throw new Error(
+        `script-focused target ${id}: replaced or changed by the page while measured, ${attempt} attempt(s) in ${SCRIPT_FOCUS_TIMEOUT} ms`,
+      );
+    }
+  }
 }
 
 for (const route of ROUTES) {
@@ -280,14 +318,8 @@ for (const route of ROUTES) {
       await open(page, route);
       // A keyboard user acts, then a script moves the focus.
       await page.keyboard.press("Tab");
-      const target = await scriptTarget(page);
-      await target.evaluate((el) => el.focus());
-      const id = await target.evaluate(label);
-      expect(
-        await target.evaluate((el) => el.matches(":focus-visible")),
-        `${id} matches :focus-visible`,
-      ).toBe(true);
-      const indicator = await focusIndicator(page, target);
+      const { id, visible, indicator } = await scriptFocus(page);
+      expect(visible, `${id} matches :focus-visible`).toBe(true);
       const found = indicator
         ? `${indicator.thickness} px at ${FOCUS_CONTRAST}:1 (strongest change ${indicator.strongest}:1)`
         : "off screen";
