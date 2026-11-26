@@ -23,9 +23,11 @@ qu'au dev/build/typegen, et sans eux `tsc` échoue sur un clone frais.
 Version de Node : `.nvmrc`, lu
 aussi par la CI. Le gestionnaire de Node du poste doit le lire (mise avec la lecture de `.nvmrc`
 activée, nvm, fnm ; pas Volta) : sinon la baseline locale tourne sur une autre version que la CI,
-ce que sync et audit signalent. `@types/node` suit la majeure de Node
-(`pnpm add -D @types/node@^<majeure>` quand on change Node) : les types doivent décrire
-l'exécution, pas la dernière version publiée.
+ce que sync et audit signalent. La changer avec `/claude-kit:sync node=<majeure>`, qui réécrit aussi
+`engines.node`. `engines.node` de `package.json` porte la même majeure pour Vercel, qui ne lit
+ni `.nvmrc` ni `volta.node` et suivrait sinon le réglage du projet, hors du dépôt. `@types/node`
+suit la majeure de Node (`pnpm add -D @types/node@^<majeure>` quand on change Node) : les types
+doivent décrire l'exécution, pas la dernière version publiée.
 
 ## TypeScript
 
