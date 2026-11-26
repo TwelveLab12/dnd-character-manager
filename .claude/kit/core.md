@@ -21,8 +21,11 @@ qu'au dev/build/typegen, et sans eux `tsc` échoue sur un clone frais.
   production et lance les e2e comme la CI (voir `.claude/kit/playwright.md`).
 
 Version de Node : `.nvmrc`, lu
-aussi par la CI. `@types/node` suit la majeure de Node (`pnpm add -D @types/node@^<majeure>`
-quand on change Node) : les types doivent décrire l'exécution, pas la dernière version publiée.
+aussi par la CI. Le gestionnaire de Node du poste doit le lire (mise avec la lecture de `.nvmrc`
+activée, nvm, fnm ; pas Volta) : sinon la baseline locale tourne sur une autre version que la CI,
+ce que sync et audit signalent. `@types/node` suit la majeure de Node
+(`pnpm add -D @types/node@^<majeure>` quand on change Node) : les types doivent décrire
+l'exécution, pas la dernière version publiée.
 
 ## TypeScript
 

@@ -24,6 +24,7 @@ pnpm test:e2e:ui    # mode UI interactif
 - Premier lancement local : `pnpm exec playwright install chromium`. Sous Linux/WSL, Chromium a
   aussi besoin de bibliothèques système, à installer une fois par machine **par l'utilisateur**
   (`sudo` demande son mot de passe, ne pas le lancer à sa place). Seul `apt` passe en root, Node
-  reste dans l'espace utilisateur (un shim Volta ne fonctionne pas sous `sudo`) :
+  reste dans l'espace utilisateur (`sudo` ne voit pas le Node de l'utilisateur, installé par mise,
+  nvm ou fnm) :
   `sudo apt-get install -y $(pnpm exec playwright install-deps --dry-run chromium 2>/dev/null | sed -n 's/^  //p')`.
   Symptôme si elles manquent : `error while loading shared libraries: libnspr4.so`.
