@@ -1,5 +1,5 @@
 {
-  "kitVersion": "0.15.0",
+  "kitVersion": "0.16.0",
   "modules": [
     "core",
     "tailwind-shadcn",
@@ -20,7 +20,7 @@
     "owner": "TwelveLab12",
     "boardNumber": "2",
     "run": "pnpm",
-    "nodeVersion": "24",
+    "nodeVersion": "26",
     "uiBase": "radix"
   }
 }
