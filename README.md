@@ -41,7 +41,7 @@ pnpm install
 pnpm dev        # http://localhost:3000
 ```
 
-Node 24 (version dans [`.nvmrc`](.nvmrc)). Avant un commit, `pnpm typecheck`, `pnpm format:check`, `pnpm lint:ci`, `pnpm test` et `pnpm build` doivent passer : c'est ce que vérifie la CI. Les conventions de travail sont dans [`CLAUDE.md`](CLAUDE.md).
+Node, dans la version de [`.nvmrc`](.nvmrc), que la CI et Vercel (par `engines.node`) suivent aussi. Avant un commit, `pnpm typecheck`, `pnpm format:check`, `pnpm lint:ci`, `pnpm test` et `pnpm build` doivent passer : c'est ce que vérifie la CI. Les conventions de travail sont dans [`CLAUDE.md`](CLAUDE.md).
 
 ## Licence
 
